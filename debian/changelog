@@ -1,0 +1,6 @@
+ngcp-web-tests-e2e (9.2.0.0+0~mr9.2.0.0) unstable; urgency=medium
+
+  [ Sergii Kipot ]
+  * [f47b8bf] TT#100553 Add initial commit with .gitreview
+
+ -- Sergii Kipot <skipot@sipwise.com>  Tue, 10 Nov 2020 16:00:00 +0200

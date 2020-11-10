@@ -1,0 +1,17 @@
+Source: ngcp-web-tests-e2e
+Section: devel
+Priority: optional
+Maintainer: Sipwise Development Team <support@sipwise.com>
+Build-Depends:
+ debhelper-compat (= 12),
+Standards-Version: 3.9.8
+Homepage: https://sipwise.com/
+
+Package: ngcp-web-tests-e2e
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Description: Additional e2e test scripts for both ngcp-admin-ui and ngcp-csc-ui
+ Test scripts help to set up important and complex scenarios and to verify the
+ work in a TDD env
