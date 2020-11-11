@@ -16,3 +16,5 @@ yarn-error.log*
 *.sln
 
 debug.log
+cypress/videos
+cypress/screenshots

@@ -1,12 +1,16 @@
 {
-  "name": "ngcp-web-tests-e2e",
-  "version": "0.0.1",
-  "description": "Cypress.io based E2E testing scenarios for testing ngcp-csc-ui and ngcp-admin-ui products",
-  "main": "index.js",
-  "author": "Sergii Leonenko <sleonenko@sipwise.com>",
-  "license": "MIT",
-  "private": true,
-  "dependencies": {
-    "cypress": "^5.6.0"
-  }
+    "name": "ngcp-web-tests-e2e",
+    "version": "0.0.1",
+    "description": "Cypress.io based E2E testing scenarios for testing ngcp-csc-ui and ngcp-admin-ui products",
+    "main": "index.js",
+    "author": "Sergii Leonenko <sleonenko@sipwise.com>",
+    "license": "MIT",
+    "private": true,
+    "scripts": {
+        "start": "cypress open",
+        "ci:run:csc-ui": "cypress run --spec ./cypress/integration/ngcp-csc-ui/*.*"
+    },
+    "dependencies": {
+        "cypress": "^5.6.0"
+    }
 }
