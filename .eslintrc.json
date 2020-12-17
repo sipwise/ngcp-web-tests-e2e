@@ -1,0 +1,25 @@
+{
+    "env": {
+        "browser": false,
+        "es2021": true,
+        "cypress/globals": true
+    },
+    "extends": [
+        "standard",
+        "plugin:cypress/recommended"
+    ],
+    "plugins": [
+        "cypress"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 12,
+        "sourceType": "module"
+    },
+    "rules": {
+        "indent": ["error", 4],
+        "arrow-parens": "off",
+        "one-var": ["error", { "var": "never", "let": "never", "const": "never" }],
+
+        "cypress/no-unnecessary-waiting": "warn"
+    }
+}

@@ -23,3 +23,44 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('login', (username, password) => {
+    const log = Cypress.log({
+        name: 'login',
+        displayName: 'LOGIN',
+        message: `🔒 Authenticating | ${username}`,
+        autoEnd: false
+    })
+    const ngcpConfigCSC = Cypress.config('ngcpConfigCSC')
+    const loginData = {
+        username,
+        password
+    }
+    const apiLoginURL = `${ngcpConfigCSC.apiHost}/login_jwt`
+
+    return cy
+        .request({
+            method: 'POST',
+            url: apiLoginURL,
+            body: loginData,
+            log: false
+        })
+        .then((response) => {
+            const quasarFrameworkDataPrefix = '__q_strn|'
+            localStorage.csc_jwt = quasarFrameworkDataPrefix + response.body.jwt
+            localStorage.csc_subscriberId = quasarFrameworkDataPrefix + response.body.subscriber_id
+
+            log.set({
+                consoleProps () {
+                    return {
+                        apiURL: apiLoginURL,
+                        username,
+                        password,
+                        jwt: response.body.jwt,
+                        subscriberId: response.body.subscriber_id
+                    }
+                }
+            })
+            log.end()
+        })
+})
