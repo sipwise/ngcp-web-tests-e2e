@@ -1,3 +1,12 @@
+ngcp-web-tests-e2e (9.2.1.0+0~mr9.2.1.0) unstable; urgency=medium
+
+  [ Sergii Leonenko ]
+  * [001dc74] TT#101106 Initial Cypress commit
+  * [d500e88] TT#101106 First test implementation
+  * [e67d978] TT#101106 CSC/AUI: Establish E2E-Test Environment based on Cypress
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 05 Jan 2021 15:32:53 +0100
+
 ngcp-web-tests-e2e (9.2.0.0+0~mr9.2.0.0) unstable; urgency=medium
 
   [ Sergii Kipot ]
