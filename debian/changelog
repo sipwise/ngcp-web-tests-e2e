@@ -1,3 +1,9 @@
+ngcp-web-tests-e2e (10.0.0.0+0~mr10.0.0.0) unstable; urgency=medium
+
+  * New release.
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 14 Jun 2021 16:38:04 +0200
+
 ngcp-web-tests-e2e (9.5.0.0+0~mr9.5.0.0) unstable; urgency=medium
 
   * New release.
