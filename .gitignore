@@ -18,3 +18,5 @@ yarn-error.log*
 debug.log
 cypress/videos
 cypress/screenshots
+
+cypress.json

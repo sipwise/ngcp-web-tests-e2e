@@ -11,6 +11,7 @@
         "ci:run:csc-ui": "cypress run --spec ./cypress/integration/ngcp-csc-ui/*.*"
     },
     "dependencies": {
+        "@nuintun/qrcode": "^3.0.1",
         "cypress": "6.2.0"
     },
     "devDependencies": {

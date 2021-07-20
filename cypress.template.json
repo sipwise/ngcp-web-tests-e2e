@@ -2,7 +2,7 @@
     "baseUrl": "http://localhost:8080",
     "ngcpConfigCSC": {
         "apiHost": "https://dev-web-trunk.mgm.sipwise.com",
-        "username": "pbx-user-1",
-        "password": "pbx-user-1"
+        "username": "43991002",
+        "password": "x43991002"
     }
 }
