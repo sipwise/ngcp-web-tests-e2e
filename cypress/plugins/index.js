@@ -16,6 +16,24 @@
  * @type {Cypress.PluginConfig}
  */
 module.exports = (on, config) => {
-  // `on` is used to hook into various events Cypress emits
-  // `config` is the resolved Cypress config
+    // `on` is used to hook into various events Cypress emits
+    // `config` is the resolved Cypress config
+
+    // Note: developers browsers might have different UI language setting so let's force that setting to English for better tests stability
+    on('before:browser:launch', function setBrowserAcceptLanguage (browser, launchOptions) {
+        const DEFAULT_ACCEPT_LANGUAGES = 'en,en-US'
+
+        if (browser.family === 'chromium' && browser.name !== 'electron') {
+            launchOptions.preferences.default.intl = {
+                accept_languages: DEFAULT_ACCEPT_LANGUAGES,
+                selected_languages: DEFAULT_ACCEPT_LANGUAGES
+            }
+            return launchOptions
+        }
+
+        if (browser.family === 'firefox') {
+            launchOptions.preferences['intl.accept_languages'] = DEFAULT_ACCEPT_LANGUAGES
+            return launchOptions
+        }
+    })
 }
