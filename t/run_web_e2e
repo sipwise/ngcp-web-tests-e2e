@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if ! [ -f /.dockerenv ] && ! grep -q 'devices:/docker' /proc/1/cgroup ; then
+  echo "Not running inside docker, exiting to avoid data damage." >&2
+  exit 1
+fi
+
+set -e
+set -u
+
+echo "Checking CSC address configuration"
+csc_address="$1"
+csc_api_address="$2"
+if [ -z "${csc_address}" ] ; then
+  echo "ERROR: Missing CSC address, please check the script parameters. Aborting."
+  exit 1
+fi
+echo "Found CSC address '${csc_address}', processing further..."
+
+cp cypress.template.json cypress.json
+sed -i -e "s|\"baseUrl\":.*|\"baseUrl\": \"${csc_address}\",|" "cypress.json"
+sed -i -e "s|\"apiHost\":.*|\"apiHost\": \"${csc_api_address}\",|" "cypress.json"
+
+yarnpkg run ci:run:csc-ui --browser chrome

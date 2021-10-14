@@ -8,7 +8,10 @@
     "private": true,
     "scripts": {
         "start": "cypress open",
-        "ci:run:csc-ui": "cypress run --spec ./cypress/integration/ngcp-csc-ui/*.*"
+        "ci:run:csc-ui": "cypress run --spec './cypress/integration/ngcp-csc-ui/*.*'",
+        "docker:rebuild:local": "docker build -f ./t/Dockerfile . -t ngcp-web-tests-e2e-bullseye",
+        "docker:run:local": "bash ./bin/run-docker.sh local",
+        "docker:run": "bash ./bin/run-docker.sh"
     },
     "dependencies": {
         "@nuintun/qrcode": "^3.0.1",
