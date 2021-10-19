@@ -78,7 +78,7 @@ Cypress.Commands.add('loginUI', (username, password) => {
     cy.intercept('POST', '**/login_jwt').as('loginRequest')
     cy.get('input:first', { log: debugging }).type(username, { log: debugging })
     cy.get('input:last', { log: debugging }).type(password, { log: debugging })
-    cy.get('.q-btn:last', { log: debugging }).click({ log: debugging })
+    cy.contains('span', 'Sign In', { log: debugging }).click({ log: debugging })
     cy.wait('@loginRequest', { log: debugging }).then(({ response }) => {
         log.set({
             consoleProps () {
