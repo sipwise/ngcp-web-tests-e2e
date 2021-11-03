@@ -4,5 +4,11 @@
         "apiHost": "https://dev-web-trunk.mgm.sipwise.com",
         "username": "43991002",
         "password": "x43991002"
+    },
+
+    "ngcpConfigAdmin": {
+        "apiHost": "https://dev-web-trunk.mgm.sipwise.com:1443",
+        "username": "administrator",
+        "password": "administrator"
     }
 }
