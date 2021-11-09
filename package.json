@@ -15,7 +15,7 @@
     },
     "dependencies": {
         "@nuintun/qrcode": "^3.0.1",
-        "cypress": "8.5.0"
+        "cypress": "8.7.0"
     },
     "devDependencies": {
         "eslint": "^7.15.0",
