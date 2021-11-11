@@ -23,7 +23,7 @@ context('Administrator tests', () => {
         it('Create a reseller', () => {
             cy.loginUI(ngcpConfigAdmin.username, ngcpConfigAdmin.password)
             cy.contains('Settings').click()
-            cy.get('a[href="#/reseller"]').click()
+            cy.get('a[href="#/reseller"][class^="q-item"]').click()
             cy.get('.q-linear-progress').should('be.visible')
             cy.get('.q-linear-progress').should('not.exist')
             cy.get('div[label="Add"]').click()
@@ -252,7 +252,7 @@ context('Administrator tests', () => {
         it('Delete reseller and check if they are deleted', () => {
             cy.loginUI(ngcpConfigAdmin.username, ngcpConfigAdmin.password)
             cy.contains('Settings').click()
-            cy.get('a[href="#/reseller"]').click()
+            cy.get('a[href="#/reseller"][class^="q-item"]').click()
             cy.get('.q-linear-progress').should('be.visible')
             cy.get('.q-linear-progress').should('not.exist')
             cy.get('input[aria-label="Search"]').type(reseller)
