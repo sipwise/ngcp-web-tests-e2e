@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-const ngcpConfigAdmin = Cypress.config('ngcpConfig')
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 function checkLoginAPIResponse (response) {
     expect(response.status || response.statusCode).to.equal(200)
@@ -17,22 +17,22 @@ context('Login page tests', () => {
     })
     context('UI login tests', () => {
         before(() => {
-            Cypress.log({ displayName: 'API URL', message: ngcpConfigAdmin.apiHost })
+            Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         })
 
         beforeEach(() => {
-            cy.visit(ngcpConfigAdmin.apiHost)
-            //adding wait here, otherwise inputs will be dropped
+            cy.visit('/')
+            // adding wait here, otherwise inputs will be dropped
             cy.wait(500)
         })
 
         it('Check if using "/" will route to login page', () => {
-            cy.visit(ngcpConfigAdmin.apiHost)
+            cy.visit('/')
             cy.url().should('match', /\/#\/login\/admin/)
         })
 
         it('Check if unknown URL will route to login page', () => {
-            cy.visit(ngcpConfigAdmin.apiHost + '/v2/#/some-another-page')
+            cy.visit('/#/some-another-page')
             cy.url().should('match', /\/#\/login\/admin/)
         })
 
@@ -60,7 +60,7 @@ context('Login page tests', () => {
 
         it('Login through UI with incorrect password', () => {
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
-            cy.get('input:first').type(ngcpConfigAdmin.username)
+            cy.get('input:first').type(ngcpConfig.username)
             cy.get('input:last').type('not-exists-password')
             cy.contains('arrow_forward').click()
 
@@ -84,8 +84,8 @@ context('Login page tests', () => {
 
         it('Login through UI with correct credentials', () => {
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
-            cy.get('input:first').type(ngcpConfigAdmin.username)
-            cy.get('input:last').type(ngcpConfigAdmin.password)
+            cy.get('input:first').type(ngcpConfig.username)
+            cy.get('input:last').type(ngcpConfig.password)
             cy.contains('arrow_forward').click()
 
             cy.wait('@loginRequest').then(({ response }) => {
@@ -96,7 +96,7 @@ context('Login page tests', () => {
 
         it('Test cy.loginUi function', () => {
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
-            cy.loginUI(ngcpConfigAdmin.username, ngcpConfigAdmin.password)
+            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
             cy.wait('@loginRequest').then(({ response }) => {
                 checkLoginAPIResponse(response)
                 cy.get('a[href="#/dashboard"]').should('be.visible')
@@ -104,8 +104,8 @@ context('Login page tests', () => {
         })
 
         it('Logout', () => {
-            cy.loginUI(ngcpConfigAdmin.username, ngcpConfigAdmin.password)
-            cy.contains(ngcpConfigAdmin.username).click()
+            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
+            cy.contains(ngcpConfig.username).click()
             cy.contains('Logout').click()
             cy.url().should('match', /\/#\/login\/admin/)
         })

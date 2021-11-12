@@ -32,11 +32,15 @@ ARGS=( "$@" )
 RESULTS_FOLDER="${PWD}/docker_results"
 mkdir -p "${RESULTS_FOLDER}"
 touch "${RESULTS_FOLDER}/console.log"
+mkdir -p "${PWD}/cypress/screenshots" "${PWD}/cypress/videos" # we need it to keep "cypress" folder in RO mounting mode
+
+application_to_test="$1"
+config_file_name="cypress.ci.${application_to_test}.template.json"
 
 docker run --rm -i -t \
   -v "/${PWD}/cypress:/code/cypress:ro" \
   -v "/${PWD}/package.json:/code/package.json:ro" \
-  -v "/${PWD}/cypress.template.json:/code/cypress.template.json:ro" \
+  -v "/${PWD}/${config_file_name}:/code/cypress.template.json:ro" \
   -v "/${PWD}/t/run_web_e2e:/code/run_web_e2e:ro" \
   -v "/${RESULTS_FOLDER}/screenshots:/code/cypress/screenshots:rw" \
   -v "/${RESULTS_FOLDER}/videos:/code/cypress/videos:rw" \

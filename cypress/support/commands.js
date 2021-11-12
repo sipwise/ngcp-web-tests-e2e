@@ -32,12 +32,12 @@ Cypress.Commands.add('loginApi', (username, password) => {
         message: `🔒 Authenticating: ${username}`,
         autoEnd: false
     })
-    const ngcpConfigCSC = Cypress.config('ngcpConfigCSC')
+    const ngcpConfig = Cypress.config('ngcpConfig')
     const loginData = {
         username,
         password
     }
-    const apiLoginURL = `${ngcpConfigCSC.apiHost}/login_jwt`
+    const apiLoginURL = `${ngcpConfig.apiHost}/login_jwt`
 
     return cy
         .request({

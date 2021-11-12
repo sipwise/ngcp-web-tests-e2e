@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-const ngcpConfigCSC = Cypress.config('ngcpConfig')
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 function checkLoginAPIResponse (response) {
     expect(response.status || response.statusCode).to.equal(200)
@@ -15,7 +15,7 @@ function CheckLoggedInUI () {
 context('Login page tests', () => {
     context('API direct login tests', () => {
         before(() => {
-            Cypress.log({ displayName: 'API URL', message: ngcpConfigCSC.apiHost })
+            Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         })
 
         beforeEach(() => {
@@ -23,18 +23,18 @@ context('Login page tests', () => {
         })
 
         it('Testing "cy.loginApi" command', () => {
-            cy.loginApi(ngcpConfigCSC.username, ngcpConfigCSC.password).then(() => {
+            cy.loginApi(ngcpConfig.username, ngcpConfig.password).then(() => {
                 CheckLoggedInUI()
             })
         })
 
         it('Trying to login through API', () => {
             const loginData = {
-                username: ngcpConfigCSC.username,
-                password: ngcpConfigCSC.password
+                username: ngcpConfig.username,
+                password: ngcpConfig.password
             }
             cy
-                .request('POST', `${ngcpConfigCSC.apiHost}/login_jwt`, loginData)
+                .request('POST', `${ngcpConfig.apiHost}/login_jwt`, loginData)
                 .then(response => {
                     checkLoginAPIResponse(response)
 
@@ -46,7 +46,7 @@ context('Login page tests', () => {
     })
     context('UI login tests', () => {
         before(() => {
-            Cypress.log({ displayName: 'API URL', message: ngcpConfigCSC.apiHost })
+            Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         })
 
         beforeEach(() => {
@@ -87,7 +87,7 @@ context('Login page tests', () => {
 
         it('Trying to login through UI with incorrect password', () => {
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
-            cy.get('input:first').type(ngcpConfigCSC.username)
+            cy.get('input:first').type(ngcpConfig.username)
             cy.get('input:last').type('not-exists-password')
             cy.get('.q-btn:last').click()
 
@@ -111,8 +111,8 @@ context('Login page tests', () => {
 
         it('Trying to login through UI with correct credentials', () => {
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
-            cy.get('input:first').type(ngcpConfigCSC.username)
-            cy.get('input:last').type(ngcpConfigCSC.password)
+            cy.get('input:first').type(ngcpConfig.username)
+            cy.get('input:last').type(ngcpConfig.password)
             cy.get('.q-btn:last').click()
 
             cy.wait('@loginRequest').then(({ response }) => {
@@ -123,7 +123,7 @@ context('Login page tests', () => {
 
         it('Test cy.loginUI function', () => {
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
-            cy.loginUI(ngcpConfigCSC.username, ngcpConfigCSC.password)
+            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
             cy.wait('@loginRequest').then(({ response }) => {
                 checkLoginAPIResponse(response)
                 cy.get('a[href="#/user/dashboard"]').should('be.visible')
@@ -131,7 +131,7 @@ context('Login page tests', () => {
         })
 
         it('Trying to logout', () => {
-            cy.loginUI(ngcpConfigCSC.username, ngcpConfigCSC.password)
+            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
             cy.logoutUI()
             cy.url().should('match', /\/#\/login$/)
         })

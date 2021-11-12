@@ -1,6 +1,6 @@
 import { Decoder } from '@nuintun/qrcode'
 
-const ngcpConfigCSC = Cypress.config('ngcpConfig')
+const ngcpConfig = Cypress.config('ngcpConfig')
 const qrReader = new Decoder()
 
 function DecodeQrCode () {
@@ -36,11 +36,11 @@ function TestQrCode (data) {
 
 context('QR code for sip:phone authentication', () => {
     before(() => {
-        Cypress.log({ displayName: 'API URL', message: ngcpConfigCSC.apiHost })
+        Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
     })
 
     beforeEach(() => {
-        cy.login(ngcpConfigCSC.username, ngcpConfigCSC.password)
+        cy.login(ngcpConfig.username, ngcpConfig.password)
         cy.visit('/')
     })
 

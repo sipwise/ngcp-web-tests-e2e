@@ -1,7 +1,7 @@
 {
-    "baseUrl": "https://localhost",
+    "baseUrl": "https://dev-web-trunk.mgm.sipwise.com:1443/v2",
     "ngcpConfig": {
-        "apiHost": "https://dev-web4-trunk.mgm.sipwise.com:1443",
+        "apiHost": "https://dev-web-trunk.mgm.sipwise.com:1443",
         "username": "administrator",
         "password": "administrator"
     },

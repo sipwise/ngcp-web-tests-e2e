@@ -9,16 +9,19 @@ set -e
 set -u
 
 echo "Checking CSC address configuration"
-csc_address="$1"
-csc_api_address="$2"
-if [ -z "${csc_address}" ] ; then
-  echo "ERROR: Missing CSC address, please check the script parameters. Aborting."
+application_to_test="$1"
+ui_address="$2"
+api_address="$3"
+if [ -z "${ui_address}" ] ; then
+  echo "ERROR: Missing UI address, please check the script parameters. Aborting."
   exit 1
 fi
-echo "Found CSC address '${csc_address}', processing further..."
+echo "Found UI address '${ui_address}', processing further..."
 
-cp cypress.template.json cypress.json
-sed -i -e "s|\"baseUrl\":.*|\"baseUrl\": \"${csc_address}\",|" "cypress.ci.csc.json"
-sed -i -e "s|\"apiHost\":.*|\"apiHost\": \"${csc_api_address}\",|" "cypress.ci.csc.json"
+config_file="cypress.ci.${application_to_test}.json"
+cp cypress.template.json "${config_file}"
+sed -i -e "s|\"baseUrl\":.*|\"baseUrl\": \"${ui_address}\",|" "${config_file}"
+sed -i -e "s|\"apiHost\":.*|\"apiHost\": \"${api_address}\",|" "${config_file}"
 
-yarnpkg run ci:csc --browser chrome
+task_name="ci:${application_to_test}"
+yarnpkg run "${task_name}" --browser chrome

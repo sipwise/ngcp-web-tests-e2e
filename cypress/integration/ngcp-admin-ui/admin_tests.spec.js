@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-const ngcpConfigAdmin = Cypress.config('ngcpConfig')
+const ngcpConfig = Cypress.config('ngcpConfig')
 const adminName = 'admin' + Math.floor((Math.random() * 100000) + 1)
 const adminPass = 'rand0mpassword1234'
 const adminName2 = 'admin' + Math.floor((Math.random() * 100000) + 1)
@@ -11,17 +11,17 @@ const contract = 'contract' + Math.floor((Math.random() * 100000) + 1)
 context('Administrator tests', () => {
     context('UI administrator tests', () => {
         before(() => {
-            Cypress.log({ displayName: 'API URL', message: ngcpConfigAdmin.apiHost })
+            Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         })
 
         beforeEach(() => {
-            cy.visit(ngcpConfigAdmin.apiHost)
+            cy.visit('/')
             // adding wait here, otherwise inputs will be dropped
             cy.wait(500)
         })
 
         it('Create a reseller', () => {
-            cy.loginUI(ngcpConfigAdmin.username, ngcpConfigAdmin.password)
+            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
             cy.contains('Settings').click()
             cy.get('a[href="#/reseller"][class^="q-item"]').click()
             cy.get('.q-linear-progress').should('be.visible')
@@ -48,7 +48,7 @@ context('Administrator tests', () => {
         })
 
         it('Create an administrator and enable superuser for this administrator', () => {
-            cy.loginUI(ngcpConfigAdmin.username, ngcpConfigAdmin.password)
+            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
             cy.contains('Settings').click()
             cy.get('a[href="#/administrator"]').click()
             cy.get('.q-linear-progress').should('be.visible')
@@ -66,7 +66,7 @@ context('Administrator tests', () => {
         })
 
         it('Create a second administrator with a different reseller', () => {
-            cy.loginUI(ngcpConfigAdmin.username, ngcpConfigAdmin.password)
+            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
             cy.contains('Settings').click()
             cy.get('a[href="#/administrator"]').click()
             cy.get('.q-linear-progress').should('be.visible')
@@ -96,7 +96,7 @@ context('Administrator tests', () => {
         })
 
         it('Set administrator to master', () => {
-            cy.loginUI(ngcpConfigAdmin.username, ngcpConfigAdmin.password)
+            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
             cy.contains('Settings').click()
             cy.get('a[href="#/administrator"]').click()
             cy.get('.q-linear-progress').should('be.visible')
@@ -128,7 +128,7 @@ context('Administrator tests', () => {
         })
 
         it('Deactivate created administrator', () => {
-            cy.loginUI(ngcpConfigAdmin.username, ngcpConfigAdmin.password)
+            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
             cy.contains('Settings').click()
             cy.get('a[href="#/administrator"]').click()
             cy.get('.q-linear-progress').should('be.visible')
@@ -160,7 +160,7 @@ context('Administrator tests', () => {
         })
 
         it('Enable customer care for administrator', () => {
-            cy.loginUI(ngcpConfigAdmin.username, ngcpConfigAdmin.password)
+            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
             cy.contains('Settings').click()
             cy.get('a[href="#/administrator"]').click()
             cy.get('.q-linear-progress').should('be.visible')
@@ -187,7 +187,7 @@ context('Administrator tests', () => {
         })
 
         it('Enable read-only for administrator', () => {
-            cy.loginUI(ngcpConfigAdmin.username, ngcpConfigAdmin.password)
+            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
             cy.contains('Settings').click()
             cy.get('a[href="#/administrator"]').click()
             cy.get('.q-linear-progress').should('be.visible')
@@ -228,7 +228,7 @@ context('Administrator tests', () => {
         })
 
         it('Delete both administrators and check if they are deleted', () => {
-            cy.loginUI(ngcpConfigAdmin.username, ngcpConfigAdmin.password)
+            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
             cy.contains('Settings').click()
             cy.get('a[href="#/administrator"]').click()
             cy.get('.q-linear-progress').should('be.visible')
@@ -250,7 +250,7 @@ context('Administrator tests', () => {
         })
 
         it('Delete reseller and check if they are deleted', () => {
-            cy.loginUI(ngcpConfigAdmin.username, ngcpConfigAdmin.password)
+            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
             cy.contains('Settings').click()
             cy.get('a[href="#/reseller"][class^="q-item"]').click()
             cy.get('.q-linear-progress').should('be.visible')
