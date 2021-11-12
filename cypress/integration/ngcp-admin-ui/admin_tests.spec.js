@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-const ngcpConfigAdmin = Cypress.config('ngcpConfigAdmin')
+const ngcpConfigAdmin = Cypress.config('ngcpConfig')
 const adminName = 'admin' + Math.floor((Math.random() * 100000) + 1)
 const adminPass = 'rand0mpassword1234'
 const adminName2 = 'admin' + Math.floor((Math.random() * 100000) + 1)

@@ -8,10 +8,14 @@
     "private": true,
     "scripts": {
         "start": "cypress open",
-        "ci:run:csc-ui": "cypress run --spec './cypress/integration/ngcp-csc-ui/*.*'",
         "docker:rebuild:local": "docker build -f ./t/Dockerfile . -t ngcp-web-tests-e2e-bullseye",
         "docker:run:local": "bash ./bin/run-docker.sh local",
-        "docker:run": "bash ./bin/run-docker.sh"
+        "docker:run": "bash ./bin/run-docker.sh",
+        "ci:csc": "cypress run --config-file cypress.ci.csc.json",
+        "ci:aui": "cypress run ----config-file cypress.ci.aui.json",
+        "tdd:csc": "cypress run --config-file cypress.tdd.csc.json",
+        "tdd:aui": "cypress run --config-file cypress.tdd.aui.json",
+        "tdd:setup": "cp cypress.tdd.csc.template.json cypress.tdd.csc.json; cp cypress.tdd.aui.template.json cypress.tdd.aui.json"
     },
     "dependencies": {
         "@nuintun/qrcode": "^3.0.1",

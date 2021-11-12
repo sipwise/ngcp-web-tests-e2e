@@ -20,4 +20,8 @@ cypress/videos
 cypress/screenshots
 
 cypress.json
+cypress.tdd.aui.json
+cypress.tdd.csc.json
+cypress.ci.aui.json
+cypress.ci.csc.json
 /docker_results

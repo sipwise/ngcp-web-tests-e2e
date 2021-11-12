@@ -5,6 +5,30 @@
 
 * [ngcp-csc-ui (Customer Self-Care WebUI)](docs/ngcp-csc-ui.md)
 * [ngcp-admin-ui (Administration WebUI)](docs/ngcp-admin-ui.md)
+
+## How to run tests for TDD
+
+### Setup TDD
+```bash
+yarn run tdd:setup
+```
+
+### Run CSC tests
+
+Configure `cypress.tdd.csc.json` to your needs.
+
+```bash
+yarn run tdd:csc
+```
+
+### Run AUI tests
+
+Configure `cypress.tdd.aui.json` to your needs.
+
+```bash
+yarn run tdd:aui
+```
+
 ## How to run
 ### Running test in Docker
 To run tests in already prepared docker image you just need to execute next command:

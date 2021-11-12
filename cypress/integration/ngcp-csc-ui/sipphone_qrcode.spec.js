@@ -1,6 +1,6 @@
 import { Decoder } from '@nuintun/qrcode'
 
-const ngcpConfigCSC = Cypress.config('ngcpConfigCSC')
+const ngcpConfigCSC = Cypress.config('ngcpConfig')
 const qrReader = new Decoder()
 
 function DecodeQrCode () {

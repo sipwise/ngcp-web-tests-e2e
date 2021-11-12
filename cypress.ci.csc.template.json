@@ -1,0 +1,9 @@
+{
+    "baseUrl": "https://localhost",
+    "ngcpConfig": {
+        "apiHost": "https://dev-web4-trunk.mgm.sipwise.com",
+        "username": "43991002",
+        "password": "x43991002"
+    },
+    "integrationFolder": "cypress/integration/ngcp-csc-ui"
+}

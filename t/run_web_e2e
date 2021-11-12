@@ -18,7 +18,7 @@ fi
 echo "Found CSC address '${csc_address}', processing further..."
 
 cp cypress.template.json cypress.json
-sed -i -e "s|\"baseUrl\":.*|\"baseUrl\": \"${csc_address}\",|" "cypress.json"
-sed -i -e "s|\"apiHost\":.*|\"apiHost\": \"${csc_api_address}\",|" "cypress.json"
+sed -i -e "s|\"baseUrl\":.*|\"baseUrl\": \"${csc_address}\",|" "cypress.ci.csc.json"
+sed -i -e "s|\"apiHost\":.*|\"apiHost\": \"${csc_api_address}\",|" "cypress.ci.csc.json"
 
-yarnpkg run ci:run:csc-ui --browser chrome
+yarnpkg run ci:csc --browser chrome

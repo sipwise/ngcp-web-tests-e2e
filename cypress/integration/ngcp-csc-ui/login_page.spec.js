@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-const ngcpConfigCSC = Cypress.config('ngcpConfigCSC')
+const ngcpConfigCSC = Cypress.config('ngcpConfig')
 
 function checkLoginAPIResponse (response) {
     expect(response.status || response.statusCode).to.equal(200)

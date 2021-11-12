@@ -1,0 +1,9 @@
+{
+    "baseUrl": "https://localhost",
+    "ngcpConfig": {
+        "apiHost": "https://dev-web4-trunk.mgm.sipwise.com:1443",
+        "username": "administrator",
+        "password": "administrator"
+    },
+    "integrationFolder": "cypress/integration/ngcp-admin-ui"
+}
