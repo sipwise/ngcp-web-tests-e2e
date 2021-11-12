@@ -1,8 +1,19 @@
 /// <reference types="cypress" />
 
-const ngcpConfig = Cypress.config('ngcpConfig')
+import {
+    getRandomNum,
+    waitPageProgress,
+    clickToolbarActionButton,
+    deleteItemOnListPageByName
+} from '../../support/ngcp-admin-ui/utils/common'
 
-const getRandomNum = (maxLength = 5) => Math.floor((Math.random() * Math.pow(10, maxLength)) + 1)
+import {
+    apiLoginAsSuperuser,
+    apiRemoveAdminBy,
+    apiRemoveResellerBy
+} from '../../support/ngcp-admin-ui/utils/api'
+
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 const admin1 = {
     name: 'admin' + getRandomNum(),
@@ -14,80 +25,6 @@ const admin2 = {
 }
 const resellerName = 'reseller' + getRandomNum()
 const contractName = 'contract' + getRandomNum()
-
-const waitPageProgress = () => {
-    cy.get('[data-cy=q-page-sticky] .q-linear-progress').should('be.visible')
-    cy.get('[data-cy=q-page-sticky] .q-linear-progress').should('not.exist')
-}
-
-const clickToolbarActionButton = (actionName) => {
-    const selector = `div[data-cy=aui-list-action--${actionName}]`
-    return cy
-        .get(selector).should('not.have.attr', 'disable')
-        .get(selector).click()
-}
-
-const apiLoginAsSuperuser = () => {
-    return cy.loginAPI('administrator', 'administrator').then(({ jwt }) => {
-        return {
-            headers: {
-                authorization: `Bearer ${jwt}`
-            }
-        }
-    })
-}
-
-const apiRemoveAdminBy = ({ name, authHeader }) => {
-    return cy.request({
-        method: 'GET',
-        url: `${ngcpConfig.apiHost}/api/admins`,
-        qs: {
-            login: name
-        },
-        ...authHeader
-    }).then(({ body }) => {
-        const adminId = body?._embedded?.['ngcp:admins']?.[0]?.id
-        if (body?.total_count === 1 && adminId > 1) {
-            return cy.request({
-                method: 'DELETE',
-                url: `${ngcpConfig.apiHost}/api/admins/${adminId}`,
-                ...authHeader
-            })
-        } else {
-            return null
-        }
-    })
-}
-
-const apiRemoveResellerBy = ({ name, authHeader }) => {
-    return cy.request({
-        method: 'GET',
-        url: `${ngcpConfig.apiHost}/api/resellers`,
-        qs: {
-            name: name
-        },
-        ...authHeader
-    }).then(({ body }) => {
-        const resellerData = body?._embedded?.['ngcp:resellers']?.[0]
-        const resellerId = resellerData?.id
-        const resellerStatus = resellerData?.status
-        if (body?.total_count === 1 && resellerId > 1 && resellerStatus !== 'terminated') {
-            return cy.request({
-                method: 'PATCH',
-                url: `${ngcpConfig.apiHost}/api/resellers/${resellerId}`,
-                body: [
-                    { op: 'replace', path: '/status', value: 'terminated' }
-                ],
-                headers: {
-                    ...authHeader.headers,
-                    'content-type': 'application/json-patch+json'
-                }
-            })
-        } else {
-            return null
-        }
-    })
-}
 
 context('Administrator tests', () => {
     context('set of simple individual tests', () => { })
@@ -311,15 +248,6 @@ context('Administrator tests', () => {
             cy.get('div[data-cy=aui-list-action--domain-creation]').should('not.exist')
             cy.get('div[data-cy=aui-list-action--delete]').should('not.exist')
         })
-
-        const deleteItemOnListPageByName = (name) => {
-            cy.get('[data-cy="aui-input-search"] input').clear().type(name)
-            waitPageProgress()
-            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            clickToolbarActionButton('delete')
-            cy.get('[data-cy="negative-confirmation-dialog"] [data-cy="btn-confirm"]').click()
-            cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
-        }
 
         it('Delete both administrators and check if they are deleted', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
