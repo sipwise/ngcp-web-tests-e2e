@@ -6,6 +6,7 @@
         "password": "administrator"
     },
     "integrationFolder": "cypress/integration/ngcp-admin-ui",
+    "supportFile": "cypress/support/ngcp-admin-ui",
     "screenshotOnRunFailure": false,
     "video": false,
     "videoUploadOnPasses": false

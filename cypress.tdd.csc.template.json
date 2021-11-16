@@ -6,6 +6,7 @@
         "password": "x43991002"
     },
     "integrationFolder": "cypress/integration/ngcp-csc-ui",
+    "supportFile": "cypress/support/ngcp-csc-ui",
     "screenshotOnRunFailure": false,
     "video": false,
     "videoUploadOnPasses": false
