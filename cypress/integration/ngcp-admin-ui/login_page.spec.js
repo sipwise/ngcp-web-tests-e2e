@@ -8,13 +8,36 @@ function checkLoginAPIResponse (response) {
 }
 
 function CheckLoggedInUI () {
-    cy.visit('/')
-    cy.url().should('match', /\/#\/user\/dashboard/)
+    cy.get('.q-drawer').should('to.be.visible')
+    cy.url().should('match', /\/#\/dashboard/)
 }
 
 context('Login page tests', () => {
     context('API direct login tests', () => {
+        before(() => {
+            Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+        })
+
+        it('Testing "cy.loginAPI" command (valid user)', () => {
+            // requesting API for JWT token, before we actually load our application UI
+            cy.intercept('POST', '**/login_jwt').as('loginRequest')
+            cy.loginAPI(ngcpConfig.username, ngcpConfig.password).then(({ response }) => {
+                checkLoginAPIResponse(response)
+            })
+
+            // we should open our application to "see" that stored JWT applied successfully
+            cy.visit('/')
+            CheckLoggedInUI()
+        })
+
+        it('Testing "cy.loginAPI" command (invalid user)', () => {
+            cy.intercept('POST', '**/login_jwt').as('loginRequest')
+            cy.loginAPI('invalid-user', 'invalid-password').then(({ response }) => {
+                expect(response.status || response.statusCode).to.not.equal(200)
+            })
+        })
     })
+
     context('UI login tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
@@ -22,7 +45,7 @@ context('Login page tests', () => {
 
         beforeEach(() => {
             cy.visit('/')
-            // adding wait here, otherwise inputs will be dropped
+            // adding wait here, to be sure that inputs are intractable \ accessible
             cy.wait(500)
         })
 
@@ -38,11 +61,11 @@ context('Login page tests', () => {
 
         it('Login through UI with no credentials', () => {
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
-            cy.contains('arrow_forward').click()
+            cy.get('[data-cy=sign-in]').click()
 
             cy.wait('@loginRequest').then(({ response }) => {
                 expect(response.statusCode).to.equal(422)
-                cy.get('div[role="alert"]').should('be.visible')
+                cy.get('.q-field div[role="alert"]').should('be.visible')
             })
         })
 
@@ -50,11 +73,11 @@ context('Login page tests', () => {
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
             cy.get('input:first').type('not-exists-user')
             cy.get('input:last').type('not-exists-password')
-            cy.contains('arrow_forward').click()
+            cy.get('[data-cy=sign-in]').click()
 
             cy.wait('@loginRequest').then(({ response }) => {
                 expect(response.statusCode).to.equal(403)
-                cy.get('div[role="alert"]').should('be.visible')
+                cy.get('.q-field div[role="alert"]').should('be.visible')
             })
         })
 
@@ -62,11 +85,11 @@ context('Login page tests', () => {
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
             cy.get('input:first').type(ngcpConfig.username)
             cy.get('input:last').type('not-exists-password')
-            cy.contains('arrow_forward').click()
+            cy.get('[data-cy=sign-in]').click()
 
             cy.wait('@loginRequest').then(({ response }) => {
                 expect(response.statusCode).to.equal(403)
-                cy.get('div[role="alert"]').should('be.visible')
+                cy.get('.q-field div[role="alert"]').should('be.visible')
             })
         })
 
@@ -74,11 +97,11 @@ context('Login page tests', () => {
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
             cy.get('input:first').type('not-exists-user')
             cy.get('input:last').clear()
-            cy.contains('arrow_forward').click()
+            cy.get('[data-cy=sign-in]').click()
 
             cy.wait('@loginRequest').then(({ response }) => {
                 expect(response.statusCode).to.equal(422)
-                cy.get('div[role="alert"]').should('be.visible')
+                cy.get('.q-field div[role="alert"]').should('be.visible')
             })
         })
 
@@ -86,12 +109,12 @@ context('Login page tests', () => {
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
             cy.get('input:first').type(ngcpConfig.username)
             cy.get('input:last').type(ngcpConfig.password)
-            cy.contains('arrow_forward').click()
+            cy.get('[data-cy=sign-in]').click()
 
             cy.wait('@loginRequest').then(({ response }) => {
                 checkLoginAPIResponse(response)
             })
-            cy.get('a[href="#/dashboard"]').should('be.visible')
+            CheckLoggedInUI()
         })
 
         it('Test cy.loginUi function', () => {
@@ -99,18 +122,25 @@ context('Login page tests', () => {
             cy.loginUI(ngcpConfig.username, ngcpConfig.password)
             cy.wait('@loginRequest').then(({ response }) => {
                 checkLoginAPIResponse(response)
-                cy.get('a[href="#/dashboard"]').should('be.visible')
+                CheckLoggedInUI()
             })
         })
 
-        it('Logout', () => {
+        it('Test cy.logoutUI function', () => {
             cy.loginUI(ngcpConfig.username, ngcpConfig.password)
-            cy.contains(ngcpConfig.username).click()
-            cy.contains('Logout').click()
+            cy.logoutUI()
             cy.url().should('match', /\/#\/login\/admin/)
         })
+    })
 
-        it('Change to all available languages', () => {
+    context('i18n tests', () => {
+        beforeEach(() => {
+            cy.visit('/')
+            // adding wait here, to be sure that inputs are intractable \ accessible
+            cy.wait(500)
+        })
+
+        it('Login page is available on different languages', () => {
             cy.contains('language').click()
             cy.contains('Deutsch').click()
             cy.contains('Administrator-Anmeldung').should('be.visible')

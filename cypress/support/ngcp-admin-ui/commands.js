@@ -24,108 +24,133 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-Cypress.Commands.add('loginApi', (username, password) => {
-    const debugging = false
-    const log = Cypress.log({
-        name: 'loginApi',
-        displayName: 'LOGIN (API)',
-        message: `🔒 Authenticating: ${username}`,
-        autoEnd: false
-    })
-    const ngcpConfig = Cypress.config('ngcpConfig')
-    const loginData = {
-        username,
-        password
-    }
-    const apiLoginURL = `${ngcpConfig.apiHost}/login_jwt`
+const debugging = false
+const quiet = {
+    log: debugging
+}
 
-    return cy
-        .request({
-            method: 'POST',
-            url: apiLoginURL,
-            body: loginData,
-            log: debugging
-        })
-        .then((response) => {
-            const quasarFrameworkDataPrefix = '__q_strn|'
-            localStorage.csc_jwt = quasarFrameworkDataPrefix + response.body.jwt
-            localStorage.csc_subscriberId = quasarFrameworkDataPrefix + response.body.subscriber_id
-
-            log.set({
-                consoleProps () {
-                    return {
-                        apiURL: apiLoginURL,
-                        username,
-                        password,
-                        jwt: response.body.jwt,
-                        subscriberId: response.body.subscriber_id
-                    }
-                }
-            })
-            log.end()
-        })
-})
-
-Cypress.Commands.add('loginUI', (username, password) => {
-    const debugging = false
-    const log = Cypress.log({
-        name: 'loginUI',
-        displayName: 'LOGIN (UI)',
-        message: `💻 🔒 Authenticating: ${username}`,
-        autoEnd: false
-    })
-
-    cy.intercept('POST', '**/login_jwt').as('loginRequest')
-    cy.get('input:first', { log: debugging }).type(username, { log: debugging })
-    cy.get('input:last', { log: debugging }).type(password, { log: debugging })
-    cy.contains('span', 'Sign In', { log: debugging }).click({ log: debugging })
-    cy.wait('@loginRequest', { log: debugging }).then(({ response }) => {
-        log.set({
-            consoleProps () {
-                return {
-                    username,
-                    password,
-                    jwt: response.body.jwt,
-                    subscriberId: response.body.subscriber_id
-                }
-            }
-        })
-    })
-    // Waiting for user data requesting \ initialization.
-    // Note: Unfortunately we cannot fully relay on requests waiting because we might have different amount of requests
-    //       according to the user type.
-    //       So, to be sure that we are logged in we are waiting for an unique UI element of MainLayout
-    cy.get('.q-drawer', { log: debugging }).should('to.be.visible', { log: debugging })
-
-    log.end()
-})
-
-Cypress.Commands.add('login', (username, password) => {
-    return cy.loginApi(username, password)
-})
-
-Cypress.Commands.add('logoutUI', () => {
-    const debugging = false
-    const log = Cypress.log({
-        name: 'logoutUI',
-        displayName: 'LOGOUT (UI)',
-        message: '🚪',
+Cypress.Commands.add('expandMainMenuSection', (key) => {
+    Cypress.log({
+        name: 'expandMainMenuSection',
+        displayName: 'expandMainMenuSection',
+        message: ' : ' + key,
         autoEnd: true
     })
 
-    cy.contains('[data-cy=q-toolbar] [data-cy=q-btn] [data-cy=q-icon]', 'person', { log: debugging }).click({ log: debugging })
-    cy.contains('exit_to_app', { log: debugging }).click({ log: debugging })
-    cy.url({ log: debugging }).should((url) => {
-        // NOTE: "should" does not support "{ log: false }" so it's a workaround for that
-        const loginPageURL = /\/#\/login$/
-        if (!loginPageURL.test(url)) {
-            expect(url).to.match(loginPageURL)
+    const menuItemSelector = `.main-menu-items [data-cy=aui-main-menu-items--${key}]`
+    const ownExpansionIconSelector = ' > .q-expansion-item__container > .q-item .q-expansion-item__toggle-icon'
+    cy.get(`${menuItemSelector} ${ownExpansionIconSelector}`, quiet).then($icon => {
+        // clicking on the section only if it's not expanded yet
+        if (!$icon.hasClass('q-expansion-item__toggle-icon--rotated')) {
+            cy.get(menuItemSelector, quiet).click(quiet)
         }
     })
-
-    log.end()
 })
 
-Cypress.Commands.add('logout', () => {
-    return cy.logoutUI()
+Cypress.Commands.add('getMainMenuItem', (key) => {
+    Cypress.log({
+        name: 'getMainMenuItem',
+        displayName: 'getMainMenuItem',
+        message: ' : ' + key,
+        autoEnd: true
+    })
+
+    return cy.get(`.main-menu-items [data-cy=aui-main-menu-item--${key}]`, quiet)
+})
+
+Cypress.Commands.add('navigateMainMenu', (path = '', waitForPageLoading = true) => {
+    Cypress.log({
+        name: 'navigateMainMenu',
+        displayName: 'navigateMainMenu',
+        message: ' : ' + path,
+        autoEnd: true
+    })
+
+    const pathParts = String(path).split('/').map(e => e.trim())
+    if (pathParts.length === 2) {
+        const [groupKey, subItemKey] = pathParts
+        cy.expandMainMenuSection(groupKey)
+        cy.getMainMenuItem(subItemKey).click()
+    } else if (pathParts.length === 1) {
+        cy.getMainMenuItem(pathParts.pop()).click()
+    }
+
+    const waitPageProgress = () => {
+        cy.get('[data-cy=q-page-sticky] .q-linear-progress').should('be.visible')
+        cy.get('[data-cy=q-page-sticky] .q-linear-progress').should('not.exist')
+    }
+
+    if (waitForPageLoading) {
+        waitPageProgress()
+    }
+
+    // // TODO: maybe we do not need to wait conditionally for the pages' data loading. So we can replace the complex check below with just an imput config parameter OR remove it completely
+    // // TODO: it will be nice to replace it with a custom "auto retry" mechanism. Example: https://github.com/cypress-io/cypress-xpath/pull/12/files
+    // const waitDataLoading = () => {
+    //     cy.log('waiting for the page initialization...')
+    //     cy.get('[data-cy=q-page-sticky] .q-linear-progress').should('be.visible')
+    //     cy.get('[data-cy=q-page-sticky] .q-linear-progress').should('not.exist')
+    // }
+    // let's wait for loading an application's JS chunk for the page
+    // cy.wait(50).then(() => {
+    //     let $pageContextToolbar = Cypress.$('.q-page-container [data-cy=q-page-sticky]')
+    //     if ($pageContextToolbar.length) {
+    //         waitDataLoading()
+    //     } else {
+    //         cy.wait(500).then(() => {
+    //             $pageContextToolbar = Cypress.$('.q-page-container [data-cy=q-page-sticky]')
+    //             if ($pageContextToolbar.length) {
+    //                 waitDataLoading()
+    //             }
+    //         })
+    //     }
+    // })
+})
+
+Cypress.Commands.add('locationShouldBe', (urlHash) => {
+    Cypress.log({
+        name: 'locationShouldBe',
+        displayName: 'locationShouldBe',
+        message: urlHash,
+        autoEnd: true
+    })
+
+    return cy.location('hash').should('eq', urlHash)
+})
+
+Cypress.Commands.add('qSelect', ({ dataCy, filter, itemContains }) => {
+    if (filter) {
+        cy.get(`[data-cy="${dataCy}"].q-field__native`).type(filter)
+    } else {
+        cy.get(`[data-cy="${dataCy}"].q-field__native`).click()
+    }
+
+    cy.wait(200)
+    cy.get(`label[data-cy="${dataCy}"]`).then($el => {
+        const id = $el.attr('for')
+        const dropdownListId = `#${id}_lb`
+        cy.get(dropdownListId).should('be.visible')
+        cy.contains(`${dropdownListId} .q-item`, itemContains).click()
+    })
+})
+
+Cypress.Commands.add('auiSelectLazySelect', ({ dataCy, filter, itemContains }) => {
+    if (filter) {
+        cy.get(`[data-cy="${dataCy}"] input`).type(filter)
+    } else {
+        cy.get(`[data-cy="${dataCy}"] input`).click()
+    }
+    cy.get(`label[data-cy="${dataCy}"]`)
+        .find('.q-spinner').should('be.visible')
+        .parent()
+        .find('.q-spinner').should('not.exist')
+
+    cy.wait(500)
+    cy.get(`label[data-cy="${dataCy}"]`).then($el => {
+        const id = $el.attr('for')
+        const dropdownListId = `#${id}_lb`
+        cy.get(dropdownListId).should('be.visible')
+            .find('.q-linear-progress').should('not.exist')
+        cy.contains(`${dropdownListId} .q-item`, itemContains).click()
+    })
 })
