@@ -1,3 +1,26 @@
+ngcp-web-tests-e2e (10.2.1.0+0~mr10.2.1.0) unstable; urgency=medium
+
+  [ Sergii Leonenko ]
+  * [eeeabdc] TT#132000 Maintenance - Upgrade Cypress from 6 to 8
+  * [2c43350] TT#128155 TestRunner - Create Docker environment in ngcp-web-test-e2e to be able to run Cypress tests within a common environment
+  * [2e8d4de] TT#149703 E2ET: Upgrade Cypress to the latest version due to https://github.com/advisories/GHSA-pjwm-rvh2-c87w
+  * [d29ff05] TT#147150 Provide TDD runners for both projects AUI and CSC (Step 2)
+  * [4e462b2] TT#147150 Provide TDD runners for both projects AUI and CSC (Step 3)
+
+  [ Nico Schedel ]
+  * [a94a83d] TT#145804 E2ET: Fix CSC login procedure in Cypress tests
+  * [c4b400b] TT#131366 Port Admin UI login tests to cypress
+  * [1438fb8] TT#131366 Port Admin UI administrator tests to cypress
+  * [654b5ed] TT#131366 fix reseller selector for admin tests
+
+  [ Guillem Jover ]
+  * [35d9cb3] TT#124273 Update packaging for bullseye
+
+  [ Hans-Peter Herzog ]
+  * [fddcaca] TT#147150 Provide TDD runners for both projects AUI and CSC (Step 1)
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 23 Nov 2021 14:19:30 +0100
+
 ngcp-web-tests-e2e (10.2.0.0+0~mr10.2.0.0) unstable; urgency=medium
 
   * New release.
