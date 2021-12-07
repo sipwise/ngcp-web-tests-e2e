@@ -4,7 +4,7 @@ import {
     getRandomNum,
     waitPageProgress,
     clickToolbarActionButton,
-    deleteItemOnListPageByName
+    deleteItemOnListPageByName, clickDataTableSelectedMoreMenuItem
 } from '../../support/ngcp-admin-ui/utils/common'
 
 import {
@@ -38,14 +38,15 @@ context('Administrator tests', () => {
 
         // if a test in the group will fail we are not running others
         // Note: the Smart Orchestration is available for paid Cypress version only. So let's emulate part of it
-        afterEach(function skipAllTestsInGroupIfOneFailed () {
-            // TODO: it will be nice to not remove tests but "skip" them
-            // TODO: it will be nice to create a configurable plugin for this
-            if (this.currentTest.state === 'failed') {
-                this.currentTest.parent.testsQueue.length = 0
-                // Cypress.runner.stop()
-            }
-        })
+        // afterEach(function skipAllTestsInGroupIfOneFailed () {
+        //     // TODO: it will be nice to not remove tests but "skip" them
+        //     // TODO: it will be nice to create a configurable plugin for this
+        //     if (this.currentTest.state === 'failed') {
+        //         this.currentTest.parent.testsQueue.length = 0
+        //         // Cypress.runner.stop()
+        //     }
+        // })
+        // TODO: let's comment this block for now, to be able to investigate the issue with two failing tests after applying the role based permission approach
 
         after(() => {
             // let's remove all data via API in case some of tests failed
@@ -97,7 +98,9 @@ context('Administrator tests', () => {
             cy.get('[data-cy="password-field"] input').type(pass)
             cy.get('[data-cy="password-retype-field"] input').type(pass)
             if (isSuperuser) {
-                cy.get('[data-cy="superuser-flag"]').click()
+                cy.qSelect({ dataCy: 'roles-list', filter: 'admin', itemContains: 'admin' })
+            } else {
+                cy.qSelect({ dataCy: 'roles-list', filter: 'reseller', itemContains: 'reseller' })
             }
 
             cy.get('[data-cy="aui-save-button"]').click()
@@ -136,10 +139,10 @@ context('Administrator tests', () => {
             cy.get('[data-cy="aui-input-search"] input').type(admin1.name)
             waitPageProgress()
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            clickToolbarActionButton('admin-edit')
+            clickDataTableSelectedMoreMenuItem('admin-edit')
 
             waitPageProgress()
-            cy.get('[data-cy="superuser-flag"]').click()
+            cy.qSelect({ dataCy: 'roles-list', filter: 'admin', itemContains: 'admin' })
             cy.get('[data-cy="master-flag"]').click()
 
             cy.get('[data-cy="aui-save-button"]').click()
@@ -164,7 +167,7 @@ context('Administrator tests', () => {
             cy.get('[data-cy="aui-input-search"] input').type(admin1.name)
             waitPageProgress()
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            clickToolbarActionButton('admin-edit')
+            clickDataTableSelectedMoreMenuItem('admin-edit')
             waitPageProgress()
             cy.get('[data-cy="master-flag"]').click()
             cy.get('[data-cy="active-flag"]').click()
@@ -195,10 +198,10 @@ context('Administrator tests', () => {
             cy.get('[data-cy="aui-input-search"] input').type(admin1.name)
             waitPageProgress()
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            clickToolbarActionButton('admin-edit')
+            clickDataTableSelectedMoreMenuItem('admin-edit')
             waitPageProgress()
             cy.get('[data-cy="active-flag"]').click()
-            cy.get('[data-cy="ccare-flag"]').click()
+            cy.qSelect({ dataCy: 'roles-list', filter: 'ccareadmin', itemContains: 'ccareadmin' })
 
             cy.get('[data-cy="aui-save-button"]').click()
             cy.contains('.q-notification', 'Administrator saved successfully').should('be.visible')
@@ -219,9 +222,9 @@ context('Administrator tests', () => {
             cy.get('[data-cy="aui-input-search"] input').type(admin1.name)
             waitPageProgress()
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            clickToolbarActionButton('admin-edit')
+            clickDataTableSelectedMoreMenuItem('admin-edit')
             waitPageProgress()
-            cy.get('[data-cy="ccare-flag"]').click()
+            cy.qSelect({ dataCy: 'roles-list', filter: 'admin', itemContains: 'admin' })
             cy.get('[data-cy="readonly-flag"]').click()
 
             cy.get('[data-cy="aui-save-button"]').click()
