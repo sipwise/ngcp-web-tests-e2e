@@ -81,8 +81,7 @@ context('Contact tests', () => {
                 clickToolbarActionButton('reseller-creation')
 
                 cy.locationShouldBe('#/reseller/create')
-                cy.get('[data-cy=aui-select-contract] [data-cy=aui-select-lazy-CreateBtn-dropdown]').click()
-                cy.get('.q-menu [data-cy=aui-popup-menu-item--contract-create-reseller]').click()
+                cy.get('[data-cy=aui-select-contract] [data-cy=aui-create-button]').click()
 
                 cy.locationShouldBe('#/contract/reseller/create')
                 cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: 'default', itemContains: 'Default Billing Profile' })
@@ -175,15 +174,6 @@ context('Contact tests', () => {
         })
 
         context('finalization', () => {
-            // TODO: remove UI seeding \ UI cleanup when API seeding be ready
-            // it('Delete reseller and check if they are deleted', () => {
-            //     cy.login(ngcpConfig.username, ngcpConfig.password)
-            //     cy.navigateMainMenu('settings / reseller-list')
-            //
-            //     cy.locationShouldBe('#/reseller')
-            //     deleteItemOnListPageByName(resellerName)
-            // })
-
             it('Data cleanup', () => {
                 // placeholder test for the "after" hook
             })
