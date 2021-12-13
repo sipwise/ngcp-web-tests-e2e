@@ -65,8 +65,7 @@ context('Administrator tests', () => {
             clickToolbarActionButton('reseller-creation')
 
             cy.locationShouldBe('#/reseller/create')
-            cy.get('[data-cy=aui-select-contract] [data-cy=aui-select-lazy-CreateBtn-dropdown]').click()
-            cy.get('.q-menu [data-cy=aui-popup-menu-item--contract-create-reseller]').click()
+            cy.get('[data-cy=aui-select-contract] [data-cy=aui-create-button]').click()
 
             cy.locationShouldBe('#/contract/reseller/create')
             cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: 'default', itemContains: 'Default Billing Profile' })
@@ -115,7 +114,10 @@ context('Administrator tests', () => {
             uiCreateAdmin({ name: admin2.name, pass: admin2.pass, resellerName, isSuperuser: false })
         })
 
-        it('Log in and make sure that superuser admin can change permissions from admins with different resellers', () => {
+        /**
+         * Todo: This case opens some questions. e.g. Which types of admin do we check here?
+         */
+        xit('Log in and make sure that superuser admin can change permissions from admins with different resellers', () => {
             cy.login(admin1.name, admin1.pass)
             cy.navigateMainMenu('settings / admin-list')
 
