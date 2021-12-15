@@ -110,7 +110,7 @@ context('Contact tests', () => {
             const formUrl = testsGroup.checkUrl
 
             context(`Contact type: ${contactType}`, () => {
-                it(`Check if ${contactType} contact with invalid email gets rejected`, () => {
+                it(`Check if ${contactType} contact with invalid values gets rejected`, () => {
                     cy.login(ngcpConfig.username, ngcpConfig.password)
                     cy.navigateMainMenu('settings / contact-list')
 
@@ -119,6 +119,8 @@ context('Contact tests', () => {
                     clickToolbarDropdownActionButton(`contact-create-${contactType}`)
 
                     cy.locationShouldBe(formUrl)
+                    cy.get('[data-cy="aui-save-button"]').click()
+                    cy.contains('div[role="alert"]', 'Input is required').should('be.visible')
                     cy.get('input[data-cy="email-field"]').type('invaildmail')
                     cy.get('[data-cy="aui-save-button"]').click()
                     cy.contains('div[role="alert"]', 'Input must be a valid email address').should('be.visible')
