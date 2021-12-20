@@ -142,7 +142,7 @@ context('Administrator tests', () => {
             clickDataTableSelectedMoreMenuItem('admin-edit')
 
             waitPageProgress()
-            cy.qSelect({ dataCy: 'roles-list', filter: 'admin', itemContains: 'admin' })
+            cy.qSelect({ dataCy: 'roles-list', filter: 'reseller', itemContains: 'reseller' })
             cy.get('[data-cy="master-flag"]').click()
 
             cy.get('[data-cy="aui-save-button"]').click()
