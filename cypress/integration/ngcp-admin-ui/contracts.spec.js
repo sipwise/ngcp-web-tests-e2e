@@ -3,7 +3,9 @@
 import {
     getRandomNum,
     waitPageProgress,
-    clickToolbarDropdownActionButton, searchInDataTable
+    clickToolbarDropdownActionButton,
+    searchInDataTable,
+    deleteItemOnListPageByName
 } from '../../support/ngcp-admin-ui/utils/common'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -75,11 +77,7 @@ context('Contract tests', () => {
                     cy.navigateMainMenu('settings / contract-list')
 
                     cy.locationShouldBe('#/contract')
-                    searchInDataTable(contractName)
-                    cy.get('[data-cy="row-more-menu-btn"]:first').click()
-                    cy.get('[data-cy="aui-popup-menu-item--delete"]').click()
-                    cy.get('button[data-cy="btn-confirm"]').click()
-                    cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
+                    deleteItemOnListPageByName(contractName)
                 })
             })
         })
