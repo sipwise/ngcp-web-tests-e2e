@@ -1,41 +1,40 @@
+/// <reference types="cypress" />
+
+import {
+    getRandomNum,
+    deleteItemOnListPageByName,
+    waitPageProgress
+} from '../../support/ngcp-admin-ui/utils/common'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
-const authConfig = {
-    username: ngcpConfig.username,
-    password: ngcpConfig.password
-}
 
-context('EmergencyMappingContainers', () => {
-    it('should create a new EmergencyMappingContainer', () => {
+const emergencymapname = 'emergency' + getRandomNum()
+
+context('Emergency mapping tests', () => {
+    it('Check if emergency mapping with invalid values gets rejected', () => {
         cy.login(ngcpConfig.username, ngcpConfig.password)
-        cy.request({
-            method: 'GET',
-            url: ngcpConfig.apiHost + '/api/resellers/1',
-            auth: authConfig
-        }).its('body').as('defaultReseller').then(function () {
-            const randomEmergencyMappingContainerName = 'EMC' + Date.now()
-            cy.navigateMainMenu('settings / emergency-mapping-container-list')
-            cy.locationShouldBe('#/emergencymapping')
-            cy.get('[data-cy=aui-list-action--emergency-mapping-container-creation]').click()
-            cy.intercept('/reseller/ajax*').as('filterResellers')
-            cy.get('[data-cy=aui-select-reseller] input').type(this.defaultReseller.name)
-            cy.wait('@filterResellers').its('response.statusCode').should('eq', 200)
-            cy.wait('@filterResellers').its('response.statusCode').should('eq', 200)
-            cy.get('[data-cy=aui-select-reseller]').then($el => {
-                cy.get(`#${$el.attr('for')}_lb .q-item`).eq(0).click()
-            })
-            cy.get('[data-cy=aui-new-emergency-mapping-container]')
-                .get('[data-cy=aui-base-form-field]:eq(1) input')
-                .type(randomEmergencyMappingContainerName)
-            cy.intercept('/api/emergencymappingcontainers', {
-                statusCode: 200,
-                body: {
-                    name: randomEmergencyMappingContainerName
-                }
-            }).as('emergencyMappingContainerCreation')
-            cy.get('[data-cy=aui-save-button]').click()
-            cy.wait('@emergencyMappingContainerCreation')
-            cy.locationShouldBe('#/emergencymapping')
-        })
+        cy.navigateMainMenu('settings / emergency-mapping-container-list')
+        cy.locationShouldBe('#/emergencymapping')
+        cy.get('[data-cy="aui-list-action--emergency-mapping-container-creation"]').click()
+        cy.get('[data-cy="aui-save-button"]').click()
+        cy.contains('[data-cy="aui-emergency-mapping-container-creation"] div[role="alert"]', 'Input is required').should('be.visible')
+    })
+
+    it('Create a new emergency mapping container', () => {
+        cy.login(ngcpConfig.username, ngcpConfig.password)
+        cy.navigateMainMenu('settings / emergency-mapping-container-list')
+        cy.locationShouldBe('#/emergencymapping')
+        cy.get('[data-cy="aui-list-action--emergency-mapping-container-creation"]').click()
+        cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: 'default', itemContains: 'default' })
+        cy.get('[data-cy="emergency-mapping-name"] input').type(emergencymapname)
+        cy.get('[data-cy="aui-save-button"]').click()
+        cy.contains('.q-notification', 'Emergency Mapping Container created successfully').should('be.visible')
+    })
+
+    it('Delete emergency mapping container', () => {
+        cy.login(ngcpConfig.username, ngcpConfig.password)
+        cy.navigateMainMenu('settings / emergency-mapping-container-list')
+        cy.locationShouldBe('#/emergencymapping')
+        deleteItemOnListPageByName(emergencymapname)
     })
 })
