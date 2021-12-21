@@ -5,7 +5,7 @@ FROM docker.mgm.sipwise.com/sipwise-bullseye:latest
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT 2021-11-09
+ENV REFRESHED_AT 2021-11-17
 
 RUN apt-get update && \
     apt-get install --assume-yes --no-install-recommends \
