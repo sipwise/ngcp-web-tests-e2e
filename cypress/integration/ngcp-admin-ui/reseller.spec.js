@@ -4,7 +4,7 @@ import {
     getRandomNum,
     waitPageProgress,
     clickToolbarActionButton,
-    deleteItemOnListPageByName
+    deleteItemOnListPageByName, searchInDataTable
 } from '../../support/ngcp-admin-ui/utils/common'
 
 import {
@@ -76,8 +76,7 @@ context('Reseller tests', () => {
             cy.navigateMainMenu('settings / reseller-list')
 
             cy.locationShouldBe('#/reseller')
-            cy.get('[data-cy="aui-input-search"] input').type(resellerName)
-            waitPageProgress()
+            searchInDataTable(resellerName)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--reseller-edit"]').click()
             waitPageProgress()
@@ -93,8 +92,7 @@ context('Reseller tests', () => {
             cy.navigateMainMenu('settings / reseller-list')
 
             cy.locationShouldBe('#/reseller')
-            cy.get('[data-cy="aui-input-search"] input').type(resellerName)
-            waitPageProgress()
+            searchInDataTable(resellerName)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--reseller-edit"]').click()
             waitPageProgress()
@@ -111,8 +109,7 @@ context('Reseller tests', () => {
             cy.navigateMainMenu('settings / reseller-list')
 
             cy.locationShouldBe('#/reseller')
-            cy.get('[data-cy="aui-input-search"] input').type(resellerName)
-            waitPageProgress()
+            searchInDataTable(resellerName)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--reseller-preferences"]').click()
             cy.get('[data-cy="q-item--cdr-export-field-separator"]').should('be.visible').as('cdrExportFieldSeparator')

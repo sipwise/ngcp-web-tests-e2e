@@ -3,7 +3,7 @@
 import {
     getRandomNum,
     waitPageProgress,
-    clickToolbarDropdownActionButton
+    clickToolbarDropdownActionButton, searchInDataTable
 } from '../../support/ngcp-admin-ui/utils/common'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -59,8 +59,7 @@ context('Contract tests', () => {
 
                     cy.locationShouldBe('#/contract')
 
-                    cy.get('label[data-cy="aui-input-search"]').type(contractName)
-                    waitPageProgress()
+                    searchInDataTable(contractName)
                     cy.get('span[data-cy="aui-data-table-edit-select"]').click() // TODO: improve selectors here
                     cy.get('.q-field__label').contains('Status').click({ force: true }) // TODO: improve selectors here
                     cy.get('div[data-cy="q-item--1"]').click()
@@ -74,9 +73,7 @@ context('Contract tests', () => {
                     cy.navigateMainMenu('settings / contract-list')
 
                     cy.locationShouldBe('#/contract')
-
-                    cy.get('label[data-cy="aui-input-search"]').type(contractName)
-                    waitPageProgress()
+                    searchInDataTable(contractName)
                     cy.get('td[data-cy="q-td"]:first').click()
                     cy.get('[data-cy="aui-popup-menu-item--delete"]').click()
                     cy.get('button[data-cy="btn-confirm"]').click()

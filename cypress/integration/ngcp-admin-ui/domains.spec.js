@@ -4,7 +4,7 @@ import {
     getRandomNum,
     waitPageProgress,
     deleteItemOnListPageByName,
-    clickDataTableSelectedMoreMenuItem
+    clickDataTableSelectedMoreMenuItem, searchInDataTable
 } from '../../support/ngcp-admin-ui/utils/common'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -41,9 +41,7 @@ context('Domain tests', () => {
             cy.navigateMainMenu('settings / domain-list')
 
             cy.locationShouldBe('#/domain')
-
-            cy.get('label[data-cy="aui-input-search"]').type(domainName)
-            waitPageProgress()
+            searchInDataTable(domainName)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('domain-preferences')
 

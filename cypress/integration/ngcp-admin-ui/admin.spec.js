@@ -4,7 +4,7 @@ import {
     getRandomNum,
     waitPageProgress,
     clickToolbarActionButton,
-    deleteItemOnListPageByName, clickDataTableSelectedMoreMenuItem
+    deleteItemOnListPageByName, clickDataTableSelectedMoreMenuItem, searchInDataTable
 } from '../../support/ngcp-admin-ui/utils/common'
 
 import {
@@ -125,8 +125,7 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            cy.get('[data-cy="aui-input-search"] input').type(admin2.name)
-            waitPageProgress()
+            searchInDataTable(admin2.name)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             cy.get('div[aria-disabled="true"]').should('not.exist') // TODO: it's not clear what was the DOM element to check
         })
@@ -136,8 +135,7 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            cy.get('[data-cy="aui-input-search"] input').type(admin1.name)
-            waitPageProgress()
+            searchInDataTable(admin1.name)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('admin-edit')
 
@@ -154,8 +152,7 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            cy.get('[data-cy="aui-input-search"] input').type(admin2.name)
-            waitPageProgress()
+            searchInDataTable(admin2.name)
             cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
         })
 
@@ -164,8 +161,7 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            cy.get('[data-cy="aui-input-search"] input').type(admin1.name)
-            waitPageProgress()
+            searchInDataTable(admin1.name)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('admin-edit')
             waitPageProgress()
@@ -195,8 +191,7 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            cy.get('[data-cy="aui-input-search"] input').type(admin1.name)
-            waitPageProgress()
+            searchInDataTable(admin1.name)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('admin-edit')
             waitPageProgress()
@@ -219,8 +214,7 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            cy.get('[data-cy="aui-input-search"] input').type(admin1.name)
-            waitPageProgress()
+            searchInDataTable(admin1.name)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('admin-edit')
             waitPageProgress()

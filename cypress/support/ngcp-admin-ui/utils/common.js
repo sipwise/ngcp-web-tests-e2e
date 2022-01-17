@@ -20,9 +20,13 @@ export const clickToolbarDropdownActionButton = (actionName) => {
         .get(selector).click()
 }
 
-export const deleteItemOnListPageByName = (name) => {
-    cy.get('[data-cy="aui-input-search"] input').clear().type(name)
+export const searchInDataTable = (text) => {
+    cy.get('[data-cy="aui-input-search--datatable"] input').clear().type(text)
     waitPageProgress()
+}
+
+export const deleteItemOnListPageByName = (name) => {
+    searchInDataTable(name)
     cy.get('[data-cy=aui-data-table] .q-checkbox').click()
     clickToolbarActionButton('delete')
     cy.get('[data-cy="negative-confirmation-dialog"] [data-cy="btn-confirm"]').click()

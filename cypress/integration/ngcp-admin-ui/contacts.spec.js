@@ -6,7 +6,7 @@ import {
     clickToolbarActionButton,
     clickToolbarDropdownActionButton,
     deleteItemOnListPageByName,
-    clickDataTableSelectedMoreMenuItem
+    clickDataTableSelectedMoreMenuItem, searchInDataTable
 } from '../../support/ngcp-admin-ui/utils/common'
 
 import {
@@ -152,8 +152,7 @@ context('Contact tests', () => {
 
                     cy.locationShouldBe('#/contact')
 
-                    cy.get('[data-cy="aui-input-search"] input').clear().type(contact.mail)
-                    waitPageProgress()
+                    searchInDataTable(contact.mail)
                     cy.get('[data-cy=aui-data-table] .q-checkbox').click()
                     clickDataTableSelectedMoreMenuItem('contact-edit')
 
