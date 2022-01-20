@@ -84,7 +84,7 @@ context('Reseller tests', () => {
             cy.get('[data-cy="aui-save-button"]').click()
             waitPageProgress()
             cy.get('[data-cy="aui-close-button"]').click()
-            cy.get('[data-cy="aui-data-table-edit-select"]').should('contain.text', 'Locked')
+            cy.get('[data-cy="aui-data-table-inline-edit--select"]').should('contain.text', 'Locked')
         })
 
         it('Enable WebRTC', () => {
@@ -101,7 +101,7 @@ context('Reseller tests', () => {
             cy.contains('.q-notification', 'Reseller updated successfully').should('be.visible')
             cy.get('[data-cy="aui-close-button"]').click()
             waitPageProgress()
-            cy.get('div[role="checkbox"][data-cy="q-toggle"][aria-checked="true"]').should('be.visible')
+            cy.get('div[data-cy="aui-data-table-inline-edit--toggle"][aria-checked="true"]').should('be.visible')
         })
 
         it('Add/Reset/Delete a preference (cdr_export_field_separator) in reseller', () => {
