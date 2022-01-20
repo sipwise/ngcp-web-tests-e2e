@@ -120,7 +120,7 @@ context('Administrator tests', () => {
         /**
          * Todo: This case opens some questions. e.g. Which types of admin do we check here?
          */
-        xit('Log in and make sure that superuser admin can change permissions from admins with different resellers', () => {
+        xit('Log in and make sure that superuser admin can change permissions from other admins with different resellers', () => {
             cy.login(admin1.name, admin1.pass)
             cy.navigateMainMenu('settings / admin-list')
 
@@ -128,6 +128,27 @@ context('Administrator tests', () => {
             searchInDataTable(admin2.name)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             cy.get('div[aria-disabled="true"]').should('not.exist') // TODO: it's not clear what was the DOM element to check
+        })
+
+        it('Check that administrator is not permitted to change their own permissions', () => {
+            cy.login(admin1.name, admin1.pass)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(admin1.name)
+            cy.get('[data-cy="aui-data-table-inline-edit--toggle"]:first').click()
+            waitPageProgress()
+            cy.contains('.q-notification', 'User cannot modify own permissions').should('be.visible')
+            cy.get('div[data-cy="aui-data-table-inline-edit--toggle"]:first[aria-checked="false"]').should('be.visible')
+            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+            clickDataTableSelectedMoreMenuItem('admin-edit')
+
+            cy.get('[data-cy="master-flag"]').click()
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.contains('.q-notification', 'User cannot modify own permissions').should('be.visible')
+            cy.get('[data-cy="aui-close-button"]').click()
+            waitPageProgress()
+            cy.get('div[data-cy="aui-data-table-inline-edit--toggle"]:first[aria-checked="false"]').should('be.visible')
         })
 
         it('Set administrator to master', () => {
