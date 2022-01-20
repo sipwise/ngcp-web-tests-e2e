@@ -29,7 +29,7 @@ context('Contract tests', () => {
                     cy.navigateMainMenu('settings / contract-list')
 
                     cy.locationShouldBe('#/contract')
-                    cy.get('div[label="Add"]').click() // TODO: fix issues in data-cy
+                    cy.get('[data-cy="aui-list-action"]').click()
                     clickToolbarDropdownActionButton(`contract-create-${contractType}`)
 
                     cy.locationShouldBe(formUrl)
@@ -42,13 +42,13 @@ context('Contract tests', () => {
                     cy.navigateMainMenu('settings / contract-list')
 
                     cy.locationShouldBe('#/contract')
-                    cy.get('div[label="Add"]').click() // TODO: fix issues in data-cy
+                    cy.get('[data-cy="aui-list-action"]').click()
                     clickToolbarDropdownActionButton(`contract-create-${contractType}`)
 
                     cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: 'default', itemContains: 'default-system' })
                     cy.get('label[data-cy="external-num"]').type(contractName)
                     cy.qSelect({ dataCy: 'contract-status', filter: '', itemContains: 'Active' })
-                    cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: 'default', itemContains: 'Default Billing Profile' })
+                    cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: 'Default', itemContains: 'Default Billing Profile' })
                     cy.get('[data-cy="aui-save-button"]').click()
                     cy.contains('.q-notification', 'Contract created successfully').should('be.visible')
                 })
@@ -60,12 +60,14 @@ context('Contract tests', () => {
                     cy.locationShouldBe('#/contract')
 
                     searchInDataTable(contractName)
-                    cy.get('span[data-cy="aui-data-table-edit-select"]').click() // TODO: improve selectors here
-                    cy.get('.q-field__label').contains('Status').click({ force: true }) // TODO: improve selectors here
-                    cy.get('div[data-cy="q-item--1"]').click()
-                    cy.contains('Save').click() // TODO: add data-cy there
+                    cy.get('[data-cy="row-more-menu-btn"]:first').click()
+                    cy.get('[data-cy="aui-popup-menu-item--contract-edit"]').click()
                     waitPageProgress()
-                    cy.get('span[data-cy="aui-data-table-edit-select"]').contains('Pending')
+                    cy.qSelect({ dataCy: 'contract-status', filter: '', itemContains: 'Pending' })
+                    cy.get('[data-cy="aui-save-button"]').click()
+                    waitPageProgress()
+                    cy.get('[data-cy="aui-close-button"]').click()
+                    cy.get('[data-cy="q-td--status"]').contains('Pending')
                 })
 
                 it(`Delete ${contractType} contact`, () => {
@@ -74,7 +76,7 @@ context('Contract tests', () => {
 
                     cy.locationShouldBe('#/contract')
                     searchInDataTable(contractName)
-                    cy.get('td[data-cy="q-td"]:first').click()
+                    cy.get('[data-cy="row-more-menu-btn"]:first').click()
                     cy.get('[data-cy="aui-popup-menu-item--delete"]').click()
                     cy.get('button[data-cy="btn-confirm"]').click()
                     cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
