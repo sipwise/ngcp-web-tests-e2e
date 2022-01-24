@@ -1,3 +1,29 @@
+ngcp-web-tests-e2e (10.4.0.0+0~mr10.4.0.0) unstable; urgency=medium
+
+  [ Sergii Leonenko ]
+  * [f386b99] TT#131366 AUI - Administrators - Create new administrator (part 2)
+  * [eb28106] TT#149705 Port Admin ui contact tests to cypress
+  * [598ba95] TT#154111 AUI: Align Administrator creation/edit to the new role concept
+  * [ac9c6b5] TT#131366 AUI - Administrators - Create new administrator (part 2)
+  * [d0fe521] TT#157153 Maintenance - Fix vulnerabilities in dependencies
+  * [53e4a40] TT#157150 General - Improve pagination and filtering
+
+  [ Nico Schedel ]
+  * [62f38fd] TT#149705 Port Admin ui contact tests to cypress
+  * [671fbbc] TT#153651 Port Admin UI contract tests to cypress
+  * [9f7801e] TT#149705 check if empty values in contacts get rejected
+  * [c24b8c5] TT#131366 fix "master admin cannot change permissions from other admins" test
+  * [df7dc01] TT#155404 More improvements for domain tests
+  * [ad0f987] TT#155404 More improvments for emergency mapping container tests
+  * [894086d] TT#157258 port reseller tests to cypress
+
+  [ Hans-Peter Herzog ]
+  * [9541c23] TT#154855 EmergencyMappingContainers - Test creation
+  * [dd396d2] TT#155500 Domains - Test Domain creation
+  * [14311fa] TT#155404 Improvements for Domain and EmergencyMappingContainer creations tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 24 Jan 2022 16:57:23 +0100
+
 ngcp-web-tests-e2e (10.3.0.0+0~mr10.3.0.0) unstable; urgency=medium
 
   [ Sergii Leonenko ]
