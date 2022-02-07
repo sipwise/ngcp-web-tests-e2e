@@ -21,7 +21,8 @@ const admin1 = {
 }
 const admin2 = {
     name: 'admin' + getRandomNum(),
-    pass: 'rand0mpassword12345'
+    pass: 'rand0mpassword12345',
+    newpass: 'testpassw0rd12345'
 }
 const resellerName = 'reseller' + getRandomNum()
 const contractName = 'contract' + getRandomNum()
@@ -267,6 +268,27 @@ context('Administrator tests', () => {
             cy.locationShouldBe('#/domain')
             cy.get('div[data-cy=aui-list-action--domain-creation]').should('not.exist')
             cy.get('div[data-cy=aui-list-action--delete]').should('not.exist')
+        })
+
+        it('Change password of second administrator', () => {
+            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(admin2.name)
+            cy.get('[data-cy="row-more-menu-btn"]:first').click()
+            cy.get('[data-cy="aui-popup-menu-item--change-password"]').click()
+
+            cy.get('input[data-cy="password-input"]').type(admin2.newpass)
+            cy.get('input[data-cy="password-retype-input"]').type(admin2.newpass)
+            cy.get('[data-cy="save-button"]').click()
+            cy.get('div[data-cy="change-password-form"]').should('not.exist')
+            cy.contains('.q-notification', 'Password changed successfully').should('be.visible')
+        })
+
+        it('Check if admin password has been changed', () => {
+            cy.login(admin2.name, admin2.newpass)
+            cy.url().should('match', /\/#\/dashboard/)
         })
 
         it('Delete both administrators and check if they are deleted', () => {
