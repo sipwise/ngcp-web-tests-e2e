@@ -4,6 +4,7 @@ import {
     getRandomNum,
     waitPageProgress,
     clickToolbarActionButton,
+    deleteDownloadsFolder,
     deleteItemOnListPageByName, clickDataTableSelectedMoreMenuItem, searchInDataTable
 } from '../../support/ngcp-admin-ui/utils/common'
 
@@ -13,6 +14,7 @@ import {
     apiRemoveResellerBy
 } from '../../support/ngcp-admin-ui/utils/api'
 
+const path = require('path')
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 const admin1 = {
@@ -27,16 +29,67 @@ const admin2 = {
 const resellerName = 'reseller' + getRandomNum()
 const contractName = 'contract' + getRandomNum()
 
-context('Administrator tests', () => {
-    context('set of simple individual tests', () => { })
+const downloadsFolder = Cypress.config('downloadsFolder')
 
-    context('complex UI administrator test suite', () => {
+const uiCreateAdmin = ({ name, pass, resellerName, isSuperuser }) => {
+    cy.navigateMainMenu('settings / admin-list')
+
+    cy.locationShouldBe('#/administrator')
+    clickToolbarActionButton('admin-creation')
+
+    cy.locationShouldBe('#/administrator/create')
+    cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: resellerName, itemContains: resellerName })
+    cy.get('[data-cy="login-field"] input').type(name)
+    cy.get('[data-cy="password-field"] input').type(pass)
+    cy.get('[data-cy="password-retype-field"] input').type(pass)
+    if (isSuperuser) {
+        cy.qSelect({ dataCy: 'roles-list', filter: 'admin', itemContains: 'admin' })
+    } else {
+        cy.qSelect({ dataCy: 'roles-list', filter: 'reseller', itemContains: 'reseller' })
+    }
+
+    cy.get('[data-cy="aui-save-button"]').click()
+    cy.contains('.q-notification', 'Administrator created successfully').should('be.visible')
+}
+
+const uiCreateReseller = (contractName, resellerName) => {
+    cy.navigateMainMenu('settings / reseller-list')
+
+    cy.locationShouldBe('#/reseller')
+    clickToolbarActionButton('reseller-creation')
+
+    cy.locationShouldBe('#/reseller/create')
+    cy.get('[data-cy=aui-select-contract] [data-cy=aui-create-button]').click()
+
+    cy.locationShouldBe('#/contract/reseller/create')
+    cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: 'default', itemContains: 'Default Billing Profile' })
+    cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: 'default', itemContains: 'default-system' })
+    cy.qSelect({ dataCy: 'contract-status', filter: '', itemContains: 'Pending' })
+    cy.get('input[data-cy="external-num"]').type(contractName)
+    cy.get('[data-cy="aui-save-button"]').click()
+    cy.contains('.q-notification', 'Contract created successfully').should('be.visible')
+
+    cy.locationShouldBe('#/reseller/create')
+    cy.auiSelectLazySelect({ dataCy: 'aui-select-contract', filter: contractName, itemContains: 'default-system' })
+    cy.get('[data-cy="reseller-name"] input').type(resellerName)
+    cy.get('[data-cy="aui-save-button"]').click()
+    waitPageProgress()
+
+    cy.contains('.q-notification', 'Reseller created successfully').should('be.visible')
+    cy.locationShouldBe('#/reseller')
+}
+
+context('Administrator tests', () => {
+    context('Simple UI admin tests', () => {
+
+    })
+
+    context('Complex UI admin tests', () => {
         // IMPORTANT: all tests in this suite are dependent to each other, so we cannot execute them individually
 
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         })
-
         // if a test in the group will fail we are not running others
         // Note: the Smart Orchestration is available for paid Cypress version only. So let's emulate part of it
         // afterEach(function skipAllTestsInGroupIfOneFailed () {
@@ -61,52 +114,8 @@ context('Administrator tests', () => {
 
         it('Create a reseller', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller-list')
-
-            cy.locationShouldBe('#/reseller')
-            clickToolbarActionButton('reseller-creation')
-
-            cy.locationShouldBe('#/reseller/create')
-            cy.get('[data-cy=aui-select-contract] [data-cy=aui-create-button]').click()
-
-            cy.locationShouldBe('#/contract/reseller/create')
-            cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: 'default', itemContains: 'Default Billing Profile' })
-            cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: 'default', itemContains: 'default-system' })
-            cy.qSelect({ dataCy: 'contract-status', filter: '', itemContains: 'Pending' })
-            cy.get('input[data-cy="external-num"]').type(contractName)
-            cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('.q-notification', 'Contract created successfully').should('be.visible')
-
-            cy.locationShouldBe('#/reseller/create')
-            cy.auiSelectLazySelect({ dataCy: 'aui-select-contract', filter: contractName, itemContains: 'default-system' })
-            cy.get('[data-cy="reseller-name"] input').type(resellerName)
-            cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgress()
-
-            cy.contains('.q-notification', 'Reseller created successfully').should('be.visible')
-            cy.locationShouldBe('#/reseller')
+            uiCreateReseller(contractName, resellerName)
         })
-
-        const uiCreateAdmin = ({ name, pass, resellerName, isSuperuser }) => {
-            cy.navigateMainMenu('settings / admin-list')
-
-            cy.locationShouldBe('#/administrator')
-            clickToolbarActionButton('admin-creation')
-
-            cy.locationShouldBe('#/administrator/create')
-            cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: resellerName, itemContains: resellerName })
-            cy.get('[data-cy="login-field"] input').type(name)
-            cy.get('[data-cy="password-field"] input').type(pass)
-            cy.get('[data-cy="password-retype-field"] input').type(pass)
-            if (isSuperuser) {
-                cy.qSelect({ dataCy: 'roles-list', filter: 'admin', itemContains: 'admin' })
-            } else {
-                cy.qSelect({ dataCy: 'roles-list', filter: 'reseller', itemContains: 'reseller' })
-            }
-
-            cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('.q-notification', 'Administrator created successfully').should('be.visible')
-        }
 
         it('Create an administrator and enable superuser for this administrator', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
@@ -306,6 +315,58 @@ context('Administrator tests', () => {
 
             cy.locationShouldBe('#/reseller')
             deleteItemOnListPageByName(resellerName)
+        })
+    })
+
+    context('Admin certificates tests', () => {
+        before(() => {
+            Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+            cy.login(ngcpConfig.username, ngcpConfig.password)
+            uiCreateReseller(contractName, resellerName)
+            uiCreateAdmin({ name: admin1.name, pass: admin1.pass, resellerName: 'default', isSuperuser: true })
+        })
+
+        beforeEach(deleteDownloadsFolder)
+
+        after(() => {
+            // let's remove all data via API
+            cy.log('Data clean up...')
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveAdminBy({ name: admin1.name, authHeader })
+                apiRemoveResellerBy({ name: resellerName, authHeader })
+            })
+            deleteDownloadsFolder()
+        })
+
+        it('Create and Download API certificate from second administrator', () => {
+            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(admin1.name)
+            cy.get('[data-cy="row-more-menu-btn"]:first').click()
+            cy.get('[data-cy="aui-popup-menu-item--cert-management"]').click()
+            cy.get('[data-cy="create-certificate"]').click()
+            cy.get('[data-cy="q-spinner-gears"]').should('not.exist')
+            const filename = path.join(downloadsFolder, 'ngcp-api-certificate.zip')
+            cy.readFile(filename, 'binary', { timeout: 1000 })
+                .should(buffer => expect(buffer.length).to.be.gt(7500))
+            cy.task('validateZipFile', filename) // has to be done separately, due to needing filesystem permissions
+        })
+
+        it('Manually download certificate and check if it downloads properly', () => {
+            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(admin1.name)
+            cy.get('[data-cy="row-more-menu-btn"]:first').click()
+            cy.get('[data-cy="aui-popup-menu-item--cert-management"]').click()
+            cy.get('[data-cy="download-certificate"]').click()
+            cy.get('[data-cy="q-spinner-gears"]').should('not.exist')
+            const filename = path.join(downloadsFolder, 'ngcp-ca.pem')
+            cy.readFile(filename, 'binary', { timeout: 1000 })
+                .should(buffer => expect(buffer.length).to.be.gt(30000))
         })
     })
 })

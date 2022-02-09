@@ -12,9 +12,13 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
+const { rmdir } = require('fs').promises
+const AdmZip = require('adm-zip')
+
 /**
  * @type {Cypress.PluginConfig}
  */
+
 module.exports = (on, config) => {
     // `on` is used to hook into various events Cypress emits
     // `config` is the resolved Cypress config
@@ -34,6 +38,36 @@ module.exports = (on, config) => {
         if (browser.family === 'firefox') {
             launchOptions.preferences['intl.accept_languages'] = DEFAULT_ACCEPT_LANGUAGES
             return launchOptions
+        }
+    })
+
+    // This will be used in tests where we need to download things, clearing download folder before we proceed with tests
+    on('task', {
+        async deleteFolder (folderName) {
+            console.log('deleting folder %s', folderName)
+            try {
+                await rmdir(folderName, { maxRetries: 10, recursive: true })
+                return null
+            } catch (err) {
+                console.error(err)
+                throw err
+            }
+        },
+
+        validateZipFile (filename) {
+            const zip = new AdmZip(filename)
+            const zipEntries = zip.getEntries()
+            const names = zipEntries.map((entry) => entry.entryName).sort()
+            if (names.findIndex(filename => /^NGCP-API-client-certificate(.*)\.pem$/.test(filename)) === -1) {
+                throw new Error('File "NGCP-API-client-certificate.pem" is missing!')
+            }
+            if (names.findIndex(filename => /^NGCP-API-client-certificate(.*)\.p12$/.test(filename)) === -1) {
+                throw new Error('File "NGCP-API-client-certificate.p12" is missing!')
+            }
+            if (names.indexOf('README.txt') === -1) {
+                throw new Error('File "README.txt" is missing!')
+            }
+            return null
         }
     })
 }

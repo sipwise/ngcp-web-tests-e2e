@@ -37,3 +37,8 @@ export const clickDataTableSelectedMoreMenuItem = (actionName) => {
     cy.get('[data-cy=aui-data-table] tr.selected [data-cy="row-more-menu-btn"]:first').click()
     return cy.get(`.q-menu [data-cy="aui-popup-menu-item--${actionName}"]`).click()
 }
+
+export const deleteDownloadsFolder = () => {
+    const downloadsFolder = Cypress.config('downloadsFolder')
+    cy.task('deleteFolder', downloadsFolder)
+}

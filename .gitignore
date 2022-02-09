@@ -18,6 +18,7 @@ yarn-error.log*
 debug.log
 cypress/videos
 cypress/screenshots
+cypress/downloads
 
 cypress.json
 cypress.tdd.aui.json
