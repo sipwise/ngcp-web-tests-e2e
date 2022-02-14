@@ -87,23 +87,6 @@ context('Reseller tests', () => {
             cy.get('[data-cy="aui-data-table-inline-edit--select"]').should('contain.text', 'Locked')
         })
 
-        it('Enable WebRTC', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller-list')
-
-            cy.locationShouldBe('#/reseller')
-            searchInDataTable(resellerName)
-            cy.get('[data-cy="row-more-menu-btn"]:first').click()
-            cy.get('[data-cy="aui-popup-menu-item--reseller-edit"]').click()
-            waitPageProgress()
-            cy.get('[data-cy="web-rtc-flag"]').click()
-            cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('.q-notification', 'Reseller updated successfully').should('be.visible')
-            cy.get('[data-cy="aui-close-button"]').click()
-            waitPageProgress()
-            cy.get('div[data-cy="aui-data-table-inline-edit--toggle"][aria-checked="true"]').should('be.visible')
-        })
-
         it('Add/Reset/Delete a preference (cdr_export_field_separator) in reseller', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller-list')
@@ -115,11 +98,11 @@ context('Reseller tests', () => {
             cy.get('[data-cy="q-item--cdr-export-field-separator"]').should('be.visible').as('cdrExportFieldSeparator')
             cy.get('@cdrExportFieldSeparator').find('input').type('test')
             cy.get('@cdrExportFieldSeparator').contains('button[data-cy="q-btn"]', 'Save').click()
-            waitPageProgress()
+
             cy.get('@cdrExportFieldSeparator').find('input').should('have.value', 'test')
             cy.get('@cdrExportFieldSeparator').contains('button[data-cy="q-icon"]', 'cancel').click()
             cy.get('@cdrExportFieldSeparator').contains('button[data-cy="q-btn"]', 'Save').click()
-            waitPageProgress()
+
             cy.get('@cdrExportFieldSeparator').find('input').should('have.value', '')
             cy.get('@cdrExportFieldSeparator').find('input').type('test')
             cy.get('@cdrExportFieldSeparator').contains('button[data-cy="q-btn"]', 'Reset').click()
