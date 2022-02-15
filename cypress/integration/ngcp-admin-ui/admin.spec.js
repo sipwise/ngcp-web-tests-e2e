@@ -363,11 +363,10 @@ context('Administrator tests', () => {
         })
 
         it('Create and Download API certificate from second administrator', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.login(admin1.name, admin1.pass)
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(admin1.name)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--cert-management"]').click()
             cy.get('[data-cy="create-certificate"]').click()
@@ -379,18 +378,40 @@ context('Administrator tests', () => {
         })
 
         it('Manually download certificate and check if it downloads properly', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.login(admin1.name, admin1.pass)
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(admin1.name)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--cert-management"]').click()
             cy.get('[data-cy="download-certificate"]').click()
             cy.get('[data-cy="q-spinner-gears"]').should('not.exist')
             const filename = path.join(downloadsFolder, 'ngcp-ca.pem')
             cy.readFile(filename, 'binary', { timeout: 1000 })
-                .should(buffer => expect(buffer.length).to.be.gt(30000))
+                .should(buffer => expect(buffer.length).to.be.gt(1500))
+        })
+
+        it('Make sure that other admins are not able to remove the API Certificate', () => {
+            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(admin1.name)
+            cy.get('[data-cy="row-more-menu-btn"]:first').click()
+            cy.get('[data-cy="aui-popup-menu-item--cert-management"]').should('not.exist')
+        })
+
+        it('Revoke Certificate', () => {
+            cy.login(admin1.name, admin1.pass)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            cy.get('[data-cy="row-more-menu-btn"]:first').click()
+            cy.get('[data-cy="aui-popup-menu-item--cert-management"]').click()
+            cy.get('[data-cy="revoke-certificate"]').click()
+            cy.get('[data-cy="q-spinner-gears"]').should('not.exist')
+            cy.get('[data-cy="revoke-certificate"]').should('not.exist')
+            cy.get('[data-cy="create-certificate"]').should('be.visible')
         })
     })
 })
