@@ -19,12 +19,12 @@ const ngcpConfig = Cypress.config('ngcpConfig')
 
 const admin1 = {
     name: 'admin' + getRandomNum(),
-    pass: 'rand0mpassword1234'
+    pass: 'rand0mpassword1234',
+    newpass: 'testpassw0rd12345'
 }
 const admin2 = {
     name: 'admin' + getRandomNum(),
-    pass: 'rand0mpassword12345',
-    newpass: 'testpassw0rd12345'
+    pass: 'rand0mpassword12345'
 }
 const resellerName = 'reseller' + getRandomNum()
 const contractName = 'contract' + getRandomNum()
@@ -251,7 +251,7 @@ context('Administrator tests', () => {
             waitPageProgress()
             cy.qSelect({ dataCy: 'roles-list', filter: 'admin', itemContains: 'admin' })
             cy.get('[data-cy="readonly-flag"]').click()
-
+            cy.get('div[data-cy="readonly-flag"][aria-checked="true"]').should('be.visible')
             cy.get('[data-cy="aui-save-button"]').click()
             cy.contains('.q-notification', 'Administrator saved successfully').should('be.visible')
         })
@@ -279,24 +279,48 @@ context('Administrator tests', () => {
             cy.get('div[data-cy=aui-list-action--delete]').should('not.exist')
         })
 
-        it('Change password of second administrator', () => {
+        it('Disable read-only for administrator', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(admin2.name)
+            searchInDataTable(admin1.name)
+            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+            clickDataTableSelectedMoreMenuItem('admin-edit')
+            waitPageProgress()
+            cy.get('[data-cy="readonly-flag"]').click()
+            cy.get('div[data-cy="readonly-flag"][aria-checked="false"]').should('be.visible')
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.contains('.q-notification', 'Administrator saved successfully').should('be.visible')
+        })
+
+        it('Make sure that admins cannot change other admins password', () => {
+            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(admin1.name)
+            cy.get('[data-cy="row-more-menu-btn"]:first').click()
+            cy.get('[data-cy="aui-popup-menu-item--change-password"]').should('not.exist')
+        })
+
+        it('Change password of administrator', () => {
+            cy.login(admin1.name, admin1.pass)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--change-password"]').click()
 
-            cy.get('input[data-cy="password-input"]').type(admin2.newpass)
-            cy.get('input[data-cy="password-retype-input"]').type(admin2.newpass)
+            cy.get('input[data-cy="password-input"]').type(admin1.newpass)
+            cy.get('input[data-cy="password-retype-input"]').type(admin1.newpass)
             cy.get('[data-cy="save-button"]').click()
             cy.get('div[data-cy="change-password-form"]').should('not.exist')
             cy.contains('.q-notification', 'Password changed successfully').should('be.visible')
         })
 
         it('Check if admin password has been changed', () => {
-            cy.login(admin2.name, admin2.newpass)
+            cy.login(admin1.name, admin1.newpass)
             cy.url().should('match', /\/#\/dashboard/)
         })
 
