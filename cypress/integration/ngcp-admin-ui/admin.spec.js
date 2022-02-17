@@ -324,6 +324,19 @@ context('Administrator tests', () => {
             cy.url().should('match', /\/#\/dashboard/)
         })
 
+        it('Make sure that admins cannot delete themselves', () => {
+            cy.login(admin1.name, admin1.newpass)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(admin1.name)
+            cy.get('[data-cy="row-more-menu-btn"]:first').click()
+            cy.get('[data-cy="aui-popup-menu-item--delete"]').click()
+            cy.get('[data-cy="btn-confirm"]').click()
+            waitPageProgress()
+            cy.contains('.q-notification', 'Cannot delete own user').should('be.visible')
+        })
+
         it('Delete both administrators and check if they are deleted', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / admin-list')
