@@ -156,6 +156,25 @@ context('Reseller tests', () => {
             cy.get('@cdrExportFieldSeparator').find('input').should('have.value', '')
         })
 
+        it('Change branding color', () => {
+            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller-list')
+
+            cy.locationShouldBe('#/reseller')
+            searchInDataTable(reseller.name)
+            cy.get('[data-cy="row-more-menu-btn"]:first').click()
+            cy.get('[data-cy="aui-popup-menu-item--reseller-details"]').click()
+            waitPageProgress()
+            cy.get('[data-cy="aui-main-menu-item--reseller-details-branding"]').click()
+            waitPageProgress()
+            cy.get('[data-cy="color-picker"]:first').click()
+            cy.get('div[class="q-color-picker"]').should('be.visible')
+            cy.get('label[data-cy="csc-font-color"]').type('rgba(0,0,0,1)')
+            cy.get('label[data-cy="csc-background-color"]').type('rgba(0,110,0,1)')
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.contains('.q-notification', 'Branding changed successfully').should('be.visible')
+        })
+
         it('Delete reseller and check if they are deleted', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller-list')
