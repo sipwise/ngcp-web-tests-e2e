@@ -117,17 +117,13 @@ context('Login page tests', () => {
             CheckLoggedInUI()
         })
 
-        it('Test cy.loginUi function', () => {
+        it('Test helper functions cy.loginUi / cy.logoutUI', () => {
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
             cy.loginUI(ngcpConfig.username, ngcpConfig.password)
             cy.wait('@loginRequest').then(({ response }) => {
                 checkLoginAPIResponse(response)
                 CheckLoggedInUI()
             })
-        })
-
-        it('Test cy.logoutUI function', () => {
-            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
             cy.logoutUI()
             cy.url().should('match', /\/#\/login\/admin/)
         })
