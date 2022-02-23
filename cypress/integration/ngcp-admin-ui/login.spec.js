@@ -127,6 +127,13 @@ context('Login page tests', () => {
             cy.logoutUI()
             cy.url().should('match', /\/#\/login\/admin/)
         })
+
+        it('Try to send a password reset email', () => {
+            cy.get('[data-cy="reset-password"]').click()
+            cy.get('label[data-cy="input-username"]').type(ngcpConfig.username)
+            cy.get('[data-cy="button-send"]').click()
+            cy.contains('.q-notification', 'Please check your email for password reset instructions').should('be.visible')
+        })
     })
 
     context('i18n tests', () => {
