@@ -333,7 +333,6 @@ context('Administrator tests', () => {
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--delete"]').click()
             cy.get('[data-cy="btn-confirm"]').click()
-            waitPageProgress()
             cy.get('div[role="alert"]').should('have.class', 'bg-negative')
         })
 
