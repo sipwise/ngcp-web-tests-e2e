@@ -30,6 +30,18 @@ context('Subscriber profile tests', () => {
             // TODO: add API cleanup of customer and subscirber after tests ran
         })
 
+        it('Check if subscriber profile set with invalid values gets rejected', () => {
+            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / subscriber-profile-set-list')
+
+            cy.locationShouldBe('#/subscriberprofile')
+            clickToolbarActionButton('subscriber-profile-set-create')
+            cy.get('[data-cy=aui-save-button]').click()
+            cy.get('label[data-cy="aui-select-reseller"][error="true"]').should('be.visible')
+            cy.get('label[data-cy="profile-set-name"] div[role="alert"]').should('be.visible')
+            cy.get('label[data-cy="profile-set-description"] div[role="alert"]').should('be.visible')
+        })
+
         it('Create subscriber profile set', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber-profile-set-list')
@@ -58,6 +70,20 @@ context('Subscriber profile tests', () => {
             cy.get('[data-cy="aui-close-button"]').click()
             waitPageProgress()
             cy.contains('[data-cy="q-td--description"]', profile.description).should('be.visible')
+        })
+
+        it('Check if subscriber profile with invalid values gets rejected', () => {
+            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / subscriber-profile-set-list')
+            cy.locationShouldBe('#/subscriberprofile')
+            searchInDataTable(profile.setName)
+            cy.get('[data-cy="row-more-menu-btn"]:first').click()
+            cy.get('[data-cy="aui-popup-menu-item--subscriber-profiles-list"]').click()
+            waitPageProgress()
+            clickToolbarActionButton('subscriber-profiles-create')
+            cy.get('[data-cy=aui-save-button]').click()
+            cy.get('label[data-cy="profile-name"] div[role="alert"]').should('be.visible')
+            cy.get('label[data-cy="profile-description"] div[role="alert"]').should('be.visible')
         })
 
         it('Create subscriber profile', () => {
