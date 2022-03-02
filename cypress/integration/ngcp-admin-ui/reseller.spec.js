@@ -40,7 +40,8 @@ context('Reseller tests', () => {
             cy.locationShouldBe('#/reseller/create')
             cy.get('[data-cy="aui-select-contract"] input').type('totallyaninvalidvalueforsure')
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('div[role="alert"]', 'Input is required').should('be.visible')
+            cy.get('label[data-cy="aui-select-contract"][error="true"]').should('be.visible')
+            cy.get('label[data-cy="reseller-name"] div[role="alert"]').should('be.visible')
         })
 
         it('Create a reseller', () => {
@@ -67,7 +68,7 @@ context('Reseller tests', () => {
             cy.get('[data-cy="aui-save-button"]').click()
             waitPageProgress()
 
-            cy.contains('.q-notification', 'Reseller created successfully').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.locationShouldBe('#/reseller')
         })
 

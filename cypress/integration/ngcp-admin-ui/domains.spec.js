@@ -22,7 +22,8 @@ context('Domain tests', () => {
             cy.locationShouldBe('#/domain')
             cy.get('[data-cy=aui-list-action--domain-creation]').click()
             cy.get('[data-cy=aui-save-button]').click()
-            cy.contains('[data-cy="aui-domain-creation"] div[role=alert]', 'Input is required').should('be.visible')
+            cy.get('label[data-cy="aui-select-reseller"][error="true"]').should('be.visible')
+            cy.get('label[data-cy="domain-name"] div[role="alert"]').should('be.visible')
         })
 
         it('Create a domain', () => {
@@ -31,9 +32,9 @@ context('Domain tests', () => {
             cy.locationShouldBe('#/domain')
             cy.get('[data-cy=aui-list-action--domain-creation]').click()
             cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: 'default', itemContains: 'default' })
-            cy.get('[data-cy=aui-new-domain] .q-item:eq(1) input').type(domainName)
+            cy.get('input[data-cy="domain-name"]').type(domainName)
             cy.get('[data-cy=aui-save-button]').click()
-            cy.contains('.q-notification', 'Domain created successfully').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
 
         it('Add/Reset/Delete a preference (allowed_ips) in domain', () => {

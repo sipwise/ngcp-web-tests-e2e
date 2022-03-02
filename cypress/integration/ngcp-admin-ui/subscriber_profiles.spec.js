@@ -40,7 +40,8 @@ context('Subscriber profile tests', () => {
             cy.get('[data-cy="profile-set-name"]input').type(profile.setName)
             cy.get('[data-cy="profile-set-description"]input').type(profile.descriptionInitial)
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('.q-notification', 'Profile created successfully').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.locationShouldBe('#/subscriberprofile')
         })
 
         it('Edit subscriber profile set', () => {
@@ -72,7 +73,7 @@ context('Subscriber profile tests', () => {
             cy.get('[data-cy="profile-description"]input').type(profile.description)
             cy.get('div[aria-label="block_in_list"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('.q-notification', 'Profile created successfully').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
 
         it('Create a second subscriber profile and mark it as default', () => {
@@ -90,7 +91,7 @@ context('Subscriber profile tests', () => {
             cy.get('[data-cy="profile-set-default-flag"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             waitPageProgress()
-            cy.contains('.q-notification', 'Profile created successfully').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             searchInDataTable(profile.profilename)
             cy.get('[data-cy="aui-data-table-inline-edit--toggle"]:eq(0)[aria-checked="false"]').should('be.visible')
             searchInDataTable(profile.profilename2)

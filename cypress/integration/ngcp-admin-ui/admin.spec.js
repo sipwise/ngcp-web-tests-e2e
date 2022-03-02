@@ -49,7 +49,7 @@ const uiCreateAdmin = ({ name, pass, resellerName, isSuperuser }) => {
     }
 
     cy.get('[data-cy="aui-save-button"]').click()
-    cy.contains('.q-notification', 'Administrator created successfully').should('be.visible')
+    cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 }
 
 const uiCreateReseller = (contractName, resellerName) => {
@@ -67,7 +67,7 @@ const uiCreateReseller = (contractName, resellerName) => {
     cy.qSelect({ dataCy: 'contract-status', filter: '', itemContains: 'Pending' })
     cy.get('input[data-cy="external-num"]').type(contractName)
     cy.get('[data-cy="aui-save-button"]').click()
-    cy.contains('.q-notification', 'Contract created successfully').should('be.visible')
+    cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 
     cy.locationShouldBe('#/reseller/create')
     cy.auiSelectLazySelect({ dataCy: 'aui-select-contract', filter: contractName, itemContains: 'default-system' })
@@ -75,7 +75,7 @@ const uiCreateReseller = (contractName, resellerName) => {
     cy.get('[data-cy="aui-save-button"]').click()
     waitPageProgress()
 
-    cy.contains('.q-notification', 'Reseller created successfully').should('be.visible')
+    cy.get('div[role="alert"]').should('have.class', 'bg-positive')
     cy.locationShouldBe('#/reseller')
 }
 
@@ -148,14 +148,14 @@ context('Administrator tests', () => {
             searchInDataTable(admin1.name)
             cy.get('[data-cy="aui-data-table-inline-edit--toggle"]:first').click()
             waitPageProgress()
-            cy.contains('.q-notification', 'User cannot modify own permissions').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-negative')
             cy.get('div[data-cy="aui-data-table-inline-edit--toggle"]:first[aria-checked="false"]').should('be.visible')
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('admin-edit')
 
             cy.get('[data-cy="master-flag"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('.q-notification', 'User cannot modify own permissions').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-negative')
             cy.get('[data-cy="aui-close-button"]').click()
             waitPageProgress()
             cy.get('div[data-cy="aui-data-table-inline-edit--toggle"]:first[aria-checked="false"]').should('be.visible')
@@ -175,7 +175,7 @@ context('Administrator tests', () => {
             cy.get('[data-cy="master-flag"]').click()
 
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('.q-notification', 'Administrator saved successfully').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
 
         it('Log in and make sure that master admin cannot change permissions from admins with different resellers', () => {
@@ -200,7 +200,7 @@ context('Administrator tests', () => {
             cy.get('[data-cy="active-flag"]').click()
 
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('.q-notification', 'Administrator saved successfully').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
 
         it('Login with deactivated administrator', () => {
@@ -230,7 +230,7 @@ context('Administrator tests', () => {
             cy.qSelect({ dataCy: 'roles-list', filter: 'ccareadmin', itemContains: 'ccareadmin' })
 
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('.q-notification', 'Administrator saved successfully').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
 
         it('Check if customer care has been activated', () => {
@@ -253,7 +253,7 @@ context('Administrator tests', () => {
             cy.get('[data-cy="readonly-flag"]').click()
             cy.get('div[data-cy="readonly-flag"][aria-checked="true"]').should('be.visible')
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('.q-notification', 'Administrator saved successfully').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
 
         it('Check if read-only has been activated', () => {
@@ -291,7 +291,7 @@ context('Administrator tests', () => {
             cy.get('[data-cy="readonly-flag"]').click()
             cy.get('div[data-cy="readonly-flag"][aria-checked="false"]').should('be.visible')
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('.q-notification', 'Administrator saved successfully').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
 
         it('Make sure that admins cannot change other admins password', () => {
@@ -316,7 +316,7 @@ context('Administrator tests', () => {
             cy.get('input[data-cy="password-retype-input"]').type(admin1.newpass)
             cy.get('[data-cy="save-button"]').click()
             cy.get('div[data-cy="change-password-form"]').should('not.exist')
-            cy.contains('.q-notification', 'Password changed successfully').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
 
         it('Check if admin password has been changed', () => {
@@ -334,7 +334,7 @@ context('Administrator tests', () => {
             cy.get('[data-cy="aui-popup-menu-item--delete"]').click()
             cy.get('[data-cy="btn-confirm"]').click()
             waitPageProgress()
-            cy.contains('.q-notification', 'Cannot delete own user').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-negative')
         })
 
         it('Delete both administrators and check if they are deleted', () => {

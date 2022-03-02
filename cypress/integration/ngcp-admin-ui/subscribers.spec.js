@@ -40,7 +40,7 @@ context('Subscriber tests', () => {
             cy.get('[data-cy="customer-external-id"] input').type(customer.id)
             cy.auiSelectLazySelect({ dataCy: 'aui-select-billing-profile', filter: 'default', itemContains: 'default' })
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('.q-notification', 'Customer created successfully').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
 
         it('Create a domain', () => {
@@ -51,7 +51,7 @@ context('Subscriber tests', () => {
             cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: 'default', itemContains: 'default' })
             cy.get('[data-cy=aui-new-domain] .q-item:eq(1) input').type(domainName)
             cy.get('[data-cy=aui-save-button]').click()
-            cy.contains('.q-notification', 'Domain created successfully').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
 
         it('Check if subscriber with invalid values gets rejected', () => {
@@ -68,13 +68,15 @@ context('Subscriber tests', () => {
             cy.get('[data-cy="aui-list-action--customer-subscriber-create"]').click()
             waitPageProgress()
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('[data-cy="aui-subscriber-creation"] div[role=alert]', 'Input is required').should('be.visible')
+            cy.get('label[data-cy="aui-select-domain"][error="true"]').should('be.visible')
+            cy.get('label[data-cy="subscriber-sip-username"] div[role="alert"]').should('be.visible')
+            cy.get('label[data-cy="subscriber-sip-password"] div[role="alert"]').should('be.visible')
             cy.auiSelectLazySelect({ dataCy: 'aui-select-domain', filter: domainName, itemContains: domainName })
             cy.get('input[data-cy="subscriber-sip-username"]').type(subscriber.username)
             cy.get('input[data-cy="subscriber-sip-password"]').type('inva')
             cy.get('input[data-cy="subscriber-email"]').type('invalid')
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('[data-cy="aui-subscriber-creation"] div[role=alert]', 'Input must be a valid email address').should('be.visible')
+            cy.get('label[data-cy="subscriber-email"] div[role="alert"]').should('be.visible')
         })
 
         it('Create subscriber', () => {
@@ -98,7 +100,7 @@ context('Subscriber tests', () => {
             cy.get('input[data-cy="subscriber-email"]').type(subscriber.email)
             cy.get('input[data-cy="subscriber-external-id"]').type(subscriber.id)
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('.q-notification', 'Subscriber created successfully').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
 
         it('Delete subscriber and check if they are deleted', () => {

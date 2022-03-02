@@ -36,7 +36,9 @@ context('Contract tests', () => {
 
                     cy.locationShouldBe(formUrl)
                     cy.get('[data-cy="aui-save-button"]').click()
-                    cy.contains('[data-cy=aui-contract-creation] div[role=alert]', 'Input is required').should('be.visible')
+                    cy.get('label[data-cy="aui-select-contact"][error="true"]').should('be.visible')
+                    cy.get('label[data-cy="aui-billing-profile-Active"][error="true"]').should('be.visible')
+                    cy.get('label[data-cy="contract-status"] div[role="alert"]').should('be.visible')
                 })
 
                 it(`Create a ${contractType} contact`, () => {
@@ -52,7 +54,7 @@ context('Contract tests', () => {
                     cy.qSelect({ dataCy: 'contract-status', filter: '', itemContains: 'Active' })
                     cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: 'Default', itemContains: 'Default Billing Profile' })
                     cy.get('[data-cy="aui-save-button"]').click()
-                    cy.contains('.q-notification', 'Contract created successfully').should('be.visible')
+                    cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 })
 
                 it(`Edit ${contractType} status`, () => {

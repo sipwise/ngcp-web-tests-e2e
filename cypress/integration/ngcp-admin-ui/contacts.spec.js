@@ -89,7 +89,7 @@ context('Contact tests', () => {
                 cy.qSelect({ dataCy: 'contract-status', filter: '', itemContains: 'Pending' })
                 cy.get('input[data-cy="external-num"]').type(contractName)
                 cy.get('[data-cy="aui-save-button"]').click()
-                cy.contains('.q-notification', 'Contract created successfully').should('be.visible')
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 
                 cy.locationShouldBe('#/reseller/create')
                 cy.auiSelectLazySelect({ dataCy: 'aui-select-contract', filter: contractName, itemContains: 'default-system' })
@@ -97,7 +97,7 @@ context('Contact tests', () => {
                 cy.get('[data-cy="aui-save-button"]').click()
                 waitPageProgress()
 
-                cy.contains('.q-notification', 'Reseller created successfully').should('be.visible')
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 cy.locationShouldBe('#/reseller')
             })
         })
@@ -120,10 +120,20 @@ context('Contact tests', () => {
 
                     cy.locationShouldBe(formUrl)
                     cy.get('[data-cy="aui-save-button"]').click()
-                    cy.contains('div[role="alert"]', 'Input is required').should('be.visible')
+                    if (contactType === 'customer') {
+                        cy.get('label[data-cy="aui-select-reseller"][error="true"]').should('be.visible')
+                    } else {
+                        cy.get('label[data-cy="aui-select-reseller"]').should('not.exist')
+                    }
+                    cy.get('label[data-cy="email-field"] div[role="alert"]').should('be.visible')
                     cy.get('input[data-cy="email-field"]').type('invaildmail')
                     cy.get('[data-cy="aui-save-button"]').click()
-                    cy.contains('div[role="alert"]', 'Input must be a valid email address').should('be.visible')
+                    if (contactType === 'customer') {
+                        cy.get('label[data-cy="aui-select-reseller"][error="true"]').should('be.visible')
+                    } else {
+                        cy.get('label[data-cy="aui-select-reseller"]').should('not.exist')
+                    }
+                    cy.get('label[data-cy="email-field"] div[role="alert"]').should('be.visible')
                 })
 
                 it(`Create a ${contactType} contact`, () => {
@@ -143,7 +153,7 @@ context('Contact tests', () => {
 
                     cy.get('input[data-cy="email-field"]').type(contact.mail)
                     cy.get('[data-cy="aui-save-button"]').click()
-                    cy.contains('.q-notification', 'Contact created successfully').should('be.visible')
+                    cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 })
 
                 it(`Add First and last name to ${contactType} contact`, () => {
@@ -161,7 +171,7 @@ context('Contact tests', () => {
                     cy.get('input[data-cy="lastname-field"]').type(contact.lastname)
                     cy.get('[data-cy="aui-save-button"]').click()
                     waitPageProgress()
-                    cy.contains('.q-notification', 'Contract saved successfully').should('be.visible')
+                    cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 })
 
                 it(`Delete ${contactType} contact`, () => {

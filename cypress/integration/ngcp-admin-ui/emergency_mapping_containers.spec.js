@@ -17,7 +17,8 @@ context('Emergency mapping tests', () => {
         cy.locationShouldBe('#/emergencymapping')
         cy.get('[data-cy="aui-list-action--emergency-mapping-container-creation"]').click()
         cy.get('[data-cy="aui-save-button"]').click()
-        cy.contains('[data-cy="aui-emergency-mapping-container-creation"] div[role="alert"]', 'Input is required').should('be.visible')
+        cy.get('label[data-cy="aui-select-reseller"][error="true"]').should('be.visible')
+        cy.get('label[data-cy="emergency-mapping-name"] div[role="alert"]').should('be.visible')
     })
 
     it('Create a new emergency mapping container', () => {
@@ -28,7 +29,7 @@ context('Emergency mapping tests', () => {
         cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: 'default', itemContains: 'default' })
         cy.get('[data-cy="emergency-mapping-name"] input').type(emergencymapname)
         cy.get('[data-cy="aui-save-button"]').click()
-        cy.contains('.q-notification', 'Emergency Mapping Container created successfully').should('be.visible')
+        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
     })
 
     it('Delete emergency mapping container', () => {

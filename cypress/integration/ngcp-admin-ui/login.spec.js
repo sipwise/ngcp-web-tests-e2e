@@ -132,7 +132,7 @@ context('Login page tests', () => {
             cy.get('[data-cy="reset-password"]').click()
             cy.get('label[data-cy="input-username"]').type(ngcpConfig.username)
             cy.get('[data-cy="button-send"]').click()
-            cy.contains('.q-notification', 'Please check your email for password reset instructions').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
     })
 

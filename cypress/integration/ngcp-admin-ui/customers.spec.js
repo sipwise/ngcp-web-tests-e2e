@@ -30,7 +30,8 @@ context('Customer tests', () => {
 
             cy.locationShouldBe('#/customer/create')
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('[data-cy="aui-select-contact"] div[role=alert]', 'Input is required').should('be.visible')
+            cy.get('label[data-cy="aui-select-billing-profile"][error="true"]').should('be.visible')
+            cy.get('label[data-cy="aui-select-contact"][error="true"]').should('be.visible')
         })
 
         it('Create a customer', () => {
@@ -45,7 +46,7 @@ context('Customer tests', () => {
             cy.get('[data-cy="customer-external-id"] input').type(customer.id)
             cy.auiSelectLazySelect({ dataCy: 'aui-select-billing-profile', filter: 'default', itemContains: 'default' })
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('.q-notification', 'Customer created successfully').should('be.visible')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
 
         it('Edit customer status to "locked"', () => {
