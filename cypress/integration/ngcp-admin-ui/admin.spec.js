@@ -127,19 +127,6 @@ context('Administrator tests', () => {
             uiCreateAdmin({ name: admin2.name, pass: admin2.pass, resellerName, isSuperuser: false })
         })
 
-        /**
-         * Todo: This case opens some questions. e.g. Which types of admin do we check here?
-         */
-        xit('Log in and make sure that superuser admin can change permissions from other admins with different resellers', () => {
-            cy.login(admin1.name, admin1.pass)
-            cy.navigateMainMenu('settings / admin-list')
-
-            cy.locationShouldBe('#/administrator')
-            searchInDataTable(admin2.name)
-            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            cy.get('div[aria-disabled="true"]').should('not.exist') // TODO: it's not clear what was the DOM element to check
-        })
-
         it('Check that administrator is not permitted to change their own permissions', () => {
             cy.login(admin1.name, admin1.pass)
             cy.navigateMainMenu('settings / admin-list')

@@ -10,12 +10,8 @@ import {
 } from '../../support/ngcp-admin-ui/utils/common'
 
 import {
-    apiCreateContract,
-    apiCreateReseller,
     apiLoginAsSuperuser,
-    apiRemoveResellerBy,
-    defaultResellerContractCreationData,
-    defaultResellerCreationData
+    apiRemoveResellerBy
 } from '../../support/ngcp-admin-ui/utils/api'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -141,7 +137,7 @@ context('Contact tests', () => {
                     cy.navigateMainMenu('settings / contact-list')
 
                     cy.locationShouldBe('#/contact')
-                    cy.get('div[label="Add"]').click() // TODO: fix issues in data-cy
+                    cy.get('[data-cy="aui-list-action"]').click()
                     clickToolbarDropdownActionButton(`contact-create-${contactType}`)
 
                     cy.locationShouldBe(formUrl)

@@ -2,8 +2,7 @@
 
 import {
     getRandomNum,
-    deleteItemOnListPageByName,
-    waitPageProgress
+    deleteItemOnListPageByName
 } from '../../support/ngcp-admin-ui/utils/common'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
