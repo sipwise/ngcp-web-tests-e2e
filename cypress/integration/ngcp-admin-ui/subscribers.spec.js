@@ -3,15 +3,27 @@
 import {
     getRandomNum,
     waitPageProgress,
-    clickToolbarActionButton,
     deleteItemOnListPageByName,
     searchInDataTable
 } from '../../support/ngcp-admin-ui/utils/common'
 
+import {
+    apiLoginAsSuperuser,
+    apiCreateDomain,
+    apiRemoveDomainBy,
+    apiCreateCustomer,
+    apiRemoveCustomerBy
+} from '../../support/ngcp-admin-ui/utils/api'
+
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 const customer = {
-    id: 'customer' + getRandomNum()
+    billing_profile_definition: 'id',
+    billing_profile_id: 1,
+    external_id: 'customer' + getRandomNum(),
+    contact_id: 1,
+    status: 'active',
+    type: 'sipaccount'
 }
 
 const subscriber = {
@@ -20,38 +32,26 @@ const subscriber = {
     id: 'subid' + getRandomNum()
 }
 
-const domainName = 'domain' + getRandomNum()
+const domain = {
+    domain: 'domain' + getRandomNum(),
+    reseller_id: 1
+}
 
 context('Subscriber tests', () => {
     context('UI subscriber tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateDomain({ data: domain, authHeader })
+                apiCreateCustomer({ data: customer, authHeader })
+            })
         })
 
-        it('Create a customer', () => { // TODO: replace this entire "test" with one API call to make it faster and less prone to errors
-            cy.login(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer-list')
-
-            cy.locationShouldBe('#/customer')
-            clickToolbarActionButton('customer-creation')
-
-            cy.locationShouldBe('#/customer/create')
-            cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: 'default', itemContains: 'default' })
-            cy.get('[data-cy="customer-external-id"] input').type(customer.id)
-            cy.auiSelectLazySelect({ dataCy: 'aui-select-billing-profile', filter: 'default', itemContains: 'default' })
-            cy.get('[data-cy="aui-save-button"]').click()
-            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-        })
-
-        it('Create a domain', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / domain-list')
-            cy.locationShouldBe('#/domain')
-            cy.get('[data-cy=aui-list-action--domain-creation]').click()
-            cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: 'default', itemContains: 'default' })
-            cy.get('[data-cy=aui-new-domain] .q-item:eq(1) input').type(domainName)
-            cy.get('[data-cy=aui-save-button]').click()
-            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+        after(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            })
         })
 
         it('Check if subscriber with invalid values gets rejected', () => {
@@ -59,7 +59,7 @@ context('Subscriber tests', () => {
             cy.navigateMainMenu('settings / customer-list')
 
             cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.id)
+            searchInDataTable(customer.external_id)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--customer-details"]').click()
             waitPageProgress()
@@ -71,7 +71,7 @@ context('Subscriber tests', () => {
             cy.get('label[data-cy="aui-select-domain"][error="true"]').should('be.visible')
             cy.get('label[data-cy="subscriber-sip-username"] div[role="alert"]').should('be.visible')
             cy.get('label[data-cy="subscriber-sip-password"] div[role="alert"]').should('be.visible')
-            cy.auiSelectLazySelect({ dataCy: 'aui-select-domain', filter: domainName, itemContains: domainName })
+            cy.auiSelectLazySelect({ dataCy: 'aui-select-domain', filter: domain.domain, itemContains: domain.domain })
             cy.get('input[data-cy="subscriber-sip-username"]').type(subscriber.username)
             cy.get('input[data-cy="subscriber-sip-password"]').type('inva')
             cy.get('input[data-cy="subscriber-email"]').type('invalid')
@@ -84,7 +84,7 @@ context('Subscriber tests', () => {
             cy.navigateMainMenu('settings / customer-list')
 
             cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.id)
+            searchInDataTable(customer.external_id)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--customer-details"]').click()
             waitPageProgress()
@@ -92,7 +92,7 @@ context('Subscriber tests', () => {
             waitPageProgress()
             cy.get('[data-cy="aui-list-action--customer-subscriber-create"]').click()
             waitPageProgress()
-            cy.auiSelectLazySelect({ dataCy: 'aui-select-domain', filter: domainName, itemContains: domainName })
+            cy.auiSelectLazySelect({ dataCy: 'aui-select-domain', filter: domain.domain, itemContains: domain.domain })
             cy.get('input[data-cy="subscriber-web-username"]').type(subscriber.username)
             cy.get('[data-cy="subscriber-password-generate"]:first').click()
             cy.get('input[data-cy="subscriber-sip-username"]').type(subscriber.username)
@@ -109,14 +109,6 @@ context('Subscriber tests', () => {
 
             cy.locationShouldBe('#/subscriber')
             deleteItemOnListPageByName(subscriber.username)
-        })
-
-        it('Delete customer and check if they are deleted', () => { // TODO: replace this entire "test" with one API call to make it faster and less prone to errors
-            cy.login(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer-list')
-
-            cy.locationShouldBe('#/customer')
-            deleteItemOnListPageByName(customer.id)
         })
     })
 })
