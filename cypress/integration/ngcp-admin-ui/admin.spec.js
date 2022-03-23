@@ -9,8 +9,14 @@ import {
 } from '../../support/ngcp-admin-ui/utils/common'
 
 import {
+    apiCreateAdmin,
+    apiCreateContract,
+    apiCreateReseller,
+    apiGetContractId,
+    apiGetResellerId,
     apiLoginAsSuperuser,
     apiRemoveAdminBy,
+    apiRemoveContractBy,
     apiRemoveResellerBy
 } from '../../support/ngcp-admin-ui/utils/api'
 
@@ -18,16 +24,41 @@ const path = require('path')
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 const admin1 = {
-    name: 'admin' + getRandomNum(),
-    pass: 'rand0mpassword1234',
+    login: 'admin' + getRandomNum(),
+    password: 'rand0mpassword1234',
     newpass: 'testpassw0rd12345'
 }
+
 const admin2 = {
-    name: 'admin' + getRandomNum(),
-    pass: 'rand0mpassword12345'
+    role: 'admin',
+    password: 'rand0mpassword12345',
+    email: 'user' + getRandomNum() + '@example.com',
+    login: 'admin' + getRandomNum(),
+    is_master: true,
+    read_only: false,
+    is_active: true,
+    show_passwords: true,
+    call_data: true,
+    can_reset_password: true,
+    reseller_id: 0
 }
-const resellerName = 'reseller' + getRandomNum()
-const contractName = 'contract' + getRandomNum()
+
+const contract = {
+    contact_id: 3,
+    status: 'active',
+    external_id: 'contract' + getRandomNum(),
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
+const reseller = {
+    contract_id: 1,
+    status: 'active',
+    rtc_networks: {},
+    name: 'reseller' + getRandomNum(),
+    enable_rtc: false
+}
 
 const downloadsFolder = Cypress.config('downloadsFolder')
 
@@ -52,33 +83,6 @@ const uiCreateAdmin = ({ name, pass, resellerName, isSuperuser }) => {
     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 }
 
-const uiCreateReseller = (contractName, resellerName) => {
-    cy.navigateMainMenu('settings / reseller-list')
-
-    cy.locationShouldBe('#/reseller')
-    clickToolbarActionButton('reseller-creation')
-
-    cy.locationShouldBe('#/reseller/create')
-    cy.get('[data-cy=aui-select-contract] [data-cy=aui-create-button]').click()
-
-    cy.locationShouldBe('#/contract/reseller/create')
-    cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: 'default', itemContains: 'Default Billing Profile' })
-    cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: 'default', itemContains: 'default-system' })
-    cy.qSelect({ dataCy: 'contract-status', filter: '', itemContains: 'Pending' })
-    cy.get('input[data-cy="external-num"]').type(contractName)
-    cy.get('[data-cy="aui-save-button"]').click()
-    cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-
-    cy.locationShouldBe('#/reseller/create')
-    cy.auiSelectLazySelect({ dataCy: 'aui-select-contract', filter: contractName, itemContains: 'default-system' })
-    cy.get('[data-cy="reseller-name"] input').type(resellerName)
-    cy.get('[data-cy="aui-save-button"]').click()
-    waitPageProgress()
-
-    cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-    cy.locationShouldBe('#/reseller')
-}
-
 context('Administrator tests', () => {
     context('Simple UI admin tests', () => {
 
@@ -89,7 +93,18 @@ context('Administrator tests', () => {
 
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateContract({ data: contract, authHeader })
+                apiGetContractId({ name: contract.external_id, authHeader }).then(contractId => {
+                    reseller.contract_id = contractId
+                    return apiCreateReseller({ data: reseller, authHeader })
+                })
+                apiGetResellerId({ name: reseller.name, authHeader }).then(resellerId => {
+                    admin2.resellerId = resellerId
+                })
+            })
         })
+
         // if a test in the group will fail we are not running others
         // Note: the Smart Orchestration is available for paid Cypress version only. So let's emulate part of it
         // afterEach(function skipAllTestsInGroupIfOneFailed () {
@@ -106,33 +121,29 @@ context('Administrator tests', () => {
             // let's remove all data via API in case some of tests failed
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin1.name, authHeader })
-                apiRemoveAdminBy({ name: admin2.name, authHeader })
-                apiRemoveResellerBy({ name: resellerName, authHeader })
+                apiRemoveAdminBy({ name: admin1.login, authHeader })
+                apiRemoveAdminBy({ name: admin2.login, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
             })
-        })
-
-        it('Create a reseller', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
-            uiCreateReseller(contractName, resellerName)
         })
 
         it('Create an administrator and enable superuser for this administrator', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
-            uiCreateAdmin({ name: admin1.name, pass: admin1.pass, resellerName: 'default', isSuperuser: true })
+            uiCreateAdmin({ name: admin1.login, pass: admin1.password, resellerName: 'default', isSuperuser: true })
         })
 
         it('Create a second administrator with a different reseller', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
-            uiCreateAdmin({ name: admin2.name, pass: admin2.pass, resellerName, isSuperuser: false })
+            uiCreateAdmin({ name: admin2.login, pass: admin2.password, resellerName: reseller.name, isSuperuser: false })
         })
 
         it('Check that administrator is not permitted to change their own permissions', () => {
-            cy.login(admin1.name, admin1.pass)
+            cy.login(admin1.login, admin1.password)
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(admin1.name)
+            searchInDataTable(admin1.login)
             cy.get('[data-cy="aui-data-table-inline-edit--toggle"]:first').click()
             waitPageProgress()
             cy.get('div[role="alert"]').should('have.class', 'bg-negative')
@@ -153,7 +164,7 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(admin1.name)
+            searchInDataTable(admin1.login)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('admin-edit')
 
@@ -166,11 +177,11 @@ context('Administrator tests', () => {
         })
 
         it('Log in and make sure that master admin cannot change permissions from admins with different resellers', () => {
-            cy.login(admin1.name, admin1.pass)
+            cy.login(admin1.login, admin1.password)
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(admin2.name)
+            searchInDataTable(admin2.login)
             cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
         })
 
@@ -179,7 +190,7 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(admin1.name)
+            searchInDataTable(admin1.login)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('admin-edit')
             waitPageProgress()
@@ -196,7 +207,7 @@ context('Administrator tests', () => {
             cy.wait(500)
 
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
-            cy.loginUI(admin1.name, admin1.pass, false)
+            cy.loginUI(admin1.login, admin1.password, false)
 
             cy.wait('@loginRequest').then(({ response }) => {
                 expect(response.statusCode).to.equal(403)
@@ -209,7 +220,7 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(admin1.name)
+            searchInDataTable(admin1.login)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('admin-edit')
             waitPageProgress()
@@ -221,7 +232,7 @@ context('Administrator tests', () => {
         })
 
         it('Check if customer care has been activated', () => {
-            cy.login(admin1.name, admin1.pass)
+            cy.login(admin1.login, admin1.password)
             cy.contains('Settings').click()
             cy.get('a[href="#/customer"]').should('be.visible')
             cy.get('a[href="#/subscriber"]').should('be.visible')
@@ -232,7 +243,7 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(admin1.name)
+            searchInDataTable(admin1.login)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('admin-edit')
             waitPageProgress()
@@ -244,7 +255,7 @@ context('Administrator tests', () => {
         })
 
         it('Check if read-only has been activated', () => {
-            cy.login(admin1.name, admin1.pass)
+            cy.login(admin1.login, admin1.password)
 
             cy.navigateMainMenu('settings / admin-list')
             cy.locationShouldBe('#/administrator')
@@ -271,7 +282,7 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(admin1.name)
+            searchInDataTable(admin1.login)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('admin-edit')
             waitPageProgress()
@@ -286,13 +297,13 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(admin1.name)
+            searchInDataTable(admin1.login)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--change-password"]').should('not.exist')
         })
 
         it('Change password of administrator', () => {
-            cy.login(admin1.name, admin1.pass)
+            cy.login(admin1.login, admin1.password)
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
@@ -307,16 +318,16 @@ context('Administrator tests', () => {
         })
 
         it('Check if admin password has been changed', () => {
-            cy.login(admin1.name, admin1.newpass)
+            cy.login(admin1.login, admin1.newpass)
             cy.url().should('match', /\/#\/dashboard/)
         })
 
         it('Make sure that admins cannot delete themselves', () => {
-            cy.login(admin1.name, admin1.newpass)
+            cy.login(admin1.login, admin1.newpass)
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(admin1.name)
+            searchInDataTable(admin1.login)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--delete"]').click()
             cy.get('[data-cy="btn-confirm"]').click()
@@ -328,25 +339,24 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            deleteItemOnListPageByName(admin1.name)
-            deleteItemOnListPageByName(admin2.name)
-        })
-
-        it('Delete reseller and check if they are deleted', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller-list')
-
-            cy.locationShouldBe('#/reseller')
-            deleteItemOnListPageByName(resellerName)
+            deleteItemOnListPageByName(admin1.login)
+            deleteItemOnListPageByName(admin2.login)
         })
     })
 
     context('Admin certificates tests', () => {
         before(() => {
-            Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-            cy.login(ngcpConfig.username, ngcpConfig.password)
-            uiCreateReseller(contractName, resellerName)
-            uiCreateAdmin({ name: admin1.name, pass: admin1.pass, resellerName: 'default', isSuperuser: true })
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateContract({ data: contract, authHeader })
+                apiGetContractId({ name: contract.external_id, authHeader }).then(contractId => {
+                    reseller.contract_id = contractId
+                })
+                apiCreateReseller({ data: reseller, authHeader })
+                apiGetResellerId({ name: reseller.name, authHeader }).then(resellerId => {
+                    admin2.reseller_id = resellerId
+                })
+                apiCreateAdmin({ data: admin2, authHeader })
+            })
         })
 
         beforeEach(deleteDownloadsFolder)
@@ -355,17 +365,19 @@ context('Administrator tests', () => {
             // let's remove all data via API
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin1.name, authHeader })
-                apiRemoveResellerBy({ name: resellerName, authHeader })
+                apiRemoveAdminBy({ name: admin2.login, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
             })
             deleteDownloadsFolder()
         })
 
         it('Create and Download API certificate from second administrator', () => {
-            cy.login(admin1.name, admin1.pass)
+            cy.login(admin2.login, admin2.password)
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
+            searchInDataTable(admin2.login)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--cert-management"]').click()
             cy.get('[data-cy="create-certificate"]').click()
@@ -377,10 +389,11 @@ context('Administrator tests', () => {
         })
 
         it('Manually download certificate and check if it downloads properly', () => {
-            cy.login(admin1.name, admin1.pass)
+            cy.login(admin2.login, admin2.password)
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
+            searchInDataTable(admin2.login)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--cert-management"]').click()
             cy.get('[data-cy="download-certificate"]').click()
@@ -395,16 +408,17 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(admin1.name)
+            searchInDataTable(admin2.login)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--cert-management"]').should('not.exist')
         })
 
         it('Revoke Certificate', () => {
-            cy.login(admin1.name, admin1.pass)
+            cy.login(admin2.login, admin2.password)
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
+            searchInDataTable(admin2.login)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--cert-management"]').click()
             cy.get('[data-cy="revoke-certificate"]').click()

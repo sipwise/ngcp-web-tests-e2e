@@ -3,7 +3,6 @@
 import {
     getRandomNum,
     waitPageProgress,
-    clickToolbarActionButton,
     clickToolbarDropdownActionButton,
     deleteItemOnListPageByName,
     clickDataTableSelectedMoreMenuItem, searchInDataTable
@@ -11,26 +10,48 @@ import {
 
 import {
     apiLoginAsSuperuser,
-    apiRemoveResellerBy
+    apiCreateContract,
+    apiGetContractId,
+    apiCreateReseller,
+    apiRemoveResellerBy,
+    apiRemoveContractBy
 } from '../../support/ngcp-admin-ui/utils/api'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
-const resellerName = 'reseller' + getRandomNum()
-const contractName = 'contract' + getRandomNum()
-
+const contract = {
+    contact_id: 3,
+    status: 'active',
+    external_id: 'contract' + getRandomNum(),
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
 const contact = {
     mail: 'contact' + getRandomNum() + '@example.com',
     firstname: 'first' + getRandomNum(),
     lastname: 'last' + getRandomNum()
 }
 
+const reseller = {
+    contract_id: 1,
+    status: 'active',
+    name: 'reseller' + getRandomNum(),
+    enable_rtc: false
+}
+
 context('Contact tests', () => {
     context('UI contact tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateContract({ data: contract, authHeader })
+                apiGetContractId({ name: contract.external_id, authHeader }).then(contractId => {
+                    reseller.contract_id = contractId
+                    return apiCreateReseller({ data: reseller, authHeader })
+                })
+            })
         })
-
         // TODO: fix API seeding issues
         // before(() => {
         //     // let's create data required for the tests below
@@ -60,44 +81,10 @@ context('Contact tests', () => {
             // let's remove all data via API at the end of all tests
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveResellerBy({ name: resellerName, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
             })
         })
-
-        context('initialization', () => {
-            it.skip('Data seeding', () => {
-                // placeholder test for the "before" hook
-            })
-
-            it('Create a reseller', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller-list')
-
-                cy.locationShouldBe('#/reseller')
-                clickToolbarActionButton('reseller-creation')
-
-                cy.locationShouldBe('#/reseller/create')
-                cy.get('[data-cy=aui-select-contract] [data-cy=aui-create-button]').click()
-
-                cy.locationShouldBe('#/contract/reseller/create')
-                cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: 'default', itemContains: 'Default Billing Profile' })
-                cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: 'default', itemContains: 'default-system' })
-                cy.qSelect({ dataCy: 'contract-status', filter: '', itemContains: 'Pending' })
-                cy.get('input[data-cy="external-num"]').type(contractName)
-                cy.get('[data-cy="aui-save-button"]').click()
-                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-
-                cy.locationShouldBe('#/reseller/create')
-                cy.auiSelectLazySelect({ dataCy: 'aui-select-contract', filter: contractName, itemContains: 'default-system' })
-                cy.get('[data-cy="reseller-name"] input').type(resellerName)
-                cy.get('[data-cy="aui-save-button"]').click()
-                waitPageProgress()
-
-                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-                cy.locationShouldBe('#/reseller')
-            })
-        })
-
         ;[
             { type: 'customer', checkUrl: '#/contact/create' },
             { type: 'system', checkUrl: '#/contact/create/noreseller' }
@@ -142,7 +129,7 @@ context('Contact tests', () => {
 
                     cy.locationShouldBe(formUrl)
                     if (contactType === 'customer') {
-                        cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: resellerName, itemContains: resellerName })
+                        cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: reseller.name, itemContains: reseller.name })
                     } else {
                         cy.get('[data-cy="aui-select-reseller"]').should('not.exist')
                     }

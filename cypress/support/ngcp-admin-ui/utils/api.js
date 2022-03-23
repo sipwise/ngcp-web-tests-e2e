@@ -11,7 +11,39 @@ export const apiLoginAsSuperuser = () => {
     })
 }
 
+export const defaultAdminContractCreationData = {
+    read_only: false,
+    billing_data: true,
+    is_active: true,
+    role_id: 3,
+    password: 'string',
+    email: 'user@example.com',
+    show_passwords: true,
+    call_data: true,
+    login: 'string',
+    is_master: true,
+    can_reset_password: true,
+    reseller_id: 0
+}
+
+export const apiCreateAdmin = ({ data, authHeader }) => {
+    cy.log('apiCreateAdmin', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/admins/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+    }).then(({ body }) => {
+        const adminData = (body?._embedded?.['ngcp:admins'] || []).pop()
+        return adminData || {}
+    })
+}
+
 export const apiRemoveAdminBy = ({ name, authHeader }) => {
+    cy.log('apiCreateAdmin', name)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/admins`,
@@ -47,19 +79,39 @@ export const defaultResellerContractCreationData = {
 }
 
 export const apiCreateContract = ({ data, authHeader }) => {
+    cy.log('apiCreateContract', data)
     return cy.request({
         method: 'POST',
-        url: `${ngcpConfig.apiHost}/api/contracts`,
+        url: `${ngcpConfig.apiHost}/api/contracts/`,
         body: data,
-        ...authHeader
-        // followRedirect: false
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
     }).then(({ body }) => {
         const contractData = (body?._embedded?.['ngcp:contracts'] || []).pop()
         return contractData || {}
     })
 }
 
+export const apiGetContractId = ({ name, authHeader }) => {
+    cy.log('apiGetContractId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/contracts`,
+        qs: {
+            external_id: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const contractData = body?._embedded?.['ngcp:contracts']?.[0]
+        const contractId = contractData?.id
+        return contractId
+    })
+}
+
 export const apiRemoveContractBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveContractBy', name)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/contracts`,
@@ -97,6 +149,7 @@ export const defaultResellerCreationData = {
 }
 
 export const apiCreateReseller = ({ data, authHeader }) => {
+    cy.log('apiCreateReseller', data)
     return cy.request({
         method: 'POST',
         url: `${ngcpConfig.apiHost}/api/resellers/`,
@@ -105,14 +158,30 @@ export const apiCreateReseller = ({ data, authHeader }) => {
             ...authHeader.headers,
             'content-type': 'application/json'
         }
-        // followRedirect: false
     }).then(({ body }) => {
         const resellersData = (body?._embedded?.['ngcp:resellers'] || []).pop()
         return resellersData || {}
     })
 }
 
+export const apiGetResellerId = ({ name, authHeader }) => {
+    cy.log('apiGetResellerId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/resellers`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const resellerData = body?._embedded?.['ngcp:resellers']?.[0]
+        const resellerId = resellerData?.id
+        return resellerId
+    })
+}
+
 export const apiRemoveResellerBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveResellerBy', name)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/resellers`,
@@ -148,6 +217,7 @@ export const defaultDomainCreationData = {
 }
 
 export const apiCreateDomain = ({ data, authHeader }) => {
+    cy.log('apiCreateDomain', data)
     return cy.request({
         method: 'POST',
         url: `${ngcpConfig.apiHost}/api/domains/`,
@@ -164,6 +234,7 @@ export const apiCreateDomain = ({ data, authHeader }) => {
 }
 
 export const apiRemoveDomainBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveDomainBy', name)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/domains`,
@@ -201,6 +272,7 @@ export const defaultCustomerCreationData = {
 }
 
 export const apiCreateCustomer = ({ data, authHeader }) => {
+    cy.log('apiCreateCustomer', data)
     return cy.request({
         method: 'POST',
         url: `${ngcpConfig.apiHost}/api/customers/`,
@@ -217,6 +289,7 @@ export const apiCreateCustomer = ({ data, authHeader }) => {
 }
 
 export const apiGetCustomerId = ({ name, authHeader }) => {
+    cy.log('apiGetCustomerId', name)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/customers`,
@@ -232,6 +305,7 @@ export const apiGetCustomerId = ({ name, authHeader }) => {
 }
 
 export const apiRemoveCustomerBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveCustomerBy', name)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/customers`,
@@ -283,6 +357,7 @@ export const defaultSubscriberCreationData = {
 }
 
 export const apiCreateSubscriber = ({ data, authHeader }) => {
+    cy.log('apiCreateSubscriber', data)
     return cy.request({
         method: 'POST',
         url: `${ngcpConfig.apiHost}/api/subscribers/`,
@@ -299,6 +374,7 @@ export const apiCreateSubscriber = ({ data, authHeader }) => {
 }
 
 export const apiGetSubscriberId = ({ name, authHeader }) => {
+    cy.log('apiGetSubscriberId', name)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/subscribers`,
@@ -314,6 +390,7 @@ export const apiGetSubscriberId = ({ name, authHeader }) => {
 }
 
 export const apiRemoveSubscriberBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveSubscriberBy', name)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/subscribers`,
