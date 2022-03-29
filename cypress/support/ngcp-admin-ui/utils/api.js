@@ -411,3 +411,79 @@ export const apiRemoveSubscriberBy = ({ name, authHeader }) => {
         }
     })
 }
+
+export const defaultContactCreationData = {
+    bic: 'string',
+    lastname: 'string',
+    street: 'string',
+    email: 'user@example.com',
+    gpp0: 'string',
+    firstname: 'string',
+    postcode: 'string',
+    faxnumber: 'string',
+    country: 'string',
+    iban: 'string',
+    comregnum: 'string',
+    city: 'string',
+    phonenumber: 'string',
+    vatnum: 'string',
+    bankname: 'string',
+    company: 'string',
+    mobilenumber: 'string',
+    timezone: 0
+}
+
+export const apiCreateContact = ({ data, authHeader }) => {
+    cy.log('apiCreateContact', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/systemcontacts/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+    }).then(({ body }) => {
+        const contactData = (body?._embedded?.['ngcp:systemcontacts'] || []).pop()
+        return contactData || {}
+    })
+}
+
+export const apiGetContactId = ({ name, authHeader }) => {
+    cy.log('apiGetContactId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/systemcontacts`,
+        qs: {
+            email: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const contactData = body?._embedded?.['ngcp:systemcontacts']?.[0]
+        const contactId = contactData?.id
+        return contactId
+    })
+}
+
+export const apiRemoveContactBy = ({ name, authHeader }) => {
+    cy.log('apiCreateAdmin', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/systemcontacts`,
+        qs: {
+            login: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const contactId = body?._embedded?.['ngcp:systemcontacts']?.[0]?.id
+        if (body?.total_count === 1 && contactId > 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/systemcontacts/${contactId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}

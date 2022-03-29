@@ -10,11 +10,14 @@ import {
 
 import {
     apiLoginAsSuperuser,
+    apiCreateContact,
     apiCreateContract,
+    apiGetContactId,
     apiGetContractId,
     apiCreateReseller,
     apiRemoveResellerBy,
-    apiRemoveContractBy
+    apiRemoveContractBy,
+    apiRemoveContactBy
 } from '../../support/ngcp-admin-ui/utils/api'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -27,6 +30,11 @@ const contract = {
     billing_profile_definition: 'id',
     billing_profile_id: 1
 }
+
+const systemContact = {
+    email: 'user' + getRandomNum() + '@example.com'
+}
+
 const contact = {
     mail: 'contact' + getRandomNum() + '@example.com',
     firstname: 'first' + getRandomNum(),
@@ -45,7 +53,10 @@ context('Contact tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
-                apiCreateContract({ data: contract, authHeader })
+                apiCreateContact({ data: systemContact, authHeader })
+                apiGetContactId({ name: systemContact.email, authHeader }).then(contactId => {
+                    return apiCreateContract({ data: { ...contract, contact_id: contactId }, authHeader })
+                })
                 apiGetContractId({ name: contract.external_id, authHeader }).then(contractId => {
                     reseller.contract_id = contractId
                     return apiCreateReseller({ data: reseller, authHeader })
@@ -83,6 +94,7 @@ context('Contact tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContactBy({ name: systemContact.email, authHeader })
             })
         })
         ;[

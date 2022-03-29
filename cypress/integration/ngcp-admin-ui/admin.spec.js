@@ -10,12 +10,15 @@ import {
 
 import {
     apiCreateAdmin,
+    apiCreateContact,
     apiCreateContract,
     apiCreateReseller,
+    apiGetContactId,
     apiGetContractId,
     apiGetResellerId,
     apiLoginAsSuperuser,
     apiRemoveAdminBy,
+    apiRemoveContactBy,
     apiRemoveContractBy,
     apiRemoveResellerBy
 } from '../../support/ngcp-admin-ui/utils/api'
@@ -44,12 +47,16 @@ const admin2 = {
 }
 
 const contract = {
-    contact_id: 3,
+    contact_id: 0,
     status: 'active',
     external_id: 'contract' + getRandomNum(),
     type: 'reseller',
     billing_profile_definition: 'id',
     billing_profile_id: 1
+}
+
+const contact = {
+    email: 'user' + getRandomNum() + '@example.com'
 }
 
 const reseller = {
@@ -94,7 +101,10 @@ context('Administrator tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
-                apiCreateContract({ data: contract, authHeader })
+                apiCreateContact({ data: contact, authHeader })
+                apiGetContactId({ name: contact.email, authHeader }).then(contactId => {
+                    return apiCreateContract({ data: { ...contract, contact_id: contactId }, authHeader })
+                })
                 apiGetContractId({ name: contract.external_id, authHeader }).then(contractId => {
                     reseller.contract_id = contractId
                     return apiCreateReseller({ data: reseller, authHeader })
@@ -125,6 +135,7 @@ context('Administrator tests', () => {
                 apiRemoveAdminBy({ name: admin2.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContactBy({ name: contact.email, authHeader })
             })
         })
 
@@ -347,7 +358,10 @@ context('Administrator tests', () => {
     context('Admin certificates tests', () => {
         before(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiCreateContract({ data: contract, authHeader })
+                apiCreateContact({ data: contact, authHeader })
+                apiGetContactId({ name: contact.email, authHeader }).then(contactId => {
+                    return apiCreateContract({ data: { ...contract, contact_id: contactId }, authHeader })
+                })
                 apiGetContractId({ name: contract.external_id, authHeader }).then(contractId => {
                     reseller.contract_id = contractId
                 })
@@ -368,6 +382,7 @@ context('Administrator tests', () => {
                 apiRemoveAdminBy({ name: admin2.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContactBy({ name: contact.email, authHeader })
             })
             deleteDownloadsFolder()
         })
