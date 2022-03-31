@@ -487,3 +487,29 @@ export const apiRemoveContactBy = ({ name, authHeader }) => {
         }
     })
 }
+
+export const apiGetMailboxLastItem = ({ mailboxName, filterSubject }) => {
+    cy.log('apiGetMailboxLastItem', mailboxName)
+    return cy.request({
+        method: 'GET',
+        url: `https://autoprov.lab.sipwise.com/smtp/api/v1/mailbox/${mailboxName}`,
+        encoding: 'utf-8'
+    }).then(({ body }) => {
+        const mailsList = body || []
+        const finalList = (filterSubject === undefined || filterSubject === null)
+            ? mailsList
+            : mailsList.filter(item => item?.subject.indexOf(filterSubject) >= 0)
+        return finalList.pop()
+    })
+}
+
+export const apiGetMail = ({ mailboxName, id }) => {
+    cy.log('apiGetMail', mailboxName)
+    return cy.request({
+        method: 'GET',
+        url: `https://autoprov.lab.sipwise.com/smtp/api/v1/mailbox/${mailboxName}/${id}`,
+        encoding: 'utf-8'
+    }).then(({ body }) => {
+        return body?.body?.text
+    })
+}

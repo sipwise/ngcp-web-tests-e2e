@@ -26,3 +26,5 @@ cypress.tdd.csc.json
 cypress.ci.aui.json
 cypress.ci.csc.json
 /docker_results
+
+core

@@ -1,5 +1,26 @@
 /// <reference types="cypress" />
 
+import {
+    getRandomNum
+} from '../../support/ngcp-admin-ui/utils/common'
+
+import {
+    apiCreateAdmin,
+    apiCreateContract,
+    apiCreateContact,
+    apiCreateReseller,
+    apiGetContractId,
+    apiGetContactId,
+    apiGetMail,
+    apiGetMailboxLastItem,
+    apiGetResellerId,
+    apiLoginAsSuperuser,
+    apiRemoveAdminBy,
+    apiRemoveContactBy,
+    apiRemoveContractBy,
+    apiRemoveResellerBy
+} from '../../support/ngcp-admin-ui/utils/api'
+
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 function checkLoginAPIResponse (response) {
@@ -11,6 +32,44 @@ function CheckLoggedInUI () {
     cy.get('.q-drawer').should('to.be.visible')
     cy.url().should('match', /\/#\/dashboard/)
 }
+
+const admin = {
+    role: 'admin',
+    password: 'rand0mpassword12345',
+    newpassword: 'n3wpassword12345',
+    login: 'admin' + getRandomNum(),
+    email: 'user' + getRandomNum() + '@example.com',
+    is_master: true,
+    read_only: false,
+    is_active: true,
+    show_passwords: true,
+    call_data: true,
+    can_reset_password: true,
+    reseller_id: 0
+}
+
+const contract = {
+    contact_id: 3,
+    status: 'active',
+    external_id: 'contract' + getRandomNum(),
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
+const contact = {
+    email: 'user' + getRandomNum() + '@example.com'
+}
+
+const reseller = {
+    contract_id: 1,
+    status: 'active',
+    rtc_networks: {},
+    name: 'reseller' + getRandomNum(),
+    enable_rtc: false
+}
+
+const urlRegex = /(https?:\/\/[^ ]*)/
 
 context('Login page tests', () => {
     context('API direct login tests', () => {
@@ -41,6 +100,20 @@ context('Login page tests', () => {
     context('UI login tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateContact({ data: contact, authHeader })
+                apiGetContactId({ name: contact.email, authHeader }).then(contactId => {
+                    return apiCreateContract({ data: { ...contract, contact_id: contactId }, authHeader })
+                })
+                apiGetContractId({ name: contract.external_id, authHeader }).then(contractId => {
+                    reseller.contract_id = contractId
+                })
+                apiCreateReseller({ data: reseller, authHeader })
+                apiGetResellerId({ name: reseller.name, authHeader }).then(resellerId => {
+                    admin.reseller_id = resellerId
+                })
+                apiCreateAdmin({ data: admin, authHeader })
+            })
         })
 
         beforeEach(() => {
@@ -49,7 +122,19 @@ context('Login page tests', () => {
             cy.wait(500)
         })
 
+        after(() => {
+            // let's remove all data via API
+            cy.log('Data clean up...')
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveAdminBy({ name: admin.login, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContactBy({ name: contact.email, authHeader })
+            })
+        })
+
         it('Check if using "/" will route to login page', () => {
+            cy.logout()
             cy.visit('/')
             cy.url().should('match', /\/#\/login\/admin/)
         })
@@ -129,10 +214,57 @@ context('Login page tests', () => {
         })
 
         it('Try to send a password reset email', () => {
+            // cy.logout() // TODO: we need rework loginAPI to be able to cleanup localStorage OR create logoutAPI \ loginCleanup etc
             cy.get('[data-cy="reset-password"]').click()
-            cy.get('label[data-cy="input-username"]').type(ngcpConfig.username)
+            cy.get('label[data-cy="input-username"]').type(admin.login)
             cy.get('[data-cy="button-send"]').click()
-            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('.q-notification[role="alert"]').should('have.class', 'bg-positive')
+            cy.waitUntil(
+                () => apiGetMailboxLastItem({
+                    mailboxName: admin.email,
+                    filterSubject: 'Password reset'
+                }).then(lastMailInfo => {
+                    if (!lastMailInfo?.id) {
+                        return false
+                    } else {
+                        apiGetMail({
+                            mailboxName: admin.email,
+                            id: lastMailInfo.id
+                        }).then(response => {
+                            const responseCheck = String(response).match(urlRegex)
+                            if (responseCheck) {
+                                const resetPasswordURL = responseCheck?.[1]
+                                return resetPasswordURL
+                            } else {
+                                return false
+                            }
+                        })
+                    }
+                }),
+                {
+                    customMessage: 'Waiting for email',
+                    errorMsg: 'Unable to find an email with the reset password URL',
+                    interval: 1000
+                }
+                /* NOTE: you the test is failing on this step, please check that your NGCP platform is configured properly
+                    ngcpcfg set /etc/ngcp-config/config.yml email.hostname=dev-web-trunk.mgm.sipwise.com ## domain name of your NGCP server
+                    ngcpcfg set /etc/ngcp-config/config.yml email.smarthosts.0.hostname=autoprov.lab.sipwise.com
+                    ngcpcfg set /etc/ngcp-config/config.yml email.smarthosts.0.port=2525
+                    ngcpcfg apply "enable test email delivery to autoprov.lab.sipwise.com"
+                 */
+            ).then(resetPasswordURL => {
+                cy.visit(resetPasswordURL)
+                // adding wait here, to be sure that inputs are intractable \ accessible
+                cy.wait(500)
+                cy.get('input[data-cy="password-input"]').type(admin.newpassword)
+                cy.get('input[data-cy="password-retype-input"]').type(admin.newpassword)
+                cy.get('button[data-cy="save-button"]').click()
+                cy.url().should('match', /\/#\/login\/admin/)
+                cy.get('input:first').type(admin.login)
+                cy.get('input:last').type(admin.newpassword)
+                cy.get('[data-cy=sign-in]').click()
+                CheckLoggedInUI()
+            })
         })
     })
 

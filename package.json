@@ -23,6 +23,7 @@
         "@nuintun/qrcode": "^3.0.1",
         "adm-zip": "0.5.9",
         "cypress": "9.5.2",
+        "cypress-wait-until": "1.7.2",
         "jwt-decode": "2.2.0"
     },
     "devDependencies": {
