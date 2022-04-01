@@ -6,6 +6,7 @@ import {
     deleteItemOnListPageByName,
     clickDataTableSelectedMoreMenuItem, searchInDataTable
 } from '../../support/ngcp-admin-ui/utils/common'
+import { apiCreateDomain, apiLoginAsSuperuser } from '../../support/ngcp-admin-ui/utils/api'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 const domainName = 'domain' + getRandomNum()
@@ -80,11 +81,21 @@ context('Domain tests', () => {
         })
 
         it('Delete domain', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / domain-list')
-
-            cy.locationShouldBe('#/domain')
-            deleteItemOnListPageByName(domainName)
+            const domainToDelete = 'domain' + Math.random()
+            apiLoginAsSuperuser().then((authHeader) => {
+                return apiCreateDomain({
+                    data: {
+                        domain: domainToDelete,
+                        reseller_id: 1
+                    },
+                    authHeader
+                })
+            }).then(() => {
+                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / domain-list')
+                cy.locationShouldBe('#/domain')
+                deleteItemOnListPageByName(domainToDelete)
+            })
         })
     })
 })
