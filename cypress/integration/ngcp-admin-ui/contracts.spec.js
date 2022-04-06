@@ -8,14 +8,50 @@ import {
     deleteItemOnListPageByName
 } from '../../support/ngcp-admin-ui/utils/common'
 
-const ngcpConfig = Cypress.config('ngcpConfig')
+import {
+    apiLoginAsSuperuser,
+    apiCreateContract,
+    apiRemoveContractBy
+} from '../../support/ngcp-admin-ui/utils/api'
 
-const contractName = 'contract' + getRandomNum()
+const peeringContract = {
+    contact_id: 3,
+    status: 'active',
+    external_id: 'contract' + getRandomNum(),
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
+const resellerContract = {
+    contact_id: 3,
+    status: 'active',
+    external_id: 'contract' + getRandomNum(),
+    type: 'sippeering',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 context('Contract tests', () => {
     context('UI contract tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+        })
+
+        beforeEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateContract({ data: peeringContract, authHeader })
+                apiCreateContract({ data: resellerContract, authHeader })
+            })
+        })
+
+        afterEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveContractBy({ name: peeringContract.external_id, authHeader })
+                apiRemoveContractBy({ name: resellerContract.external_id, authHeader })
+            })
         })
 
         ;[
@@ -42,6 +78,10 @@ context('Contract tests', () => {
                 })
 
                 it(`Create a ${contractType} contact`, () => {
+                    apiLoginAsSuperuser().then(authHeader => {
+                        apiRemoveContractBy({ name: peeringContract.external_id, authHeader })
+                        apiRemoveContractBy({ name: resellerContract.external_id, authHeader })
+                    })
                     cy.login(ngcpConfig.username, ngcpConfig.password)
                     cy.navigateMainMenu('settings / contract-list')
 
@@ -49,8 +89,12 @@ context('Contract tests', () => {
                     cy.get('[data-cy="aui-list-action"]').click()
                     clickToolbarDropdownActionButton(`contract-create-${contractType}`)
 
+                    if (contractType === 'peering') {
+                        cy.get('label[data-cy="external-num"]').type(peeringContract.external_id)
+                    } else {
+                        cy.get('label[data-cy="external-num"]').type(resellerContract.external_id)
+                    }
                     cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: 'default', itemContains: 'default-system' })
-                    cy.get('label[data-cy="external-num"]').type(contractName)
                     cy.qSelect({ dataCy: 'contract-status', filter: '', itemContains: 'Active' })
                     cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: 'Default', itemContains: 'Default Billing Profile' })
                     cy.get('[data-cy="aui-save-button"]').click()
@@ -63,7 +107,11 @@ context('Contract tests', () => {
 
                     cy.locationShouldBe('#/contract')
 
-                    searchInDataTable(contractName)
+                    if (contractType === 'peering') {
+                        searchInDataTable(peeringContract.external_id)
+                    } else {
+                        searchInDataTable(resellerContract.external_id)
+                    }
                     cy.get('[data-cy="row-more-menu-btn"]:first').click()
                     cy.get('[data-cy="aui-popup-menu-item--contract-edit"]').click()
                     waitPageProgress()
@@ -79,7 +127,11 @@ context('Contract tests', () => {
                     cy.navigateMainMenu('settings / contract-list')
 
                     cy.locationShouldBe('#/contract')
-                    deleteItemOnListPageByName(contractName)
+                    if (contractType === 'peering') {
+                        deleteItemOnListPageByName(peeringContract.external_id)
+                    } else {
+                        deleteItemOnListPageByName(resellerContract.external_id)
+                    }
                 })
             })
         })

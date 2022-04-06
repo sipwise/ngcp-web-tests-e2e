@@ -1,4 +1,3 @@
-
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 export const apiLoginAsSuperuser = () => {
@@ -36,9 +35,9 @@ export const apiCreateAdmin = ({ data, authHeader }) => {
             ...authHeader.headers,
             'content-type': 'application/json'
         }
-    }).then(({ body }) => {
-        const adminData = (body?._embedded?.['ngcp:admins'] || []).pop()
-        return adminData || {}
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
     })
 }
 
@@ -88,9 +87,9 @@ export const apiCreateContract = ({ data, authHeader }) => {
             ...authHeader.headers,
             'content-type': 'application/json'
         }
-    }).then(({ body }) => {
-        const contractData = (body?._embedded?.['ngcp:contracts'] || []).pop()
-        return contractData || {}
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
     })
 }
 
@@ -158,9 +157,9 @@ export const apiCreateReseller = ({ data, authHeader }) => {
             ...authHeader.headers,
             'content-type': 'application/json'
         }
-    }).then(({ body }) => {
-        const resellersData = (body?._embedded?.['ngcp:resellers'] || []).pop()
-        return resellersData || {}
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
     })
 }
 
@@ -227,9 +226,9 @@ export const apiCreateDomain = ({ data, authHeader }) => {
             'content-type': 'application/json'
         }
         // followRedirect: false
-    }).then(({ body }) => {
-        const resellersData = (body?._embedded?.['ngcp:domains'] || []).pop()
-        return resellersData || {}
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
     })
 }
 
@@ -282,9 +281,9 @@ export const apiCreateCustomer = ({ data, authHeader }) => {
             'content-type': 'application/json'
         }
         // followRedirect: false
-    }).then(({ body }) => {
-        const customerData = (body?._embedded?.['ngcp:customers'] || []).pop()
-        return customerData || {}
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
     })
 }
 
@@ -367,9 +366,9 @@ export const apiCreateSubscriber = ({ data, authHeader }) => {
             'content-type': 'application/json'
         }
         // followRedirect: false
-    }).then(({ body }) => {
-        const subscriberData = (body?._embedded?.['ngcp:subscribers'] || []).pop()
-        return subscriberData || {}
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
     })
 }
 
@@ -412,7 +411,7 @@ export const apiRemoveSubscriberBy = ({ name, authHeader }) => {
     })
 }
 
-export const defaultContactCreationData = {
+export const defaultSystemContactCreationData = {
     bic: 'string',
     lastname: 'string',
     street: 'string',
@@ -433,8 +432,8 @@ export const defaultContactCreationData = {
     timezone: 0
 }
 
-export const apiCreateContact = ({ data, authHeader }) => {
-    cy.log('apiCreateContact', data)
+export const apiCreateSystemContact = ({ data, authHeader }) => {
+    cy.log('apiCreateSystemContact', data)
     return cy.request({
         method: 'POST',
         url: `${ngcpConfig.apiHost}/api/systemcontacts/`,
@@ -443,14 +442,14 @@ export const apiCreateContact = ({ data, authHeader }) => {
             ...authHeader.headers,
             'content-type': 'application/json'
         }
-    }).then(({ body }) => {
-        const contactData = (body?._embedded?.['ngcp:systemcontacts'] || []).pop()
-        return contactData || {}
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
     })
 }
 
-export const apiGetContactId = ({ name, authHeader }) => {
-    cy.log('apiGetContactId', name)
+export const apiGetSystemContactId = ({ name, authHeader }) => {
+    cy.log('apiGetSystemContactId', name)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/systemcontacts`,
@@ -465,13 +464,13 @@ export const apiGetContactId = ({ name, authHeader }) => {
     })
 }
 
-export const apiRemoveContactBy = ({ name, authHeader }) => {
-    cy.log('apiCreateAdmin', name)
+export const apiRemoveSystemContactBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveSystemContactBy', name)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/systemcontacts`,
         qs: {
-            login: name
+            email: name
         },
         ...authHeader
     }).then(({ body }) => {
@@ -480,6 +479,252 @@ export const apiRemoveContactBy = ({ name, authHeader }) => {
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/systemcontacts/${contactId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
+export const defaultCustomerContactCreationData = {
+    city: 'string',
+    bic: 'string',
+    bankname: 'string',
+    timezone: 0,
+    mobilenumber: 'string',
+    postcode: 'string',
+    firstname: 'string',
+    email: 'user@example.com',
+    gpp0: 'string',
+    faxnumber: 'string',
+    phonenumber: 'string',
+    street: 'string',
+    country: 'string',
+    vatnum: 'string',
+    company: 'string',
+    lastname: 'string',
+    comregnum: 'string',
+    reseller_id: 0,
+    iban: 'string'
+}
+
+export const apiCreateCustomerContact = ({ data, authHeader }) => {
+    cy.log('apiCreateCustomerContact', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/customercontacts/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetCustomerContactId = ({ name, authHeader }) => {
+    cy.log('apiGetCustomerContactId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/customercontacts`,
+        qs: {
+            email: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const contactData = body?._embedded?.['ngcp:customercontacts']?.[0]
+        const contactId = contactData?.id
+        return contactId
+    })
+}
+
+export const apiRemoveCustomerContactBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveCustomerContactBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/customercontacts`,
+        qs: {
+            email: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const contactId = body?._embedded?.['ngcp:customercontacts']?.[0]?.id
+        if (body?.total_count === 1 && contactId > 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/customercontacts/${contactId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
+export const defaultEmergencyMappingContainerCreationData = {
+    name: 'string',
+    reseller_id: 0
+}
+
+export const apiCreateEmergencyMappingContainer = ({ data, authHeader }) => {
+    cy.log('apiCreateEmergencyMappingContainer', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/emergencymappingcontainers/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiRemoveEmergencyMappingContainerBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveEmergencyMappingContainerBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/emergencymappingcontainers`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const emcId = body?._embedded?.['ngcp:emergencymappingcontainers']?.[0]?.id
+        if (body?.total_count === 1 && emcId > 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/emergencymappingcontainers/${emcId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
+export const defaultSubscriberProfileSetCreationData = {
+    set_default: false,
+    description: 'string',
+    name: 'string'
+}
+
+export const apiCreateSubscriberProfileSet = ({ data, authHeader }) => {
+    cy.log('apiCreateSubscriberProfileSet', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/subscriberprofilesets/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetSubscriberProfileSetId = ({ name, authHeader }) => {
+    cy.log('apiGetSubscriberProfileSetId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/subscriberprofilesets`,
+        qs: {
+            username: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const subscriberProfileSetData = body?._embedded?.['ngcp:subscriberprofilesets']?.[0]
+        const subscriberProfileSetId = subscriberProfileSetData?.id
+        return subscriberProfileSetId
+    })
+}
+
+export const apiRemoveSubscriberProfileSetBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveSubscriberProfileSetBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/subscriberprofilesets`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const subscriberProfileSetId = body?._embedded?.['ngcp:subscriberprofilesets']?.[0]?.id
+        if (body?.total_count === 1 && subscriberProfileSetId > 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/subscriberprofilesets/${subscriberProfileSetId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
+export const defaultBillingProfileCreationData = {
+    name: 'string',
+    handle: 'string',
+    reseller_id: 0
+}
+
+export const apiCreateBillingProfile = ({ data, authHeader }) => {
+    cy.log('apiCreateBillingProfile', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/billingprofiles/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetBillingProfileId = ({ name, authHeader }) => {
+    cy.log('apiGetBillingProfileId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/billingprofiles`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const billingProfileData = body?._embedded?.['ngcp:billingprofiles']?.[0]
+        const billingProfileId = billingProfileData?.id
+        return billingProfileId
+    })
+}
+
+export const apiRemoveBillingProfileBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveBillingProfileBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/billingprofiles`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const billingProfileId = body?._embedded?.['ngcp:billingprofiles']?.[0]?.id
+        if (body?.total_count === 1 && billingProfileId > 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/billingprofiles/${billingProfileId}`,
                 ...authHeader
             })
         } else {

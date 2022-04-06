@@ -6,10 +6,19 @@ import {
     deleteItemOnListPageByName,
     clickDataTableSelectedMoreMenuItem, searchInDataTable
 } from '../../support/ngcp-admin-ui/utils/common'
-import { apiCreateDomain, apiLoginAsSuperuser } from '../../support/ngcp-admin-ui/utils/api'
+
+import {
+    apiCreateDomain,
+    apiLoginAsSuperuser,
+    apiRemoveDomainBy
+} from '../../support/ngcp-admin-ui/utils/api'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
-const domainName = 'domain' + getRandomNum()
+
+const domain = {
+    reseller_id: 1,
+    domain: 'domain' + getRandomNum()
+}
 
 context('Domain tests', () => {
     context('UI domain tests', () => {
@@ -17,6 +26,17 @@ context('Domain tests', () => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         })
 
+        beforeEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateDomain({ data: domain, authHeader })
+            })
+        })
+
+        afterEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
+            })
+        })
         it('Check if domain with invalid values gets rejected', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / domain-list')
@@ -28,12 +48,15 @@ context('Domain tests', () => {
         })
 
         it('Create a domain', () => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
+            })
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / domain-list')
             cy.locationShouldBe('#/domain')
             cy.get('[data-cy=aui-list-action--domain-creation]').click()
             cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: 'default', itemContains: 'default' })
-            cy.get('input[data-cy="domain-name"]').type(domainName)
+            cy.get('input[data-cy="domain-name"]').type(domain.domain)
             cy.get('[data-cy=aui-save-button]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
@@ -43,7 +66,7 @@ context('Domain tests', () => {
             cy.navigateMainMenu('settings / domain-list')
 
             cy.locationShouldBe('#/domain')
-            searchInDataTable(domainName)
+            searchInDataTable(domain.domain)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('domain-preferences')
 
@@ -81,21 +104,10 @@ context('Domain tests', () => {
         })
 
         it('Delete domain', () => {
-            const domainToDelete = 'domain' + Math.random()
-            apiLoginAsSuperuser().then((authHeader) => {
-                return apiCreateDomain({
-                    data: {
-                        domain: domainToDelete,
-                        reseller_id: 1
-                    },
-                    authHeader
-                })
-            }).then(() => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / domain-list')
-                cy.locationShouldBe('#/domain')
-                deleteItemOnListPageByName(domainToDelete)
-            })
+            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / domain-list')
+            cy.locationShouldBe('#/domain')
+            deleteItemOnListPageByName(domain.domain)
         })
     })
 })

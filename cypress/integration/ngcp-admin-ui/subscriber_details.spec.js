@@ -8,15 +8,13 @@ import {
 } from '../../support/ngcp-admin-ui/utils/common'
 
 import {
-    apiLoginAsSuperuser,
-    apiCreateDomain,
-    apiRemoveDomainBy,
     apiCreateCustomer,
-    apiRemoveCustomerBy,
+    apiCreateDomain,
     apiCreateSubscriber,
-    apiRemoveSubscriberBy,
-    apiGetCustomerId,
-    apiGetSubscriberId
+    apiLoginAsSuperuser,
+    apiRemoveCustomerBy,
+    apiRemoveDomainBy,
+    apiRemoveSubscriberBy
 } from '../../support/ngcp-admin-ui/utils/api'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -55,18 +53,22 @@ context('Subscriber tests', () => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
                 apiCreateDomain({ data: domain, authHeader })
-                apiCreateCustomer({ data: customer, authHeader })
-                apiGetCustomerId({ name: customer.external_id, authHeader }).then(customerId => {
-                    subscriber.customer_id = customerId
-                    return apiCreateSubscriber({ data: subscriber, authHeader })
+                apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                    subscriber.customer_id = id
                 })
-                apiGetSubscriberId({ name: subscriber.username, authHeader }).then(subscriberId => {
-                    subscriber.subscriber_id = subscriberId
+            })
+        })
+
+        beforeEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
+                    subscriber.subscriber_id = id
                 })
             })
         })
 
         after(() => {
+            cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveDomainBy({ name: domain.domain, authHeader })
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
@@ -74,6 +76,13 @@ context('Subscriber tests', () => {
             })
             deleteDownloadsFolder()
         })
+
+        afterEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            })
+        })
+
         context('Voicemail settings', () => {
             it('Change voicemail settings', () => {
                 cy.login(ngcpConfig.username, ngcpConfig.password)

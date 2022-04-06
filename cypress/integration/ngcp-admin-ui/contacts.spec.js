@@ -10,14 +10,14 @@ import {
 
 import {
     apiLoginAsSuperuser,
-    apiCreateContact,
     apiCreateContract,
-    apiGetContactId,
-    apiGetContractId,
+    apiCreateCustomerContact,
     apiCreateReseller,
-    apiRemoveResellerBy,
+    apiCreateSystemContact,
     apiRemoveContractBy,
-    apiRemoveContactBy
+    apiRemoveCustomerContactBy,
+    apiRemoveResellerBy,
+    apiRemoveSystemContactBy
 } from '../../support/ngcp-admin-ui/utils/api'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -32,13 +32,12 @@ const contract = {
 }
 
 const systemContact = {
-    email: 'user' + getRandomNum() + '@example.com'
+    email: 'contact' + getRandomNum() + '@example.com'
 }
 
-const contact = {
-    mail: 'contact' + getRandomNum() + '@example.com',
-    firstname: 'first' + getRandomNum(),
-    lastname: 'last' + getRandomNum()
+const customerContact = {
+    reseller_id: null,
+    email: 'contact' + getRandomNum() + '@example.com'
 }
 
 const reseller = {
@@ -48,53 +47,50 @@ const reseller = {
     enable_rtc: false
 }
 
+const systemContactDependency = {
+    email: 'contact' + getRandomNum() + '@example.com'
+}
+
+const contactNames = {
+    firstname: 'first' + getRandomNum(),
+    lastname: 'last' + getRandomNum()
+}
+
 context('Contact tests', () => {
     context('UI contact tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
-                apiCreateContact({ data: systemContact, authHeader })
-                apiGetContactId({ name: systemContact.email, authHeader }).then(contactId => {
-                    return apiCreateContract({ data: { ...contract, contact_id: contactId }, authHeader })
-                })
-                apiGetContractId({ name: contract.external_id, authHeader }).then(contractId => {
-                    reseller.contract_id = contractId
-                    return apiCreateReseller({ data: reseller, authHeader })
+                apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
+                    apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                            customerContact.reseller_id = id
+                        })
+                    })
                 })
             })
         })
-        // TODO: fix API seeding issues
-        // before(() => {
-        //     // let's create data required for the tests below
-        //     cy.log('Create a reseller')
-        //     apiLoginAsSuperuser().then(authHeader => {
-        //         const contractData = {
-        //             ...defaultResellerContractCreationData,
-        //             status: 'pending'
-        //         }
-        //         apiCreateContract({ data: contractData, authHeader })
-        //             .then(contractResponse => {
-        //                 console.log('data:', contractResponse)
-        //                 if (contractResponse?.id) {
-        //                     const resellerData = {
-        //                         ...defaultResellerCreationData,
-        //                         name: resellerName,
-        //                         contract_id: contractResponse?.id,
-        //                         enable_rtc: true
-        //                     }
-        //                     apiCreateReseller({ data: resellerData, authHeader })
-        //                 }
-        //             })
-        //     })
-        // })
+
+        beforeEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateSystemContact({ data: systemContact, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader })
+            })
+        })
 
         after(() => {
-            // let's remove all data via API at the end of all tests
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveContactBy({ name: systemContact.email, authHeader })
+                apiRemoveSystemContactBy({ name: systemContactDependency.email, authHeader })
+            })
+        })
+
+        afterEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
+                apiRemoveCustomerContactBy({ name: customerContact.email, authHeader })
             })
         })
         ;[
@@ -132,6 +128,10 @@ context('Contact tests', () => {
                 })
 
                 it(`Create a ${contactType} contact`, () => {
+                    apiLoginAsSuperuser().then(authHeader => {
+                        apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
+                        apiRemoveCustomerContactBy({ name: customerContact.email, authHeader })
+                    })
                     cy.login(ngcpConfig.username, ngcpConfig.password)
                     cy.navigateMainMenu('settings / contact-list')
 
@@ -142,11 +142,12 @@ context('Contact tests', () => {
                     cy.locationShouldBe(formUrl)
                     if (contactType === 'customer') {
                         cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: reseller.name, itemContains: reseller.name })
+                        cy.get('input[data-cy="email-field"]').type(customerContact.email)
                     } else {
                         cy.get('[data-cy="aui-select-reseller"]').should('not.exist')
+                        cy.get('input[data-cy="email-field"]').type(systemContact.email)
                     }
 
-                    cy.get('input[data-cy="email-field"]').type(contact.mail)
                     cy.get('[data-cy="aui-save-button"]').click()
                     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 })
@@ -157,13 +158,17 @@ context('Contact tests', () => {
 
                     cy.locationShouldBe('#/contact')
 
-                    searchInDataTable(contact.mail)
+                    if (contactType === 'customer') {
+                        searchInDataTable(customerContact.email)
+                    } else {
+                        searchInDataTable(systemContact.email)
+                    }
                     cy.get('[data-cy=aui-data-table] .q-checkbox').click()
                     clickDataTableSelectedMoreMenuItem('contact-edit')
 
                     // cy.locationShouldBe(formUrl) // TODO: parametric URLs
-                    cy.get('input[data-cy="firstname-field"]').type(contact.firstname)
-                    cy.get('input[data-cy="lastname-field"]').type(contact.lastname)
+                    cy.get('input[data-cy="firstname-field"]').type(contactNames.firstname)
+                    cy.get('input[data-cy="lastname-field"]').type(contactNames.lastname)
                     cy.get('[data-cy="aui-save-button"]').click()
                     waitPageProgress()
                     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
@@ -174,14 +179,12 @@ context('Contact tests', () => {
                     cy.navigateMainMenu('settings / contact-list')
 
                     cy.locationShouldBe('#/contact')
-                    deleteItemOnListPageByName(contact.mail)
+                    if (contactType === 'customer') {
+                        deleteItemOnListPageByName(customerContact.email)
+                    } else {
+                        deleteItemOnListPageByName(systemContact.email)
+                    }
                 })
-            })
-        })
-
-        context('finalization', () => {
-            it('Data cleanup', () => {
-                // placeholder test for the "after" hook
             })
         })
     })

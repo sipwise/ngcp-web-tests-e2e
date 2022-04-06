@@ -1,6 +1,22 @@
 /// <reference types="cypress" />
 
 import {
+    apiCreateBillingProfile,
+    apiCreateContract,
+    apiCreateCustomer,
+    apiCreateCustomerContact,
+    apiCreateReseller,
+    apiCreateSystemContact,
+    apiLoginAsSuperuser,
+    apiRemoveBillingProfileBy,
+    apiRemoveContractBy,
+    apiRemoveCustomerBy,
+    apiRemoveCustomerContactBy,
+    apiRemoveResellerBy,
+    apiRemoveSystemContactBy
+} from '../../support/ngcp-admin-ui/utils/api'
+
+import {
     getRandomNum,
     waitPageProgress,
     clickToolbarActionButton,
@@ -9,16 +25,94 @@ import {
     clickDataTableSelectedMoreMenuItem
 } from '../../support/ngcp-admin-ui/utils/common'
 
-const ngcpConfig = Cypress.config('ngcpConfig')
-
 const customer = {
-    id: 'customer' + getRandomNum()
+    billing_profile_definition: 'id',
+    billing_profile_id: null,
+    external_id: 'customer' + getRandomNum(),
+    contact_id: null,
+    status: 'active',
+    type: 'sipaccount',
+    customer_id: null
 }
+
+const contract = {
+    contact_id: 3,
+    status: 'active',
+    external_id: 'contract' + getRandomNum(),
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
+const systemContact = {
+    email: 'contact' + getRandomNum() + '@example.com'
+}
+
+const customerContact = {
+    reseller_id: null,
+    email: 'contact' + getRandomNum() + '@example.com'
+}
+
+const reseller = {
+    contract_id: 1,
+    status: 'active',
+    name: 'reseller' + getRandomNum(),
+    enable_rtc: false
+}
+
+const billingProfile = {
+    name: 'profile' + getRandomNum(),
+    handle: 'profilehandle' + getRandomNum(),
+    reseller_id: null
+}
+
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 context('Customer tests', () => {
     context('UI customer tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
+                    apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                            customerContact.reseller_id = id
+                            apiCreateBillingProfile({ data: { ...billingProfile, reseller_id: id }, authHeader }).then(({ id }) => {
+                                customer.billing_profile_id = id
+                            })
+                        })
+                    })
+                })
+            })
+        })
+
+        beforeEach(() => {
+            customer.external_id = 'customer' + getRandomNum()
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        customer.customer_id = id
+                    })
+                })
+            })
+        })
+
+        after(() => {
+            cy.log('Data clean up...')
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
+            })
+        })
+
+        afterEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                cy.log(customer.customer_id)
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ name: customerContact.email, authHeader })
+            })
         })
 
         it('Check if customer with invalid values gets rejected', () => {
@@ -35,6 +129,10 @@ context('Customer tests', () => {
         })
 
         it('Create a customer', () => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                customer.external_id = 'customer' + getRandomNum()
+            })
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer-list')
 
@@ -43,7 +141,7 @@ context('Customer tests', () => {
 
             cy.locationShouldBe('#/customer/create')
             cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: 'default', itemContains: 'default' })
-            cy.get('[data-cy="customer-external-id"] input').type(customer.id)
+            cy.get('[data-cy="customer-external-id"] input').type(customer.external_id)
             cy.auiSelectLazySelect({ dataCy: 'aui-select-billing-profile', filter: 'default', itemContains: 'default' })
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
@@ -54,7 +152,7 @@ context('Customer tests', () => {
             cy.navigateMainMenu('settings / customer-list')
 
             cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.id)
+            searchInDataTable(customer.external_id)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('customer-edit')
             waitPageProgress()
@@ -72,7 +170,7 @@ context('Customer tests', () => {
             cy.navigateMainMenu('settings / customer-list')
 
             cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.id)
+            searchInDataTable(customer.external_id)
             cy.get('[data-cy="q-td--max-subscribers"] [data-cy^="aui-data-table-inline-edit--"]').click()
             cy.get('[data-cy="aui-data-table-edit-input--popup"] input').type('50')
             cy.contains('.q-popup-edit__buttons button', 'Save').click()
@@ -90,7 +188,7 @@ context('Customer tests', () => {
             cy.navigateMainMenu('settings / customer-list')
 
             cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.id)
+            searchInDataTable(customer.external_id)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('customer-preferences')
             waitPageProgress()
@@ -114,7 +212,7 @@ context('Customer tests', () => {
             cy.navigateMainMenu('settings / customer-list')
 
             cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.id)
+            searchInDataTable(customer.external_id)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('customer-preferences')
             waitPageProgress()
@@ -139,7 +237,7 @@ context('Customer tests', () => {
             cy.navigateMainMenu('settings / customer-list')
 
             cy.locationShouldBe('#/customer')
-            deleteItemOnListPageByName(customer.id)
+            deleteItemOnListPageByName(customer.external_id)
         })
     })
 })

@@ -8,10 +8,15 @@ import {
     clickToolbarActionButton
 } from '../../support/ngcp-admin-ui/utils/common'
 
+import {
+    apiCreateSubscriberProfileSet,
+    apiLoginAsSuperuser,
+    apiRemoveSubscriberProfileSetBy
+} from '../../support/ngcp-admin-ui/utils/api'
+
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 const profile = {
-    setName: 'set' + getRandomNum(),
     descriptionInitial: 'testdescription' + getRandomNum(),
     description: 'testdescription' + getRandomNum(),
     profilename: 'profile' + getRandomNum(),
@@ -19,15 +24,29 @@ const profile = {
 
 }
 
+const profileSet = {
+    reseller_id: 1,
+    description: 'testdescription' + getRandomNum(),
+    descriptionNew: 'testdescription' + getRandomNum(),
+    name: 'set' + getRandomNum()
+}
+
 context('Subscriber profile tests', () => {
     context('UI subscriber profile tests', () => {
         before(() => {
-            // TODO: add API creation of customer and subscriber before running tests
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         })
 
-        after(() => {
-            // TODO: add API cleanup of customer and subscirber after tests ran
+        beforeEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateSubscriberProfileSet({ data: profileSet, authHeader })
+            })
+        })
+
+        afterEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
+            })
         })
 
         it('Check if subscriber profile set with invalid values gets rejected', () => {
@@ -43,14 +62,17 @@ context('Subscriber profile tests', () => {
         })
 
         it('Create subscriber profile set', () => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
+            })
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber-profile-set-list')
 
             cy.locationShouldBe('#/subscriberprofile')
             clickToolbarActionButton('subscriber-profile-set-create')
             cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: 'default', itemContains: 'default' })
-            cy.get('[data-cy="profile-set-name"]input').type(profile.setName)
-            cy.get('[data-cy="profile-set-description"]input').type(profile.descriptionInitial)
+            cy.get('[data-cy="profile-set-name"]input').type(profileSet.name)
+            cy.get('[data-cy="profile-set-description"]input').type(profileSet.description)
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.locationShouldBe('#/subscriberprofile')
@@ -61,22 +83,22 @@ context('Subscriber profile tests', () => {
             cy.navigateMainMenu('settings / subscriber-profile-set-list')
 
             cy.locationShouldBe('#/subscriberprofile')
-            searchInDataTable(profile.setName)
+            searchInDataTable(profileSet.name)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--subscriber-profile-set-edit"]').click()
-            cy.get('[data-cy="profile-set-description"]input').clear().type(profile.description)
+            cy.get('[data-cy="profile-set-description"]input').clear().type(profileSet.descriptionNew)
             cy.get('[data-cy="aui-save-button"]').click()
             cy.contains('.q-notification', 'Profile saved successfully').should('be.visible')
             cy.get('[data-cy="aui-close-button"]').click()
             waitPageProgress()
-            cy.contains('[data-cy="q-td--description"]', profile.description).should('be.visible')
+            cy.contains('[data-cy="q-td--description"]', profileSet.descriptionNew).should('be.visible')
         })
 
         it('Check if subscriber profile with invalid values gets rejected', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber-profile-set-list')
             cy.locationShouldBe('#/subscriberprofile')
-            searchInDataTable(profile.setName)
+            searchInDataTable(profileSet.name)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--subscriber-profiles-list"]').click()
             waitPageProgress()
@@ -86,11 +108,12 @@ context('Subscriber profile tests', () => {
             cy.get('label[data-cy="profile-description"] div[role="alert"]').should('be.visible')
         })
 
-        it('Create subscriber profile', () => {
+        it('Create two subscriber profiles and mark one as default', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber-profile-set-list')
+
             cy.locationShouldBe('#/subscriberprofile')
-            searchInDataTable(profile.setName)
+            searchInDataTable(profileSet.name)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
             cy.get('[data-cy="aui-popup-menu-item--subscriber-profiles-list"]').click()
             waitPageProgress()
@@ -99,18 +122,8 @@ context('Subscriber profile tests', () => {
             cy.get('[data-cy="profile-description"]input').type(profile.description)
             cy.get('div[aria-label="block_in_list"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-        })
-
-        it('Create a second subscriber profile and mark it as default', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / subscriber-profile-set-list')
-
-            cy.locationShouldBe('#/subscriberprofile')
-            searchInDataTable(profile.setName)
-            cy.get('[data-cy="row-more-menu-btn"]:first').click()
-            cy.get('[data-cy="aui-popup-menu-item--subscriber-profiles-list"]').click()
             waitPageProgress()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             clickToolbarActionButton('subscriber-profiles-create')
             cy.get('[data-cy="profile-name"]input').type(profile.profilename2)
             cy.get('[data-cy="profile-description"]input').type(profile.description)
@@ -124,12 +137,12 @@ context('Subscriber profile tests', () => {
             cy.get('[data-cy="aui-data-table-inline-edit--toggle"]:eq(0)[aria-checked="true"]').should('be.visible')
         })
 
-        it('Delete subscriber profile set and check if they are deleted', () => { // TODO: replace this entire "test" with one API call to make it faster and less prone to errors
+        it('Delete subscriber profile set and check if they are deleted', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber-profile-set-list')
 
             cy.locationShouldBe('#/subscriberprofile')
-            deleteItemOnListPageByName(profile.setName)
+            deleteItemOnListPageByName(profileSet.name)
         })
     })
 })

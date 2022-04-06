@@ -9,10 +9,12 @@ import {
 
 import {
     apiLoginAsSuperuser,
-    apiCreateDomain,
-    apiRemoveDomainBy,
     apiCreateCustomer,
-    apiRemoveCustomerBy
+    apiCreateDomain,
+    apiCreateSubscriber,
+    apiRemoveDomainBy,
+    apiRemoveCustomerBy,
+    apiRemoveSubscriberBy
 } from '../../support/ngcp-admin-ui/utils/api'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -26,15 +28,19 @@ const customer = {
     type: 'sipaccount'
 }
 
-const subscriber = {
-    username: 'subscriber' + getRandomNum(),
-    email: 'email' + getRandomNum() + '@test.com',
-    id: 'subid' + getRandomNum()
-}
-
 const domain = {
     domain: 'domain' + getRandomNum(),
     reseller_id: 1
+}
+
+const subscriber = {
+    username: 'subscriber' + getRandomNum(),
+    email: 'email' + getRandomNum() + '@test.com',
+    external_id: 'subid' + getRandomNum(),
+    password: 'sub' + getRandomNum() + 'pass',
+    domain: domain.domain,
+    customer_id: 0,
+    subscriber_id: 0
 }
 
 context('Subscriber tests', () => {
@@ -43,14 +49,29 @@ context('Subscriber tests', () => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
                 apiCreateDomain({ data: domain, authHeader })
-                apiCreateCustomer({ data: customer, authHeader })
+                apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                    subscriber.customer_id = id
+                })
+            })
+        })
+
+        beforeEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateSubscriber({ data: subscriber, authHeader })
             })
         })
 
         after(() => {
+            cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveDomainBy({ name: domain.domain, authHeader })
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            })
+        })
+
+        afterEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
             })
         })
 
@@ -80,6 +101,9 @@ context('Subscriber tests', () => {
         })
 
         it('Create subscriber', () => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            })
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer-list')
 
@@ -98,7 +122,7 @@ context('Subscriber tests', () => {
             cy.get('input[data-cy="subscriber-sip-username"]').type(subscriber.username)
             cy.get('[data-cy="subscriber-password-generate"]:last').click()
             cy.get('input[data-cy="subscriber-email"]').type(subscriber.email)
-            cy.get('input[data-cy="subscriber-external-id"]').type(subscriber.id)
+            cy.get('input[data-cy="subscriber-external-id"]').type(subscriber.external_id)
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })

@@ -7,18 +7,15 @@ import {
 import {
     apiCreateAdmin,
     apiCreateContract,
-    apiCreateContact,
+    apiCreateSystemContact,
     apiCreateReseller,
-    apiGetContractId,
-    apiGetContactId,
     apiGetMail,
     apiGetMailboxLastItem,
-    apiGetResellerId,
     apiLoginAsSuperuser,
     apiRemoveAdminBy,
-    apiRemoveContactBy,
     apiRemoveContractBy,
-    apiRemoveResellerBy
+    apiRemoveResellerBy,
+    apiRemoveSystemContactBy
 } from '../../support/ngcp-admin-ui/utils/api'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -101,18 +98,13 @@ context('Login page tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
-                apiCreateContact({ data: contact, authHeader })
-                apiGetContactId({ name: contact.email, authHeader }).then(contactId => {
-                    return apiCreateContract({ data: { ...contract, contact_id: contactId }, authHeader })
+                apiCreateSystemContact({ data: contact, authHeader }).then(({ id }) => {
+                    apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                            apiCreateAdmin({ data: { ...admin, reseller_id: id }, authHeader })
+                        })
+                    })
                 })
-                apiGetContractId({ name: contract.external_id, authHeader }).then(contractId => {
-                    reseller.contract_id = contractId
-                })
-                apiCreateReseller({ data: reseller, authHeader })
-                apiGetResellerId({ name: reseller.name, authHeader }).then(resellerId => {
-                    admin.reseller_id = resellerId
-                })
-                apiCreateAdmin({ data: admin, authHeader })
             })
         })
 
@@ -129,7 +121,7 @@ context('Login page tests', () => {
                 apiRemoveAdminBy({ name: admin.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveContactBy({ name: contact.email, authHeader })
+                apiRemoveSystemContactBy({ name: contact.email, authHeader })
             })
         })
 
