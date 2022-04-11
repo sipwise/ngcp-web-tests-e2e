@@ -213,7 +213,7 @@ context('Login page tests', () => {
             cy.url().should('match', /\/#\/login\/admin/)
         })
 
-        it('Try to send a password reset email', () => {
+        it.skip('Try to send a password reset email', () => {
             // cy.logout() // TODO: we need rework loginAPI to be able to cleanup localStorage OR create logoutAPI \ loginCleanup etc
             cy.get('[data-cy="reset-password"]').click()
             cy.get('label[data-cy="input-username"]').type(admin.login)
