@@ -183,55 +183,6 @@ context('Customer tests', () => {
             cy.contains('[data-cy="q-td--max-subscribers"] button', 'add').should('exist')
         })
 
-        it('Add/Reset/Delete a preference (concurrent_max) in customer', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer-list')
-
-            cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.external_id, 'External #')
-            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            clickDataTableSelectedMoreMenuItem('customer-preferences')
-            waitPageProgress()
-
-            cy.get('[data-cy="q-item--concurrent-max"]').should('be.visible').as('concurrentMax')
-            cy.get('@concurrentMax').find('input').type('500')
-            cy.get('@concurrentMax').find('button[data-cy="preference-save"]').click()
-            waitPageProgress()
-            cy.get('@concurrentMax').find('input').should('have.value', '500')
-            cy.get('@concurrentMax').contains('button[data-cy="q-icon"]', 'cancel').click()
-            cy.get('@concurrentMax').find('button[data-cy="preference-save"]').click()
-            waitPageProgress()
-            cy.get('@concurrentMax').find('input').should('have.value', '')
-            cy.get('@concurrentMax').find('input').type('500')
-            cy.get('@concurrentMax').find('button[data-cy="preference-reset"]').click()
-            cy.get('@concurrentMax').find('input').should('have.value', '')
-        })
-
-        it('Add/Delete a preference (allowed_clis) in customer', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer-list')
-
-            cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.external_id, 'External #')
-            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            clickDataTableSelectedMoreMenuItem('customer-preferences')
-            waitPageProgress()
-
-            cy.get('[data-cy="q-item--allowed-clis"]').should('be.visible').as('allowedCLIs')
-            cy.get('@allowedCLIs').find('input').type('test')
-            cy.get('@allowedCLIs').find('button[data-cy="chip-add"]').click()
-            waitPageProgress()
-            cy.get('@allowedCLIs').find('[data-cy="q-chip--test-0"]').should('contain.text', 'test')
-            cy.get('@allowedCLIs').find('input').type('testtest')
-            cy.get('@allowedCLIs').find('button[data-cy="chip-add"]').click()
-            waitPageProgress()
-            cy.get('@allowedCLIs').find('[data-cy="q-chip--testtest-1"]').should('contain.text', 'testtest')
-            cy.get('@allowedCLIs').find('[data-cy="q-chip--test-0"] i[role="presentation"][data-cy="q-icon"]').click()
-            waitPageProgress()
-            cy.get('@allowedCLIs').find('[data-cy="q-chip--testtest-0"]').should('be.visible')
-            cy.get('@allowedCLIs').find('[data-cy="q-chip--test-0"]').should('not.exist')
-        })
-
         it('Delete customer and check if they are deleted', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer-list')

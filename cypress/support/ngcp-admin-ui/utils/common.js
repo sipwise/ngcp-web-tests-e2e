@@ -53,6 +53,57 @@ function getPreferencesFieldInfo (fieldName) {
     return { dataCy, dataCySelector, cyAliasName }
 }
 
+function getChipBtnSelectors ({ value, itemPosition = 0 }) {
+    const valueAsKebab = Cypress._.kebabCase(value)
+    const lastKebabGroup = valueAsKebab.split('-').pop()
+    const isLastGroupNumbers = Cypress._.isNumber(lastKebabGroup)
+    const additionalSeparator = !isLastGroupNumbers ? '-' : ''
+    const dataCySelector = `[data-cy="q-chip--${valueAsKebab}${additionalSeparator}${itemPosition}"]`
+    return {
+        selector: dataCySelector,
+        removeBtnSelector: dataCySelector + ' .q-chip__icon--remove'
+    }
+}
+
+export const testPreferencesChipField = (name, testValues = { value1: 'testvalue', value2: 'testtestvalue' }, numbers = false) => {
+    const { dataCySelector, cyAliasName } = getPreferencesFieldInfo(name)
+    const tValue1 = {
+        position0: getChipBtnSelectors({ value: testValues.value1, itemPosition: 0 }),
+        position1: getChipBtnSelectors({ value: testValues.value1, itemPosition: 1 })
+    }
+    const tValue2 = {
+        position0: getChipBtnSelectors({ value: testValues.value2, itemPosition: 0 }),
+        position1: getChipBtnSelectors({ value: testValues.value2, itemPosition: 1 })
+    }
+
+    cy.get(dataCySelector).should('be.visible').as(cyAliasName)
+
+    if (numbers) {
+        cy.get('@' + cyAliasName).find('input').type('invalid') // TODO: we need some check here
+        cy.get('@' + cyAliasName).find('input').clear()
+    }
+
+    cy.get('@' + cyAliasName).find('input').clear().type(testValues.value1)
+    cy.get('@' + cyAliasName).find('button[data-cy="chip-add"]').click()
+    waitPageProgress()
+    cy.get('@' + cyAliasName).find(tValue1.position0.selector)
+    cy.get('@' + cyAliasName).find('input').type(testValues.value2)
+    cy.get('@' + cyAliasName).find('button[data-cy="chip-add"]').click()
+    waitPageProgress()
+    cy.get('@' + cyAliasName).find(tValue2.position1.selector)
+    cy.get('@' + cyAliasName).find(tValue1.position0.removeBtnSelector).click()
+    waitPageProgress()
+    cy.get('@' + cyAliasName).find(tValue2.position0.selector).should('be.visible')
+    cy.get('@' + cyAliasName).find(tValue1.position1.selector).should('not.exist')
+    cy.get('@' + cyAliasName).find('input').type(testValues.value1)
+    cy.get('@' + cyAliasName).find('button[data-cy="chip-add"]').click()
+    waitPageProgress()
+    cy.get('@' + cyAliasName).find(tValue1.position1.selector).should('exist')
+    cy.get('@' + cyAliasName).find('button[data-cy="chip-removeall"]').click()
+    waitPageProgress()
+    cy.get('@' + cyAliasName).find('[data-cy^="q-chip"]').should('not.exist')
+}
+
 export const testPreferencesTextField = (name, value = 'test', onlyNumbers = false) => {
     const { dataCySelector, cyAliasName } = getPreferencesFieldInfo(name)
     cy.get(dataCySelector).should('be.visible').as(cyAliasName)
@@ -80,4 +131,16 @@ export const testPreferencesListField = (name, entry = null) => {
     cy.get('div[role="listbox"]').contains(entry).click()
     waitPageProgress()
     cy.get('@' + cyAliasName).find('span').contains(entry).should('be.visible')
+}
+
+export const testPreferencesToggleField = (name) => {
+    const { dataCySelector, cyAliasName } = getPreferencesFieldInfo(name)
+    cy.get(dataCySelector).should('be.visible').as(cyAliasName)
+
+    cy.get('@' + cyAliasName).find('div[role=checkbox]').click()
+    waitPageProgress()
+    cy.get('@' + cyAliasName).find('div[role=checkbox]').invoke('attr', 'aria-checked').should('eq', 'true')
+    cy.get('@' + cyAliasName).find('div[role=checkbox]').click()
+    waitPageProgress()
+    cy.get('@' + cyAliasName).find('div[role=checkbox]').invoke('attr', 'aria-checked').should('eq', 'false')
 }

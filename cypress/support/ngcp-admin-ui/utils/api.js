@@ -795,6 +795,69 @@ export const apiRemoveRewriteRuleSetBy = ({ name, authHeader }) => {
     })
 }
 
+export const defaultNCOSLevelCreationData = {
+    reseller_id: 0,
+    level: 'string',
+    mode: 'whitelist',
+    description: 'string'
+}
+
+export const apiCreateNCOSLevel = ({ data, authHeader }) => {
+    cy.log('apiCreateNCOSLevel', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/ncoslevels/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetNCOSLevelId = ({ name, authHeader }) => {
+    cy.log('apiGetNCOSLevelId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/ncoslevels`,
+        qs: {
+            level: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const NCOSLevelData = body?._embedded?.['ngcp:ncoslevels']?.[0]
+        const NCOSLevelId = NCOSLevelData?.id
+        return NCOSLevelId
+    })
+}
+
+export const apiRemoveNCOSLevelBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveNCOSLevelBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/ncoslevels`,
+        qs: {
+            level: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const NCOSLevelId = body?._embedded?.['ngcp:ncoslevels']?.[0]?.id
+        if (body?.total_count === 1 && NCOSLevelId > 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/ncoslevels/${NCOSLevelId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
 export const apiGetMailboxLastItem = ({ mailboxName, filterSubject }) => {
     cy.log('apiGetMailboxLastItem', mailboxName)
     return cy.request({
