@@ -144,15 +144,15 @@ context('Reseller tests', () => {
             cy.get('[data-cy="aui-popup-menu-item--reseller-preferences"]').click()
             cy.get('[data-cy="q-item--cdr-export-field-separator"]').should('be.visible').as('cdrExportFieldSeparator')
             cy.get('@cdrExportFieldSeparator').find('input').type('test')
-            cy.get('@cdrExportFieldSeparator').contains('button[data-cy="q-btn"]', 'Save').click()
+            cy.get('@cdrExportFieldSeparator').find('button[data-cy="preference-save"]').click()
 
             cy.get('@cdrExportFieldSeparator').find('input').should('have.value', 'test')
             cy.get('@cdrExportFieldSeparator').contains('button[data-cy="q-icon"]', 'cancel').click()
-            cy.get('@cdrExportFieldSeparator').contains('button[data-cy="q-btn"]', 'Save').click()
+            cy.get('@cdrExportFieldSeparator').find('button[data-cy="preference-save"]').click()
 
             cy.get('@cdrExportFieldSeparator').find('input').should('have.value', '')
             cy.get('@cdrExportFieldSeparator').find('input').type('test')
-            cy.get('@cdrExportFieldSeparator').contains('button[data-cy="q-btn"]', 'Reset').click()
+            cy.get('@cdrExportFieldSeparator').find('button[data-cy="preference-reset"]').click()
             cy.get('@cdrExportFieldSeparator').find('input').should('have.value', '')
         })
 
