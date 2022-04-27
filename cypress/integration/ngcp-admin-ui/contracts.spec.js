@@ -9,13 +9,15 @@ import {
 } from '../../support/ngcp-admin-ui/utils/common'
 
 import {
-    apiLoginAsSuperuser,
     apiCreateContract,
-    apiRemoveContractBy
+    apiCreateSystemContact,
+    apiLoginAsSuperuser,
+    apiRemoveContractBy,
+    apiRemoveSystemContactBy
 } from '../../support/ngcp-admin-ui/utils/api'
 
 const peeringContract = {
-    contact_id: 3,
+    contact_id: null,
     status: 'active',
     external_id: 'contract' + getRandomNum(),
     type: 'reseller',
@@ -24,12 +26,16 @@ const peeringContract = {
 }
 
 const resellerContract = {
-    contact_id: 3,
+    contact_id: null,
     status: 'active',
     external_id: 'contract' + getRandomNum(),
     type: 'sippeering',
     billing_profile_definition: 'id',
     billing_profile_id: 1
+}
+
+const systemContactDependency = {
+    email: 'contact' + getRandomNum() + '@example.com'
 }
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -38,12 +44,25 @@ context('Contract tests', () => {
     context('UI contract tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
+                    resellerContract.contact_id = id
+                    peeringContract.contact_id = id
+                })
+            })
         })
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiCreateContract({ data: peeringContract, authHeader })
                 apiCreateContract({ data: resellerContract, authHeader })
+            })
+        })
+
+        after(() => {
+            Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSystemContactBy({ name: systemContactDependency.email, authHeader })
             })
         })
 
@@ -61,7 +80,7 @@ context('Contract tests', () => {
             const contractType = testsGroup.type
             const formUrl = testsGroup.checkUrl
 
-            context(`Contact type: ${contractType}`, () => {
+            context(`Contract type: ${contractType}`, () => {
                 it(`Check if ${contractType} contact with invalid values gets rejected`, () => {
                     cy.login(ngcpConfig.username, ngcpConfig.password)
                     cy.navigateMainMenu('settings / contract-list')
