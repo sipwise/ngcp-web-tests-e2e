@@ -733,6 +733,68 @@ export const apiRemoveBillingProfileBy = ({ name, authHeader }) => {
     })
 }
 
+export const defaultRewriteRuleSetCreationData = {
+    description: 'string',
+    name: 'string',
+    reseller_id: 0
+}
+
+export const apiCreateRewriteRuleSet = ({ data, authHeader }) => {
+    cy.log('apiCreateRewriteRuleSet', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/rewriterulesets/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetRewriteRuleSetId = ({ name, authHeader }) => {
+    cy.log('apiGetRewriteRuleSetId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/rewriterulesets`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const rewriteRuleSetData = body?._embedded?.['ngcp:rewriterulesets']?.[0]
+        const rewriteRuleSetId = rewriteRuleSetData?.id
+        return rewriteRuleSetId
+    })
+}
+
+export const apiRemoveRewriteRuleSetBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveRewriteRuleSetBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/rewriterulesets`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const rewriteRuleSetId = body?._embedded?.['ngcp:rewriterulesets']?.[0]?.id
+        if (body?.total_count === 1 && rewriteRuleSetId > 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/rewriterulesets/${rewriteRuleSetId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
 export const apiGetMailboxLastItem = ({ mailboxName, filterSubject }) => {
     cy.log('apiGetMailboxLastItem', mailboxName)
     return cy.request({

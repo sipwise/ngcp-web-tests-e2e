@@ -1,4 +1,3 @@
-
 export const getRandomNum = (maxLength = 5) => Math.floor((Math.random() * Math.pow(10, maxLength)) + 1)
 
 export const waitPageProgress = () => {
@@ -41,4 +40,40 @@ export const clickDataTableSelectedMoreMenuItem = (actionName) => {
 export const deleteDownloadsFolder = () => {
     const downloadsFolder = Cypress.config('downloadsFolder')
     cy.task('deleteFolder', downloadsFolder)
+}
+
+function getPreferencesFieldInfo (fieldName) {
+    const dataCy = Cypress._.kebabCase(fieldName)
+    const dataCySelector = `div[data-cy="q-item--${dataCy}"]`
+    const cyAliasName = Cypress._.camelCase(fieldName)
+    return { dataCy, dataCySelector, cyAliasName }
+}
+
+export const testPreferencesTextField = (name, value = 'test', onlyNumbers = false) => {
+    const { dataCySelector, cyAliasName } = getPreferencesFieldInfo(name)
+    cy.get(dataCySelector).should('be.visible').as(cyAliasName)
+    cy.get('@' + cyAliasName).find('input').type(value)
+    cy.get('button[data-cy="preference-save"]').click()
+    waitPageProgress()
+    cy.get('@' + cyAliasName).find('input').should('have.value', value)
+    cy.get('@' + cyAliasName).contains('button[data-cy="q-icon"]', 'cancel').click()
+    cy.get('button[data-cy="preference-save"]').click()
+    waitPageProgress()
+    cy.get('@' + cyAliasName).find('input').should('have.value', '')
+    cy.get('@' + cyAliasName).find('input').type(value)
+    cy.get('button[data-cy="preference-reset"]').click()
+    cy.get('@' + cyAliasName).find('input').should('have.value', '')
+    if (onlyNumbers) {
+        cy.get('@' + cyAliasName).find('input').type('test')
+        cy.get('button[data-cy="preference-save"]').should('not.exist')
+    }
+}
+
+export const testPreferencesListField = (name, entry = null) => {
+    const { dataCySelector, cyAliasName } = getPreferencesFieldInfo(name)
+    cy.get(dataCySelector).should('be.visible').as(cyAliasName)
+    cy.get('@' + cyAliasName).find('label').click()
+    cy.get('div[role="listbox"]').contains(entry).click()
+    waitPageProgress()
+    cy.get('@' + cyAliasName).find('span').contains(entry).should('be.visible')
 }
