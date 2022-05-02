@@ -4,7 +4,7 @@ import {
     getRandomNum,
     waitPageProgress,
     clickToolbarDropdownActionButton,
-    deleteItemOnListPageByName,
+    deleteItemOnListPageBy,
     clickDataTableSelectedMoreMenuItem, searchInDataTable
 } from '../../support/ngcp-admin-ui/utils/common'
 
@@ -180,9 +180,9 @@ context('Contact tests', () => {
 
                     cy.locationShouldBe('#/contact')
                     if (contactType === 'customer') {
-                        deleteItemOnListPageByName(customerContact.email)
+                        deleteItemOnListPageBy(customerContact.email)
                     } else {
-                        deleteItemOnListPageByName(systemContact.email)
+                        deleteItemOnListPageBy(systemContact.email)
                     }
                 })
             })

@@ -3,7 +3,7 @@
 import {
     getRandomNum,
     waitPageProgress,
-    deleteItemOnListPageByName,
+    deleteItemOnListPageBy,
     clickDataTableSelectedMoreMenuItem, searchInDataTable
 } from '../../support/ngcp-admin-ui/utils/common'
 
@@ -107,7 +107,7 @@ context('Domain tests', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / domain-list')
             cy.locationShouldBe('#/domain')
-            deleteItemOnListPageByName(domain.domain)
+            deleteItemOnListPageBy(domain.domain)
         })
     })
 })

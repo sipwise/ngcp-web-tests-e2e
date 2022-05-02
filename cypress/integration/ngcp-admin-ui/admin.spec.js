@@ -5,7 +5,7 @@ import {
     waitPageProgress,
     clickToolbarActionButton,
     deleteDownloadsFolder,
-    deleteItemOnListPageByName, clickDataTableSelectedMoreMenuItem, searchInDataTable
+    deleteItemOnListPageBy, clickDataTableSelectedMoreMenuItem, searchInDataTable
 } from '../../support/ngcp-admin-ui/utils/common'
 
 import {
@@ -322,7 +322,7 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
-            deleteItemOnListPageByName(admin1.login)
+            deleteItemOnListPageBy(admin1.login)
         })
     })
 

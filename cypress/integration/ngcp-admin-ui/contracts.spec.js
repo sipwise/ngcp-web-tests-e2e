@@ -5,7 +5,7 @@ import {
     waitPageProgress,
     clickToolbarDropdownActionButton,
     searchInDataTable,
-    deleteItemOnListPageByName
+    deleteItemOnListPageBy
 } from '../../support/ngcp-admin-ui/utils/common'
 
 import {
@@ -147,9 +147,9 @@ context('Contract tests', () => {
 
                     cy.locationShouldBe('#/contract')
                     if (contractType === 'peering') {
-                        deleteItemOnListPageByName(peeringContract.external_id)
+                        deleteItemOnListPageBy(peeringContract.external_id)
                     } else {
-                        deleteItemOnListPageByName(resellerContract.external_id)
+                        deleteItemOnListPageBy(resellerContract.external_id)
                     }
                 })
             })

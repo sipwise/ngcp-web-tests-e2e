@@ -3,7 +3,7 @@
 import {
     getRandomNum,
     waitPageProgress,
-    deleteItemOnListPageByName,
+    deleteItemOnListPageBy,
     searchInDataTable,
     clickToolbarActionButton
 } from '../../support/ngcp-admin-ui/utils/common'
@@ -142,7 +142,7 @@ context('Subscriber profile tests', () => {
             cy.navigateMainMenu('settings / subscriber-profile-set-list')
 
             cy.locationShouldBe('#/subscriberprofile')
-            deleteItemOnListPageByName(profileSet.name)
+            deleteItemOnListPageBy(profileSet.name)
         })
     })
 })

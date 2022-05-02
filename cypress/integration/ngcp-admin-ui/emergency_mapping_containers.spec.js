@@ -14,7 +14,7 @@ import {
 
 import {
     getRandomNum,
-    deleteItemOnListPageByName
+    deleteItemOnListPageBy
 } from '../../support/ngcp-admin-ui/utils/common'
 
 const EmergencyMappingContainer = {
@@ -107,6 +107,6 @@ context('Emergency mapping tests', () => {
         cy.login(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emergency-mapping-container-list')
         cy.locationShouldBe('#/emergencymapping')
-        deleteItemOnListPageByName(EmergencyMappingContainer.name)
+        deleteItemOnListPageBy(EmergencyMappingContainer.name)
     })
 })

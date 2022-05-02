@@ -4,7 +4,7 @@ import {
     getRandomNum,
     waitPageProgress,
     clickToolbarActionButton,
-    deleteItemOnListPageByName, searchInDataTable
+    deleteItemOnListPageBy, searchInDataTable
 } from '../../support/ngcp-admin-ui/utils/common'
 
 import {
@@ -158,7 +158,7 @@ context('Reseller tests', () => {
             cy.navigateMainMenu('settings / reseller-list')
 
             cy.locationShouldBe('#/reseller')
-            deleteItemOnListPageByName(reseller.name)
+            deleteItemOnListPageBy(reseller.name)
         })
     })
 })

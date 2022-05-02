@@ -20,7 +20,7 @@ import {
     getRandomNum,
     waitPageProgress,
     clickToolbarActionButton,
-    deleteItemOnListPageByName,
+    deleteItemOnListPageBy,
     searchInDataTable,
     clickDataTableSelectedMoreMenuItem
 } from '../../support/ngcp-admin-ui/utils/common'
@@ -152,7 +152,7 @@ context('Customer tests', () => {
             cy.navigateMainMenu('settings / customer-list')
 
             cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.external_id)
+            searchInDataTable(customer.external_id, 'External #')
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('customer-edit')
             waitPageProgress()
@@ -170,7 +170,7 @@ context('Customer tests', () => {
             cy.navigateMainMenu('settings / customer-list')
 
             cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.external_id)
+            searchInDataTable(customer.external_id, 'External #')
             cy.get('[data-cy="q-td--max-subscribers"] [data-cy^="aui-data-table-inline-edit--"]').click()
             cy.get('[data-cy="aui-data-table-edit-input--popup"] input').type('50')
             cy.contains('.q-popup-edit__buttons button', 'Save').click()
@@ -188,7 +188,7 @@ context('Customer tests', () => {
             cy.navigateMainMenu('settings / customer-list')
 
             cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.external_id)
+            searchInDataTable(customer.external_id, 'External #')
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('customer-preferences')
             waitPageProgress()
@@ -212,7 +212,7 @@ context('Customer tests', () => {
             cy.navigateMainMenu('settings / customer-list')
 
             cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.external_id)
+            searchInDataTable(customer.external_id, 'External #')
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('customer-preferences')
             waitPageProgress()
@@ -237,7 +237,7 @@ context('Customer tests', () => {
             cy.navigateMainMenu('settings / customer-list')
 
             cy.locationShouldBe('#/customer')
-            deleteItemOnListPageByName(customer.external_id)
+            deleteItemOnListPageBy(customer.external_id, 'External #')
         })
     })
 })

@@ -19,13 +19,17 @@ export const clickToolbarDropdownActionButton = (actionName) => {
         .get(selector).click()
 }
 
-export const searchInDataTable = (text) => {
-    cy.get('[data-cy="aui-input-search--datatable"] input').clear().type(text)
+export const searchInDataTable = (searchText, searchCriteria = null) => {
+    if (searchCriteria !== null) {
+        cy.qSelect({ dataCy: 'aui-data-table-filter-criteria', filter: '', itemContains: searchCriteria })
+        waitPageProgress()
+    }
+    cy.get('[data-cy="aui-input-search--datatable"] input').clear().type(searchText)
     waitPageProgress()
 }
 
-export const deleteItemOnListPageByName = (name) => {
-    searchInDataTable(name)
+export const deleteItemOnListPageBy = (searchText, searchCriteria = null) => {
+    searchInDataTable(searchText, searchCriteria)
     cy.get('[data-cy=aui-data-table] .q-checkbox').click()
     clickToolbarActionButton('delete')
     cy.get('[data-cy="negative-confirmation-dialog"] [data-cy="btn-confirm"]').click()
