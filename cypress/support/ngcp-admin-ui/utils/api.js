@@ -858,6 +858,73 @@ export const apiRemoveNCOSLevelBy = ({ name, authHeader }) => {
     })
 }
 
+export const defaultSoundSetCreationData = {
+    replace_existing: true,
+    contract_default: true,
+    language: 'en',
+    name: 'string',
+    description: 'string',
+    reseller_id: 0,
+    copy_from_default: true,
+    loopplay: true
+}
+
+export const apiCreateSoundSet = ({ data, authHeader }) => {
+    cy.log('apiCreateSoundSet', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/soundsets/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetSoundSetId = ({ name, authHeader }) => {
+    cy.log('apiGetSoundSetId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/soundsets`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const SoundSetData = body?._embedded?.['ngcp:soundsets']?.[0]
+        const SoundSetId = SoundSetData?.id
+        return SoundSetId
+    })
+}
+
+export const apiRemoveSoundSetBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveSoundSetBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/soundsets`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const SoundSetId = body?._embedded?.['ngcp:soundsets']?.[0]?.id
+        if (body?.total_count === 1 && SoundSetId > 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/soundsets/${SoundSetId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
 export const apiGetMailboxLastItem = ({ mailboxName, filterSubject }) => {
     cy.log('apiGetMailboxLastItem', mailboxName)
     return cy.request({

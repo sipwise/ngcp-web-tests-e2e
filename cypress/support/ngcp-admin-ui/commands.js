@@ -118,39 +118,64 @@ Cypress.Commands.add('locationShouldBe', (urlHash) => {
     return cy.location('hash').should('eq', urlHash)
 })
 
-Cypress.Commands.add('qSelect', ({ dataCy, filter, itemContains }) => {
-    if (filter) {
-        cy.get(`[data-cy="${dataCy}"].q-field__native`).type(filter)
-    } else {
-        cy.get(`[data-cy="${dataCy}"].q-field__native`).click()
+Cypress.Commands.add(
+    'qSelect',
+    { prevSubject: ['optional', 'element'] },
+    (subject, { dataCy, filter, itemContains }) => {
+        const inputElementSelector = `[data-cy="${dataCy}"].q-field__native`
+        const labelElementSelector = `label[data-cy="${dataCy}"]`
+        ;(subject ? cy.wrap(subject) : cy.get('body')).then($parent => {
+            const inputElementExists = $parent.find(inputElementSelector).length
+
+            if (typeof filter !== 'undefined' && filter !== '') {
+                if (inputElementExists) {
+                    cy.wrap($parent).find(inputElementSelector).type(filter)
+                } else {
+                    throw new Error('Current qSelect is not filterable')
+                }
+            } else {
+                if (inputElementExists) {
+                    cy.wrap($parent).find(inputElementSelector).click()
+                } else {
+                    cy.wrap($parent).find(labelElementSelector).click()
+                }
+            }
+
+            cy.wait(200)
+            cy.wrap($parent).find(labelElementSelector).then($el => {
+                const id = $el.attr('for')
+                const dropdownListId = `#${id}_lb`
+                cy.get(dropdownListId).should('be.visible')
+                cy.contains(`${dropdownListId} .q-item`, itemContains).click()
+            })
+        })
     }
+)
 
-    cy.wait(200)
-    cy.get(`label[data-cy="${dataCy}"]`).then($el => {
-        const id = $el.attr('for')
-        const dropdownListId = `#${id}_lb`
-        cy.get(dropdownListId).should('be.visible')
-        cy.contains(`${dropdownListId} .q-item`, itemContains).click()
-    })
-})
+Cypress.Commands.add('auiSelectLazySelect',
+    { prevSubject: ['optional', 'element'] },
+    (subject, { dataCy, filter, itemContains }) => {
+        const inputElementSelector = `[data-cy="${dataCy}"] input`
+        const labelElementSelector = `label[data-cy="${dataCy}"]`
+        ;(subject ? cy.wrap(subject) : cy.get('body')).then($parent => {
+            if (filter) {
+                cy.wrap($parent).find(inputElementSelector).type(filter)
+            } else {
+                cy.wrap($parent).find(inputElementSelector).click()
+            }
+            cy.wrap($parent).find(labelElementSelector)
+                .find('.q-spinner').should('be.visible')
+                .parent()
+                .find('.q-spinner').should('not.exist')
 
-Cypress.Commands.add('auiSelectLazySelect', ({ dataCy, filter, itemContains }) => {
-    if (filter) {
-        cy.get(`[data-cy="${dataCy}"] input`).type(filter)
-    } else {
-        cy.get(`[data-cy="${dataCy}"] input`).click()
+            cy.wait(500)
+            cy.wrap($parent).find(labelElementSelector).then($el => {
+                const id = $el.attr('for')
+                const dropdownListId = `#${id}_lb`
+                cy.get(dropdownListId).should('be.visible')
+                    .find('.q-linear-progress').should('not.exist')
+                cy.contains(`${dropdownListId} .q-item`, itemContains).click()
+            })
+        })
     }
-    cy.get(`label[data-cy="${dataCy}"]`)
-        .find('.q-spinner').should('be.visible')
-        .parent()
-        .find('.q-spinner').should('not.exist')
-
-    cy.wait(500)
-    cy.get(`label[data-cy="${dataCy}"]`).then($el => {
-        const id = $el.attr('for')
-        const dropdownListId = `#${id}_lb`
-        cy.get(dropdownListId).should('be.visible')
-            .find('.q-linear-progress').should('not.exist')
-        cy.contains(`${dropdownListId} .q-item`, itemContains).click()
-    })
-})
+)

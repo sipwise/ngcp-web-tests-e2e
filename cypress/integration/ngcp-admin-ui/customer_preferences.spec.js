@@ -95,7 +95,6 @@ context('Customer preferences tests', () => {
                     apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                         apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
                             customerContact.reseller_id = id
-                            emergencyMappingContainer.reseller_id = id
                             apiCreateEmergencyMappingContainer({ data: { ...emergencyMappingContainer, reseller_id: id }, authHeader })
                             apiCreateNCOSLevel({ data: { ...ncosLevel, reseller_id: id }, authHeader })
                             apiCreateBillingProfile({ data: { ...billingProfile, reseller_id: id }, authHeader }).then(({ id }) => {

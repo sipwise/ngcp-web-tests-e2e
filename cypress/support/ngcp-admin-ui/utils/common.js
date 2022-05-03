@@ -4,21 +4,18 @@ export const waitPageProgress = () => {
     cy.get('[data-cy=q-page-sticky] .q-linear-progress').should('be.visible')
     cy.get('[data-cy=q-page-sticky] .q-linear-progress').should('not.exist')
 }
-
 export const clickToolbarActionButton = (actionName) => {
     const selector = `div[data-cy=aui-list-action--${actionName}]`
     return cy
         .get(selector).should('not.have.attr', 'disable')
         .get(selector).click()
 }
-
 export const clickToolbarDropdownActionButton = (actionName) => {
     const selector = `[data-cy=aui-list-action-menu-item--${actionName}]`
     return cy
         .get(selector).should('not.have.attr', 'disable')
         .get(selector).click()
 }
-
 export const searchInDataTable = (searchText, searchCriteria = null) => {
     if (searchCriteria !== null) {
         cy.qSelect({ dataCy: 'aui-data-table-filter-criteria', filter: '', itemContains: searchCriteria })
@@ -27,7 +24,6 @@ export const searchInDataTable = (searchText, searchCriteria = null) => {
     cy.get('[data-cy="aui-input-search--datatable"] input').clear().type(searchText)
     waitPageProgress()
 }
-
 export const deleteItemOnListPageBy = (searchText, searchCriteria = null) => {
     searchInDataTable(searchText, searchCriteria)
     cy.get('[data-cy=aui-data-table] .q-checkbox').click()
@@ -35,17 +31,14 @@ export const deleteItemOnListPageBy = (searchText, searchCriteria = null) => {
     cy.get('[data-cy="negative-confirmation-dialog"] [data-cy="btn-confirm"]').click()
     cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
 }
-
 export const clickDataTableSelectedMoreMenuItem = (actionName) => {
     cy.get('[data-cy=aui-data-table] tr.selected [data-cy="row-more-menu-btn"]:first').click()
     return cy.get(`.q-menu [data-cy="aui-popup-menu-item--${actionName}"]`).click()
 }
-
 export const deleteDownloadsFolder = () => {
     const downloadsFolder = Cypress.config('downloadsFolder')
     cy.task('deleteFolder', downloadsFolder)
 }
-
 function getPreferencesFieldInfo (fieldName) {
     const dataCy = Cypress._.kebabCase(fieldName)
     const dataCySelector = `div[data-cy="q-item--${dataCy}"]`
@@ -76,7 +69,9 @@ export const testPreferencesChipField = (name, testValues = { value1: 'testvalue
     cy.get(dataCySelector).should('be.visible').as(cyAliasName)
 
     if (numbers) {
-        cy.get('@' + cyAliasName).find('input').type('invalid') // TODO: we need some check here
+        cy.get('@' + cyAliasName).find('input').type('invalid')
+        cy.get('@' + cyAliasName).find('button[data-cy="chip-add"]').click()
+        cy.get('@' + cyAliasName).find('.q-field--error').should('exist')
         cy.get('@' + cyAliasName).find('input').clear()
     }
 
@@ -120,12 +115,16 @@ export const testPreferencesTextField = (name, value = 'test', onlyNumbers = fal
         cy.get('button[data-cy="preference-save"]').should('not.exist')
     }
 }
-
 export const testPreferencesListField = (name, entry = null) => {
     const { dataCySelector, cyAliasName } = getPreferencesFieldInfo(name)
     cy.get(dataCySelector).should('be.visible').as(cyAliasName)
-    cy.get('@' + cyAliasName).find('label').click()
-    cy.get('div[role="listbox"]').contains(entry).click()
+        .then($row => {
+            if ($row.find('[data-cy="q-select"]').length) {
+                cy.get('@' + cyAliasName).qSelect({ dataCy: 'q-select', itemContains: entry })
+            } else {
+                cy.get('@' + cyAliasName).auiSelectLazySelect({ dataCy: 'aui-select-lazy', filter: entry, itemContains: entry })
+            }
+        })
     waitPageProgress()
     cy.get('@' + cyAliasName).find('span').contains(entry).should('be.visible')
 }
