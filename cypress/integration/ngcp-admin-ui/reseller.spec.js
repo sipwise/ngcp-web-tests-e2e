@@ -134,28 +134,6 @@ context('Reseller tests', () => {
             cy.get('[data-cy="aui-data-table-inline-edit--select"]').should('contain.text', 'Locked')
         })
 
-        it('Add/Reset/Delete a preference (cdr_export_field_separator) in reseller', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller-list')
-
-            cy.locationShouldBe('#/reseller')
-            searchInDataTable(reseller.name)
-            cy.get('[data-cy="row-more-menu-btn"]:first').click()
-            cy.get('[data-cy="aui-popup-menu-item--reseller-preferences"]').click()
-            cy.get('[data-cy="q-item--cdr-export-field-separator"]').should('be.visible').as('cdrExportFieldSeparator')
-            cy.get('@cdrExportFieldSeparator').find('input').type('test')
-            cy.get('@cdrExportFieldSeparator').find('button[data-cy="preference-save"]').click()
-
-            cy.get('@cdrExportFieldSeparator').find('input').should('have.value', 'test')
-            cy.get('@cdrExportFieldSeparator').contains('button[data-cy="q-icon"]', 'cancel').click()
-            cy.get('@cdrExportFieldSeparator').find('button[data-cy="preference-save"]').click()
-
-            cy.get('@cdrExportFieldSeparator').find('input').should('have.value', '')
-            cy.get('@cdrExportFieldSeparator').find('input').type('test')
-            cy.get('@cdrExportFieldSeparator').find('button[data-cy="preference-reset"]').click()
-            cy.get('@cdrExportFieldSeparator').find('input').should('have.value', '')
-        })
-
         it('Change branding color', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller-list')
