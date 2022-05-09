@@ -9,11 +9,14 @@ import {
 } from '../../support/ngcp-admin-ui/utils/common'
 
 import {
+    apiCreateBillingProfile,
     apiCreateContract,
+    apiCreateReseller,
     apiCreateSystemContact,
     apiLoginAsSuperuser,
+    apiRemoveBillingProfileBy,
     apiRemoveContractBy,
-    apiRemoveSystemContactBy
+    apiRemoveResellerBy
 } from '../../support/ngcp-admin-ui/utils/api'
 
 const peeringContract = {
@@ -22,10 +25,19 @@ const peeringContract = {
     external_id: 'contract' + getRandomNum(),
     type: 'reseller',
     billing_profile_definition: 'id',
-    billing_profile_id: 1
+    billing_profile_id: null
 }
 
 const resellerContract = {
+    contact_id: null,
+    status: 'active',
+    external_id: 'contract' + getRandomNum(),
+    type: 'sippeering',
+    billing_profile_definition: 'id',
+    billing_profile_id: null
+}
+
+const dependencyContract = {
     contact_id: null,
     status: 'active',
     external_id: 'contract' + getRandomNum(),
@@ -38,6 +50,19 @@ const systemContactDependency = {
     email: 'contact' + getRandomNum() + '@example.com'
 }
 
+const dependencyReseller = {
+    contract_id: null,
+    status: 'active',
+    name: 'reseller' + getRandomNum(),
+    enable_rtc: false
+}
+
+const dependencyBillingProfile = {
+    name: 'billing' + getRandomNum(),
+    handle: 'string' + getRandomNum(),
+    reseller_id: 0
+}
+
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 context('Contract tests', () => {
@@ -48,6 +73,14 @@ context('Contract tests', () => {
                 apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
                     resellerContract.contact_id = id
                     peeringContract.contact_id = id
+                    apiCreateContract({ data: { ...dependencyContract, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateReseller({ data: { ...dependencyReseller, contract_id: id }, authHeader }).then(({ id }) => {
+                            apiCreateBillingProfile({ data: { ...dependencyBillingProfile, reseller_id: id }, authHeader }).then(({ id }) => {
+                                peeringContract.billing_profile_id = id
+                                resellerContract.billing_profile_id = id
+                            })
+                        })
+                    })
                 })
             })
         })
@@ -62,7 +95,9 @@ context('Contract tests', () => {
         after(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSystemContactBy({ name: systemContactDependency.email, authHeader })
+                apiRemoveBillingProfileBy({ name: dependencyBillingProfile.name, authHeader })
+                apiRemoveResellerBy({ name: dependencyReseller.name, authHeader })
+                apiRemoveContractBy({ name: dependencyContract.external_id, authHeader })
             })
         })
 
@@ -115,7 +150,7 @@ context('Contract tests', () => {
                     }
                     cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: 'default', itemContains: 'default-system' })
                     cy.qSelect({ dataCy: 'contract-status', filter: '', itemContains: 'Active' })
-                    cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: 'Default', itemContains: 'Default Billing Profile' })
+                    cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: dependencyBillingProfile.name, itemContains: dependencyBillingProfile.name })
                     cy.get('[data-cy="aui-save-button"]').click()
                     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 })

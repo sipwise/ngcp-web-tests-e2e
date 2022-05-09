@@ -4,6 +4,7 @@ export const waitPageProgress = () => {
     cy.get('[data-cy=q-page-sticky] .q-linear-progress').should('be.visible')
     cy.get('[data-cy=q-page-sticky] .q-linear-progress').should('not.exist')
 }
+
 export const clickToolbarActionButton = (actionName) => {
     const selector = `div[data-cy=aui-list-action--${actionName}]`
     return cy
