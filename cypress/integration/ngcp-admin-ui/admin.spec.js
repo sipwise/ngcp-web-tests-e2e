@@ -46,6 +46,14 @@ const admin2 = {
     reseller_id: null
 }
 
+const exampleResellerAdmin = {
+    login: 'admin' + getRandomNum(),
+    password: 'rand0mpassword12345',
+    role: 'reseller',
+    is_master: false,
+    reseller_id: 1
+}
+
 const contract = {
     contact_id: 0,
     status: 'active',
@@ -323,6 +331,66 @@ context('Administrator tests', () => {
 
             cy.locationShouldBe('#/administrator')
             deleteItemOnListPageBy(admin1.login)
+        })
+    })
+
+    context('Reseller admin tests', () => {
+        before(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateSystemContact({ data: contact, authHeader }).then(({ id }) => {
+                    apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                            admin2.reseller_id = id
+                            exampleResellerAdmin.reseller_id = id
+                        })
+                    })
+                })
+            })
+        })
+
+        beforeEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateAdmin({ data: admin2, authHeader })
+                apiCreateAdmin({ data: exampleResellerAdmin, authHeader })
+            })
+        })
+
+        after(() => {
+            // let's remove all data via API
+            cy.log('Data clean up...')
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveAdminBy({ name: exampleResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ name: admin2.login, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveSystemContactBy({ name: contact.email, authHeader })
+            })
+        })
+
+        afterEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveAdminBy({ name: admin2.login, authHeader })
+                apiRemoveAdminBy({ name: exampleResellerAdmin.login, authHeader })
+            })
+        })
+
+        it('Create a reseller administrator', () => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveAdminBy({ name: exampleResellerAdmin.login, authHeader })
+            })
+            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            clickToolbarActionButton('admin-creation')
+
+            cy.locationShouldBe('#/administrator/create')
+            cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: 'default', itemContains: 'default' })
+            cy.get('[data-cy="login-field"] input').type(exampleResellerAdmin.login)
+            cy.get('[data-cy="password-field"] input').type(exampleResellerAdmin.password)
+            cy.get('[data-cy="password-retype-field"] input').type(exampleResellerAdmin.password)
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
     })
 
