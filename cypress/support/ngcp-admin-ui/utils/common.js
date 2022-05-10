@@ -55,10 +55,7 @@ function getPreferencesFieldInfo (fieldName) {
 
 function getChipBtnSelectors ({ value, itemPosition = 0 }) {
     const valueAsKebab = Cypress._.kebabCase(value)
-    const lastKebabGroup = valueAsKebab.split('-').pop()
-    const isLastGroupNumbers = Cypress._.isNumber(lastKebabGroup)
-    const additionalSeparator = !isLastGroupNumbers ? '-' : ''
-    const dataCySelector = `[data-cy="q-chip--${valueAsKebab}${additionalSeparator}${itemPosition}"]`
+    const dataCySelector = `[data-cy="q-chip--${valueAsKebab}-${itemPosition}"]`
     return {
         selector: dataCySelector,
         removeBtnSelector: dataCySelector + ' .q-chip__icon--remove'
