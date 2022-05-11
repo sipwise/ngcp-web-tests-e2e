@@ -46,12 +46,28 @@ const admin2 = {
     reseller_id: null
 }
 
-const exampleResellerAdmin = {
+const mainResellerAdmin = {
     login: 'admin' + getRandomNum(),
     password: 'rand0mpassword12345',
     role: 'reseller',
+    is_master: true,
+    is_active: true,
+    show_passwords: true,
+    call_data: true,
+    billing_data: true,
+    reseller_id: null
+}
+
+const secondaryresellerAdmin = {
+    login: 'admin' + getRandomNum(),
+    password: 'rand0mpassword1234',
+    role: 'reseller',
     is_master: false,
-    reseller_id: 1
+    is_active: true,
+    show_passwords: true,
+    call_data: true,
+    billing_data: true,
+    reseller_id: null
 }
 
 const contract = {
@@ -82,7 +98,7 @@ context('Administrator tests', () => {
 
     })
 
-    context('Complex UI admin tests', () => {
+    context('Test admin actions as normal admin', () => {
         // IMPORTANT: all tests in this suite are dependent to each other, so we cannot execute them individually
 
         before(() => {
@@ -334,14 +350,14 @@ context('Administrator tests', () => {
         })
     })
 
-    context('Reseller admin tests', () => {
+    context('Test admin actions as reseller admin', () => {
         before(() => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiCreateSystemContact({ data: contact, authHeader }).then(({ id }) => {
                     apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                         apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
-                            admin2.reseller_id = id
-                            exampleResellerAdmin.reseller_id = id
+                            mainResellerAdmin.reseller_id = id
+                            secondaryresellerAdmin.reseller_id = id
                         })
                     })
                 })
@@ -350,8 +366,8 @@ context('Administrator tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiCreateAdmin({ data: admin2, authHeader })
-                apiCreateAdmin({ data: exampleResellerAdmin, authHeader })
+                apiCreateAdmin({ data: mainResellerAdmin, authHeader })
+                apiCreateAdmin({ data: secondaryresellerAdmin, authHeader })
             })
         })
 
@@ -359,8 +375,8 @@ context('Administrator tests', () => {
             // let's remove all data via API
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: exampleResellerAdmin.login, authHeader })
-                apiRemoveAdminBy({ name: admin2.login, authHeader })
+                apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ name: secondaryresellerAdmin.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ name: contact.email, authHeader })
@@ -369,16 +385,35 @@ context('Administrator tests', () => {
 
         afterEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin2.login, authHeader })
-                apiRemoveAdminBy({ name: exampleResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ name: secondaryresellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
             })
         })
 
-        it('Create a reseller administrator', () => {
+        it('Check if reseller admin is not allowed to change their own permissions (with is_master=true/false)', () => {
+            cy.login(mainResellerAdmin.login, mainResellerAdmin.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            cy.get('div[role="alert"] button').click()
+            searchInDataTable(mainResellerAdmin.login)
+            cy.get('td[data-cy="q-td--is-master"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-negative')
+            cy.logoutUI()
+            cy.wait(500)
+            cy.loginUI(secondaryresellerAdmin.login, secondaryresellerAdmin.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(secondaryresellerAdmin.login)
+            cy.get('td[data-cy="q-td--is-master"] div').should('have.attr', 'aria-disabled', 'true')
+        })
+
+        it('Create a reseller admin (is_master=false) and check if permissions are correct', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: exampleResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ name: secondaryresellerAdmin.login, authHeader })
             })
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.login(mainResellerAdmin.username, mainResellerAdmin.password)
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
@@ -386,10 +421,124 @@ context('Administrator tests', () => {
 
             cy.locationShouldBe('#/administrator/create')
             cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: 'default', itemContains: 'default' })
-            cy.get('[data-cy="login-field"] input').type(exampleResellerAdmin.login)
-            cy.get('[data-cy="password-field"] input').type(exampleResellerAdmin.password)
-            cy.get('[data-cy="password-retype-field"] input').type(exampleResellerAdmin.password)
+            cy.get('[data-cy="login-field"] input').type(secondaryresellerAdmin.login)
+            cy.qSelect({ dataCy: 'roles-list', filter: secondaryresellerAdmin.reseller_id, itemContains: 'reseller' })
+            cy.get('[data-cy="password-field"] input').type(secondaryresellerAdmin.password)
+            cy.get('[data-cy="password-retype-field"] input').type(secondaryresellerAdmin.password)
             cy.get('[data-cy="aui-save-button"]').click()
+            waitPageProgress()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            cy.logoutUI()
+            cy.wait(500)
+            cy.loginUI(secondaryresellerAdmin.login, secondaryresellerAdmin.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            cy.get('div[data-cy="aui-list-action--admin-creation"]').should('not.exist')
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').should('not.exist')
+            cy.get('div[data-cy="aui-list-action--delete"]').should('not.exist')
+            cy.get('button[data-cy="row-more-menu-btn"]:first').should('not.exist')
+        })
+
+        it('Enable master for reseller admin and check if permission is applied correctly', () => {
+            cy.login(mainResellerAdmin.login, mainResellerAdmin.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(secondaryresellerAdmin.login)
+            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+            clickDataTableSelectedMoreMenuItem('admin-edit')
+            waitPageProgress()
+            cy.get('[data-cy="master-flag"]').click()
+
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            cy.logoutUI()
+            cy.wait(500)
+            cy.loginUI(secondaryresellerAdmin.login, secondaryresellerAdmin.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            cy.get('div[data-cy="aui-list-action--admin-creation"]').should('be.visible')
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').should('be.visible')
+            cy.get('div[data-cy="aui-list-action--delete"]').should('be.visible')
+            cy.get('button[data-cy="row-more-menu-btn"]:first').should('be.visible')
+        })
+
+        it('Deactivate reseller admin and check if admin is deactivated', () => {
+            cy.login(mainResellerAdmin.username, mainResellerAdmin.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(secondaryresellerAdmin.login)
+            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+            clickDataTableSelectedMoreMenuItem('admin-edit')
+            waitPageProgress()
+            cy.get('[data-cy="master-flag"]').click()
+            cy.get('[data-cy="active-flag"]').click()
+
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            cy.logoutUI()
+            cy.wait(500)
+            cy.loginUI(secondaryresellerAdmin.login, secondaryresellerAdmin.password, false)
+            cy.get('[data-cy=aui-input-password] div[role="alert"]').should('be.visible')
+        })
+
+        it('Enter admin email', () => {
+            cy.login(mainResellerAdmin.username, mainResellerAdmin.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(secondaryresellerAdmin.login)
+            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+            clickDataTableSelectedMoreMenuItem('admin-edit')
+            waitPageProgress()
+            cy.get('input[data-cy="email-field"]').type('testemail@invalid.com')
+
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+        })
+
+        xit('First check if password reset is disabled, then enable password reset for reseller admin and check if permission is applied correctly', () => {
+            // Test will be unlocked when permissions in regards to password reset are fixed
+            cy.login(mainResellerAdmin.login, mainResellerAdmin.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(mainResellerAdmin.login)
+            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+            cy.get('div[data-cy="aui-popup-menu-item--change-password"]').should('not.exist')
+            cy.logoutUI()
+
+            cy.login(mainResellerAdmin.username, mainResellerAdmin.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(secondaryresellerAdmin.login)
+            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+            clickDataTableSelectedMoreMenuItem('admin-edit')
+            waitPageProgress()
+            cy.get('div[data-cy="master-flag"]').click()
+            cy.get('div[data-cy="can-reset-password-flag"]').click()
+            cy.get('[data-cy="aui-save-button"]').click()
+            waitPageProgress()
+            cy.get('button[data-cy="aui-close-button"]').click()
+
+            cy.logoutUI()
+            cy.login(secondaryresellerAdmin.login, secondaryresellerAdmin.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(secondaryresellerAdmin.login)
+            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+            clickDataTableSelectedMoreMenuItem('change-password')
+            cy.get('input[data-cy="password-input"]').type('averyshinynewpwd')
+            cy.get('input[data-cy="password-retype-input"]').type('averyshinynewpwd')
+            cy.get('button[data-cy="save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
     })
