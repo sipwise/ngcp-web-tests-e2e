@@ -541,6 +541,14 @@ context('Administrator tests', () => {
             cy.get('button[data-cy="save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
+
+        it('Delete reseller admin and check if they are deleted', () => {
+            cy.login(mainResellerAdmin.username, mainResellerAdmin.password)
+            cy.navigateMainMenu('settings / admin-list')
+
+            cy.locationShouldBe('#/administrator')
+            deleteItemOnListPageBy(secondaryresellerAdmin.login)
+        })
     })
 
     context('Admin certificates tests', () => {
