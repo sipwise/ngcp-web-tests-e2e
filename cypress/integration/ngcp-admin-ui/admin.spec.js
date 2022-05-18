@@ -564,18 +564,16 @@ context('Administrator tests', () => {
             })
         })
 
-        beforeEach(deleteDownloadsFolder)
-
         after(() => {
             // let's remove all data via API
             cy.log('Data clean up...')
+            deleteDownloadsFolder()
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveAdminBy({ name: admin1.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ name: contact.email, authHeader })
             })
-            deleteDownloadsFolder()
         })
 
         it('Create and Download API certificate from second administrator', () => {
