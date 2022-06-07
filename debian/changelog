@@ -1,3 +1,32 @@
+ngcp-web-tests-e2e (11.0.0.0+0~mr11.0.0.0) unstable; urgency=medium
+
+  [ Hans-Peter Herzog ]
+  * [f9e45b8] TT#169625 Domains - Update domains test
+
+  [ Nico Schedel ]
+  * [090aa67] TT#169101 add password reset test
+  * [fce8e0c] TT#169101 temporarily disable password reset test
+  * [48ef7be] TT#170250 E2ET: Isolation - Remove data dependencies between single tests
+  * [4ecf8ac] TT#166950 update data-cy for preferences pages
+  * [63ffe2d] TT#165100 E2ET: add tests for reseller branding
+  * [8e004a9] TT#170250 create system contact in contracts to fix tests on CE instances
+  * [18ac454] TT#172100 E2ET: AUI - ResellerPreferences
+  * [a93e7bf] TT#172100 E2ET: AUI - remove preference test from reseller.spec.js
+  * [ad2eac2] TT#174406 fix customer tests for data table api switch
+  * [5763978] TT#171900 E2ET: AUI - CustomerPreferences
+  * [4c4d6b6] TT#176950 E2ET: AUI - AdminCreation as role reseller (is_master=yes)
+  * [7a4ac41] TT#176851 E2ET: AUI - AdminUpdate as role reseller (is_master=yes)
+  * [f589369] TT#176901 E2ET: AUI - AdminDeletion as role reseller (is_master=yes)
+  * [e036d1c] TT#176903 E2ET: AUI - DomainPreferences
+  * [8d4fb15] TT#174406 create billing profile in contracts
+  * [6daa490] TT#177856 E2ET: AUI - Customers - As Admin with role reseller I want to manage Customers
+  * [af9a9bd] TT#174406 clean up clearing of downloads folder
+
+  [ Sergii Leonenko ]
+  * [52773d4] TT#171900 E2ET: AUI - CustomerPreferences
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 07 Jun 2022 11:44:54 +0200
+
 ngcp-web-tests-e2e (10.5.0.0+0~mr10.5.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
