@@ -5,7 +5,8 @@ import {
     waitPageProgress,
     clickToolbarDropdownActionButton,
     searchInDataTable,
-    deleteItemOnListPageBy
+    deleteItemOnListPageBy,
+    clickDataTableSelectedMoreMenuItem
 } from '../../support/ngcp-admin-ui/utils/common'
 
 import {
@@ -116,7 +117,7 @@ context('Contract tests', () => {
             const formUrl = testsGroup.checkUrl
 
             context(`Contract type: ${contractType}`, () => {
-                it(`Check if ${contractType} contact with invalid values gets rejected`, () => {
+                it(`Check if ${contractType} contract with invalid values gets rejected`, () => {
                     cy.login(ngcpConfig.username, ngcpConfig.password)
                     cy.navigateMainMenu('settings / contract-list')
 
@@ -131,7 +132,7 @@ context('Contract tests', () => {
                     cy.get('label[data-cy="contract-status"] div[role="alert"]').should('be.visible')
                 })
 
-                it(`Create a ${contractType} contact`, () => {
+                it(`Create a ${contractType} contract`, () => {
                     apiLoginAsSuperuser().then(authHeader => {
                         apiRemoveContractBy({ name: peeringContract.external_id, authHeader })
                         apiRemoveContractBy({ name: resellerContract.external_id, authHeader })
@@ -155,7 +156,7 @@ context('Contract tests', () => {
                     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 })
 
-                it(`Edit ${contractType} status`, () => {
+                it(`Edit ${contractType} contract status`, () => {
                     cy.login(ngcpConfig.username, ngcpConfig.password)
                     cy.navigateMainMenu('settings / contract-list')
 
@@ -166,8 +167,8 @@ context('Contract tests', () => {
                     } else {
                         searchInDataTable(resellerContract.external_id)
                     }
-                    cy.get('[data-cy="row-more-menu-btn"]:first').click()
-                    cy.get('[data-cy="aui-popup-menu-item--contract-edit"]').click()
+                    cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+                    clickDataTableSelectedMoreMenuItem('contractEdit')
                     waitPageProgress()
                     cy.qSelect({ dataCy: 'contract-status', filter: '', itemContains: 'Pending' })
                     cy.get('[data-cy="aui-save-button"]').click()
@@ -176,7 +177,7 @@ context('Contract tests', () => {
                     cy.get('[data-cy="q-td--status"]').contains('Pending')
                 })
 
-                it(`Delete ${contractType} contact`, () => {
+                it(`Delete ${contractType} contract`, () => {
                     cy.login(ngcpConfig.username, ngcpConfig.password)
                     cy.navigateMainMenu('settings / contract-list')
 

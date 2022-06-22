@@ -34,7 +34,7 @@ export const deleteItemOnListPageBy = (searchText, searchCriteria = null) => {
 }
 export const clickDataTableSelectedMoreMenuItem = (actionName) => {
     cy.get('[data-cy=aui-data-table] tr.selected [data-cy="row-more-menu-btn"]:first').click()
-    return cy.get(`.q-menu [data-cy="aui-popup-menu-item--${actionName}"]`).click()
+    return cy.get(`.q-menu [data-cy="aui-data-table-row-menu--${actionName}"]`).click()
 }
 export const deleteDownloadsFolder = () => {
     const downloadsFolder = Cypress.config('downloadsFolder')
