@@ -260,7 +260,7 @@ context('Domain preferences tests', () => {
             testPreferencesListField('mobile_push_enable', 'Send push only if no device registered')
             testPreferencesTextField('mobile_push_expiry', 123)
             cy.get('label[data-cy="aui-input-search"] input').clear().type('prepaid_library')
-            testPreferencesListField('prepaid_library', 'libinewrate')
+            // testPreferencesListField('prepaid_library', 'libswrate') disabled, only libswrate available and selecting it again doesnt trigger saving mechanism
             cy.get('label[data-cy="aui-input-search"] input').clear().type('r')
             testPreferencesToggleField('recent_calls_by_upn')
             testPreferencesChipField('rerouting_codes', { value1: '123', value2: '54321' })

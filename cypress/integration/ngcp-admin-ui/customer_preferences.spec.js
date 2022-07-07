@@ -221,7 +221,7 @@ context('Customer preferences tests', () => {
             testPreferencesListField('advice_of_charge', 'Currency')
             testPreferencesTextField('concurrent_calls_quota', 123)
             testPreferencesTextField('conference_max_participants', 123)
-            testPreferencesListField('prepaid_library', 'libinewrate')
+            testPreferencesListField('prepaid_library', 'libswrate')
             testPreferencesToggleField('recent_calls_by_upn')
         })
 
