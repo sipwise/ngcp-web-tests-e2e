@@ -925,6 +925,73 @@ export const apiRemoveSoundSetBy = ({ name, authHeader }) => {
     })
 }
 
+export const defaultlLocationmappingCreationData = {
+    external_id: 'string',
+    mode: 'add',
+    location: 'string',
+    to_username: 'string',
+    caller_pattern: 'string',
+    callee_pattern: 'string',
+    subscriber_id: 0,
+    enabled: true
+}
+
+export const apiCreateLocationMapping = ({ data, authHeader }) => {
+    cy.log('apiCreateLocationMapping', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/subscriberlocationmappings/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetLocationMappingId = ({ name, authHeader }) => {
+    cy.log('apiGetLocationMappingId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/subscriberlocationmappings`,
+        qs: {
+            external_id: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const LocationHeaderData = body?._embedded?.['ngcp:subscriberlocationmappings']?.[0]
+        const LocationHeaderId = LocationHeaderData?.id
+        return LocationHeaderId
+    })
+}
+
+export const apiRemoveLocationMappingBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveLocationMappingBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/subscriberlocationmappings`,
+        qs: {
+            external_id: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const LocationHeaderId = body?._embedded?.['ngcp:subscriberlocationmappings']?.[0]?.id
+        if (body?.total_count === 1 && LocationHeaderId > 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/subscriberlocationmappings/${LocationHeaderId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
 export const apiGetMailboxLastItem = ({ mailboxName, filterSubject }) => {
     cy.log('apiGetMailboxLastItem', mailboxName)
     return cy.request({

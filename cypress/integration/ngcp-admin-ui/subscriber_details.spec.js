@@ -11,10 +11,12 @@ import {
 import {
     apiCreateCustomer,
     apiCreateDomain,
+    apiCreateLocationMapping,
     apiCreateSubscriber,
     apiLoginAsSuperuser,
     apiRemoveCustomerBy,
     apiRemoveDomainBy,
+    apiRemoveLocationMappingBy,
     apiRemoveSubscriberBy
 } from '../../support/ngcp-admin-ui/utils/api'
 
@@ -45,6 +47,17 @@ const subscriber = {
     subscriber_id: 0
 }
 
+const locationmapping = {
+    external_id: 'location' + getRandomNum() + 'id',
+    mode: 'add',
+    location: 'location' + getRandomNum(),
+    to_username: 'user' + getRandomNum(),
+    caller_pattern: 'caller' + getRandomNum(),
+    callee_pattern: 'callee' + getRandomNum(),
+    subscriber_id: 0,
+    enabled: true
+}
+
 const downloadsFolder = Cypress.config('downloadsFolder')
 const fixturesFolder = Cypress.config('fixturesFolder')
 
@@ -64,6 +77,7 @@ context('Subscriber Details tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     subscriber.subscriber_id = id
+                    apiCreateLocationMapping({ data: { ...locationmapping, subscriber_id: id }, authHeader })
                 })
             })
         })
@@ -80,6 +94,7 @@ context('Subscriber Details tests', () => {
 
         afterEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLocationMappingBy({ name: locationmapping.external_id, authHeader })
                 apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
             })
         })
@@ -220,7 +235,7 @@ context('Subscriber Details tests', () => {
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             })
 
-            it('Add Secret Key Renew Notify Email to Fax Features', () => {
+            it('Add/Delete Secret Key Renew Notify Email to Fax Features', () => {
                 cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber-list')
 
@@ -254,7 +269,7 @@ context('Subscriber Details tests', () => {
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             })
 
-            it('Add ACL to Fax Features', () => {
+            it('Add/Delete ACL to Fax Features', () => {
                 cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber-list')
 
@@ -287,6 +302,77 @@ context('Subscriber Details tests', () => {
                 cy.get('[data-cy="aui-save-button"]').click()
                 waitPageProgress()
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            })
+
+            it('Add Location Mapping', () => {
+                apiLoginAsSuperuser().then(authHeader => {
+                    apiRemoveLocationMappingBy({ name: locationmapping.external_id, authHeader })
+                })
+                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / subscriber-list')
+
+                cy.locationShouldBe('#/subscriber')
+                searchInDataTable(subscriber.username)
+                cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+                clickDataTableSelectedMoreMenuItem('subscriberDetails')
+
+                cy.get('[data-cy="aui-main-menu-item--subscriber-details-location-mappings"]').click()
+                waitPageProgress()
+                cy.get('div[data-cy="aui-list-action--subscriber-location-mappings-creation"]').click()
+                cy.get('input[data-cy="locationmapping-location"]').type('testlocation')
+                cy.get('input[data-cy="locationmapping-caller_pattern"]').type('testcallerpattern')
+                cy.get('input[data-cy="locationmapping-callee_pattern"]').type('testcalleepattern')
+                cy.qSelect({ dataCy: 'locationmapping-mode', filter: 'Forward', itemContains: 'Forward' })
+                cy.get('input[data-cy="locationmapping-to_username"]').type('testusername')
+                cy.get('input[data-cy="locationmapping-external_id"]').type(locationmapping.external_id)
+                cy.get('[data-cy="aui-save-button"]').click()
+                waitPageProgress()
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            })
+
+            it('Edit Location Mapping', () => {
+                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / subscriber-list')
+
+                cy.locationShouldBe('#/subscriber')
+                searchInDataTable(subscriber.username)
+                cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+                clickDataTableSelectedMoreMenuItem('subscriberDetails')
+
+                cy.get('[data-cy="aui-main-menu-item--subscriber-details-location-mappings"]').click()
+                waitPageProgress()
+                cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+                clickDataTableSelectedMoreMenuItem('subscriberLocationMappingsEdit')
+                cy.get('label[data-cy="locationmapping-location"] button').click()
+                cy.get('input[data-cy="locationmapping-location"]').type('newtestlocation')
+                cy.get('label[data-cy="locationmapping-caller_pattern"] button').click()
+                cy.get('input[data-cy="locationmapping-caller_pattern"]').type('newtestcallerpattern')
+                cy.get('label[data-cy="locationmapping-callee_pattern"] button').click()
+                cy.get('input[data-cy="locationmapping-callee_pattern"]').type('newtestcalleepattern')
+                cy.qSelect({ dataCy: 'locationmapping-mode', filter: 'Add', itemContains: 'Add' })
+                cy.get('label[data-cy="locationmapping-to_username"] button').click()
+                cy.get('input[data-cy="locationmapping-to_username"]').type('newtestusername')
+                cy.get('div[aria-label="Enabled"]').click()
+                cy.get('[data-cy="aui-save-button"]').click()
+                waitPageProgress()
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            })
+
+            it('Delete Location Mapping', () => {
+                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / subscriber-list')
+
+                cy.locationShouldBe('#/subscriber')
+                searchInDataTable(subscriber.username)
+                cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+                clickDataTableSelectedMoreMenuItem('subscriberDetails')
+
+                cy.get('[data-cy="aui-main-menu-item--subscriber-details-location-mappings"]').click()
+                waitPageProgress()
+                cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+                clickDataTableSelectedMoreMenuItem('delete')
+                cy.get('[data-cy="negative-confirmation-dialog"] [data-cy="btn-confirm"]').click()
+                cy.contains('.q-table__bottom--nodata', 'No data available').should('be.visible')
             })
         })
     })
