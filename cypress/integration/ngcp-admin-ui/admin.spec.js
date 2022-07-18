@@ -26,7 +26,7 @@ const ngcpConfig = Cypress.config('ngcpConfig')
 const admin1 = {
     role: 'admin',
     password: 'rand0mpassword12345',
-    newpass: 'testpassw0rd12345',
+    newpass: 'tesTpassw0r12345',
     email: 'user' + getRandomNum() + '@example.com',
     login: 'admin' + getRandomNum(),
     is_master: true,
@@ -40,7 +40,7 @@ const admin1 = {
 
 const admin2 = {
     login: 'admin' + getRandomNum(),
-    password: 'rand0mpassword1234',
+    password: 'rand0mpAsswo1234',
     role: 'reseller',
     is_master: true,
     reseller_id: null
@@ -48,7 +48,7 @@ const admin2 = {
 
 const mainResellerAdmin = {
     login: 'admin' + getRandomNum(),
-    password: 'rand0mpassword12345',
+    password: 'rand0mpasswO12345',
     role: 'reseller',
     is_master: true,
     is_active: true,
@@ -60,7 +60,7 @@ const mainResellerAdmin = {
 
 const secondaryresellerAdmin = {
     login: 'admin' + getRandomNum(),
-    password: 'rand0mpassword1234',
+    password: 'rand0mpasswO1234',
     role: 'reseller',
     is_master: false,
     is_active: true,
@@ -402,9 +402,11 @@ context('Administrator tests', () => {
             cy.logoutUI()
             cy.wait(500)
             cy.loginUI(secondaryresellerAdmin.login, secondaryresellerAdmin.password)
+            cy.get('a[data-cy="aui-main-menu-item--dashboard"]').click()
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
+            cy.get('input[data-cy="aui-input-search--datatable"]').clear()
             searchInDataTable(secondaryresellerAdmin.login)
             cy.get('td[data-cy="q-td--is-master"] div').should('have.attr', 'aria-disabled', 'true')
         })
@@ -432,6 +434,8 @@ context('Administrator tests', () => {
             cy.logoutUI()
             cy.wait(500)
             cy.loginUI(secondaryresellerAdmin.login, secondaryresellerAdmin.password)
+            cy.get('a[data-cy="aui-main-menu-item--dashboard"]').click()
+
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
@@ -458,6 +462,8 @@ context('Administrator tests', () => {
             cy.logoutUI()
             cy.wait(500)
             cy.loginUI(secondaryresellerAdmin.login, secondaryresellerAdmin.password)
+            cy.get('a[data-cy="aui-main-menu-item--dashboard"]').click()
+
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
