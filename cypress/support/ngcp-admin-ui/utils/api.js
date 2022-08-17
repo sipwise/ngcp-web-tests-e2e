@@ -992,6 +992,70 @@ export const apiRemoveLocationMappingBy = ({ name, authHeader }) => {
     })
 }
 
+export const defaultSubscriberProfileCreationData = {
+    name: 'string',
+    profile_set_id: 0,
+    attribute: {},
+    set_default: true,
+    description: 'string'
+}
+
+export const apiCreateSubscriberProfile = ({ data, authHeader }) => {
+    cy.log('apiCreateSubscriberProfile', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/subscriberprofiles/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetSubscriberProfileId = ({ name, authHeader }) => {
+    cy.log('apiGetSubscriberProfileId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/subscriberprofiles`,
+        qs: {
+            username: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const subscriberProfileData = body?._embedded?.['ngcp:subscriberprofiles']?.[0]
+        const subscriberProfileId = subscriberProfileData?.id
+        return subscriberProfileId
+    })
+}
+
+export const apiRemoveSubscriberProfileBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveSubscriberProfileBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/subscriberprofiles`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const subscriberProfileId = body?._embedded?.['ngcp:subscriberprofiles']?.[0]?.id
+        if (body?.total_count === 1 && subscriberProfileId > 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/subscriberprofiles/${subscriberProfileId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
 export const apiGetMailboxLastItem = ({ mailboxName, filterSubject }) => {
     cy.log('apiGetMailboxLastItem', mailboxName)
     return cy.request({
