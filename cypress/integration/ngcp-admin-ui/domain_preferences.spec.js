@@ -178,7 +178,6 @@ context('Domain preferences tests', () => {
             cy.qSelect({ dataCy: 'category-selection', filter: 'Applications', itemContains: 'Applications' })
             testPreferencesListField('callrecording_type', 'External')
             testPreferencesToggleField('malicious_call_identification')
-            testPreferencesToggleField('party_call_control')
             testPreferencesToggleField('play_announce_before_call_setup')
             testPreferencesToggleField('play_announce_before_cf')
             testPreferencesListField('play_announce_before_recording', 'External calls only')

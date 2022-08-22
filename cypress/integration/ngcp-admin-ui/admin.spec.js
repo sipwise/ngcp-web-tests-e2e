@@ -436,13 +436,26 @@ context('Administrator tests', () => {
             cy.loginUI(secondaryresellerAdmin.login, secondaryresellerAdmin.password)
             cy.get('a[data-cy="aui-main-menu-item--dashboard"]').click()
 
-            cy.navigateMainMenu('settings / admin-list')
+            cy.get('div[data-cy="aui-main-menu-items--settings"]').click()
+            cy.get('a[data-cy="aui-main-menu-item--admin-list"]').click()
 
             cy.locationShouldBe('#/administrator')
             cy.get('div[data-cy="aui-list-action--admin-creation"]').should('not.exist')
-            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').should('not.exist')
+            cy.get('button[data-cy="row-more-menu-btn"]:first').click()
             cy.get('div[data-cy="aui-list-action--delete"]').should('not.exist')
-            cy.get('button[data-cy="row-more-menu-btn"]:first').should('not.exist')
+            cy.get('a[data-cy="aui-data-table-row-menu--adminEdit"]').click()
+
+            waitPageProgress()
+            cy.get('label[data-cy="aui-select-reseller"]').should('not.exist')
+            cy.get('div[data-cy="roles-list"]').should('not.exist')
+            cy.get('label[data-cy="password-field"]').should('not.exist')
+            cy.get('div[data-cy="master-flag"]').should('not.exist')
+            cy.get('div[data-cy="active-flag"]').should('not.exist')
+            cy.get('div[data-cy="readonly-flag"]').should('not.exist')
+            cy.get('div[data-cy="show-password-flag"]').should('not.exist')
+            cy.get('div[data-cy="can-reset-password-flag"]').should('not.exist')
+            cy.get('div[data-cy="show-cdrs-flag"]').should('not.exist')
+            cy.get('div[data-cy="show-billing-info-flag"]').should('not.exist')
         })
 
         it('Enable master for reseller admin and check if permission is applied correctly', () => {
