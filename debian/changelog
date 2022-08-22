@@ -1,3 +1,16 @@
+ngcp-web-tests-e2e (11.1.0.0+0~mr11.1.0.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [a30e752] TT#180558 fix data-cys to make tests work again
+  * [58957ab] TT#180558 update translation string for login test
+  * [1c81a0d] TT#181851 E2ET: AUI - SubscriberDetails - FaxFeatures
+  * [f334488] TT#180558 fix prepaid_libary in customer and domain preferences
+  * [91edd61] TT#180558 fix reseller admin tests
+  * [9c91348] TT#181850 E2ET: AUI - SubscriberDetails - LocationMappings
+  * [175dfd2] TT#180558 test fixes for domain/customer preferences and admin
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 22 Aug 2022 20:02:38 +0200
+
 ngcp-web-tests-e2e (11.0.0.0+0~mr11.0.0.0) unstable; urgency=medium
 
   [ Hans-Peter Herzog ]
