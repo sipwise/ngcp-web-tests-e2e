@@ -260,7 +260,7 @@ context('Administrator tests', () => {
             cy.get('a[href="#/subscriber"]').should('be.visible')
         })
 
-        it('Enable read-only for administrator and check if read-only has been activated', () => {
+        xit('Enable read-only for administrator and check if read-only has been activated', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / admin-list')
 
