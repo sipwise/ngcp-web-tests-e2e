@@ -1,3 +1,12 @@
+ngcp-web-tests-e2e (11.1.1.0+0~mr11.1.1.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [eed20ff] TT#186200 E2ET: AUI - Subscriber - Edit MasterData page
+  * [8858bed] TT#122871 upgrade cypress to 9.7.x
+  * [4826c9a] MT#55491 Temporarly disable the e2e test for AUI that always fails
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 04 Oct 2022 13:51:56 +0200
+
 ngcp-web-tests-e2e (11.1.0.0+0~mr11.1.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
