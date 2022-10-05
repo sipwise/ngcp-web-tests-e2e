@@ -9,5 +9,7 @@
     "supportFile": "cypress/support/ngcp-admin-ui",
     "screenshotOnRunFailure": false,
     "video": false,
-    "videoUploadOnPasses": false
+    "videoUploadOnPasses": false,
+    "viewportHeight": 800,
+    "viewportWidth": 1280
 }
