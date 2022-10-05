@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (11.0.1.2+0~mr11.0.1.2) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [38a808e] MT#55491 Temporarly disable the e2e test for AUI that always fails
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 05 Oct 2022 11:13:31 +0200
+
 ngcp-web-tests-e2e (11.0.1.1+0~mr11.0.1.1) unstable; urgency=medium
 
   * New release.
