@@ -1,5 +1,19 @@
 /// <reference types="cypress" />
 
+import {
+    getRandomNum
+} from '../../support/ngcp-admin-ui/utils/common'
+
+import {
+    apiLoginAsSuperuser,
+    apiCreateCustomer,
+    apiCreateDomain,
+    apiCreateSubscriber,
+    apiRemoveDomainBy,
+    apiRemoveCustomerBy,
+    apiRemoveSubscriberBy
+} from '../../support/ngcp-admin-ui/utils/api'
+
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 function checkLoginAPIResponse (response) {
@@ -7,50 +21,68 @@ function checkLoginAPIResponse (response) {
     expect(response.body).to.have.property('jwt')
 }
 
-function CheckLoggedInUI () {
-    cy.visit('/')
-    cy.url().should('match', /\/#\/user\/dashboard/)
+const customer = {
+    billing_profile_definition: 'id',
+    billing_profile_id: 1,
+    external_id: 'customer' + getRandomNum(),
+    contact_id: 1,
+    status: 'active',
+    type: 'sipaccount'
+}
+
+const domain = {
+    domain: 'domain' + getRandomNum(),
+    reseller_id: 1
+}
+
+const subscriber = {
+    username: 'subscriber' + getRandomNum(),
+    webusername: 'subscriber' + getRandomNum(),
+    email: 'email' + getRandomNum() + '@test.com',
+    external_id: 'subid' + getRandomNum(),
+    password: 'sub' + getRandomNum() + 'pass',
+    webpassword: 'sub' + getRandomNum() + 'pass',
+    domain: domain.domain,
+    customer_id: 0,
+    subscriber_id: 0
+}
+
+const loginInfo = {
+    username: subscriber.webusername + '@' + subscriber.domain,
+    password: subscriber.webpassword
 }
 
 context('Login page tests', () => {
-    context('API direct login tests', () => {
-        before(() => {
-            Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-        })
-
-        beforeEach(() => {
-            cy.visit('/')
-        })
-
-        it('Testing "cy.loginApi" command', () => {
-            cy.loginApi(ngcpConfig.username, ngcpConfig.password).then(() => {
-                CheckLoggedInUI()
-            })
-        })
-
-        it('Trying to login through API', () => {
-            const loginData = {
-                username: ngcpConfig.username,
-                password: ngcpConfig.password
-            }
-            cy
-                .request('POST', `${ngcpConfig.apiHost}/login_jwt`, loginData)
-                .then(response => {
-                    checkLoginAPIResponse(response)
-
-                    const quasarFrameworkDataPrefix = '__q_strn|'
-                    localStorage.csc_jwt = quasarFrameworkDataPrefix + response.body.jwt
-                    localStorage.csc_subscriberId = quasarFrameworkDataPrefix + response.body.subscriber_id
-                })
-        })
-    })
     context('UI login tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateDomain({ data: domain, authHeader })
+                apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                    subscriber.customer_id = id
+                })
+            })
         })
 
         beforeEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateSubscriber({ data: subscriber, authHeader })
+            })
             cy.visit('/')
+        })
+
+        after(() => {
+            cy.log('Data clean up...')
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            })
+        })
+
+        afterEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            })
         })
 
         it('Check if using "/" will route to login page', () => {
@@ -64,7 +96,7 @@ context('Login page tests', () => {
         })
 
         it('Trying to login through UI with no credentials', () => {
-            cy.intercept('POST', '**/login_jwt').as('loginRequest')
+            cy.intercept('POST', '**/login_jwt?lang=en').as('loginRequest')
             cy.get('.q-btn:last').click()
 
             cy.wait('@loginRequest').then(({ response }) => {
@@ -74,7 +106,7 @@ context('Login page tests', () => {
         })
 
         it('Trying to login through UI with incorrect user and password', () => {
-            cy.intercept('POST', '**/login_jwt').as('loginRequest')
+            cy.intercept('POST', '**/login_jwt?lang=en').as('loginRequest')
             cy.get('input:first').type('not-exists-user')
             cy.get('input:last').type('not-exists-password')
             cy.get('.q-btn:last').click()
@@ -86,8 +118,8 @@ context('Login page tests', () => {
         })
 
         it('Trying to login through UI with incorrect password', () => {
-            cy.intercept('POST', '**/login_jwt').as('loginRequest')
-            cy.get('input:first').type(ngcpConfig.username)
+            cy.intercept('POST', '**/login_jwt?lang=en').as('loginRequest')
+            cy.get('input:first').type(loginInfo.username)
             cy.get('input:last').type('not-exists-password')
             cy.get('.q-btn:last').click()
 
@@ -98,7 +130,7 @@ context('Login page tests', () => {
         })
 
         it('Trying to login through UI with no password', () => {
-            cy.intercept('POST', '**/login_jwt').as('loginRequest')
+            cy.intercept('POST', '**/login_jwt?lang=en').as('loginRequest')
             cy.get('input:first').type('not-exists-user')
             cy.get('input:last').clear()
             cy.get('.q-btn:last').click()
@@ -110,9 +142,9 @@ context('Login page tests', () => {
         })
 
         it('Trying to login through UI with correct credentials', () => {
-            cy.intercept('POST', '**/login_jwt').as('loginRequest')
-            cy.get('input:first').type(ngcpConfig.username)
-            cy.get('input:last').type(ngcpConfig.password)
+            cy.intercept('POST', '**/login_jwt?lang=en').as('loginRequest')
+            cy.get('input:first').type(loginInfo.username)
+            cy.get('input:last').type(loginInfo.password)
             cy.get('.q-btn:last').click()
 
             cy.wait('@loginRequest').then(({ response }) => {
@@ -122,8 +154,8 @@ context('Login page tests', () => {
         })
 
         it('Test cy.loginUI function', () => {
-            cy.intercept('POST', '**/login_jwt').as('loginRequest')
-            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
+            cy.intercept('POST', '**/login_jwt?lang=en').as('loginRequest')
+            cy.loginUI(loginInfo.username, loginInfo.password)
             cy.wait('@loginRequest').then(({ response }) => {
                 checkLoginAPIResponse(response)
                 cy.get('a[href="#/user/dashboard"]').should('be.visible')
@@ -131,8 +163,9 @@ context('Login page tests', () => {
         })
 
         it('Trying to logout', () => {
-            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
-            cy.logoutUI()
+            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.get('button[data-cy="user-menu"]').click()
+            cy.get('div[data-cy="user-logout"]').click()
             cy.url().should('match', /\/#\/login$/)
         })
 
@@ -147,8 +180,8 @@ context('Login page tests', () => {
             cy.contains('Français').click()
             cy.contains('Authentification de l’abonné').should('be.visible')
             cy.contains('language').click()
-            cy.contains('Italiano').click()
-            cy.contains('Accedi come utente').should('be.visible')
+            cy.contains('Italian').click()
+            cy.contains('Accesso abbonato').should('be.visible')
             cy.contains('language').click()
             cy.contains('English').click()
             cy.contains('Subscriber Sign In').should('be.visible')

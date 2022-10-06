@@ -13,8 +13,6 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-// Import commands.js using ES2015 syntax:
+import 'cypress-wait-until'
+import './login_logout'
 import './commands'
-
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
