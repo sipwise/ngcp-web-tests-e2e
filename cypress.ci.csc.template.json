@@ -2,9 +2,11 @@
     "baseUrl": "https://dev-web-trunk.mgm.sipwise.com/v2",
     "ngcpConfig": {
         "apiHost": "https://dev-web-trunk.mgm.sipwise.com",
-        "username": "43991002",
-        "password": "x43991002"
+        "username": "administrator",
+        "password": "administrator"
     },
     "integrationFolder": "cypress/integration/ngcp-csc-ui",
-    "supportFile": "cypress/support/ngcp-csc-ui"
+    "supportFile": "cypress/support/ngcp-csc-ui",
+    "viewportHeight": 800,
+    "viewportWidth": 1280
 }

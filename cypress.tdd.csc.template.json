@@ -1,13 +1,15 @@
 {
-    "baseUrl": "https://localhost:8080/v2",
+    "baseUrl": "https://localhost",
     "ngcpConfig": {
-        "apiHost": "https://dev-web-trunk.mgm.sipwise.com",
-        "username": "43991002@dev-web-trunk.mgm.sipwise.com",
-        "password": "x43991002"
+        "apiHost": "https://localhost:1443",
+        "username": "administrator",
+        "password": "administrator"
     },
     "integrationFolder": "cypress/integration/ngcp-csc-ui",
     "supportFile": "cypress/support/ngcp-csc-ui",
     "screenshotOnRunFailure": false,
     "video": false,
-    "videoUploadOnPasses": false
+    "videoUploadOnPasses": false,
+    "viewportHeight": 800,
+    "viewportWidth": 1280
 }

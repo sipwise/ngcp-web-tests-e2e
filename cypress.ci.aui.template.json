@@ -6,5 +6,7 @@
         "password": "administrator"
     },
     "integrationFolder": "cypress/integration/ngcp-admin-ui",
-    "supportFile": "cypress/support/ngcp-admin-ui"
+    "supportFile": "cypress/support/ngcp-admin-ui",
+    "viewportHeight": 800,
+    "viewportWidth": 1280
 }
