@@ -91,8 +91,7 @@ context('Reseller preferences tests', () => {
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
-            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-            clickDataTableSelectedMoreMenuItem('reseller-preferences')
+            clickDataTableSelectedMoreMenuItem('resellerPreferences')
 
             waitPageProgress()
             testPreferencesTextField('cdr_export_field_separator')

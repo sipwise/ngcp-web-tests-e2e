@@ -143,8 +143,7 @@ context('Customer preferences tests', () => {
 
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
-            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-            clickDataTableSelectedMoreMenuItem('customer-preferences')
+            clickDataTableSelectedMoreMenuItem('customerPreferences')
 
             waitPageProgress()
             cy.qSelect({ dataCy: 'category-selection', itemContains: 'Access Restrictions' })
@@ -167,8 +166,7 @@ context('Customer preferences tests', () => {
 
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
-            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-            clickDataTableSelectedMoreMenuItem('customer-preferences')
+            clickDataTableSelectedMoreMenuItem('customerPreferences')
 
             waitPageProgress()
             cy.qSelect({ dataCy: 'category-selection', itemContains: 'Applications' })
@@ -186,8 +184,7 @@ context('Customer preferences tests', () => {
 
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
-            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-            clickDataTableSelectedMoreMenuItem('customer-preferences')
+            clickDataTableSelectedMoreMenuItem('customerPreferences')
 
             waitPageProgress()
             cy.qSelect({ dataCy: 'category-selection', itemContains: 'Call Blockings' })
@@ -213,8 +210,7 @@ context('Customer preferences tests', () => {
 
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
-            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-            clickDataTableSelectedMoreMenuItem('customer-preferences')
+            clickDataTableSelectedMoreMenuItem('customerPreferences')
 
             waitPageProgress()
             cy.qSelect({ dataCy: 'category-selection', itemContains: 'Internals' })
@@ -231,8 +227,7 @@ context('Customer preferences tests', () => {
 
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
-            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-            clickDataTableSelectedMoreMenuItem('customer-preferences')
+            clickDataTableSelectedMoreMenuItem('customerPreferences')
 
             waitPageProgress()
             cy.qSelect({ dataCy: 'category-selection', itemContains: 'Number Manipulations' })
