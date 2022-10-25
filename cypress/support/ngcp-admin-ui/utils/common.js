@@ -78,22 +78,22 @@ export const testPreferencesChipField = (name, testValues = { value1: 'testvalue
 
     cy.get('@' + cyAliasName).find('input').clear().type(testValues.value1)
     cy.get('@' + cyAliasName).find('button[data-cy="chip-add"]').click()
-    waitPageProgress()
+    cy.get('@' + cyAliasName).find('input[disabled="disabled"]').should('not.exist')
     cy.get('@' + cyAliasName).find(tValue1.position0.selector)
     cy.get('@' + cyAliasName).find('input').type(testValues.value2)
     cy.get('@' + cyAliasName).find('button[data-cy="chip-add"]').click()
-    waitPageProgress()
+    cy.get('@' + cyAliasName).find('input[disabled="disabled"]').should('not.exist')
     cy.get('@' + cyAliasName).find(tValue2.position1.selector)
     cy.get('@' + cyAliasName).find(tValue1.position0.removeBtnSelector).click()
-    waitPageProgress()
+    cy.get('@' + cyAliasName).find('input[disabled="disabled"]').should('not.exist')
     cy.get('@' + cyAliasName).find(tValue2.position0.selector).should('be.visible')
     cy.get('@' + cyAliasName).find(tValue1.position1.selector).should('not.exist')
     cy.get('@' + cyAliasName).find('input').type(testValues.value1)
     cy.get('@' + cyAliasName).find('button[data-cy="chip-add"]').click()
-    waitPageProgress()
+    cy.get('@' + cyAliasName).find('input[disabled="disabled"]').should('not.exist')
     cy.get('@' + cyAliasName).find(tValue1.position1.selector).should('exist')
     cy.get('@' + cyAliasName).find('button[data-cy="chip-removeall"]').click()
-    waitPageProgress()
+    cy.get('@' + cyAliasName).find('input[disabled="disabled"]').should('not.exist')
     cy.get('@' + cyAliasName).find('[data-cy^="q-chip"]').should('not.exist')
 }
 
@@ -102,11 +102,11 @@ export const testPreferencesTextField = (name, value = 'test', onlyNumbers = fal
     cy.get(dataCySelector).should('be.visible').as(cyAliasName)
     cy.get('@' + cyAliasName).find('input').type(value)
     cy.get('button[data-cy="preference-save"]').click()
-    waitPageProgress()
+    cy.get('@' + cyAliasName).find('label[aria-disabled="true"]').should('not.exist')
     cy.get('@' + cyAliasName).find('input').should('have.value', value)
     cy.get('@' + cyAliasName).contains('button[data-cy="q-icon"]', 'cancel').click()
     cy.get('button[data-cy="preference-save"]').click()
-    waitPageProgress()
+    cy.get('@' + cyAliasName).find('label[aria-disabled="true"]').should('not.exist')
     cy.get('@' + cyAliasName).find('input').should('have.value', '')
     cy.get('@' + cyAliasName).find('input').type(value)
     cy.get('button[data-cy="preference-reset"]').click()
@@ -126,7 +126,7 @@ export const testPreferencesListField = (name, entry = null) => {
                 cy.get('@' + cyAliasName).auiSelectLazySelect({ dataCy: 'aui-select-lazy', filter: entry, itemContains: entry })
             }
         })
-    waitPageProgress()
+    cy.get('@' + cyAliasName).find('label[aria-disabled="true"]').should('not.exist')
     cy.get('@' + cyAliasName).find('span').contains(entry).should('be.visible')
 }
 
@@ -135,9 +135,9 @@ export const testPreferencesToggleField = (name) => {
     cy.get(dataCySelector).should('be.visible').as(cyAliasName)
 
     cy.get('@' + cyAliasName).find('div[role=checkbox]').click()
-    waitPageProgress()
+    cy.get('@' + cyAliasName).find('div[role=checkbox][aria-disabled="true"]').should('not.exist')
     cy.get('@' + cyAliasName).find('div[role=checkbox]').invoke('attr', 'aria-checked').should('eq', 'true')
     cy.get('@' + cyAliasName).find('div[role=checkbox]').click()
-    waitPageProgress()
+    cy.get('@' + cyAliasName).find('div[role=checkbox][aria-disabled="true"]').should('not.exist')
     cy.get('@' + cyAliasName).find('div[role=checkbox]').invoke('attr', 'aria-checked').should('eq', 'false')
 }
