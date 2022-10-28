@@ -5,7 +5,8 @@ import {
     waitPageProgress,
     clickToolbarDropdownActionButton,
     searchInDataTable,
-    deleteItemOnListPageBy
+    deleteItemOnListPageBy,
+    clickDataTableSelectedMoreMenuItem
 } from '../../support/ngcp-admin-ui/utils/common'
 
 import {
@@ -166,8 +167,8 @@ context('Contract tests', () => {
                     } else {
                         searchInDataTable(resellerContract.external_id)
                     }
-                    cy.get('[data-cy="row-more-menu-btn"]:first').click()
-                    cy.get('[data-cy="aui-popup-menu-item--contract-edit"]').click()
+                    clickDataTableSelectedMoreMenuItem('contractEdit')
+
                     waitPageProgress()
                     cy.qSelect({ dataCy: 'contract-status', filter: '', itemContains: 'Pending' })
                     cy.get('[data-cy="aui-save-button"]').click()

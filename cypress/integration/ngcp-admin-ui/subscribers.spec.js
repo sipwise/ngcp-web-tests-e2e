@@ -4,7 +4,8 @@ import {
     getRandomNum,
     waitPageProgress,
     deleteItemOnListPageBy,
-    searchInDataTable
+    searchInDataTable,
+    clickDataTableSelectedMoreMenuItem
 } from '../../support/ngcp-admin-ui/utils/common'
 
 import {
@@ -81,8 +82,7 @@ context('Subscriber tests', () => {
 
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
-            cy.get('[data-cy="row-more-menu-btn"]:first').click()
-            cy.get('[data-cy="aui-popup-menu-item--customer-details"]').click()
+            clickDataTableSelectedMoreMenuItem('customerDetails')
             waitPageProgress()
             cy.get('[data-cy="aui-main-menu-item--customer-details-subscribers"]').click()
             waitPageProgress()
@@ -109,8 +109,7 @@ context('Subscriber tests', () => {
 
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
-            cy.get('[data-cy="row-more-menu-btn"]:first').click()
-            cy.get('[data-cy="aui-popup-menu-item--customer-details"]').click()
+            clickDataTableSelectedMoreMenuItem('customerDetails')
             waitPageProgress()
             cy.get('[data-cy="aui-main-menu-item--customer-details-subscribers"]').click()
             waitPageProgress()

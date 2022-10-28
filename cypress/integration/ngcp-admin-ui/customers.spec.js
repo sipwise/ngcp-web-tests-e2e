@@ -182,7 +182,7 @@ context('Customer tests', () => {
                     cy.locationShouldBe('#/customer')
                     searchInDataTable(customer.external_id, 'External #')
                     cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-                    clickDataTableSelectedMoreMenuItem('customer-edit')
+                    clickDataTableSelectedMoreMenuItem('customerEdit')
                     waitPageProgress()
 
                     cy.qSelect({ dataCy: 'customer-status', filter: '', itemContains: 'Locked' })
