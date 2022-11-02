@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (11.1.1.2+0~mr11.1.1.2) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [c59a38e] TT#122872 fix timeout when editing voicemail settings
+  * [974f424] TT#122872 fix wait timeouts in preferences pages
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 02 Nov 2022 12:50:50 +0100
+
 ngcp-web-tests-e2e (11.1.1.1+0~mr11.1.1.1) unstable; urgency=medium
 
   [ Nico Schedel ]
