@@ -439,7 +439,12 @@ context('Administrator tests', () => {
 
             cy.locationShouldBe('#/administrator')
             cy.get('div[data-cy="aui-list-action--admin-creation"]').should('not.exist')
-            cy.get('button[data-cy="row-more-menu-btn"]:first').should('not.exist')
+            cy.get('div[data-cy="aui-data-table-inline-edit--toggle"][aria-disabled="true"]').should('be.visible')
+            cy.get('button[data-cy="row-more-menu-btn"]:first').click()
+            cy.get('div[data-cy="aui-data-table-row-menu--adminEdit"]').click()
+            cy.get('input[data-cy="login-field"]').type('test')
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-negative')
         })
 
         it('Enable master for reseller admin and check if permission is applied correctly', () => {
