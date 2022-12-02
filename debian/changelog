@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (10.5.2.3+0~mr10.5.2.3) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [a4db05f] MT#55491 sync admin tests with all changes done in mr10.5
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 02 Dec 2022 10:57:55 +0100
+
 ngcp-web-tests-e2e (10.5.2.2+0~mr10.5.2.2) unstable; urgency=medium
 
   [ Nico Schedel ]
