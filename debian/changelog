@@ -1,3 +1,13 @@
+ngcp-web-tests-e2e (10.5.3.1+0~mr10.5.3.1) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [0f43462] TT#122872 big fixup for mr10.5
+  * [6d83189] TT#122872 fix wait timeouts in preferences pages
+  * [977e7fa] MT#55491 Temporarly disable the e2e test for AUI that always fails
+  * [8941f89] MT#55491 fix reseller admin creation test
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 22 Dec 2022 16:20:58 +0100
+
 ngcp-web-tests-e2e (10.5.3.0+0~mr10.5.3.0) unstable; urgency=medium
 
   * New release.
