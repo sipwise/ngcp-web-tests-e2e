@@ -1,3 +1,17 @@
+ngcp-web-tests-e2e (11.3.0.0+0~mr11.3.0.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [877d947] TT#122872 increase viewport size to 1280x800
+  * [011ec2d] MT#55492 rework csc test to add new ones later
+  * [9ab9ae9] MT#55492 add new dashboard tests
+  * [1fa5259] TT#122872 improve template config files to be less confusing
+  * [026895a] TT#122872 fix wait timeouts in preferences pages
+  * [3632724] TT#122872 fix timeout when editing voicemail settings
+  * [67b0e96] MT#55492 add fax settings tests
+  * [e98b14e] TT#122872 fixes for subscriber details tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 17 Jan 2023 17:44:24 +0100
+
 ngcp-web-tests-e2e (11.2.0.0+0~mr11.2.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
