@@ -58,6 +58,7 @@ function getChipBtnSelectors ({ value, itemPosition = 0 }) {
 
 export const testPreferencesChipField = (name, testValues = { value1: 'testvalue', value2: 'testtestvalue' }, numbers = false) => {
     const { dataCySelector, cyAliasName } = getPreferencesFieldInfo(name)
+    cy.get(dataCySelector).should('be.visible').as(cyAliasName)
     const tValue1 = {
         position0: getChipBtnSelectors({ value: testValues.value1, itemPosition: 0 }),
         position1: getChipBtnSelectors({ value: testValues.value1, itemPosition: 1 })
@@ -66,8 +67,6 @@ export const testPreferencesChipField = (name, testValues = { value1: 'testvalue
         position0: getChipBtnSelectors({ value: testValues.value2, itemPosition: 0 }),
         position1: getChipBtnSelectors({ value: testValues.value2, itemPosition: 1 })
     }
-
-    cy.get(dataCySelector).should('be.visible').as(cyAliasName)
 
     if (numbers) {
         cy.get('@' + cyAliasName).find('input').type('invalid')
@@ -115,29 +114,26 @@ export const testPreferencesTextField = (name, value = 'test', onlyNumbers = fal
         cy.get('@' + cyAliasName).find('input').type('test')
         cy.get('button[data-cy="preference-save"]').should('not.exist')
     }
+    cy.get('@' + cyAliasName).find('label[aria-disabled="true"]').should('not.exist')
 }
+
 export const testPreferencesListField = (name, entry = null) => {
     const { dataCySelector, cyAliasName } = getPreferencesFieldInfo(name)
     cy.get(dataCySelector).should('be.visible').as(cyAliasName)
-        .then($row => {
-            if ($row.find('[data-cy="q-select"]').length) {
-                cy.get('@' + cyAliasName).qSelect({ dataCy: 'q-select', itemContains: entry })
-            } else {
-                cy.get('@' + cyAliasName).auiSelectLazySelect({ dataCy: 'aui-select-lazy', filter: entry, itemContains: entry })
-            }
-        })
+    cy.get('@' + cyAliasName).find('label').click()
+    cy.get('div[role="listbox"]').should('be.visible')
+    cy.get('div[role="listbox"]').contains(entry).click()
     cy.get('@' + cyAliasName).find('label[aria-disabled="true"]').should('not.exist')
-    cy.get('@' + cyAliasName).find('span').contains(entry).should('be.visible')
 }
 
 export const testPreferencesToggleField = (name) => {
     const { dataCySelector, cyAliasName } = getPreferencesFieldInfo(name)
     cy.get(dataCySelector).should('be.visible').as(cyAliasName)
-
     cy.get('@' + cyAliasName).find('div[role=checkbox]').click()
     cy.get('@' + cyAliasName).find('div[role=checkbox][aria-disabled="true"]').should('not.exist')
     cy.get('@' + cyAliasName).find('div[role=checkbox]').invoke('attr', 'aria-checked').should('eq', 'true')
     cy.get('@' + cyAliasName).find('div[role=checkbox]').click()
     cy.get('@' + cyAliasName).find('div[role=checkbox][aria-disabled="true"]').should('not.exist')
     cy.get('@' + cyAliasName).find('div[role=checkbox]').invoke('attr', 'aria-checked').should('eq', 'false')
+    cy.get('@' + cyAliasName).find('div[role=checkbox][aria-disabled="true"]').should('not.exist')
 }

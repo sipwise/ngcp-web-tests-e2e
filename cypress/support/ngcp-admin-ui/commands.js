@@ -146,6 +146,7 @@ Cypress.Commands.add(
                 const id = $el.attr('for')
                 const dropdownListId = `#${id}_lb`
                 cy.get(dropdownListId).should('be.visible')
+                cy.contains(`${dropdownListId} .q-item`, itemContains).should('be.visible')
                 cy.contains(`${dropdownListId} .q-item`, itemContains).click()
             })
         })
