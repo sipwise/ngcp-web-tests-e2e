@@ -26,7 +26,7 @@ const ngcpConfig = Cypress.config('ngcpConfig')
 const admin1 = {
     role: 'admin',
     password: 'rand0mpassword12345',
-    newpass: 'tesTpassw0r12345',
+    newpass: 'te#sTpaw0r4638',
     email: 'user' + getRandomNum() + '@example.com',
     login: 'admin' + getRandomNum(),
     is_master: true,
@@ -317,7 +317,9 @@ context('Administrator tests', () => {
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminChangePassword')
 
-            cy.get('input[data-cy="password-input"]').type(admin1.newpass)
+            cy.get('input[data-cy="password-input"]').type('test')
+            cy.get('[data-cy="vue-password-strength-meter"]').should('be.visible')
+            cy.get('input[data-cy="password-input"]').clear().type(admin1.newpass)
             cy.get('input[data-cy="password-retype-input"]').type(admin1.newpass)
             cy.get('[data-cy="save-button"]').click()
             cy.get('div[data-cy="change-password-form"]').should('not.exist')
