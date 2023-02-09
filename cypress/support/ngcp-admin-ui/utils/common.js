@@ -122,6 +122,7 @@ export const testPreferencesListField = (name, entry = null) => {
     cy.get(dataCySelector).should('be.visible').as(cyAliasName)
     cy.get('@' + cyAliasName).find('label').click()
     cy.get('div[role="listbox"]').should('be.visible')
+    cy.wait(1000)
     cy.get('div[role="listbox"]').contains(entry).click()
     cy.get('@' + cyAliasName).find('label[aria-disabled="true"]').should('not.exist')
 }
