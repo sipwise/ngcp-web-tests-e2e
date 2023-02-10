@@ -171,7 +171,6 @@ context('Customer preferences tests', () => {
             waitPageProgress()
             cy.qSelect({ dataCy: 'category-selection', itemContains: 'Applications' })
             testPreferencesToggleField('malicious_call_identification')
-            testPreferencesToggleField('party_call_control')
             testPreferencesToggleField('play_announce_before_call_setup')
             testPreferencesListField('play_announce_before_recording', 'External calls only')
             testPreferencesToggleField('play_announce_to_callee')
@@ -217,7 +216,7 @@ context('Customer preferences tests', () => {
             testPreferencesListField('advice_of_charge', 'Currency')
             testPreferencesTextField('concurrent_calls_quota', 123)
             testPreferencesTextField('conference_max_participants', 123)
-            testPreferencesListField('prepaid_library', 'libinewrate')
+            testPreferencesListField('prepaid_library', 'libswrate')
             testPreferencesToggleField('recent_calls_by_upn')
         })
 
