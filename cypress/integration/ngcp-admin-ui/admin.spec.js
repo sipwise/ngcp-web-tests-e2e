@@ -444,9 +444,14 @@ context('Administrator tests', () => {
             cy.get('div[data-cy="aui-data-table-inline-edit--toggle"][aria-disabled="true"]').should('be.visible')
             cy.get('button[data-cy="row-more-menu-btn"]:first').click()
             cy.get('div[data-cy="aui-data-table-row-menu--adminEdit"]').click()
-            cy.get('input[data-cy="login-field"]').type('test')
-            cy.get('[data-cy="aui-save-button"]').click()
-            cy.get('div[role="alert"]').should('have.class', 'bg-negative')
+            waitPageProgress()
+            cy.get('div[data-cy="master-flag"]').should('not.exist')
+            cy.get('div[data-cy="active-flag"]').should('not.exist')
+            cy.get('div[data-cy="readonly-flag"]').should('not.exist')
+            cy.get('div[data-cy="show-password-flag"]').should('not.exist')
+            cy.get('div[data-cy="can-reset-password-flag"]').should('not.exist')
+            cy.get('div[data-cy="show-cdrs-flag"]').should('not.exist')
+            cy.get('div[data-cy="show-billing-info-flag"]').should('not.exist')
         })
 
         it('Enable master for reseller admin and check if permission is applied correctly', () => {

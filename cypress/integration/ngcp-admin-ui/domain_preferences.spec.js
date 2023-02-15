@@ -132,6 +132,7 @@ context('Domain preferences tests', () => {
 
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
+            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
@@ -170,6 +171,7 @@ context('Domain preferences tests', () => {
 
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
+            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
@@ -189,6 +191,7 @@ context('Domain preferences tests', () => {
 
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
+            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
@@ -204,6 +207,7 @@ context('Domain preferences tests', () => {
 
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
+            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
@@ -217,6 +221,7 @@ context('Domain preferences tests', () => {
 
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
+            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
@@ -292,6 +297,7 @@ context('Domain preferences tests', () => {
 
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
+            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
@@ -366,6 +372,7 @@ context('Domain preferences tests', () => {
 
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
+            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
@@ -403,6 +410,7 @@ context('Domain preferences tests', () => {
 
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
+            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
@@ -442,6 +450,7 @@ context('Domain preferences tests', () => {
 
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
+            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
@@ -455,6 +464,7 @@ context('Domain preferences tests', () => {
 
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
+            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()

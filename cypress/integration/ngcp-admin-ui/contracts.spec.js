@@ -167,8 +167,8 @@ context('Contract tests', () => {
                     } else {
                         searchInDataTable(resellerContract.external_id)
                     }
+                    cy.get('[data-cy=aui-data-table] .q-checkbox').click()
                     clickDataTableSelectedMoreMenuItem('contractEdit')
-
                     waitPageProgress()
                     cy.qSelect({ dataCy: 'contract-status', filter: '', itemContains: 'Pending' })
                     cy.get('[data-cy="aui-save-button"]').click()

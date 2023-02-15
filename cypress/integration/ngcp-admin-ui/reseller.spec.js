@@ -4,7 +4,9 @@ import {
     getRandomNum,
     waitPageProgress,
     clickToolbarActionButton,
-    deleteItemOnListPageBy, searchInDataTable, clickDataTableSelectedMoreMenuItem
+    deleteItemOnListPageBy,
+    searchInDataTable,
+    clickDataTableSelectedMoreMenuItem
 } from '../../support/ngcp-admin-ui/utils/common'
 
 import {
@@ -124,6 +126,7 @@ context('Reseller tests', () => {
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
+            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('resellerEdit')
             waitPageProgress()
             cy.qSelect({ dataCy: 'reseller-status', filter: '', itemContains: 'Locked' })
@@ -139,6 +142,7 @@ context('Reseller tests', () => {
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
+            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('resellerDetails')
             waitPageProgress()
             cy.get('[data-cy="aui-main-menu-item--reseller-details-branding"]').click()

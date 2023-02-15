@@ -91,6 +91,7 @@ context('Subscriber tests', () => {
 
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
+                cy.get('[data-cy=aui-data-table] .q-checkbox').click()
                 clickDataTableSelectedMoreMenuItem('subscriberDetails')
 
                 cy.get('[data-cy="aui-main-menu-item--subscriber-details-voicemail-settings"]').click()
@@ -134,6 +135,7 @@ context('Subscriber tests', () => {
 
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
+                cy.get('[data-cy=aui-data-table] .q-checkbox').click()
                 clickDataTableSelectedMoreMenuItem('subscriberDetails')
 
                 cy.get('[data-cy="aui-main-menu-item--subscriber-details-voicemail-settings"]').click()
