@@ -240,7 +240,7 @@ context('Fax settings page tests', () => {
                     cy.get('div[class="csc-list-item-head-menu"]').click()
                     cy.get('div[data-cy="destination-delete"]').click()
 
-                    cy.get('div[data-cy="csc-dialog-delete"]').click()
+                    cy.get('button[data-cy="csc-dialog-delete"]').click()
                     cy.get('div[data-cy="csc-list-item-title"]').contains('<test@mail.com> as PS').should('not.exist')
                 } else {
                     cy.log('Not a SPPRO instance, exiting test...')
