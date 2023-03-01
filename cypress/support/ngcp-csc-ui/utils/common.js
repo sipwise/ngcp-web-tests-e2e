@@ -1,8 +1,8 @@
 export const getRandomNum = (maxLength = 5) => Math.floor((Math.random() * Math.pow(10, maxLength)) + 1)
 
 export const waitPageProgress = () => {
-    cy.get('[data-cy="q-spinner-dots"]').should('be.visible')
-    cy.get('[data-cy="q-spinner-dots"]').should('not.exist')
+    cy.get('main[data-cy="q-page"] svg[data-cy="q-spinner-dots"]').should('be.visible')
+    cy.get('main[data-cy="q-page"] svg[data-cy="q-spinner-dots"]').should('not.exist')
 }
 
 export const clickToolbarActionButton = (actionName) => {
