@@ -79,7 +79,8 @@ context('Call Settings "General" page tests', () => {
                 apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
             })
         })
-        it('Enable "Music on Hold"', () => {
+
+        it('Enable/Disable "Music on Hold"', () => {
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -91,6 +92,20 @@ context('Call Settings "General" page tests', () => {
             cy.get('div[data-cy="music-on-hold"][aria-checked="true"]').should('be.visible')
             cy.get('div[data-cy="music-on-hold"]').click()
             cy.get('div[data-cy="music-on-hold"][aria-checked="false"]').should('be.visible')
+        })
+
+        it('Enable/Disable "Hide your number to the callee"', () => {
+            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.get('a[href="#/user/dashboard"]').should('be.visible')
+
+            cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
+            cy.get('a[href="#/user/call-blocking/privacy"]').click()
+
+            cy.get('div[data-cy="csc-privacy-hide"][aria-disabled="true"]').should('not.exist')
+            cy.get('div[data-cy="csc-privacy-hide"]').click()
+            cy.get('div[data-cy="csc-privacy-hide"][aria-checked="true"]').should('be.visible')
+            cy.get('div[data-cy="csc-privacy-hide"]').click()
+            cy.get('div[data-cy="csc-privacy-hide"][aria-checked="false"]').should('be.visible')
         })
     })
 })
