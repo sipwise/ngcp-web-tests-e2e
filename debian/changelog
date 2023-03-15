@@ -1,3 +1,14 @@
+ngcp-web-tests-e2e (10.5.5.0+0~mr10.5.5.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [779e418] TT#122872 fix preference page tests failing
+  * [76d98ac] TT#122872 apply subscriber master data fix for lists in domain_pref
+  * [0e9bbf2] TT#122872 remove party_call_control setting
+  * [b2e70d9] TT#122872 fix admin change password tests
+  * [8d72e43] TT#122872 big fixup package for mr10.5
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 15 Mar 2023 16:09:45 +0100
+
 ngcp-web-tests-e2e (10.5.4.0+0~mr10.5.4.0) unstable; urgency=medium
 
   [ Nico Schedel ]
