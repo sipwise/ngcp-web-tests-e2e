@@ -1,3 +1,22 @@
+ngcp-web-tests-e2e (11.4.0.0+0~mr11.4.0.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [0eaab73] TT#122872 fix preference page tests failing
+  * [4230e75] TT#122872 fix admin change password tests
+  * [b9336f3] TT#122872 fix "edit subscriber master data" test
+  * [3e9e4fc] TT#122872 subscriber fax features test should only run on sppro
+  * [17e2124] MT#55492 fix conversation tab test
+  * [fcaafde] TT#122872 apply subscriber master data fix for pilot and seat subs
+  * [bc740a1] TT#122872 apply subscriber master data fix for lists in domain_pref
+  * [b14d4c4] MT#55492 add music_on_hold test
+  * [89530ef] MT#55492 fix faxsettings test
+  * [45a0c86] MT#55492 add voicebox page tests
+  * [eede7c9] MT#55492 add call blocking tests
+  * [769847a] MT#55492 add privacy test
+  * [ad012b9] MT#55492 add call recording tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 24 Mar 2023 13:04:56 +0100
+
 ngcp-web-tests-e2e (11.3.0.0+0~mr11.3.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
