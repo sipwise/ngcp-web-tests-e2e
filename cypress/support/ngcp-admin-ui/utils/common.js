@@ -33,7 +33,7 @@ export const deleteItemOnListPageBy = (searchText, searchCriteria = null) => {
     cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
 }
 export const clickDataTableSelectedMoreMenuItem = (actionName) => {
-    cy.get('[data-cy=aui-data-table] tr.selected [data-cy="row-more-menu-btn"]:first').click()
+    cy.get('[data-cy="row-more-menu-btn"]:first').click()
     return cy.get(`.q-menu [data-cy="aui-data-table-row-menu--${actionName}"]`).click()
 }
 export const deleteDownloadsFolder = () => {
