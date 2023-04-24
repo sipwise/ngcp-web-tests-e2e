@@ -48,8 +48,8 @@ const loginInfo = {
     password: subscriber.webpassword
 }
 
-context('Call recordings tests', () => {
-    context('UI Call recordings tests', () => {
+context('Reminder tests', () => {
+    context('UI reminder tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {

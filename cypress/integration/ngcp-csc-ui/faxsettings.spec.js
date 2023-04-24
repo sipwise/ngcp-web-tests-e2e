@@ -48,7 +48,7 @@ const loginInfo = {
 }
 
 context('Fax settings page tests', () => {
-    context('UI Dashboard tests', () => {
+    context('UI fax settings tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {

@@ -47,8 +47,8 @@ const loginInfo = {
     password: subscriber.webpassword
 }
 
-context('Call blocking page tests', () => {
-    context('UI call blocking tests', () => {
+context('Call forwarding page tests', () => {
+    context('UI call forwarding tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
