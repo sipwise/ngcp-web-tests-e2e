@@ -1,27 +1,33 @@
-# DOCKER_NAME=ngcp-web-tests-e2e-bullseye
-FROM docker.mgm.sipwise.com/sipwise-bullseye:latest
+# DOCKER_NAME=ngcp-web-tests-e2e-bookworm
+FROM docker.mgm.sipwise.com/sipwise-bookworm:latest
 
 # Important! Update this no-op ENV variable when this Dockerfile
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT 2022-08-26
+ENV REFRESHED_AT 2023-07-28
 
 RUN apt-get update && \
     apt-get install --assume-yes --no-install-recommends \
+        bzip2 \
         nodejs \
         yarnpkg \
-        libgtk2.0-0 libgtk-3-0 libnotify-dev libgconf-2-4 libgbm-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb \
-        && \
+        libdbus-glib-1-2 libgtk2.0-0 libgtk-3-0 libnotify-dev libgconf-2-4 libgbm-dev libnss3 libxss1 libasound2 libxtst6 \
+        wget \
+        xauth \
+        xvfb && \
     apt-get clean
 
-# installing Chrome
-RUN wget https://deb.sipwise.com/files/google-chrome-stable_current_amd64.deb && \
-    apt install -y ./google-chrome-stable_current_amd64.deb && \
-    rm -f google-chrome-stable_current_amd64.deb
+# installing Chrome (114.0.5735.198)
+RUN wget https://deb.sipwise.com/files/google-chrome-stable_114_amd64.deb && \
+    apt install -y ./google-chrome-stable_114_amd64.deb  && \
+    rm -f google-chrome-stable_114_amd64.deb
 
-# installing Firefox
-# TODO: add Firefox installation code
+# installing firefox (lang=en_US) (114.0.2)
+RUN wget http://deb.sipwise.com/files/firefox-114.0.2.tar.bz2 && \
+    tar xvf firefox-114.0.2.tar.bz2 && \
+    ln -s /home/selenium/firefox/firefox /usr/bin/firefox && \
+    rm -f firefox-114.0.2.tar.bz2
 
 WORKDIR /code
 ADD package.json /code/
@@ -40,11 +46,11 @@ RUN echo "cd /code && ./run_web_e2e" >/root/.bash_history
 # (jump to the next section if you don't want to build yourself!):
 #
 # NOTE: run the following command from root folder of git repository to build docker image locally and run the container:
-# % docker build --tag="ngcp-web-tests-e2e-bullseye" -f ./t/Dockerfile .
+# % docker build --tag="ngcp-web-tests-e2e-bookworm" -f ./t/Dockerfile .
 # % docker run --rm -i -t -v "/${PWD}/cypress:/code/cypress:rw" -v "/${PWD}/package.json:/code/package.json:ro" -v "/${PWD}/cypress.template.json:/code/cypress.template.json:ro" -v "/${PWD}/t/run_web_e2e:/code/run_web_e2e:ro" ngcp-web-tests-e2e-bullseye:latest bash
 #
 # Use the existing docker image:
-# % docker pull docker.mgm.sipwise.com/ngcp-web-tests-e2e-bullseye
+# % docker pull docker.mgm.sipwise.com/ngcp-web-tests-e2e-bookworm
 #
 # NOTE: run the following command from root folder of git repository to run a new container:
 # % docker run --rm -i -t -v "/${PWD}/cypress:/code/cypress:rw" -v "/${PWD}/package.json:/code/package.json:ro" -v "/${PWD}/cypress.template.json:/code/cypress.template.json:ro" -v "/${PWD}/t/run_web_e2e:/code/run_web_e2e:ro" docker.mgm.sipwise.com/ngcp-web-tests-e2e-bullseye:latest bash
