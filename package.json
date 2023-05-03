@@ -8,23 +8,23 @@
     "private": true,
     "scripts": {
         "start": "cypress open",
-        "start:csc": "cypress open --config-file cypress.tdd.csc.json",
-        "start:aui": "cypress open --config-file cypress.tdd.aui.json",
+        "start:csc": "cypress open --config-file cypress.tdd.csc.config.js",
+        "start:aui": "cypress open --config-file cypress.tdd.aui.config.js",
         "docker:rebuild:local": "docker build -f ./t/Dockerfile . -t ngcp-web-tests-e2e-bullseye",
         "docker:run:local": "bash ./bin/run-docker.sh local",
         "docker:run": "bash ./bin/run-docker.sh",
-        "ci:csc": "cypress run --config-file cypress.ci.csc.json",
-        "ci:aui": "cypress run --config-file cypress.ci.aui.json",
-        "tdd:csc": "cypress run --config-file cypress.tdd.csc.json",
-        "tdd:aui": "cypress run --config-file cypress.tdd.aui.json",
-        "tdd:setup": "cp ./cypress.tdd.csc.template.json ./cypress.tdd.csc.json && cp ./cypress.tdd.aui.template.json ./cypress.tdd.aui.json"
+        "ci:csc": "cypress run --config-file cypress.ci.csc.config.js",
+        "ci:aui": "cypress run --config-file cypress.ci.aui.config.js",
+        "tdd:csc": "cypress run --config-file cypress.tdd.csc.config.js",
+        "tdd:aui": "cypress run --config-file cypress.tdd.aui.config.js",
+        "tdd:setup": "cp ./cypress.tdd.csc.template.json ./cypress.tdd.csc.json && cp ./cypress.tdd.aui.template.json ./cypress.tdd.aui.config.js"
     },
     "dependencies": {
-        "@nuintun/qrcode": "^3.0.1",
-        "adm-zip": "0.5.9",
-        "cypress": "9.7.0",
+        "@nuintun/qrcode": "^3.3.1",
+        "adm-zip": "0.5.10",
+        "cypress": "13.1.0",
         "cypress-wait-until": "1.7.2",
-        "jwt-decode": "2.2.0"
+        "jwt-decode": "3.1.2"
     },
     "devDependencies": {
         "eslint": "^7.15.0",

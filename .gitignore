@@ -22,9 +22,13 @@ cypress/downloads
 
 cypress.json
 cypress.tdd.aui.json
+cypress.tdd.aui.config.js
 cypress.tdd.csc.json
+cypress.tdd.csc.config.js
 cypress.ci.aui.json
+cypress.ci.aui.config.js
 cypress.ci.csc.json
+cypress.ci.csc.config.js
 /docker_results
 
 core
