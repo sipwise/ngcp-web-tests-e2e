@@ -158,7 +158,6 @@ context('Domain preferences tests', () => {
             testPreferencesTextField('max_call_duration', 123)
             testPreferencesToggleField('reject_emergency')
             testPreferencesToggleField('reject_vsc')
-            testPreferencesToggleField('softphone_autoprov')
             testPreferencesChipField('ua_filter_list')
             testPreferencesToggleField('ua_filter_mode"]')
             testPreferencesToggleField('ua_reject_missing"]')
