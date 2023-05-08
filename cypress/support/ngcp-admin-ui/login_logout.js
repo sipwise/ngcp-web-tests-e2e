@@ -108,7 +108,7 @@ Cypress.Commands.add('loginUI', (username, password, waitForSidemenu = true) => 
         // Note: Unfortunately we cannot fully relay on requests waiting because we might have different amount of requests
         //       according to the user type.
         //       So, to be sure that we are logged in we are waiting for an unique UI element of MainLayout
-        cy.get('.q-drawer', quiet).should('to.be.visible', quiet)
+        cy.get('.q-drawer', quiet, { timeout: 10000 }).should('be.visible', quiet)
     }
 
     log.end()
@@ -130,7 +130,7 @@ Cypress.Commands.add('login', (username, password, loginMode = defaultLoginMode)
         cy.wait(500)
         loginResponse = cy.loginUI(username, password, false)
     }
-    cy.get('.q-drawer').should('to.be.visible')
+    cy.get('.q-drawer', { timeout: 10000 }).should('be.visible')
     return loginResponse
 })
 
