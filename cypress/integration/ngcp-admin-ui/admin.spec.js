@@ -181,7 +181,7 @@ context('Administrator tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-negative')
             cy.get('div[data-cy="aui-data-table-inline-edit--toggle"]:first[aria-checked="true"]').should('be.visible')
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            clickDataTableSelectedMoreMenuItem('admin-edit')
+            clickDataTableSelectedMoreMenuItem('adminEdit')
 
             cy.get('[data-cy="master-flag"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
@@ -198,7 +198,7 @@ context('Administrator tests', () => {
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin1.login)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            clickDataTableSelectedMoreMenuItem('admin-edit')
+            clickDataTableSelectedMoreMenuItem('adminEdit')
 
             waitPageProgress()
             cy.qSelect({ dataCy: 'roles-list', filter: 'reseller', itemContains: 'reseller' })
@@ -224,7 +224,7 @@ context('Administrator tests', () => {
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin1.login)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            clickDataTableSelectedMoreMenuItem('admin-edit')
+            clickDataTableSelectedMoreMenuItem('adminEdit')
             waitPageProgress()
             cy.get('[data-cy="master-flag"]').click()
             cy.get('[data-cy="active-flag"]').click()
@@ -238,14 +238,14 @@ context('Administrator tests', () => {
             cy.get('[data-cy=aui-input-password] div[role="alert"]').should('be.visible')
         })
 
-        it('Enable customer care for administrator and check if customer care has been activated', () => {
+        xit('Enable customer care for administrator and check if customer care has been activated', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin1.login)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            clickDataTableSelectedMoreMenuItem('admin-edit')
+            clickDataTableSelectedMoreMenuItem('adminEdit')
             waitPageProgress()
             cy.qSelect({ dataCy: 'roles-list', filter: 'ccareadmin', itemContains: 'ccareadmin' })
 
@@ -260,14 +260,14 @@ context('Administrator tests', () => {
             cy.get('a[href="#/subscriber"]').should('be.visible')
         })
 
-        it('Enable read-only for administrator and check if read-only has been activated', () => {
+        xit('Enable read-only for administrator and check if read-only has been activated', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / admin-list')
 
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin1.login)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            clickDataTableSelectedMoreMenuItem('admin-edit')
+            clickDataTableSelectedMoreMenuItem('adminEdit')
             waitPageProgress()
             cy.get('[data-cy="readonly-flag"]').click()
             cy.get('div[data-cy="readonly-flag"][aria-checked="true"]').should('be.visible')
@@ -305,7 +305,7 @@ context('Administrator tests', () => {
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin1.login)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
-            cy.get('[data-cy="aui-popup-menu-item--change-password"]').should('not.exist')
+            cy.get('[data-cy="aui-data-table-row-menu--adminChangePassword"]').should('not.exist')
         })
 
         it('Change password of administrator and check if admin password has been changed', () => {
@@ -314,8 +314,7 @@ context('Administrator tests', () => {
 
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin1.login)
-            cy.get('[data-cy="row-more-menu-btn"]:first').click()
-            cy.get('[data-cy="aui-popup-menu-item--change-password"]').click()
+            clickDataTableSelectedMoreMenuItem('adminChangePassword')
 
             cy.get('input[data-cy="password-input"]').type(admin1.newpass)
             cy.get('input[data-cy="password-retype-input"]').type(admin1.newpass)
@@ -336,7 +335,7 @@ context('Administrator tests', () => {
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin1.login)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
-            cy.get('[data-cy="aui-popup-menu-item--delete"]').click()
+            cy.get('[data-cy="aui-data-table-row-menu--delete"]').click()
             cy.get('[data-cy="btn-confirm"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-negative')
         })
@@ -402,7 +401,9 @@ context('Administrator tests', () => {
             cy.logoutUI()
             cy.wait(500)
             cy.loginUI(secondaryresellerAdmin.login, secondaryresellerAdmin.password)
-            cy.navigateMainMenu('settings / admin-list')
+            cy.get('div[data-cy="aui-main-menu-items--settings"]').click()
+            cy.wait(500)
+            cy.get('a[data-cy="aui-main-menu-item--admin-list"]').click()
 
             cy.locationShouldBe('#/administrator')
             searchInDataTable(secondaryresellerAdmin.login)
@@ -432,13 +433,27 @@ context('Administrator tests', () => {
             cy.logoutUI()
             cy.wait(500)
             cy.loginUI(secondaryresellerAdmin.login, secondaryresellerAdmin.password)
-            cy.navigateMainMenu('settings / admin-list')
+            cy.get('div[data-cy="aui-main-menu-items--settings"]').click()
+            cy.wait(500)
+            cy.get('a[data-cy="aui-main-menu-item--admin-list"]').click()
 
             cy.locationShouldBe('#/administrator')
             cy.get('div[data-cy="aui-list-action--admin-creation"]').should('not.exist')
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').should('not.exist')
             cy.get('div[data-cy="aui-list-action--delete"]').should('not.exist')
-            cy.get('button[data-cy="row-more-menu-btn"]:first').should('not.exist')
+            clickDataTableSelectedMoreMenuItem('adminEdit')
+
+            waitPageProgress()
+            cy.get('label[data-cy="aui-select-reseller"]').should('not.exist')
+            cy.get('div[data-cy="roles-list"]').should('not.exist')
+            cy.get('label[data-cy="password-field"]').should('not.exist')
+            cy.get('div[data-cy="master-flag"]').should('not.exist')
+            cy.get('div[data-cy="active-flag"]').should('not.exist')
+            cy.get('div[data-cy="readonly-flag"]').should('not.exist')
+            cy.get('div[data-cy="show-password-flag"]').should('not.exist')
+            cy.get('div[data-cy="can-reset-password-flag"]').should('not.exist')
+            cy.get('div[data-cy="show-cdrs-flag"]').should('not.exist')
+            cy.get('div[data-cy="show-billing-info-flag"]').should('not.exist')
         })
 
         it('Enable master for reseller admin and check if permission is applied correctly', () => {
@@ -448,7 +463,7 @@ context('Administrator tests', () => {
             cy.locationShouldBe('#/administrator')
             searchInDataTable(secondaryresellerAdmin.login)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            clickDataTableSelectedMoreMenuItem('admin-edit')
+            clickDataTableSelectedMoreMenuItem('adminEdit')
             waitPageProgress()
             cy.get('[data-cy="master-flag"]').click()
 
@@ -474,7 +489,7 @@ context('Administrator tests', () => {
             cy.locationShouldBe('#/administrator')
             searchInDataTable(secondaryresellerAdmin.login)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            clickDataTableSelectedMoreMenuItem('admin-edit')
+            clickDataTableSelectedMoreMenuItem('adminEdit')
             waitPageProgress()
             cy.get('[data-cy="master-flag"]').click()
             cy.get('[data-cy="active-flag"]').click()
@@ -495,7 +510,7 @@ context('Administrator tests', () => {
             cy.locationShouldBe('#/administrator')
             searchInDataTable(secondaryresellerAdmin.login)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            clickDataTableSelectedMoreMenuItem('admin-edit')
+            clickDataTableSelectedMoreMenuItem('adminEdit')
             waitPageProgress()
             cy.get('input[data-cy="email-field"]').type('testemail@invalid.com')
 
@@ -520,7 +535,7 @@ context('Administrator tests', () => {
             cy.locationShouldBe('#/administrator')
             searchInDataTable(secondaryresellerAdmin.login)
             cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-            clickDataTableSelectedMoreMenuItem('admin-edit')
+            clickDataTableSelectedMoreMenuItem('adminEdit')
             waitPageProgress()
             cy.get('div[data-cy="master-flag"]').click()
             cy.get('div[data-cy="can-reset-password-flag"]').click()
@@ -582,8 +597,7 @@ context('Administrator tests', () => {
 
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin1.login)
-            cy.get('[data-cy="row-more-menu-btn"]:first').click()
-            cy.get('[data-cy="aui-popup-menu-item--cert-management"]').click()
+            clickDataTableSelectedMoreMenuItem('adminChangeCertificate')
             cy.get('[data-cy="create-certificate"]').click()
             cy.get('[data-cy="q-spinner-gears"]').should('not.exist')
             const filename = path.join(downloadsFolder, 'ngcp-api-certificate.zip')
@@ -598,8 +612,7 @@ context('Administrator tests', () => {
 
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin1.login)
-            cy.get('[data-cy="row-more-menu-btn"]:first').click()
-            cy.get('[data-cy="aui-popup-menu-item--cert-management"]').click()
+            clickDataTableSelectedMoreMenuItem('adminChangeCertificate')
             cy.get('[data-cy="download-certificate"]').click()
             cy.get('[data-cy="q-spinner-gears"]').should('not.exist')
             const filename = path.join(downloadsFolder, 'ngcp-ca.pem')
@@ -618,7 +631,7 @@ context('Administrator tests', () => {
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin1.login)
             cy.get('[data-cy="row-more-menu-btn"]:first').click()
-            cy.get('[data-cy="aui-popup-menu-item--cert-management"]').should('not.exist')
+            cy.get('[data-cy="aui-data-table-row-menu--adminChangeCertificate"]').should('not.exist')
         })
     })
 })

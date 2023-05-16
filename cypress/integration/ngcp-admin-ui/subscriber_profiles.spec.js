@@ -5,6 +5,7 @@ import {
     waitPageProgress,
     deleteItemOnListPageBy,
     searchInDataTable,
+    clickDataTableSelectedMoreMenuItem,
     clickToolbarActionButton
 } from '../../support/ngcp-admin-ui/utils/common'
 
@@ -84,11 +85,11 @@ context('Subscriber profile tests', () => {
 
             cy.locationShouldBe('#/subscriberprofile')
             searchInDataTable(profileSet.name)
-            cy.get('[data-cy="row-more-menu-btn"]:first').click()
-            cy.get('[data-cy="aui-popup-menu-item--subscriber-profile-set-edit"]').click()
+            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+            clickDataTableSelectedMoreMenuItem('subscriberProfileSetEdit')
             cy.get('[data-cy="profile-set-description"]input').clear().type(profileSet.descriptionNew)
             cy.get('[data-cy="aui-save-button"]').click()
-            cy.contains('.q-notification', 'Profile saved successfully').should('be.visible')
+            cy.contains('.q-notification', 'Subscriber Profile Set saved successfully').should('be.visible')
             cy.get('[data-cy="aui-close-button"]').click()
             waitPageProgress()
             cy.contains('[data-cy="q-td--description"]', profileSet.descriptionNew).should('be.visible')
@@ -99,10 +100,10 @@ context('Subscriber profile tests', () => {
             cy.navigateMainMenu('settings / subscriber-profile-set-list')
             cy.locationShouldBe('#/subscriberprofile')
             searchInDataTable(profileSet.name)
-            cy.get('[data-cy="row-more-menu-btn"]:first').click()
-            cy.get('[data-cy="aui-popup-menu-item--subscriber-profiles-list"]').click()
+            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+            clickDataTableSelectedMoreMenuItem('subscriberProfileList')
             waitPageProgress()
-            clickToolbarActionButton('subscriber-profiles-create')
+            clickToolbarActionButton('subscriber-profile-create')
             cy.get('[data-cy=aui-save-button]').click()
             cy.get('label[data-cy="profile-name"] div[role="alert"]').should('be.visible')
             cy.get('label[data-cy="profile-description"] div[role="alert"]').should('be.visible')
@@ -114,17 +115,17 @@ context('Subscriber profile tests', () => {
 
             cy.locationShouldBe('#/subscriberprofile')
             searchInDataTable(profileSet.name)
-            cy.get('[data-cy="row-more-menu-btn"]:first').click()
-            cy.get('[data-cy="aui-popup-menu-item--subscriber-profiles-list"]').click()
+            cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+            clickDataTableSelectedMoreMenuItem('subscriberProfileList')
             waitPageProgress()
-            clickToolbarActionButton('subscriber-profiles-create')
+            clickToolbarActionButton('subscriber-profile-create')
             cy.get('[data-cy="profile-name"]input').type(profile.profilename)
             cy.get('[data-cy="profile-description"]input').type(profile.description)
             cy.get('div[aria-label="block_in_list"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             waitPageProgress()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-            clickToolbarActionButton('subscriber-profiles-create')
+            clickToolbarActionButton('subscriber-profile-create')
             cy.get('[data-cy="profile-name"]input').type(profile.profilename2)
             cy.get('[data-cy="profile-description"]input').type(profile.description)
             cy.get('[data-cy="profile-set-default-flag"]').click()

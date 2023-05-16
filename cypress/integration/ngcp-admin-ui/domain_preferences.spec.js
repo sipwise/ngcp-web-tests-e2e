@@ -133,7 +133,7 @@ context('Domain preferences tests', () => {
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-            clickDataTableSelectedMoreMenuItem('domain-preferences')
+            clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
             cy.qSelect({ dataCy: 'category-selection', filter: 'Access Restrictions', itemContains: 'Access Restrictions' })
@@ -172,7 +172,7 @@ context('Domain preferences tests', () => {
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-            clickDataTableSelectedMoreMenuItem('domain-preferences')
+            clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
             cy.qSelect({ dataCy: 'category-selection', filter: 'Applications', itemContains: 'Applications' })
@@ -193,7 +193,7 @@ context('Domain preferences tests', () => {
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-            clickDataTableSelectedMoreMenuItem('domain-preferences')
+            clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
             cy.qSelect({ dataCy: 'category-selection', filter: 'Call Blockings', itemContains: 'Call Blockings' })
@@ -209,7 +209,7 @@ context('Domain preferences tests', () => {
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-            clickDataTableSelectedMoreMenuItem('domain-preferences')
+            clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
             cy.qSelect({ dataCy: 'category-selection', filter: 'IMS Application Server', itemContains: 'IMS Application Server' })
@@ -223,7 +223,7 @@ context('Domain preferences tests', () => {
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-            clickDataTableSelectedMoreMenuItem('domain-preferences')
+            clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
             cy.qSelect({ dataCy: 'category-selection', filter: 'Internal', itemContains: 'Internal' })
@@ -283,7 +283,7 @@ context('Domain preferences tests', () => {
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-            clickDataTableSelectedMoreMenuItem('domain-preferences')
+            clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
             cy.qSelect({ dataCy: 'category-selection', filter: 'Media Codec Transcoding Options', itemContains: 'Media Codec Transcoding Options' })
@@ -348,7 +348,7 @@ context('Domain preferences tests', () => {
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-            clickDataTableSelectedMoreMenuItem('domain-preferences')
+            clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
             cy.qSelect({ dataCy: 'category-selection', filter: 'NAT and Media Flow Control', itemContains: 'NAT and Media Flow Control' })
@@ -386,7 +386,7 @@ context('Domain preferences tests', () => {
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-            clickDataTableSelectedMoreMenuItem('domain-preferences')
+            clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
             cy.qSelect({ dataCy: 'category-selection', filter: 'Number Manipulations', itemContains: 'Number Manipulations' })
@@ -420,7 +420,7 @@ context('Domain preferences tests', () => {
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-            clickDataTableSelectedMoreMenuItem('domain-preferences')
+            clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
             cy.qSelect({ dataCy: 'category-selection', filter: 'Remote Authentication', itemContains: 'Remote Authentication' })
@@ -434,7 +434,7 @@ context('Domain preferences tests', () => {
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain)
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-            clickDataTableSelectedMoreMenuItem('domain-preferences')
+            clickDataTableSelectedMoreMenuItem('domainPreferences')
 
             waitPageProgress()
             cy.qSelect({ dataCy: 'category-selection', filter: 'Session Timers', itemContains: 'Session Timers' })
