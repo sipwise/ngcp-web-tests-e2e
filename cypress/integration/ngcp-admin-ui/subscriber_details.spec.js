@@ -4,6 +4,7 @@ import {
     getRandomNum,
     deleteDownloadsFolder,
     searchInDataTable,
+    clickDataTableSelectedMoreMenuItem,
     waitPageProgress
 } from '../../support/ngcp-admin-ui/utils/common'
 
@@ -90,8 +91,8 @@ context('Subscriber tests', () => {
 
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
-                cy.get('[data-cy="row-more-menu-btn"]:first').click()
-                cy.get('[data-cy="aui-popup-menu-item--subscriber-details"]').click()
+                cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+                clickDataTableSelectedMoreMenuItem('subscriberDetails')
 
                 cy.get('[data-cy="aui-main-menu-item--subscriber-details-voicemail-settings"]').click()
                 waitPageProgress()
@@ -134,8 +135,8 @@ context('Subscriber tests', () => {
 
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
-                cy.get('[data-cy="row-more-menu-btn"]:first').click()
-                cy.get('[data-cy="aui-popup-menu-item--subscriber-details"]').click()
+                cy.get('[data-cy=aui-data-table] .q-checkbox').click()
+                clickDataTableSelectedMoreMenuItem('subscriberDetails')
 
                 cy.get('[data-cy="aui-main-menu-item--subscriber-details-voicemail-settings"]').click()
                 waitPageProgress()

@@ -164,7 +164,7 @@ context('Contact tests', () => {
                         searchInDataTable(systemContact.email)
                     }
                     cy.get('[data-cy=aui-data-table] .q-checkbox').click()
-                    clickDataTableSelectedMoreMenuItem('contact-edit')
+                    clickDataTableSelectedMoreMenuItem('contactEdit')
 
                     // cy.locationShouldBe(formUrl) // TODO: parametric URLs
                     cy.get('input[data-cy="firstname-field"]').type(contactNames.firstname)

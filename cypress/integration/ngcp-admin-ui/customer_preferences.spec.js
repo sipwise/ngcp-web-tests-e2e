@@ -143,6 +143,7 @@ context('Customer preferences tests', () => {
 
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
+            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('customerPreferences')
 
             waitPageProgress()
@@ -166,6 +167,7 @@ context('Customer preferences tests', () => {
 
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
+            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('customerPreferences')
 
             waitPageProgress()
@@ -184,6 +186,7 @@ context('Customer preferences tests', () => {
 
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
+            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('customerPreferences')
 
             waitPageProgress()
@@ -210,6 +213,7 @@ context('Customer preferences tests', () => {
 
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
+            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('customerPreferences')
 
             waitPageProgress()
@@ -227,6 +231,7 @@ context('Customer preferences tests', () => {
 
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
+            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('customerPreferences')
 
             waitPageProgress()
