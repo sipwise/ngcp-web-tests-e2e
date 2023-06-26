@@ -1,3 +1,14 @@
+ngcp-web-tests-e2e (11.4.1.0+0~mr11.4.1.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [fba2c4b] MT#55492 add call forwarding tests
+  * [236c221] MT#55492 add reminder tests
+  * [6e4197a] MT#55492 add speed dial tests
+  * [4095b43] MT#55491 remove 'softphone_autoprov' setting check
+  * [50bf799] MT#55491 improve inconsistent login method
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 26 Jun 2023 14:11:34 +0200
+
 ngcp-web-tests-e2e (11.4.0.0+0~mr11.4.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
