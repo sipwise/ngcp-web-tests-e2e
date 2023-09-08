@@ -1074,6 +1074,73 @@ export const apiRemoveRewriteRuleSetBy = ({ name, authHeader }) => {
     })
 }
 
+export const defaultRewriteRuleCreationData = {
+    priority: 0,
+    description: "string",
+    set_id: 0,
+    enabled: true,
+    direction: "in",
+    replace_pattern: "string",
+    match_pattern: "string",
+    field: "callee"
+}
+
+export const apiCreateRewriteRules = ({ data, authHeader }) => {
+    cy.log('apiCreateRewriteRules', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/rewriterules/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetRewriteRulesId = ({ name, authHeader }) => {
+    cy.log('apiGetRewriteRulesId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/rewriterules`,
+        qs: {
+            description: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const rewriteRulesData = body?._embedded?.['ngcp:rewriterules']?.[0]
+        const rewriteRulesId = rewriteRulesData?.id
+        return rewriteRulesId
+    })
+}
+
+export const apiRemoveRewriteRulesBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveRewriteRulesBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/rewriterules`,
+        qs: {
+            description: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const rewriteRulesId = body?._embedded?.['ngcp:rewriterules']?.[0]?.id
+        if (body?.total_count === 1 && rewriteRules > 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/rewriterules/${rewriteRulesId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
 export const defaultNCOSLevelCreationData = {
     reseller_id: 0,
     level: 'string',
