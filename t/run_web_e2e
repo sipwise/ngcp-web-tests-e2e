@@ -19,7 +19,6 @@ fi
 echo "Found UI address '${ui_address}', processing further..."
 
 config_file="cypress.ci.${application_to_test}.config.js"
-cp cypress.ci.aui.template.js "${config_file}"
 sed -i -e "s|\"baseUrl\":.*|\"baseUrl\": \"${ui_address}\",|" "${config_file}"
 sed -i -e "s|\"apiHost\":.*|\"apiHost\": \"${api_address}\",|" "${config_file}"
 
