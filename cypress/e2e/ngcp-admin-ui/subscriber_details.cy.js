@@ -13,8 +13,7 @@ import {
     getRandomNum,
     deleteDownloadsFolder,
     searchInDataTable,
-    waitPageProgress,
-    clickDataTableSelectedMoreMenuItem
+    waitPageProgress
 } from '../../support/ngcp-admin-ui/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')

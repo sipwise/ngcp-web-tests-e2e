@@ -18,10 +18,8 @@ import {
     apiRemoveSystemContactBy,
     getRandomNum,
     waitPageProgress,
-    clickToolbarActionButton,
     deleteItemOnListPageBy,
     searchInDataTable,
-    clickDataTableSelectedMoreMenuItem
 } from '../../support/ngcp-admin-ui/e2e'
 
 const mainResellerAdmin = {

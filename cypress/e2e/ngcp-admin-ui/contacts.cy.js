@@ -3,7 +3,6 @@
 import {
     getRandomNum,
     waitPageProgress,
-    clickToolbarDropdownActionButton,
     deleteItemOnListPageBy,
     clickDataTableSelectedMoreMenuItem,
     searchInDataTable,

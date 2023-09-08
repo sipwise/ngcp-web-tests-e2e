@@ -7,9 +7,7 @@ import {
     getRandomNum,
     waitPageProgress,
     deleteItemOnListPageBy,
-    searchInDataTable,
-    clickToolbarActionButton,
-    clickDataTableSelectedMoreMenuItem
+    searchInDataTable
 } from '../../support/ngcp-admin-ui/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')

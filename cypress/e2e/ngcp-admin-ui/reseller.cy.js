@@ -10,10 +10,8 @@ import {
     apiRemoveSystemContactBy,
     getRandomNum,
     waitPageProgress,
-    clickToolbarActionButton,
     deleteItemOnListPageBy,
-    searchInDataTable,
-    clickDataTableSelectedMoreMenuItem
+    searchInDataTable
 } from '../../support/ngcp-admin-ui/e2e'
 
 const contract = {
