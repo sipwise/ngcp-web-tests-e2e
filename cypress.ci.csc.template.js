@@ -9,7 +9,6 @@ module.exports = defineConfig({
     experimentalMemoryManagement: true,
     screenshotOnRunFailure: true,
     video: true,
-    videoUploadOnPasses: true,
     viewportHeight: 800,
     viewportWidth: 1280,
     watchForFileChanges: false,
