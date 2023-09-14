@@ -185,7 +185,6 @@ context('Administrator tests', () => {
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-negative')
             cy.get('[data-cy="aui-close-button"]').click()
-            waitPageProgress()
             cy.get('div[data-cy="aui-data-table-inline-edit--toggle"]:first[aria-checked="true"]').should('be.visible')
         })
 
