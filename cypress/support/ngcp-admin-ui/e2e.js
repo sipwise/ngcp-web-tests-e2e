@@ -45,6 +45,7 @@ Cypress.Commands.add('navigateMainMenu', (path = '', waitForPageLoading = true) 
     if (pathParts.length === 2) {
         const [groupKey, subItemKey] = pathParts
         cy.get('div').contains('Settings').click()
+        cy.wait(500)
         cy.get('a[href="#/' + subItemKey + '"]:first').click()
     } else if (pathParts.length === 1) {
         cy.get('a').should('have.attr', 'href', '#/' + subItemKey).click()
@@ -115,6 +116,7 @@ Cypress.Commands.add('auiSelectLazySelect',
                 const dropdownListId = `#${id}_lb`
                 cy.get(dropdownListId).should('be.visible')
                     .find('.q-linear-progress').should('not.exist')
+                cy.wait(500)
                 cy.contains(`${dropdownListId} .q-item`, itemContains).click()
             })
         })
