@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (11.5.1.1+0~mr11.5.1.1) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [fea2d9d] MT#57567 MT#57568 update cypress and dependencies for admin and csc
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 18 Sep 2023 13:52:09 +0200
+
 ngcp-web-tests-e2e (11.5.1.0+0~mr11.5.1.0) unstable; urgency=medium
 
   * New release.
