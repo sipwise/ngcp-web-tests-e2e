@@ -218,6 +218,7 @@ context('NCOS tests', () => {
             cy.get('button[data-cy="row-more-menu-btn"]:first').click()
             cy.get('div[data-cy="aui-data-table-row-menu--addLevel"]').click()
 
+            waitPageProgress()
             cy.get('div[data-cy="ncos-set-levels-list"] input:last').type('thisshouldneverexist123')
             waitPageProgress()
 
