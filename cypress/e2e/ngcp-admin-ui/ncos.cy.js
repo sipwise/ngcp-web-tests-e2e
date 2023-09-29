@@ -7,7 +7,6 @@ import {
     searchInDataTable,
     apiCreateContract,
     apiCreateReseller,
-    apiCreateNCOSLNPCarrier,
     apiLoginAsSuperuser,
     apiRemoveSystemContactBy,
     apiRemoveContractBy,
@@ -17,7 +16,6 @@ import {
     apiCreateNCOSPattern,
     apiRemoveNCOSPatternBy,
     apiRemoveNCOSLevelBy,
-    apiRemoveNCOSLNPCarrierBy
 } from '../../support/ngcp-admin-ui/e2e'
 
 const path = require('path')
@@ -49,13 +47,6 @@ const NCOSLevel = {
     level: 'level' + getRandomNum(),
     mode: 'whitelist',
     description: 'desc' + getRandomNum()
-}
-
-const NCOSLNPCarrier = {
-    id: 0,
-    carrier_id: 3,
-    description: "desc" + getRandomNum(),
-    ncos_level_id: 0
 }
 
 const NCOSPattern = {
@@ -91,9 +82,6 @@ context('NCOS tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiCreateNCOSLevel({ data: NCOSLevel, authHeader }).then(({ id }) => {
                     NCOSLevel.id = id
-                    apiCreateNCOSLNPCarrier({ data: { ...NCOSLNPCarrier, ncos_level_id: id }, authHeader }).then(({ id }) => {
-                        NCOSLNPCarrier.id = id
-                    })
                     apiCreateNCOSPattern({ data: { ...NCOSPattern, ncos_level_id: id }, authHeader }).then(({ id }) => {
                         NCOSPattern.id = id
                     })
@@ -112,7 +100,6 @@ context('NCOS tests', () => {
 
         afterEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveNCOSLNPCarrierBy({ name: NCOSLNPCarrier.id, authHeader})
                 apiRemoveNCOSPatternBy({ name: NCOSPattern.pattern, authHeader })
                 apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
             })
