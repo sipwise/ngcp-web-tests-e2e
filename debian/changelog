@@ -1,3 +1,24 @@
+ngcp-web-tests-e2e (12.1.0.0+0~mr12.1.0.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [f448580] MT#57567 MT#57568 update cypress and dependencies for admin and csc
+  * [5555a91] MT#55492 remove duplicate config file copy
+  * [d832c47] MT#55492 fix file copy to docker container
+  * [1f5df7c] MT#55492 remove unneeded imports from tests
+  * [1aa37fb] MT#58247 add ncos tests to admin ui
+  * [6b44a3a] MT#57567 MT#57568 remove videoUploadOnPasses from template
+  * [84cd2b7] MT#57567 MT#57568 fix test errors on jenkins
+  * [35723d6] MT#57567 MT#57568 fix auiSelectLazySelect and navigateMainMenu
+  * [2c26769] MT#58247 fix for "add ncos level to ncos set" test
+  * [9e278c3] MT#58247 remove ncos lnp carrier API creation from test
+  * [83571d8] MT#58250 add rewrite rule set tests
+
+  [ Guillem Jover ]
+  * [c25c63c] MT#58381 Use short name for GPL-3 in debian/copyright
+  * [31e0c40] MT#58356 Update packaging for bookworm
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Sun, 15 Oct 2023 08:24:56 +0200
+
 ngcp-web-tests-e2e (12.0.1.0+0~mr12.0.1.0) unstable; urgency=medium
 
   * New release.
