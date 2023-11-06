@@ -136,7 +136,7 @@ context('Fax settings page tests', () => {
                     cy.get('button[data-cy="destination-add"]').click()
 
                     cy.get('input[data-cy="destination-email"]').type('invalidemail')
-                    cy.get('label[data-cy="destination-email"][error="true"]').should('be.visible')
+                    cy.get('div[role="alert"]').contains('Input a valid email address').should('be.visible')
                     cy.get('button[data-cy="destinaton-creation-confirm"][aria-disabled="true"]').should('be.visible')
                     cy.get('button[data-cy="destinaton-cancel-creation"]').click()
 
@@ -197,16 +197,17 @@ context('Fax settings page tests', () => {
                     cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
                     cy.get('div[data-cy="csc-list-item-title"]').click()
                     cy.get('i[data-cy="destination-icon-deliver-incoming"]').should('have.value', '')
-
+                    cy.wait(1000)
                     cy.get('div[data-cy="csc-list-item-title"]').click()
                     cy.get('div[data-cy="destinaton-deliver-outgoing"]').click()
                     cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
                     cy.get('div[data-cy="csc-list-item-title"]').click()
                     cy.get('i[data-cy="destination-icon-deliver-outgoing"]').should('have.value', '')
-
+                    cy.wait(1000)
                     cy.get('div[data-cy="csc-list-item-title"]').click()
                     cy.get('div[data-cy="destinaton-deliver-incoming"]').click()
                     cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
+                    cy.wait(1000)
                     cy.get('div[data-cy="destinaton-deliver-outgoing"]').click()
                     cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
                     cy.get('div[data-cy="csc-list-item-title"]').click()
