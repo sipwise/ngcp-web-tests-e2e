@@ -125,12 +125,12 @@ context('Dashboard page tests', () => {
             cy.get('div[data-cy="q-tab-call-fax-voicemail"]').click()
             cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
 
-            cy.get('label[data-cy="filter-from"]').click()
+            cy.get('input[data-cy="filter-from"]').click()
             cy.get('div[class="q-date__calendar-item q-date__calendar-item--in"] span').contains('1').click({ force: true })
             cy.wait(1000)
-            cy.get('label[data-cy="filter-to"]').click()
+            cy.get('input[data-cy="filter-to"]').click()
             cy.get('div[class="q-date__calendar-item q-date__calendar-item--in"] span').contains(dayjs().format('D')).click({ force: true })
-
+            cy.wait(1000)
             cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
         })
     })
