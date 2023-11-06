@@ -20,7 +20,7 @@ module.exports = defineConfig({
         },
         experimentalRunAllSpecs: true,
         baseUrl: 'https://ce-trunk.mgm.sipwise.com',
-        specPattern: 'cypress/e2e/ngcp-admin-ui/**/*.cy.{js,jsx,ts,tsx}',
-        supportFile: 'cypress/support/ngcp-admin-ui'
+        specPattern: 'cypress/e2e/ngcp-csc-ui/**/*.cy.{js,jsx,ts,tsx}',
+        supportFile: 'cypress/support/ngcp-csc-ui'
     }
 })
