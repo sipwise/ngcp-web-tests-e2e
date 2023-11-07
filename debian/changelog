@@ -1,10 +1,4 @@
-ngcp-web-tests-e2e (12.0.3.0+0~mr12.0.3.0) unstable; urgency=medium
-
-  * New release.
-
- -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 30 Oct 2023 17:05:58 +0100
-
-ngcp-web-tests-e2e (12.0.2.0+0~mr12.0.2.0) unstable; urgency=medium
+ngcp-web-tests-e2e (12.0.0.0+0~mr12.0.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
   * [f448580] MT#57567 MT#57568 update cypress and dependencies for admin and csc
@@ -23,13 +17,7 @@ ngcp-web-tests-e2e (12.0.2.0+0~mr12.0.2.0) unstable; urgency=medium
   * [c25c63c] MT#58381 Use short name for GPL-3 in debian/copyright
   * [31e0c40] MT#58356 Update packaging for bookworm
 
- -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Sun, 15 Oct 2023 08:24:54 +0200
-
-ngcp-web-tests-e2e (12.0.1.0+0~mr12.0.1.0) unstable; urgency=medium
-
-  * New release.
-
- -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 30 Aug 2023 18:05:19 +0200
+ -- Mykola Malkov <mmalkov@sipwise.com>  Tue, 07 Nov 2023 16:22:31 +0200
 
 ngcp-web-tests-e2e (11.5.0.0+0~mr11.5.0.0) unstable; urgency=medium
 
