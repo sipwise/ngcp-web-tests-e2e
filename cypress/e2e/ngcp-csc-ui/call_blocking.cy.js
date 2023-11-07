@@ -156,13 +156,12 @@ context('Call blocking page tests', () => {
             cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
             cy.get('button[data-cy="csc-block-number-save"]').click()
 
-            waitPageProgress()
+            cy.contains('testnumber').should('be.visible')
             cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
             cy.get('div[data-cy="csc-blocked-number-delete"]').click()
             cy.get('div[data-cy="q-card"]').contains('OK').click()
             cy.contains('testnumber').should('not.exist')
 
-            waitPageProgress()
             cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
             cy.get('div[data-cy="csc-blocked-number-delete"]').click()
             cy.get('div[data-cy="q-card"]').contains('OK').click()
@@ -226,13 +225,12 @@ context('Call blocking page tests', () => {
             cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
             cy.get('button[data-cy="csc-block-number-save"]').click()
 
-            waitPageProgress()
+            cy.contains('testnumber').should('be.visible')
             cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
             cy.get('div[data-cy="csc-blocked-number-delete"]').click()
             cy.get('div[data-cy="q-card"]').contains('OK').click()
             cy.contains('testnumber').should('not.exist')
 
-            waitPageProgress()
             cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
             cy.get('div[data-cy="csc-blocked-number-delete"]').click()
             cy.get('div[data-cy="q-card"]').contains('OK').click()
