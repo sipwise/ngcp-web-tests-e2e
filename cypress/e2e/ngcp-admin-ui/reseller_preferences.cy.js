@@ -82,7 +82,7 @@ context('Reseller preferences tests', () => {
             })
         })
 
-        it('Test all Reseller preferences in customer', () => {
+        it('Test all access restrictions preferences in reseller', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller')
 
@@ -92,6 +92,25 @@ context('Reseller preferences tests', () => {
             clickDataTableSelectedMoreMenuItem('resellerPreferences')
 
             waitPageProgress()
+            testPreferencesTextField('concurrent_max', 123, true)
+            testPreferencesTextField('concurrent_max_in', 123, true)
+            testPreferencesTextField('concurrent_max_in_total', 123, true)
+            testPreferencesTextField('concurrent_max_out', 123, true)
+            testPreferencesTextField('concurrent_max_out_total', 123, true)
+            testPreferencesTextField('concurrent_max_total', 123, true)
+        })
+
+        it('Test all CDR/EDR export settings in reseller', () => {
+            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
+
+            cy.locationShouldBe('#/reseller')
+            searchInDataTable(reseller.name)
+            cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
+            clickDataTableSelectedMoreMenuItem('resellerPreferences')
+
+            waitPageProgress()
+            cy.get('div[data-cy="q-item--cdr-export-field-separator"]').scrollIntoView()
             testPreferencesTextField('cdr_export_field_separator')
             testPreferencesListField('cdr_export_sclidui_rwrs', rewriteRuleSet.name)
         })
