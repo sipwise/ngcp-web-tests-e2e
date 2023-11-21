@@ -128,10 +128,11 @@ context('Rewrite Rule Set tests', () => {
 
         afterEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
                 if (cloneCreated) {
                     apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name + "clone", authHeader })
+                    cloneCreated = false
                 }
+                apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
             })
         })
 
