@@ -7,6 +7,8 @@ module.exports = defineConfig({
         password: 'administrator'
     },
     experimentalMemoryManagement: true,
+    numTestsKeptInMemory: 1,
+    retries: 1,
     screenshotOnRunFailure: true,
     video: true,
     viewportHeight: 800,
