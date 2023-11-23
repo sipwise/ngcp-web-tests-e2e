@@ -6,6 +6,12 @@ module.exports = defineConfig({
         username: 'administrator',
         password: 'administrator'
     },
+    experimentalMemoryManagement: true,
+    // Enable this if you run out of memory while running tests. You can specify the amount of tests that should be kept in RAM.
+    // Keep in mind that you have to stop tests when an error occours to look at test details.
+    // Otherwise test details will be discarded after some time.
+    // numTestsKeptInMemory: 2,
+    retries: 1,
     viewportHeight: 800,
     viewportWidth: 1280,
     watchForFileChanges: false,
