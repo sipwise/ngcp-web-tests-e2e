@@ -1,3 +1,18 @@
+ngcp-web-tests-e2e (12.2.0.0+0~mr12.2.0.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [823999a] MT#57568 fix cypress csc tests after quasar upgrade
+  * [41a1d1e] MT#57567 MT#57568 upgrade cypress to 13.4.0
+  * [f7c32f7] MT#57568 add fix for call blocking tests on jenkins
+  * [b59193a] MT#57567 MT#57568 upgrade cypress to 13.5.0
+  * [93ed280] MT#58247 fixes for domain and reseller preferences tests
+  * [73ce554] MT#57568 fix for "Set time and then enable reminder" test
+  * [c324cdb] MT#58247 fix for "clone rewrite rule set" test
+  * [e0acae2] MT#57567 MT#57568 add test retires and memory optimizations to configs
+  * [c046065] MT#57568 fix voicebox tests not properly waiting until actionable
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 29 Nov 2023 13:37:54 +0100
+
 ngcp-web-tests-e2e (12.1.0.0+0~mr12.1.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
