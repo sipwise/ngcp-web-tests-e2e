@@ -22,7 +22,7 @@
     "dependencies": {
         "@nuintun/qrcode": "^3.3.1",
         "adm-zip": "0.5.10",
-        "cypress": "13.1.0",
+        "cypress": "13.6.0",
         "cypress-wait-until": "1.7.2",
         "jwt-decode": "3.1.2"
     },
