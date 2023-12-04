@@ -1588,6 +1588,68 @@ export const apiRemoveSubscriberProfileBy = ({ name, authHeader }) => {
     })
 }
 
+export const defaultTimesetCreationData = {
+    calendarfile: "string",
+    name: "string",
+    reseller_id: "id"
+}
+
+export const apiCreateTimeset = ({ data, authHeader }) => {
+    cy.log('apiCreateTimeset', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/timesets/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetTimesetId = ({ name, authHeader }) => {
+    cy.log('apiGetTimesetId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/timesets`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const timesetData = body?._embedded?.['ngcp:timesets']?.[0]
+        const timesetId = timesetData?.id
+        return timesetId
+    })
+}
+
+export const apiRemoveTimesetBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveTimesetBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/timesets`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const timesetID = body?._embedded?.['ngcp:timesets']?.[0]?.id
+        if (body?.total_count === 1 && timesetID > 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/timesets/${timesetID}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
 export const apiGetMailboxLastItem = ({ mailboxName, filterSubject }) => {
     cy.log('apiGetMailboxLastItem', mailboxName)
     return cy.request({
