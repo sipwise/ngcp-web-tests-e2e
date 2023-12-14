@@ -1000,6 +1000,69 @@ export const apiRemoveSubscriberProfileSetBy = ({ name, authHeader }) => {
     })
 }
 
+export const defaultResellerPhonebookData = {
+    name: "string",
+    reseller_id: 0,
+    id: 0,
+    number: "string"
+}
+
+export const apiCreateResellerPhonebook = ({ data, authHeader }) => {
+    cy.log('apiCreateResellerPhonebook', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/resellerphonebookentries/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetResellerPhonebookId = ({ name, authHeader }) => {
+    cy.log('apiGetResellerPhonebookId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/resellerphonebookentries`,
+        qs: {
+            username: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const subscriberProfileSetData = body?._embedded?.['ngcp:resellerphonebookentries']?.[0]
+        const subscriberProfileSetId = subscriberProfileSetData?.id
+        return subscriberProfileSetId
+    })
+}
+
+export const apiRemoveResellerPhonebookBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveResellerPhonebookBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/resellerphonebookentries`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const subscriberProfileSetId = body?._embedded?.['ngcp:resellerphonebookentries']?.[0]?.id
+        if (body?.total_count === 1 && subscriberProfileSetId >= 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/resellerphonebookentries/${subscriberProfileSetId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
 export const defaultBillingProfileCreationData = {
     name: 'string',
     handle: 'string',
