@@ -888,6 +888,53 @@ export const apiRemoveEmergencyMappingContainerBy = ({ name, authHeader }) => {
     })
 }
 
+export const defaultEmergencyMappingCreationData = {
+    prefix: "string",
+    code: "string",
+    suffix: "string",
+    emergency_container_id: 0
+}
+
+export const apiCreateEmergencyMapping = ({ data, authHeader }) => {
+    cy.log('apiCreateEmergencyMapping', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/emergencymappings/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiRemoveEmergencyMappingBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveEmergencyMappingBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/emergencymappings`,
+        qs: {
+            code: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const emcId = body?._embedded?.['ngcp:emergencymappings']?.[0]?.id
+        if (body?.total_count === 1 && emcId > 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/emergencymappings/${emcId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
 export const defaultSubscriberProfileSetCreationData = {
     set_default: false,
     description: 'string',
