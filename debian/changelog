@@ -1,3 +1,12 @@
+ngcp-web-tests-e2e (12.2.1.0+0~mr12.2.1.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [de7b19c] MT#57567 MT#57568 upgrade cypress to 13.6.0 and rebuild docker container
+  * [2f6238a] MT#58908 add timesets tests
+  * [ddfb7f0] MT#58247 add more emergency mapping tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 15 Jan 2024 14:48:10 +0100
+
 ngcp-web-tests-e2e (12.2.0.0+0~mr12.2.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
