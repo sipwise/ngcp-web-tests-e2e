@@ -103,6 +103,9 @@ Cypress.Commands.add('auiSelectLazySelect',
         const inputElementSelector = `input[data-cy="${dataCy}"]`
         ;(subject ? cy.wrap(subject) : cy.get('body')).then($parent => {
             if (filter) {
+                cy.wrap($parent).find(inputElementSelector).click()
+                cy.get('.q-spinner').should('be.visible')
+                cy.get('.q-spinner').should('not.exist')
                 cy.wrap($parent).find(inputElementSelector).type(filter)
             } else {
                 cy.wrap($parent).find(inputElementSelector).click()
@@ -1689,6 +1692,74 @@ export const apiRemoveTimesetBy = ({ name, authHeader }) => {
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/timesets/${timesetID}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
+export const defaultProfilePackageCreationData = {
+    balance_interval_unit: "minute",
+    balance_interval_value: 0,
+    description: "string",
+    name: "string",
+    initial_profiles: [
+        {
+          profile_id: 0,
+        }
+      ],
+}
+
+export const apiCreateProfilePackage = ({ data, authHeader }) => {
+    cy.log('apiCreateProfilePackage', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/profilepackages/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetProfilePackageId = ({ name, authHeader }) => {
+    cy.log('apiGetProfilePackageId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/profilepackages`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const profilePackageData = body?._embedded?.['ngcp:profilepackages']?.[0]
+        const profilePackageId = profilePackageData?.id
+        return timesetId
+    })
+}
+
+export const apiRemoveProfilePackageBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveProfilePackageBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/profilepackages`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const profilePackageID = body?._embedded?.['ngcp:profilepackages']?.[0]?.id
+        if (body?.total_count === 1 && profilePackageID > 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/profilepackages/${profilePackageID}`,
                 ...authHeader
             })
         } else {
