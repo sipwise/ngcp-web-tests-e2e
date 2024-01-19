@@ -169,7 +169,7 @@ context('Login page tests', () => {
         it('Try to change to all available languages', () => {
             cy.contains('language').click()
             cy.contains('Deutsch').click()
-            cy.contains('Subscriber-Anmeldung').should('be.visible')
+            cy.contains('Teilnehmer-Anmeldung').should('be.visible')
             cy.contains('language').click()
             cy.contains('Español').click()
             cy.contains('Iniciar sesión de suscriptor').should('be.visible')
