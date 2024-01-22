@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.2.2.0+0~mr12.2.2.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [8ac0ca2] MT#57568 fix for csc login test translations
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 22 Jan 2024 15:02:00 +0100
+
 ngcp-web-tests-e2e (12.2.1.0+0~mr12.2.1.0) unstable; urgency=medium
 
   [ Nico Schedel ]
