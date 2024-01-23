@@ -52,7 +52,7 @@ context('Subscriber profile tests', () => {
             cy.locationShouldBe('#/subscriberprofile')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy=aui-save-button]').click()
-            cy.get('label[data-cy="aui-select-reseller"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+            cy.get('input[data-cy="aui-select-reseller"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('label[data-cy="profile-set-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('label[data-cy="profile-set-description"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
         })
