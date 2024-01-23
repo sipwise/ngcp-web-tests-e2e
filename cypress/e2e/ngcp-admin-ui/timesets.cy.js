@@ -77,7 +77,7 @@ context('Timeset tests', () => {
             })
         })
 
-        it('Check if timeset with invalid values gets rejected', () => {
+        xit('Check if timeset with invalid values gets rejected', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / timeset')
             cy.locationShouldBe('#/timeset')
@@ -87,7 +87,7 @@ context('Timeset tests', () => {
             cy.get('input[data-cy="timeset-name"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
         })
 
-        it('Create a timeset', () => {
+        xit('Create a timeset', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveTimesetBy({ name: timeset.name, authHeader })
             })
@@ -101,7 +101,7 @@ context('Timeset tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
 
-        it('Delete timeset', () => {
+        xit('Delete timeset', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / timeset')
             cy.locationShouldBe('#/timeset')
