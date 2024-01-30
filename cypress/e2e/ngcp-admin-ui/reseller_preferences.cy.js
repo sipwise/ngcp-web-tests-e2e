@@ -60,6 +60,7 @@ context('Reseller preferences tests', () => {
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    reseller.name = 'reseller' + getRandomNum()
                     apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
                         apiCreateRewriteRuleSet({ data: { ...rewriteRuleSet, reseller_id: id }, authHeader })
                     })

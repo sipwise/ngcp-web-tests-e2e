@@ -136,6 +136,7 @@ context('Administrator tests', () => {
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
+                reseller.name = 'reseller' + getRandomNum()
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ name: contact.email, authHeader })
             })
@@ -378,6 +379,7 @@ context('Administrator tests', () => {
                 apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
                 apiRemoveAdminBy({ name: secondaryresellerAdmin.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
+                reseller.name = 'reseller' + getRandomNum()
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ name: contact.email, authHeader })
             })
