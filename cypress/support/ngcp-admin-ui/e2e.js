@@ -1685,7 +1685,7 @@ export const apiRemoveTimesetBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const timesetID = body?._embedded?.['ngcp:timesets']?.[0]?.id
-        if (body?.total_count === 1 && timesetID > 1) {
+        if (body?.total_count === 1 && timesetID >= 1) {
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/timesets/${timesetID}`,
