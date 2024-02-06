@@ -1125,6 +1125,149 @@ export const apiRemoveBillingProfileBy = ({ name, authHeader }) => {
     })
 }
 
+export const defaultBillingProfileZoneCreationData = {
+    detail: 'string',
+    zone: 'string',
+    billingprofile_id: 0
+}
+
+export const apiCreateBillingProfileZone = ({ data, authHeader }) => {
+    cy.log('apiCreateBillingProfileZone', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/billingzones/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetBillingProfileZoneId = ({ name, authHeader }) => {
+    cy.log('apiGetBillingProfileZoneId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/billingzones`,
+        qs: {
+            zone: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const billingProfileZoneData = body?._embedded?.['ngcp:billingzones']?.[0]
+        const billingProfileZoneId = billingProfileZoneData?.id
+        return billingProfileZoneId
+    })
+}
+
+export const apiRemoveBillingProfileZoneBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveBillingProfileZoneBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/billingzones`,
+        qs: {
+            zone: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const billingProfileZoneId = body?._embedded?.['ngcp:billingzones']?.[0]?.id
+        if (body?.total_count === 1 && billingProfileZoneId > 1) {  
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/billingzones/${billingProfileZoneId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
+export const defaultBillingProfileFeeCreationData = {
+    destination: "string",
+    billing_zone_id: 0,
+    offpeak_init_interval: 0,
+    onpeak_init_interval: 0,
+    direction: "in",
+    offpeak_extra_rate: 0,
+    onpeak_extra_rate: 0,
+    offpeak_init_rate: 0,
+    source: "string",
+    offpeak_follow_interval: 0,
+    match_mode: "regex_longest_pattern",
+    aoc_pulse_amount_per_message: 0,
+    onpeak_use_free_time: true,
+    onpeak_follow_interval: 0,
+    billing_profile_id: 0,
+    offpeak_follow_rate: 0,
+    purge_existing: true,
+    offpeak_extra_second: 0,
+    onpeak_extra_second: 0,
+    onpeak_init_rate: 0,
+    offpeak_use_free_time: true,
+    onpeak_follow_rate: 0
+}
+
+export const apiCreateBillingProfileFee = ({ data, authHeader }) => {
+    cy.log('apiCreateBillingProfileFee', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/billingfees/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetBillingProfileFeeId = ({ name, authHeader }) => {
+    cy.log('apiGetBillingProfileFeeId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/billingfees`,
+        qs: {
+            destination: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const billingProfileFeeData = body?._embedded?.['ngcp:billingfees']?.[0]
+        const billingProfileFeeId = billingProfileFeeData?.id
+        return billingProfileFeeId
+    })
+}
+
+export const apiRemoveBillingProfileFeeBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveBillingProfileFeeBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/billingfees`,
+        qs: {
+            destination: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const billingProfileFeeId = body?._embedded?.['ngcp:billingfees']?.[0]?.id
+        if (body?.total_count === 1 && billingProfileFeeId > 1) {  
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/billingfees/${billingProfileFeeId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
 export const defaultRewriteRuleSetCreationData = {
     description: 'string',
     name: 'string',
@@ -1873,12 +2016,18 @@ export const searchInDataTable = (searchText, searchCriteria = null) => {
     cy.get('input[data-cy="aui-input-search--datatable"]').type(searchText)
     waitPageProgress()
 }
-export const deleteItemOnListPageBy = (searchText, searchCriteria = null) => {
-    searchInDataTable(searchText, searchCriteria)
+export const deleteItemOnListPageBy = (searchText = null, searchCriteria = null) => {
+    if (searchText !== null) {
+        searchInDataTable(searchText, searchCriteria)
+    }
     cy.get('div[class="aui-data-table"] .q-checkbox').click()
     cy.get('button[data-cy="aui-list-action--delete"]').click()
     cy.get('[data-cy="btn-confirm"]').click()
-    cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
+    if (searchText !== null) {
+        cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
+    } else {
+        cy.contains('.q-table__bottom--nodata', 'No data available').should('be.visible')
+    }
 }
 export const clickDataTableSelectedMoreMenuItem = (actionName) => {
     cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
