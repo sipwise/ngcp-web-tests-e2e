@@ -926,7 +926,7 @@ export const apiRemoveEmergencyMappingBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const emcId = body?._embedded?.['ngcp:emergencymappings']?.[0]?.id
-        if (body?.total_count === 1 && emcId > 1) {
+        if (body?.total_count === 1 && emcId >= 1) {
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/emergencymappings/${emcId}`,

@@ -8,13 +8,14 @@ import {
     apiCreateReseller,
     apiCreateSystemContact,
     apiRemoveContractBy,
+    apiRemoveEmergencyMappingBy,
     apiRemoveEmergencyMappingContainerBy,
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     clickDataTableSelectedMoreMenuItem,
-    getRandomNum,
     deleteItemOnListPageBy,
-    apiRemoveEmergencyMappingBy,
+    getRandomNum,
+    searchInDataTable,
     waitPageProgress
 } from '../../support/ngcp-admin-ui/e2e'
 
@@ -119,6 +120,7 @@ context('Emergency mapping tests', () => {
         cy.login(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emergencymapping')
         cy.locationShouldBe('#/emergencymapping')
+        searchInDataTable(EmergencyMappingContainer.name)
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         clickDataTableSelectedMoreMenuItem('emergencyMappingList')
         waitPageProgress()
@@ -134,6 +136,7 @@ context('Emergency mapping tests', () => {
         cy.login(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emergencymapping')
         cy.locationShouldBe('#/emergencymapping')
+        searchInDataTable(EmergencyMappingContainer.name)
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         clickDataTableSelectedMoreMenuItem('emergencyMappingList')
         waitPageProgress()
@@ -149,6 +152,7 @@ context('Emergency mapping tests', () => {
         cy.login(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emergencymapping')
         cy.locationShouldBe('#/emergencymapping')
+        searchInDataTable(EmergencyMappingContainer.name)
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         clickDataTableSelectedMoreMenuItem('emergencyMappingList')
         waitPageProgress()
