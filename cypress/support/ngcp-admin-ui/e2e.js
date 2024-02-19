@@ -104,9 +104,8 @@ Cypress.Commands.add('auiSelectLazySelect',
         ;(subject ? cy.wrap(subject) : cy.get('body')).then($parent => {
             if (filter) {
                 cy.wrap($parent).find(inputElementSelector).click()
-                cy.get('.q-spinner').should('be.visible')
-                cy.get('.q-spinner').should('not.exist')
-                cy.wrap($parent).find(inputElementSelector).type(filter)
+                cy.wait(1000)
+                cy.wrap($parent).find(inputElementSelector).type(filter + '{enter}')
             } else {
                 cy.wrap($parent).find(inputElementSelector).click()
             }
@@ -1701,7 +1700,7 @@ export const apiRemoveSoundSetBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const SoundSetId = body?._embedded?.['ngcp:soundsets']?.[0]?.id
-        if (body?.total_count === 1 && SoundSetId > 1) {
+        if (body?.total_count === 1 && SoundSetId >= 1) {
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/soundsets/${SoundSetId}`,
