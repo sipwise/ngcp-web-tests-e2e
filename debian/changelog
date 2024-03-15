@@ -1,3 +1,21 @@
+ngcp-web-tests-e2e (12.4.0.0+0~mr12.4.0.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [c059533] MT#57568 fix for csc login test translations
+  * [b0e2713] MT#57568 fix "hide your number to the callee test"
+  * [e7ca976] MT#58247 temporarily disable timeset tests
+  * [11ddbb0] MT#58247 fix subscriber profile tests
+  * [1933f28] MT#58247 fix for tests creating and deleting resellers via api
+  * [3a9ef01] MT#59023 fix for timeset tests
+  * [f402d64] MT#59097 add profile package tests
+  * [fa1f64d] MT#58247 fixes to emergency mapping tests
+  * [ae52c9b] MT#58937 add phonebook tests
+  * [f76c22a] MT#59246 add billing profile tests
+  * [ba030e5] MT#58247 disable phonebook tests for CE enviroments
+  * [502b86f] MT#59374 add soundset tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 15 Mar 2024 08:49:18 +0100
+
 ngcp-web-tests-e2e (12.3.0.0+0~mr12.3.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
