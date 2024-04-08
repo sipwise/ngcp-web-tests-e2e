@@ -1946,7 +1946,7 @@ export const apiGetProfilePackageId = ({ name, authHeader }) => {
     }).then(({ body }) => {
         const profilePackageData = body?._embedded?.['ngcp:profilepackages']?.[0]
         const profilePackageId = profilePackageData?.id
-        return timesetId
+        return profilePackageId
     })
 }
 
@@ -1965,6 +1965,279 @@ export const apiRemoveProfilePackageBy = ({ name, authHeader }) => {
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/profilepackages/${profilePackageID}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
+export const defaultHeaderRulesetCreationData = {
+    name: "string",
+    description: "string",
+    subscriber_id: 0,
+    reseller_id: 0,
+    rules: {}
+}
+
+export const apiCreateHeaderRuleset = ({ data, authHeader }) => {
+    cy.log('apiCreateHeaderRuleset', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/headerrulesets/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetHeaderRulesetId = ({ name, authHeader }) => {
+    cy.log('apiGetHeaderRulesetId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/headerrulesets`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const HeaderRulesetData = body?._embedded?.['ngcp:headerrulesets']?.[0]
+        const HeaderRulesetId = HeaderRulesetData?.id
+        return HeaderRulesetId
+    })
+}
+
+export const apiRemoveHeaderRulesetBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveHeaderRulesetBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/headerrulesets`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const HeaderRulesetID = body?._embedded?.['ngcp:headerrulesets']?.[0]?.id
+        if (body?.total_count === 1 && HeaderRulesetID >= 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/headerrulesets/${HeaderRulesetID}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
+export const defaultHeaderRuleCreationData = {
+    stopper: true,
+    enabled: true,
+    direction: "inbound",
+    description: "string",
+    name: "string",
+    set_id: 0,
+    priority: 0
+}
+
+export const apiCreateHeaderRule = ({ data, authHeader }) => {
+    cy.log('apiCreateHeaderRule', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/headerrules/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetHeaderRuleId = ({ name, authHeader }) => {
+    cy.log('apiGetHeaderRuleId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/headerrules`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const HeaderRuleData = body?._embedded?.['ngcp:headerrules']?.[0]
+        const HeaderRuleId = HeaderRuleData?.id
+        return HeaderRuleId
+    })
+}
+
+export const apiRemoveHeaderRuleBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveHeaderRuleBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/headerrules`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const HeaderRuleID = body?._embedded?.['ngcp:headerrules']?.[0]?.id
+        if (body?.total_count === 1 && HeaderRuleID >= 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/headerrules/${HeaderRuleID}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
+export const defaultHeaderRuleConditionCreationData = {
+    values: [
+        {
+          value: "string"
+        }
+      ],
+    match_part: "full",
+    rwr_dp: "",
+    enabled: true,
+    match_name: "string",
+    match_type: "header",
+    expression_negation: true,
+    rule_id: 0,
+    rwr_set_id: 0,
+    expression: "is",
+    value_type: "input"
+}
+
+export const apiCreateHeaderRuleCondition = ({ data, authHeader }) => {
+    cy.log('apiCreateHeaderRuleCondition', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/headerruleconditions/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetHeaderRuleConditionId = ({ name, authHeader }) => {
+    cy.log('apiGetHeaderRuleConditionId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/headerruleconditions`,
+        qs: {
+            match_name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const HeaderRuleConditionData = body?._embedded?.['ngcp:headerruleconditions']?.[0]
+        const HeaderRuleConditionId = HeaderRuleConditionData?.id
+        return HeaderRuleConditionId
+    })
+}
+
+export const apiRemoveHeaderRuleConditionBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveHeaderRuleConditionBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/headerruleconditions`,
+        qs: {
+            match_name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const HeaderRuleConditionID = body?._embedded?.['ngcp:headerruleconditions']?.[0]?.id
+        if (body?.total_count === 1 && HeaderRuleConditionID >= 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/headerruleconditions/${HeaderRuleConditionID}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
+export const defaultHeaderRuleActionCreationData = {
+    rwr_dp: "",
+    enabled: true,
+    priority: 0,
+    action_type: "set",
+    header: "string",
+    header_part: "full",
+    value_part: "full",
+    value: "string",
+    rwr_set_id: 0,
+    rule_id: 0
+}
+
+export const apiCreateHeaderRuleAction = ({ data, authHeader }) => {
+    cy.log('apiCreateHeaderRuleAction', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/headerruleactions/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetHeaderRuleActionId = ({ name, authHeader }) => {
+    cy.log('apiGetHeaderRuleActionId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/headerruleactions`,
+        qs: {
+            header: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const HeaderRuleActionData = body?._embedded?.['ngcp:headerruleactions']?.[0]
+        const HeaderRuleActionId = HeaderRuleActionData?.id
+        return HeaderRuleActionId
+    })
+}
+
+export const apiRemoveHeaderRuleActionBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveHeaderRuleActionBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/headerruleactions`,
+        qs: {
+            header: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const HeaderRuleActionID = body?._embedded?.['ngcp:headerruleactions']?.[0]?.id
+        if (body?.total_count === 1 && HeaderRuleActionID >= 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/headerruleactions/${HeaderRuleActionID}`,
                 ...authHeader
             })
         } else {
