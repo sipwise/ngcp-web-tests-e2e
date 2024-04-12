@@ -190,21 +190,41 @@ context('Soundset tests', () => {
         })
 
         it('Upload default soundset files', () => {
+            cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
             cy.login(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / sound')
+            cy.wait('@platforminfo').then(({ response }) => {
+                if (response.body.type === 'sppro') {
+                    cy.navigateMainMenu('settings / sound')
 
-            cy.locationShouldBe('#/sound')
-            searchInDataTable(soundSet.name)
-            cy.get('div[class="aui-data-table"] .q-checkbox').click()
-            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--soundSetDefault"]').click()
-            waitPageProgress()
-            cy.qSelect({ dataCy: 'soundsets-language', itemContains: 'de' })
-            cy.get('div[data-cy="soundsets-loopplay"]').click()
-            cy.get('div[data-cy="soundsets-replace_existing"]').click()
-            cy.get('div[class="aui-base-sub-context"]').click()
-            cy.get('[data-cy="aui-save-button"]').click()
-            cy.get('div[role="alert"]', {timeout: 30000}).should('have.class', 'bg-positive')
+                    cy.locationShouldBe('#/sound')
+                    searchInDataTable(soundSet.name)
+                    cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                    cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                    cy.get('a[data-cy="aui-data-table-row-menu--soundSetDefault"]').click()
+                    waitPageProgress()
+                    cy.qSelect({ dataCy: 'soundsets-language', itemContains: 'de' })
+                    cy.get('div[data-cy="soundsets-loopplay"]').click()
+                    cy.get('div[data-cy="soundsets-replace_existing"]').click()
+                    cy.get('div[class="aui-base-sub-context"]').click()
+                    cy.get('[data-cy="aui-save-button"]').click()
+                    cy.get('div[role="alert"]', {timeout: 30000}).should('have.class', 'bg-positive')
+                } else {
+                    cy.navigateMainMenu('settings / sound')
+
+                    cy.locationShouldBe('#/sound')
+                    searchInDataTable(soundSet.name)
+                    cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                    cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                    cy.get('a[data-cy="aui-data-table-row-menu--soundSetDefault"]').click()
+                    waitPageProgress()
+                    cy.qSelect({ dataCy: 'soundsets-language', itemContains: 'en' })
+                    cy.get('div[data-cy="soundsets-loopplay"]').click()
+                    cy.get('div[data-cy="soundsets-replace_existing"]').click()
+                    cy.get('div[class="aui-base-sub-context"]').click()
+                    cy.get('[data-cy="aui-save-button"]').click()
+                    cy.get('div[role="alert"]', {timeout: 30000}).should('have.class', 'bg-positive')
+                }
+            })
         })
 
         it('Assign soundset to customer', () => {
