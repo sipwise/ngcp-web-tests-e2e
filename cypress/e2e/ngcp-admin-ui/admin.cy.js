@@ -22,7 +22,7 @@ const path = require('path')
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 const admin1 = {
-    role: 'admin',
+    role: 'reseller',
     password: 'rand0mpassword12345',
     newpass: 'te#sTpaw0r4638',
     email: 'user' + getRandomNum() + '@example.com',
@@ -190,24 +190,7 @@ context('Administrator tests', () => {
         })
 
         it('Make sure that reseller admins cannot change permissions from reseller admins with different resellers', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / administrator')
-
-            cy.locationShouldBe('#/administrator')
-            searchInDataTable(admin1.login)
-            cy.get('div[class="aui-data-table"] .q-checkbox').click()
-            clickDataTableSelectedMoreMenuItem('adminEdit')
-
-            waitPageProgress()
-            cy.qSelect({ dataCy: 'roles-list', filter: 'reseller', itemContains: 'reseller' })
-
-            cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgress()
-            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-
-            cy.logoutUI()
-            cy.wait(500)
-            cy.loginUI(admin1.login, admin1.password)
+            cy.login(admin1.login, admin1.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
