@@ -286,7 +286,7 @@ context('Billing profile tests', () => {
 
             cy.qSelect({ dataCy: 'bilingfees-direction', itemContains: 'inbound' })
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgress()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
             waitPageProgress()
             cy.get('span[data-cy="aui-data-table-highlighted-text"]').contains("inbound").should('be.visible')
