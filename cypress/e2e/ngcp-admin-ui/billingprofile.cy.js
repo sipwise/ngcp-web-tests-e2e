@@ -193,7 +193,7 @@ context('Billing profile tests', () => {
 
             cy.get('div[data-cy="billingprofiles-prepaid"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgress()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
             waitPageProgress()
             cy.get('div[data-cy="aui-data-table-inline-edit--toggle"][aria-checked="true"]').should('be.visible')
@@ -240,7 +240,7 @@ context('Billing profile tests', () => {
             cy.get('a[data-cy="aui-data-table-row-menu--billingZoneEdit"]').click()
             cy.get('input[data-cy="billing-detail"]').clear().type("testdetail")
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgress()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
             waitPageProgress()
             cy.get('span[data-cy="aui-data-table-highlighted-text"]').contains("testdetail").should('be.visible')
