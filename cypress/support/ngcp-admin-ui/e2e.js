@@ -2246,6 +2246,134 @@ export const apiRemoveHeaderRuleActionBy = ({ name, authHeader }) => {
     })
 }
 
+export const defaultLNPCarrierCreationData = {
+    name: "string",
+    authoritative: true,
+    skip_rewrite: true,
+    prefix: "string"
+}
+
+export const apiCreateLNPCarrier = ({ data, authHeader }) => {
+    cy.log('apiCreateLNPCarrier', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/lnpcarriers/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetLNPCarrierId = ({ name, authHeader }) => {
+    cy.log('apiGetLNPCarrierId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/lnpcarriers`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const LNPCarrierData = body?._embedded?.['ngcp:lnpcarriers']?.[0]
+        const LNPCarrierId = LNPCarrierData?.id
+        return LNPCarrierId
+    })
+}
+
+export const apiRemoveLNPCarrierBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveLNPCarrierBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/lnpcarriers`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const LNPCarrierID = body?._embedded?.['ngcp:lnpcarriers']?.[0]?.id
+        if (body?.total_count === 1 && LNPCarrierID >= 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/lnpcarriers/${LNPCarrierID}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
+export const defaultLNPNumberCreationData = {
+    number: "string",
+    end: "string",
+    start: "string",
+    type: "string",
+    carrier_id: 0,
+    routing_number: "string"
+}
+
+export const apiCreateLNPNumber = ({ data, authHeader }) => {
+    cy.log('apiCreateLNPNumber', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/lnpnumbers/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetLNPNumberId = ({ name, authHeader }) => {
+    cy.log('apiGetLNPNumberId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/lnpnumbers`,
+        qs: {
+            number: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const LNPNumberData = body?._embedded?.['ngcp:lnpnumbers']?.[0]
+        const LNPNumberId = LNPNumberData?.id
+        return LNPNumberId
+    })
+}
+
+export const apiRemoveLNPNumberBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveLNPNumberBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/lnpnumbers`,
+        qs: {
+            number: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const LNPNumberId = body?._embedded?.['ngcp:lnpnumbers']?.[0]?.id
+        if (body?.total_count === 1 && LNPNumberId >= 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/lnpnumbers/${LNPNumberId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
 export const apiGetMailboxLastItem = ({ mailboxName, filterSubject }) => {
     cy.log('apiGetMailboxLastItem', mailboxName)
     return cy.request({
