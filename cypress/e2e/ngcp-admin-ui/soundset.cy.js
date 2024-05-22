@@ -217,7 +217,6 @@ context('Soundset tests', () => {
                     cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                     cy.get('a[data-cy="aui-data-table-row-menu--soundSetDefault"]').click()
                     waitPageProgress()
-                    cy.qSelect({ dataCy: 'soundsets-language', itemContains: 'en' })
                     cy.get('div[data-cy="soundsets-loopplay"]').click()
                     cy.get('div[data-cy="soundsets-replace_existing"]').click()
                     cy.get('div[class="aui-base-sub-context"]').click()
