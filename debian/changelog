@@ -1,3 +1,16 @@
+ngcp-web-tests-e2e (12.4.1.0+0~mr12.4.1.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [477798d] MT#59824 add header manipulations tests
+  * [36fd2bc] MT#58247 fixes for admin, soundset and domain preferences
+  * [84b8166] MT#58247 disable header manipulation tests for CE environments
+  * [3b2dd1d] MT#58247 fix freezing issue in searchInDataTable
+  * [500eb51] MT#58247 fix "edit billing profile fee direction" test
+  * [9a8f2ae] MT#58247 more billing profile fixes
+  * [ec556f9] MT#60081 add lnp tests to cypress
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 22 May 2024 14:32:36 +0200
+
 ngcp-web-tests-e2e (12.4.0.0+0~mr12.4.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
