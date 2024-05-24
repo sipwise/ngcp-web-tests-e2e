@@ -987,7 +987,7 @@ export const apiRemoveSubscriberProfileSetBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const subscriberProfileSetId = body?._embedded?.['ngcp:subscriberprofilesets']?.[0]?.id
-        if (body?.total_count === 1 && subscriberProfileSetId > 1) {
+        if (body?.total_count === 1 && subscriberProfileSetId >= 1) {
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/subscriberprofilesets/${subscriberProfileSetId}`,
