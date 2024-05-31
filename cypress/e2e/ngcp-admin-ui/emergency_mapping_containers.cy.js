@@ -40,11 +40,27 @@ const contract = {
     billing_profile_id: 1
 }
 
+const editcontract = {
+    contact_id: 3,
+    status: 'active',
+    external_id: 'contract' + getRandomNum(),
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
 const systemContact = {
     email: 'contact' + getRandomNum() + '@example.com'
 }
 
 const reseller = {
+    contract_id: 1,
+    status: 'active',
+    name: 'reseller' + getRandomNum(),
+    enable_rtc: false
+}
+
+const editreseller = {
     contract_id: 1,
     status: 'active',
     name: 'reseller' + getRandomNum(),
@@ -63,6 +79,9 @@ context('Emergency mapping tests', () => {
                         EmergencyMappingContainer.reseller_id = id
                     })
                 })
+                apiCreateContract({ data: { ...editcontract, contact_id: id }, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...editreseller, contract_id: id }, authHeader })
+                })
             })
         })
     })
@@ -78,7 +97,9 @@ context('Emergency mapping tests', () => {
     after(() => {
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveResellerBy({ name: editreseller.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
+            apiRemoveContractBy({ name: editcontract.external_id, authHeader })
             apiRemoveContractBy({ name: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
         })
@@ -116,6 +137,24 @@ context('Emergency mapping tests', () => {
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
     })
 
+    it('Edit emergency mapping container', () => {
+        cy.login(ngcpConfig.username, ngcpConfig.password)
+        cy.navigateMainMenu('settings / emergencymapping')
+        cy.locationShouldBe('#/emergencymapping')
+        searchInDataTable(EmergencyMappingContainer.name, 'Name')
+        cy.get('div[class="aui-data-table"] .q-checkbox').click()
+        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+        cy.get('a[data-cy="aui-data-table-row-menu--emergencyMappingContainerEdit"]').click()
+        waitPageProgress()
+        cy.get('label[data-cy="aui-select-reseller"] button:first').click()
+        cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: editreseller.name , itemContains: editreseller.name })
+        cy.get('[data-cy="aui-save-button"]').click()
+        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+        cy.get('[data-cy="aui-close-button"]').click()
+        waitPageProgress()
+        cy.get('td[data-cy="q-td--reseller-name"]').contains(editreseller.name).should('be.visible')
+    })
+
     it('Check if emergency mapping with invalid values gets rejected', () => {
         cy.login(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emergencymapping')
@@ -146,6 +185,29 @@ context('Emergency mapping tests', () => {
         cy.get('input[data-cy="emergency-suffix"]').type(EmergencyMapping.suffix)
         cy.get('[data-cy="aui-save-button"]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+    })
+
+    it('Edit emergency mapping', () => {
+        cy.login(ngcpConfig.username, ngcpConfig.password)
+        cy.navigateMainMenu('settings / emergencymapping')
+        cy.locationShouldBe('#/emergencymapping')
+        searchInDataTable(EmergencyMappingContainer.name)
+        cy.get('div[class="aui-data-table"] .q-checkbox').click()
+        clickDataTableSelectedMoreMenuItem('emergencyMappingList')
+        waitPageProgress()
+        searchInDataTable(EmergencyMapping.code, 'Number')
+        cy.get('div[class="aui-data-table"] .q-checkbox').click()
+        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+        cy.get('a[data-cy="aui-data-table-row-menu--emergencyMappingEdit"]').click()
+        waitPageProgress()
+        cy.get('input[data-cy="emergency-prefix"]').clear().type('testprefix')
+        cy.get('input[data-cy="emergency-suffix"]').clear().type('testsuffix')
+        cy.get('[data-cy="aui-save-button"]').click()
+        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+        cy.get('[data-cy="aui-close-button"]').click()
+        waitPageProgress()
+        cy.get('td[data-cy="q-td--prefix"]').contains('testprefix').should('be.visible')
+        cy.get('td[data-cy="q-td--suffix"]').contains('testsuffix').should('be.visible')
     })
 
     it('Delete emergency mapping', () => {

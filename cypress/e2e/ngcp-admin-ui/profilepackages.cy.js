@@ -15,7 +15,8 @@ import {
     apiRemoveSystemContactBy,
     deleteItemOnListPageBy,
     getRandomNum,
-    searchInDataTable
+    searchInDataTable,
+    waitPageProgress
 } from '../../support/ngcp-admin-ui/e2e'
 
 const mainResellerAdmin = {
@@ -56,6 +57,12 @@ const billingProfile = {
     reseller_id: null
 }
 
+const editBillingProfile = {
+    name: 'profile' + getRandomNum(),
+    handle: 'profilehandle' + getRandomNum(),
+    reseller_id: null
+}
+
 const profilePackage = {
     balance_interval_unit: "minute",
     balance_interval_value: 60,
@@ -81,6 +88,7 @@ context('Profile package tests', () => {
                             apiCreateBillingProfile({ data: { ...billingProfile, reseller_id: id }, authHeader }).then(({ id }) => {
                                 profilePackage.initial_profiles[0].profile_id = id
                             })
+                            apiCreateBillingProfile({ data: { ...editBillingProfile, reseller_id: id }, authHeader })
                         })
                     })
                 })
@@ -98,6 +106,7 @@ context('Profile package tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveBillingProfileBy({ name: editBillingProfile.name, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
@@ -156,8 +165,13 @@ context('Profile package tests', () => {
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfilePackageEdit"]').click()
             cy.get('input[data-cy="profilepackages-description"]').clear().type('testDescription')
             cy.get('input[data-cy="profilepackages-balanceinterval"]').clear().type('10')
+            cy.get('input[data-cy="aui-select-initial-billing-profile"]').click().type('{backspace}')
+            cy.auiSelectLazySelect({ dataCy: 'aui-select-initial-billing-profile', filter: editBillingProfile.name, itemContains: editBillingProfile.name })
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('[data-cy="aui-close-button"]').click()
+            waitPageProgress()
+            cy.get('td[data-cy="q-td--initial-profiles-grp"]').contains(editBillingProfile.name).should('be.visible')
         })
 
         it('Delete profile package and check if they are deleted', () => {

@@ -169,6 +169,10 @@ context('Contact tests', () => {
                     cy.get('[data-cy="aui-save-button"]').click()
                     waitPageProgress()
                     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                    cy.get('[data-cy="aui-close-button"]').click()
+                    waitPageProgress()
+                    cy.get('td[data-cy="q-td--firstname"]').contains(contactNames.firstname).should('be.visible')
+                    cy.get('td[data-cy="q-td--lastname"]').contains(contactNames.lastname).should('be.visible')
                 })
 
                 it(`Delete ${contactType} contact`, () => {

@@ -158,6 +158,9 @@ context('Soundset tests', () => {
             cy.get('input[data-cy="soundsets-description"]').clear().type('testDescription')
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('[data-cy="aui-close-button"]').click()
+            waitPageProgress()
+            cy.get('td[data-cy="q-td--description"]').contains('testDescription').should('be.visible')
         })
 
         it('Upload/Delete sound in soundset', () => {

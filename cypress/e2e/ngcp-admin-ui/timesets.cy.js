@@ -5,13 +5,15 @@ import {
     apiCreateContract,
     apiCreateReseller,
     apiCreateSystemContact,
+    apiCreateTimeset,
     apiRemoveContractBy,
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
-    getRandomNum,
+    apiRemoveTimesetBy,
     deleteItemOnListPageBy,
-    apiCreateTimeset,
-    apiRemoveTimesetBy
+    getRandomNum,
+    searchInDataTable,
+    waitPageProgress
 } from '../../support/ngcp-admin-ui/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -25,7 +27,23 @@ const contract = {
     billing_profile_id: 1
 }
 
+const editcontract = {
+    contact_id: 3,
+    status: 'active',
+    external_id: 'contract' + getRandomNum(),
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
 const reseller = {
+    contract_id: 1,
+    status: 'active',
+    name: 'reseller' + getRandomNum(),
+    enable_rtc: false
+}
+
+const editreseller = {
     contract_id: 1,
     status: 'active',
     name: 'reseller' + getRandomNum(),
@@ -52,6 +70,9 @@ context('Timeset tests', () => {
                             timeset.reseller_id = id
                         })
                     })
+                    apiCreateContract({ data: { ...editcontract, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateReseller({ data: { ...editreseller, contract_id: id }, authHeader })
+                    })
                 })
             })
         })
@@ -65,7 +86,9 @@ context('Timeset tests', () => {
         after(() => {
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: editreseller.name, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ name: editcontract.external_id, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ name: systemContactDependency.email, authHeader })
             })
@@ -99,6 +122,23 @@ context('Timeset tests', () => {
             cy.get('input[data-cy="timeset-name"]').type(timeset.name)
             cy.get('[data-cy=aui-save-button]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+        })
+
+        it('Edit timeset', () => {
+            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / timeset')
+            cy.locationShouldBe('#/timeset')
+            searchInDataTable(timeset.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--timeSetEdit"]').click()
+            cy.get('input[data-cy="aui-select-reseller"]').parents('label').find('button:first').click()
+            cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: editreseller.name, itemContains: editreseller.name })
+            cy.get('[data-cy=aui-save-button]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('[data-cy="aui-close-button"]').click()
+            waitPageProgress()
+            cy.get('td[data-cy="q-td--reseller-name"]').contains(editreseller.name).should('be.visible')
         })
 
         it('Delete timeset', () => {
