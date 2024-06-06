@@ -173,6 +173,8 @@ context('Soundset tests', () => {
             cy.get('a[data-cy="aui-data-table-row-menu--soundSetHandles"]').click()
 
             waitPageProgress()
+            cy.get('div[data-cy="aui-list-item-title"]').contains('voucher_recharge').should('be.visible')
+            cy.get('div[data-cy="aui-list-item-title"]').contains('calling_card').scrollIntoView()
             cy.get('div[data-cy="aui-list-item-title"]').contains('calling_card').click()
             cy.get('input[data-cy="soundsetfile-selectUpload"]:first').selectFile(path.join(fixturesFolder, 'ring.wav'), { force: 'true' })
             cy.get('button[data-cy="soundsetfile-undo"]').click()
