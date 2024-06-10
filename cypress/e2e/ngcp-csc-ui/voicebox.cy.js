@@ -236,7 +236,12 @@ context('Voicebox page tests', () => {
             cy.get('div[data-cy="voicebox-attach-file"]').click()
 
             cy.get('div[data-cy="voicebox-attach-file"][aria-disabled="true"]').should('not.exist')
+            cy.get('div[data-cy="voicebox-attach-file"][aria-checked="true"]').should('be.visible')
+            cy.get('div[data-cy="voicebox-attach-file"]').click()
+
+            cy.get('div[data-cy="voicebox-attach-file"][aria-disabled="true"]').should('not.exist')
             cy.get('div[data-cy="voicebox-attach-file"][aria-checked="false"]').should('be.visible')
+            cy.get('div[data-cy="voicebox-delete-file"][aria-disabled="true"]').should('be.visible')
             cy.get('div[data-cy="voicebox-attach-file"]').click()
 
             cy.get('div[data-cy="voicebox-attach-file"][aria-disabled="true"]').should('not.exist')
