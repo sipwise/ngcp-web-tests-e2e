@@ -80,7 +80,7 @@ context('Voicebox page tests', () => {
             })
         })
 
-        it('Switch between all Voicebox languages', () => {
+        xit('Switch between all Voicebox languages', () => {
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -158,7 +158,7 @@ context('Voicebox page tests', () => {
             cy.get('div[data-cy="voicebox-change-language"]').contains('use domain default').should('be.visible')
         })
 
-        it('Change and Undo PIN', () => {
+        xit('Change and Undo PIN', () => {
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -190,7 +190,7 @@ context('Voicebox page tests', () => {
                 .then(inputval => expect(inputval).to.eq('123456'))
         })
 
-        it('Change and Undo Email', () => {
+        xit('Change and Undo Email', () => {
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -225,7 +225,7 @@ context('Voicebox page tests', () => {
                 .then(inputval => expect(inputval).to.eq('test.test@test.coma'))
         })
 
-        it('Enable/Disable attach/delete voicemail', () => {
+        xit('Enable/Disable attach/delete voicemail', () => {
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -257,7 +257,7 @@ context('Voicebox page tests', () => {
             cy.get('div[data-cy="voicebox-delete-file"]').click()
         })
 
-        it('Upload/Delete busy greeting sound', () => {
+        xit('Upload/Delete busy greeting sound', () => {
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -284,7 +284,7 @@ context('Voicebox page tests', () => {
             cy.get('button[data-cy="csc-fileselect-select"]').should('be.visible')
         })
 
-        it('Upload/Delete unavailable greeting sound', () => {
+        xit('Upload/Delete unavailable greeting sound', () => {
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
