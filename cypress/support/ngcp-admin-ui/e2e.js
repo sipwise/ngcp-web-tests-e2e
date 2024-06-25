@@ -2374,6 +2374,271 @@ export const apiRemoveLNPNumberBy = ({ name, authHeader }) => {
     })
 }
 
+export const defaultPeeringGroupCreationData = {
+    time_set_id: 0,
+    name: "string",
+    description: "string",
+    contract_id: 0,
+    priority: "1"
+}
+
+export const apiCreatePeeringGroup = ({ data, authHeader }) => {
+    cy.log('apiCreatePeeringGroup', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/peeringgroups/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetPeeringGroupId = ({ name, authHeader }) => {
+    cy.log('apiGetPeeringGroupId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/peeringgroups `,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const PeeringGroupData = body?._embedded?.['ngcp:peeringgroups']?.[0]
+        const PeeringGroupId = PeeringGroupData?.id
+        return PeeringGroupId
+    })
+}
+
+export const apiRemovePeeringGroupBy = ({ name, authHeader }) => {
+    cy.log('apiRemovePeeringGroupBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/peeringgroups`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const PeeringGroupId = body?._embedded?.['ngcp:peeringgroups']?.[0]?.id
+        if (body?.total_count === 1 && PeeringGroupId >= 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/peeringgroups/${PeeringGroupId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
+export const defaultPeeringInboundRuleCreationData = {
+    reject_reason: "string",
+    field: "from_user",
+    reject_code: 0,
+    enabled: true,
+    priority: 0,
+    group_id: 0,
+    pattern: "string"
+}
+
+export const apiCreatePeeringInboundRule = ({ data, authHeader }) => {
+    cy.log('apiCreatePeeringInboundRule', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/peeringinboundrules/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetPeeringInboundRule = ({ name, authHeader }) => {
+    cy.log('apiGetPeeringInboundRule', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/peeringinboundrules`,
+        qs: {
+            pattern: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const PeeringInboundRuleData = body?._embedded?.['ngcp:peeringinboundrules']?.[0]
+        const PeeringInboundRuleId = PeeringInboundRuleData?.id
+        return PeeringInboundRuleId
+    })
+}
+
+export const apiRemovePeeringInboundRuleBy = ({ name, authHeader }) => {
+    cy.log('apiRemovePeeringInboundRuleBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/peeringinboundrules`,
+        qs: {
+            pattern: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const PeeringInboundRuleId = body?._embedded?.['ngcp:peeringinboundrules']?.[0]?.id
+        if (body?.total_count === 1 && PeeringInboundRuleId >= 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/peeringinboundrules/${PeeringInboundRuleId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
+export const defaultPeeringOutboundRuleCreationData = {
+    stopper: true,
+    caller_pattern: "string",
+    callee_pattern: "string",
+    callee_prefix: "string",
+    description: "string",
+    group_id: 0,
+    enabled: true
+}
+
+export const apiCreatePeeringOutboundRule = ({ data, authHeader }) => {
+    cy.log('apiCreatePeeringOutboundRule', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/peeringrules/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetPeeringOutboundRule = ({ name, authHeader }) => {
+    cy.log('apiGetPeeringOutboundRule', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/peeringrules`,
+        qs: {
+            description: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const PeeringOutboundRuleData = body?._embedded?.['ngcp:peeringrules']?.[0]
+        const PeeringOutboundRuleId = PeeringOutboundRuleData?.id
+        return PeeringOutboundRuleId
+    })
+}
+
+export const apiRemovePeeringOutboundRuleBy = ({ name, authHeader }) => {
+    cy.log('apiRemovePeeringOutboundRuleBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/peeringrules`,
+        qs: {
+            description: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const PeeringOutboundRuleId = body?._embedded?.['ngcp:peeringrules']?.[0]?.id
+        if (body?.total_count === 1 && PeeringOutboundRuleId >= 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/peeringrules/${PeeringOutboundRuleId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
+export const defaultPeeringServerCreationData = {
+    transport: "1",
+    weight: 0,
+    probe: true,
+    enabled: true,
+    port: 0,
+    host: "string",
+    via_route: "",
+    group_id: 0,
+    name: "string",
+    ip: "string"
+}
+
+export const apiCreatePeeringServer = ({ data, authHeader }) => {
+    cy.log('apiCreatePeeringServer', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/peeringservers/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetPeeringServerId = ({ name, authHeader }) => {
+    cy.log('apiGetPeeringServerId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/peeringservers`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const PeeringServerData = body?._embedded?.['ngcp:peeringservers']?.[0]
+        const PeeringServerId = PeeringServerData?.id
+        return PeeringServerId
+    })
+}
+
+export const apiRemovePeeringServerBy = ({ name, authHeader }) => {
+    cy.log('apiRemovePeeringServerBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/peeringservers`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const PeeringServerId = body?._embedded?.['ngcp:peeringservers']?.[0]?.id
+        if (body?.total_count === 1 && PeeringServerId >= 1) {
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/peeringservers/${PeeringServerId}`,
+                ...authHeader
+            })
+        } else {
+            return null
+        }
+    })
+}
+
 export const apiGetMailboxLastItem = ({ mailboxName, filterSubject }) => {
     cy.log('apiGetMailboxLastItem', mailboxName)
     return cy.request({
