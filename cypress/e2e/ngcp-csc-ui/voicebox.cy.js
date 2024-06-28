@@ -80,7 +80,7 @@ context('Voicebox page tests', () => {
             })
         })
 
-        xit('Switch between all Voicebox languages', () => {
+        it('Switch between all Voicebox languages', () => {
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -158,7 +158,7 @@ context('Voicebox page tests', () => {
             cy.get('div[data-cy="voicebox-change-language"]').contains('use domain default').should('be.visible')
         })
 
-        xit('Change and Undo PIN', () => {
+        it('Change and Undo PIN', () => {
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -190,7 +190,7 @@ context('Voicebox page tests', () => {
                 .then(inputval => expect(inputval).to.eq('123456'))
         })
 
-        xit('Change and Undo Email', () => {
+        it('Change and Undo Email', () => {
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -225,7 +225,7 @@ context('Voicebox page tests', () => {
                 .then(inputval => expect(inputval).to.eq('test.test@test.coma'))
         })
 
-        xit('Enable/Disable attach/delete voicemail', () => {
+        it('Enable/Disable attach/delete voicemail', () => {
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -233,19 +233,16 @@ context('Voicebox page tests', () => {
             cy.get('a[href="#/user/voicebox"]').click()
 
             cy.get('div[data-cy="voicebox-attach-file"][aria-disabled="true"]').should('not.exist')
-            cy.get('div[data-cy="voicebox-attach-file"]').click()
-
-            cy.get('div[data-cy="voicebox-attach-file"][aria-disabled="true"]').should('not.exist')
             cy.get('div[data-cy="voicebox-attach-file"][aria-checked="true"]').should('be.visible')
             cy.get('div[data-cy="voicebox-attach-file"]').click()
 
             cy.get('div[data-cy="voicebox-attach-file"][aria-disabled="true"]').should('not.exist')
             cy.get('div[data-cy="voicebox-attach-file"][aria-checked="false"]').should('be.visible')
-            cy.get('div[data-cy="voicebox-delete-file"][aria-disabled="true"]').should('be.visible')
             cy.get('div[data-cy="voicebox-attach-file"]').click()
 
             cy.get('div[data-cy="voicebox-attach-file"][aria-disabled="true"]').should('not.exist')
             cy.get('div[data-cy="voicebox-attach-file"][aria-checked="true"]').should('be.visible')
+            cy.get('div[data-cy="voicebox-delete-file"][aria-checked="false"]').should('be.visible')
             cy.get('div[data-cy="voicebox-delete-file"]').click()
 
             cy.get('div[data-cy="voicebox-delete-file"][aria-disabled="true"]').should('not.exist')
@@ -257,7 +254,7 @@ context('Voicebox page tests', () => {
             cy.get('div[data-cy="voicebox-delete-file"]').click()
         })
 
-        xit('Upload/Delete busy greeting sound', () => {
+        it('Upload/Delete busy greeting sound', () => {
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -284,7 +281,7 @@ context('Voicebox page tests', () => {
             cy.get('button[data-cy="csc-fileselect-select"]').should('be.visible')
         })
 
-        xit('Upload/Delete unavailable greeting sound', () => {
+        it('Upload/Delete unavailable greeting sound', () => {
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
