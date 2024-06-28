@@ -140,7 +140,6 @@ context('NCOS tests', () => {
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
-            waitPageProgress()
 
             cy.locationShouldBe('#/ncossets')
             cy.get('span[data-cy="aui-data-table-inline-edit--input"]').contains('testdescription').should('be.visible')

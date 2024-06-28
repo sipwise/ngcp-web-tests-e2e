@@ -1447,7 +1447,7 @@ export const apiRemoveNCOSLevelBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const NCOSLevelId = body?._embedded?.['ngcp:ncoslevels']?.[0]?.id
-        if (body?.total_count === 1 && NCOSLevelId > 1) {
+        if (body?.total_count === 1 && NCOSLevelId >= 1) {
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/ncoslevels/${NCOSLevelId}`,
@@ -1509,7 +1509,7 @@ export const apiRemoveNCOSLNPCarrierBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const NCOSLNPCarrierId = body?._embedded?.['ngcp:ncoslnpcarriers']?.[0]?.id
-        if (body?.total_count === 1 && NCOSLNPCarrierId > 1) {
+        if (body?.total_count === 1 && NCOSLNPCarrierId >= 1) {
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/ncoslnpcarriers/${NCOSLNPCarrierId}`,
@@ -1571,7 +1571,7 @@ export const apiRemoveNCOSLNPPatternBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const NCOSLNPCarrierId = body?._embedded?.['ngcp:ncoslnppatterns']?.[0]?.id
-        if (body?.total_count === 1 && NCOSLNPCarrierId > 1) {
+        if (body?.total_count === 1 && NCOSLNPCarrierId >= 1) {
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/ncoslnppatterns/${NCOSLNPCarrierId}`,
@@ -1633,7 +1633,7 @@ export const apiRemoveNCOSPatternBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const NCOSPatternId = body?._embedded?.['ngcp:ncospatterns']?.[0]?.id
-        if (body?.total_count === 1 && NCOSPatternId > 1) {
+        if (body?.total_count === 1 && NCOSPatternId >= 1) {
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/ncospatterns/${NCOSPatternId}`,
