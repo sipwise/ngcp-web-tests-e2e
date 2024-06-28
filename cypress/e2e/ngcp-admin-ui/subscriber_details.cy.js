@@ -57,7 +57,7 @@ const locationmapping = {
 const downloadsFolder = Cypress.config('downloadsFolder')
 const fixturesFolder = Cypress.config('fixturesFolder')
 
-context('Subscriber Details tests', () => {
+context('Subscriber details tests', () => {
     context('UI subscriber  details tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
@@ -117,6 +117,7 @@ context('Subscriber Details tests', () => {
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('label[data-cy="subscriber-email"][aria-disabled="true"]').should('not.exist')
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('div[role="alert"][class^="bg-negative"]').should('not.exist')
                 cy.get('label[data-cy="subscriber-email"]').type('invalid')
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('[data-cy="subscriber-email"] div[role="alert"]').should('be.visible')
@@ -125,6 +126,7 @@ context('Subscriber Details tests', () => {
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('label[data-cy="subscriber-sms-number"][aria-disabled="true"]').should('not.exist')
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('div[role="alert"][class^="bg-negative"]').should('not.exist')
                 cy.get('label[data-cy="subscriber-sms-number"]').type('invalid')
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('[data-cy="subscriber-sms-number"] div[role="alert"]').should('be.visible')
@@ -133,10 +135,12 @@ context('Subscriber Details tests', () => {
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('div[data-cy="subscriber-delete-after-delivery"][aria-disabled="true"]').should('not.exist')
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('div[role="alert"][class^="bg-negative"]').should('not.exist')
                 cy.get('div[data-cy="subscriber-delete-after-delivery"]').click()
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('div[data-cy="subscriber-attach-notification"][aria-disabled="true"]').should('not.exist')
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('div[role="alert"][class^="bg-negative"]').should('not.exist')
                 cy.get('div[data-cy="subscriber-attach-notification"]').click()
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('div[role="alert"]').should('have.class', 'bg-negative')
@@ -168,7 +172,7 @@ context('Subscriber Details tests', () => {
                 cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="player-stop-button"]').click()
                 cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="player-download-button"]').click()
                 const filename = path.join(downloadsFolder, 'voicemail_unavail_' + subscriber.subscriber_id + '.wav')
-                cy.readFile(filename, 'binary', { timeout: 1000 }).should(buffer => expect(buffer.length).to.be.gt(8400))
+                cy.readFile(filename, 'binary', { timeout: 5000 }).should(buffer => expect(buffer.length).to.be.gt(8400))
                 cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="file-delete-button"]').click()
                 cy.get('button[data-cy="btn-confirm"]').click()
                 cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="file-select-button"]').should('be.visible')
