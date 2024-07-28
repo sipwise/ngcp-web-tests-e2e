@@ -1,3 +1,20 @@
+ngcp-web-tests-e2e (13.0.0.0+0~mr13.0.0.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [552e114] MT#58247 dont select language for default soundset in CE instances
+  * [89d6915] MT#58247 fix for sometimes failing subscriber profile deletion
+  * [fce900a] MT#58247 fix editing lnp test
+  * [32e1617] MT#58247 improve all editing tests in admin ui e2e test suite
+  * [694705f] MT#58247 fix adding sound to soundset test
+  * [44c7809] MT#58247 fix voicebox Enable/Disable attach/delete voicemail test
+  * [f0a6638] MT#58247 temporairly disable voicebox tests
+  * [0430e5a] MT#60365 add peering tests
+  * [d1d497d] MT#58247 small fixes for ncos tests
+  * [fe49c81] MT#58247 fix and re-enable voicebox tests
+  * [241e896] MT#58247 small fixes for subscriber details
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Sun, 28 Jul 2024 12:03:54 +0200
+
 ngcp-web-tests-e2e (12.5.0.0+0~mr12.5.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
