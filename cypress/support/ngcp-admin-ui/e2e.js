@@ -2487,7 +2487,7 @@ export const apiRemovePeeringInboundRuleBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/peeringinboundrules`,
         qs: {
-            pattern: name
+            group_id: name
         },
         ...authHeader
     }).then(({ body }) => {

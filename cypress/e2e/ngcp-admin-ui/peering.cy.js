@@ -201,7 +201,7 @@ context('Peering tests', () => {
 
         it('Create an Inbound peering rule', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.pattern, authHeader })
+                apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.group_id, authHeader })
                 peeringInboundRule.pattern = "pattern" + getRandomNum()
             })
             cy.login(ngcpConfig.username, ngcpConfig.password)
