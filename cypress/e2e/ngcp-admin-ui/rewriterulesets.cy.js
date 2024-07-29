@@ -212,13 +212,11 @@ context('Rewrite Rule Set tests', () => {
             cy.get('td[data-cy="q-td--description"] span').contains(rewriteRuleSet.rewriterules[0].description).should('be.visible')      
             
             cy.contains('Outbound for Callee').click()
-            waitPageProgress()
             cy.get('td[data-cy="q-td--match-pattern"] span').contains(rewriteRuleSet.rewriterules[1].match_pattern).should('be.visible')
             cy.get('td[data-cy="q-td--replace-pattern"] span').contains(rewriteRuleSet.rewriterules[1].replace_pattern).should('be.visible')
             cy.get('td[data-cy="q-td--description"] span').contains(rewriteRuleSet.rewriterules[1].description).should('be.visible')
 
             cy.contains('Outbound for Caller').click()
-            waitPageProgress()
             cy.get('td[data-cy="q-td--match-pattern"]:first span').contains(rewriteRuleSet.rewriterules[2].match_pattern).should('be.visible')
             cy.get('td[data-cy="q-td--replace-pattern"]:first span').contains(rewriteRuleSet.rewriterules[2].replace_pattern).should('be.visible')
             cy.get('td[data-cy="q-td--description"]:first span').contains(rewriteRuleSet.rewriterules[2].description).should('be.visible')
@@ -227,13 +225,11 @@ context('Rewrite Rule Set tests', () => {
             cy.get('td[data-cy="q-td--description"]:last span').contains(rewriteRuleSet.rewriterules[3].description).should('be.visible')
 
             cy.contains('LNP for Caller').click()
-            waitPageProgress()
             cy.get('td[data-cy="q-td--match-pattern"] span').contains(rewriteRuleSet.rewriterules[4].match_pattern).should('be.visible')
             cy.get('td[data-cy="q-td--replace-pattern"] span').contains(rewriteRuleSet.rewriterules[4].replace_pattern).should('be.visible')
             cy.get('td[data-cy="q-td--description"] span').contains(rewriteRuleSet.rewriterules[4].description).should('be.visible')
 
             cy.contains('LNP for Callee').click()
-            waitPageProgress()
             cy.get('td[data-cy="q-td--match-pattern"] span').contains(rewriteRuleSet.rewriterules[5].match_pattern).should('be.visible')
             cy.get('td[data-cy="q-td--replace-pattern"] span').contains(rewriteRuleSet.rewriterules[5].replace_pattern).should('be.visible')
             cy.get('td[data-cy="q-td--description"] span').contains(rewriteRuleSet.rewriterules[5].description).should('be.visible')
