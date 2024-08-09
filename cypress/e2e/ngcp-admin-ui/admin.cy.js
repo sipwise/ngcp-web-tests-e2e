@@ -23,7 +23,7 @@ const ngcpConfig = Cypress.config('ngcpConfig')
 
 const admin1 = {
     role: 'reseller',
-    password: 'rand0mpassword12345',
+    password: 'Rand0m#PasswOrd#12345#',
     newpass: 'te#sTpaw0r4638',
     email: 'user' + getRandomNum() + '@example.com',
     login: 'admin' + getRandomNum(),
@@ -38,7 +38,7 @@ const admin1 = {
 
 const admin2 = {
     login: 'admin' + getRandomNum(),
-    password: 'rand0mpAsswo1234',
+    password: 'Rand0m#pAssw#O1234#',
     role: 'reseller',
     is_master: true,
     reseller_id: null
@@ -46,7 +46,7 @@ const admin2 = {
 
 const mainResellerAdmin = {
     login: 'admin' + getRandomNum(),
-    password: 'rand0mpasswO12345',
+    password: 'Rand0m#PassWO#12345#',
     role: 'reseller',
     is_master: true,
     is_active: true,
@@ -58,7 +58,7 @@ const mainResellerAdmin = {
 
 const secondaryresellerAdmin = {
     login: 'admin' + getRandomNum(),
-    password: 'rand0mpasswO1234',
+    password: 'Rand0m#PassW#O1234#',
     role: 'reseller',
     is_master: false,
     is_active: true,
@@ -496,7 +496,6 @@ context('Administrator tests', () => {
             searchInDataTable(secondaryresellerAdmin.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
-            waitPageProgress()
             cy.get('input[data-cy="email-field"]').type('testemail@invalid.com')
 
             cy.get('[data-cy="aui-save-button"]').click()
