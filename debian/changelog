@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.2+0~mr12.5.1.2) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [33a7665] MT#58247 update passwords for admin tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 19 Aug 2024 16:16:35 +0200
+
 ngcp-web-tests-e2e (12.5.1.1+0~mr12.5.1.1) unstable; urgency=medium
 
   * New release.
