@@ -24,7 +24,7 @@ const ngcpConfig = Cypress.config('ngcpConfig')
 const admin1 = {
     role: 'reseller',
     password: 'Rand0m#PasswOrd#12345#',
-    newpass: 'te#sTpaw0r4638',
+    newpass: 'te#sTpaW0#R4638#',
     email: 'user' + getRandomNum() + '@example.com',
     login: 'admin' + getRandomNum(),
     is_master: true,
