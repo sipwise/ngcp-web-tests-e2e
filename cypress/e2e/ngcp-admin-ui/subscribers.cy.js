@@ -47,7 +47,7 @@ const subscriber = {
     username: 'subscriber' + getRandomNum(),
     email: 'email' + getRandomNum() + '@test.com',
     external_id: 'subid' + getRandomNum(),
-    password: 'sub' + getRandomNum() + 'pass',
+    password: 'sub!SUB' + getRandomNum() + '#pass$',
     domain: domain.domain,
     customer_id: 0,
     subscriber_id: 0
@@ -57,7 +57,7 @@ const pilotsubscriber = {
     username: 'subscriber' + getRandomNum(),
     email: 'email' + getRandomNum() + '@test.com',
     external_id: 'subid' + getRandomNum(),
-    password: 'sub' + getRandomNum() + 'pass',
+    password: 'sub!SUB' + getRandomNum() + '#pass$',
     is_pbx_pilot: true,
     primary_number: {
         sn: getRandomNum(),
@@ -73,7 +73,7 @@ const seatsubscriber = {
     username: 'subscriber' + getRandomNum(),
     email: 'email' + getRandomNum() + '@test.com',
     external_id: 'subid' + getRandomNum(),
-    password: 'sub' + getRandomNum() + 'pass',
+    password: 'sub!SUB' + getRandomNum() + '#pass$',
     is_pbx_pilot: false,
     pbx_extension: getRandomNum(),
     domain: domain.domain,
