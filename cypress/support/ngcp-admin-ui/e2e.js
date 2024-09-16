@@ -79,9 +79,9 @@ Cypress.Commands.add(
                 }
             } else {
                 if (inputElementExists) {
-                    cy.wrap($parent).find(inputElementSelector).click()
+                    cy.wrap($parent).find(inputElementSelector).click({ force: true })
                 } else {
-                    cy.wrap($parent).find(inputElementSelector).parents('label').click()
+                    cy.wrap($parent).find(inputElementSelector).parents('label').click({ force: true })
                 }
             }
 
@@ -90,6 +90,7 @@ Cypress.Commands.add(
                 const id = $el.attr('for')
                 const dropdownListId = `#${id}_lb`
                 cy.get(dropdownListId).should('be.visible')
+                cy.contains(`${dropdownListId} .q-item`, itemContains).scrollIntoView()
                 cy.contains(`${dropdownListId} .q-item`, itemContains).should('be.visible')
                 cy.contains(`${dropdownListId} .q-item`, itemContains).click()
             })
