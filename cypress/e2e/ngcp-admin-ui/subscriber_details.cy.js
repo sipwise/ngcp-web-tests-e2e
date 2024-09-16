@@ -37,7 +37,7 @@ const subscriber = {
     username: 'subscriber' + getRandomNum(),
     email: 'email' + getRandomNum() + '@test.com',
     external_id: 'subid' + getRandomNum(),
-    password: 'sub' + getRandomNum() + 'pass',
+    password: 'suB#' + getRandomNum() + '#PaSs#',
     domain: domain.domain,
     customer_id: 0,
     subscriber_id: 0
@@ -54,6 +54,65 @@ const locationmapping = {
     enabled: true
 }
 
+const bnumberset = {
+    subscriber_id: 0,
+    mode: "whitelist",
+    name: "bnumberset" + getRandomNum(),
+    bnumbers: [
+        {
+        bnumber: getRandomNum()
+        }
+    ],
+    is_regex: true
+}
+
+const destinationset = {
+    subscriber_id: 0,
+    name: "destination" + getRandomNum(),
+    destinations: [
+        {
+        simple_destination: "string",
+        priority: 0,
+        timeout: 0,
+        announcement_id: 0,
+        destination: "number" + getRandomNum()
+        }
+    ]
+}
+
+const sourceset = {
+    subscriber_id: 0,
+    mode: "whitelist",
+    name: "sourceset" + getRandomNum(),
+    sources: [
+      {
+        source: "regex"
+      }
+    ],
+    is_regex: true
+}
+const timeset = {
+    name: "timeset" + getRandomNum(),
+    times: [
+      {
+        wday: "Monday",
+        minute: "0",
+        mday: "20",
+        hour: "8",
+        month: "April",
+        year: "2020"
+      },
+      {
+        wday: "Thursday",
+        minute: "0",
+        mday: "31",
+        hour: "9",
+        month: "December",
+        year: "2020"
+      }
+    ],
+    subscriber_id: 0
+}
 const downloadsFolder = Cypress.config('downloadsFolder')
 const fixturesFolder = Cypress.config('fixturesFolder')
 
@@ -107,8 +166,7 @@ context('Subscriber details tests', () => {
                 cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
 
                 cy.get('div[data-cy="aui-detail-page-menu"]').contains('Voicemail Settings').click()
-                waitPageProgress()
-
+                cy.get('label[data-cy="subscriber-pin"][aria-disabled="true"]').should('not.exist')
                 cy.get('label[data-cy="subscriber-pin"]').type('abcd')
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('[data-cy="subscriber-pin"] div[role="alert"]').should('be.visible')
@@ -178,13 +236,519 @@ context('Subscriber details tests', () => {
                 cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="file-select-button"]').should('be.visible')
             })
 
+            it('Create/Delete Unconditional Call Forward with Source, Time, BNumber and Destination Set', () => {
+                cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
+                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.wait('@platforminfo').then(({ response }) => {
+                    if (response.body.type === 'sppro') {
+                        cy.navigateMainMenu('settings / subscriber')
+                        cy.locationShouldBe('#/subscriber')
+                        searchInDataTable(subscriber.username)
+                        cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                        cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+                        cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
+                        waitPageProgress()
+                        cy.get('div[data-cy="q-item-label"]').contains('Unconditional').click()
+                        waitPageProgress()
+                        cy.get('div[data-cy="aui-cfunconditional-destinationset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfunconditional-destinationset-destination', itemContains: 'New DestinationSet' })
+                        cy.get('input[data-cy="aui-cfunconditional-destination-name"]').type(destinationset.name)
+                        cy.get('input[data-cy="aui-cfunconditional-destination-number"]').type(destinationset.destinations[0].destination)
+                        cy.get('div[data-cy="aui-cfunconditional-timeset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfunconditional-timeset-time', itemContains: 'New TimeSet' })
+                        cy.get('input[data-cy="aui-cfunconditional-timeset-name"]').type(timeset.name)
+                        cy.get('label[data-cy="aui-cfunconditional-timeset-year"]').scrollIntoView()
+                        cy.qSelect({ dataCy: 'aui-cfunconditional-timeset-year', itemContains: timeset.times[0].year})
+                        cy.qSelect({ dataCy: 'aui-cfunconditional-timeset-month', itemContains: timeset.times[0].month})
+                        cy.qSelect({ dataCy: 'aui-cfunconditional-timeset-day', itemContains: timeset.times[0].mday})
+                        cy.qSelect({ dataCy: 'aui-cfunconditional-timeset-weekday', itemContains: timeset.times[0].wday})
+                        cy.qSelect({ dataCy: 'aui-cfunconditional-timeset-hour', itemContains: timeset.times[0].hour})
+                        cy.qSelect({ dataCy: 'aui-cfunconditional-timeset-minute', itemContains: timeset.times[0].minute})
+                        cy.qSelect({ dataCy: 'aui-cfunconditional-timeset-year-through', itemContains: timeset.times[1].year})
+                        cy.qSelect({ dataCy: 'aui-cfunconditional-timeset-month-through', itemContains: timeset.times[1].month})
+                        cy.qSelect({ dataCy: 'aui-cfunconditional-timeset-day-through', itemContains: timeset.times[1].mday})
+                        cy.qSelect({ dataCy: 'aui-cfunconditional-timeset-weekday-through', itemContains: timeset.times[1].wday})
+                        cy.qSelect({ dataCy: 'aui-cfunconditional-timeset-hour-through', itemContains: timeset.times[1].hour})
+                        cy.qSelect({ dataCy: 'aui-cfunconditional-timeset-minute-through', itemContains: timeset.times[1].minute})
+                        cy.get('div[data-cy="aui-cfunconditional-sourceset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfunconditional-sourceset-source', itemContains: 'New SourceSet' })
+                        cy.get('input[data-cy="aui-cfunconditional-source-name"]').type(sourceset.name)
+                        cy.get('div[data-cy="aui-cfunconditional-sourceset-isregex"]').click()
+                        cy.get('input[data-cy="aui-cfunconditional-source"]').type(sourceset.sources[0].source)
+                        cy.get('div[data-cy="aui-cfunconditional-bnumberset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfunconditional-bnumber', itemContains: 'New B-NumberSet' })
+                        cy.get('input[data-cy="aui-cfunconditional-bnumber-name"]').type(bnumberset.name)
+                        cy.get('div[data-cy="aui-cfunconditional-bnumberset-isregex"]').click()
+                        cy.get('input[data-cy="aui-cfunconditional-bnumberset-bnumber"]').type(bnumberset.bnumbers[0].bnumber)
+                        cy.get('button[data-cy="aui-save-button"]').click()
+                        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                        cy.get('div[data-cy="q-item-label"]').contains('Summary').click()
+                        waitPageProgress()
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(destinationset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(timeset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(sourceset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(bnumberset.name).should("exist")
+                        cy.get('div[data-cy="q-item-label"]').contains('Unconditional').click()
+                        waitPageProgress()
+                        cy.get('button[data-cy="aui-cfunconditional-delete"]').click()
+                        cy.get('button[data-cy="aui-save-button"]').click()
+                        waitPageProgress()
+                        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                        cy.get('div[data-cy="q-item-label"]').contains('Summary').click()
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(destinationset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(timeset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(sourceset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(bnumberset.name).should("not.exist")
+                    } else {
+                        cy.log('Not a SPPRO instance, exiting test...')
+                    }
+                })
+            })
+
+            it('Create/Delete Busy Call Forward with Source, Time, BNumber and Destination Set', () => {
+                cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
+                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.wait('@platforminfo').then(({ response }) => {
+                    if (response.body.type === 'sppro') {
+                        cy.navigateMainMenu('settings / subscriber')
+                        cy.locationShouldBe('#/subscriber')
+                        searchInDataTable(subscriber.username)
+                        cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                        cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+                        cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
+                        waitPageProgress()
+                        cy.get('div[data-cy="q-item-label"]').contains('Busy').click()
+                        waitPageProgress()
+                        cy.get('div[data-cy="aui-cfbusy-destinationset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfbusy-destinationset-destination', itemContains: 'New DestinationSet' })
+                        cy.get('input[data-cy="aui-cfbusy-destination-name"]').type(destinationset.name)
+                        cy.get('input[data-cy="aui-cfbusy-destination-number"]').type(destinationset.destinations[0].destination)
+                        cy.get('div[data-cy="aui-cfbusy-timeset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfbusy-timeset-time', itemContains: 'New TimeSet' })
+                        cy.get('input[data-cy="aui-cfbusy-timeset-name"]').type(timeset.name)
+                        cy.get('label[data-cy="aui-cfbusy-timeset-year"]').scrollIntoView()
+                        cy.qSelect({ dataCy: 'aui-cfbusy-timeset-year', itemContains: timeset.times[0].year})
+                        cy.qSelect({ dataCy: 'aui-cfbusy-timeset-month', itemContains: timeset.times[0].month})
+                        cy.qSelect({ dataCy: 'aui-cfbusy-timeset-day', itemContains: timeset.times[0].mday})
+                        cy.qSelect({ dataCy: 'aui-cfbusy-timeset-weekday', itemContains: timeset.times[0].wday})
+                        cy.qSelect({ dataCy: 'aui-cfbusy-timeset-hour', itemContains: timeset.times[0].hour})
+                        cy.qSelect({ dataCy: 'aui-cfbusy-timeset-minute', itemContains: timeset.times[0].minute})
+                        cy.qSelect({ dataCy: 'aui-cfbusy-timeset-year-through', itemContains: timeset.times[1].year})
+                        cy.qSelect({ dataCy: 'aui-cfbusy-timeset-month-through', itemContains: timeset.times[1].month})
+                        cy.qSelect({ dataCy: 'aui-cfbusy-timeset-day-through', itemContains: timeset.times[1].mday})
+                        cy.qSelect({ dataCy: 'aui-cfbusy-timeset-weekday-through', itemContains: timeset.times[1].wday})
+                        cy.qSelect({ dataCy: 'aui-cfbusy-timeset-hour-through', itemContains: timeset.times[1].hour})
+                        cy.qSelect({ dataCy: 'aui-cfbusy-timeset-minute-through', itemContains: timeset.times[1].minute})
+                        cy.get('div[data-cy="aui-cfbusy-sourceset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfbusy-sourceset-source', itemContains: 'New SourceSet' })
+                        cy.get('input[data-cy="aui-cfbusy-source-name"]').type(sourceset.name)
+                        cy.get('div[data-cy="aui-cfbusy-sourceset-isregex"]').click()
+                        cy.get('input[data-cy="aui-cfbusy-source"]').type(sourceset.sources[0].source)
+                        cy.get('div[data-cy="aui-cfbusy-bnumberset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfbusy-bnumber', itemContains: 'New B-NumberSet' })
+                        cy.get('input[data-cy="aui-cfbusy-bnumber-name"]').type(bnumberset.name)
+                        cy.get('div[data-cy="aui-cfbusy-bnumberset-isregex"]').click()
+                        cy.get('input[data-cy="aui-cfbusy-bnumberset-bnumber"]').type(bnumberset.bnumbers[0].bnumber)
+                        cy.get('button[data-cy="aui-save-button"]').click()
+                        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                        cy.get('div[data-cy="q-item-label"]').contains('Summary').click()
+                        waitPageProgress()
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(destinationset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(timeset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(sourceset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(bnumberset.name).should("exist")
+                        cy.get('div[data-cy="q-item-label"]').contains('Busy').click()
+                        waitPageProgress()
+                        cy.get('button[data-cy="aui-cfbusy-delete"]').click()
+                        cy.get('button[data-cy="aui-save-button"]').click()
+                        waitPageProgress()
+                        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                        cy.get('div[data-cy="q-item-label"]').contains('Summary').click()
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(destinationset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(timeset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(sourceset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(bnumberset.name).should("not.exist")
+                    } else {
+                        cy.log('Not a SPPRO instance, exiting test...')
+                    }
+                })
+            })
+
+            it('Create/Delete Timeout Call Forward with Source, Time, BNumber and Destination Set', () => {
+                cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
+                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.wait('@platforminfo').then(({ response }) => {
+                    if (response.body.type === 'sppro') {
+                        cy.navigateMainMenu('settings / subscriber')
+                        cy.locationShouldBe('#/subscriber')
+                        searchInDataTable(subscriber.username)
+                        cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                        cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+                        cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
+                        waitPageProgress()
+                        cy.get('div[data-cy="q-item-label"]').contains('Timeout').click()
+                        waitPageProgress()
+                        cy.get('div[data-cy="aui-cftimeout-destinationset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cftimeout-destinationset-destination', itemContains: 'New DestinationSet' })
+                        cy.get('input[data-cy="aui-cftimeout-destination-name"]').type(destinationset.name)
+                        cy.get('input[data-cy="aui-cftimeout-destination-number"]').type(destinationset.destinations[0].destination)
+                        cy.get('div[data-cy="aui-cftimeout-timeset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cftimeout-timeset-time', itemContains: 'New TimeSet' })
+                        cy.get('input[data-cy="aui-cftimeout-timeset-name"]').type(timeset.name)
+                        cy.get('label[data-cy="aui-cftimeout-timeset-year"]').scrollIntoView()
+                        cy.qSelect({ dataCy: 'aui-cftimeout-timeset-year', itemContains: timeset.times[0].year})
+                        cy.qSelect({ dataCy: 'aui-cftimeout-timeset-month', itemContains: timeset.times[0].month})
+                        cy.qSelect({ dataCy: 'aui-cftimeout-timeset-day', itemContains: timeset.times[0].mday})
+                        cy.qSelect({ dataCy: 'aui-cftimeout-timeset-weekday', itemContains: timeset.times[0].wday})
+                        cy.qSelect({ dataCy: 'aui-cftimeout-timeset-hour', itemContains: timeset.times[0].hour})
+                        cy.qSelect({ dataCy: 'aui-cftimeout-timeset-minute', itemContains: timeset.times[0].minute})
+                        cy.qSelect({ dataCy: 'aui-cftimeout-timeset-year-through', itemContains: timeset.times[1].year})
+                        cy.qSelect({ dataCy: 'aui-cftimeout-timeset-month-through', itemContains: timeset.times[1].month})
+                        cy.qSelect({ dataCy: 'aui-cftimeout-timeset-day-through', itemContains: timeset.times[1].mday})
+                        cy.qSelect({ dataCy: 'aui-cftimeout-timeset-weekday-through', itemContains: timeset.times[1].wday})
+                        cy.qSelect({ dataCy: 'aui-cftimeout-timeset-hour-through', itemContains: timeset.times[1].hour})
+                        cy.qSelect({ dataCy: 'aui-cftimeout-timeset-minute-through', itemContains: timeset.times[1].minute})
+                        cy.get('div[data-cy="aui-cftimeout-sourceset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cftimeout-sourceset-source', itemContains: 'New SourceSet' })
+                        cy.get('input[data-cy="aui-cftimeout-source-name"]').type(sourceset.name)
+                        cy.get('div[data-cy="aui-cftimeout-sourceset-isregex"]').click()
+                        cy.get('input[data-cy="aui-cftimeout-source"]').type(sourceset.sources[0].source)
+                        cy.get('div[data-cy="aui-cftimeout-bnumberset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cftimeout-bnumber', itemContains: 'New B-NumberSet' })
+                        cy.get('input[data-cy="aui-cftimeout-bnumber-name"]').type(bnumberset.name)
+                        cy.get('div[data-cy="aui-cftimeout-bnumberset-isregex"]').click()
+                        cy.get('input[data-cy="aui-cftimeout-bnumberset-bnumber"]').type(bnumberset.bnumbers[0].bnumber)
+                        cy.get('button[data-cy="aui-save-button"]').click()
+                        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                        cy.get('div[data-cy="q-item-label"]').contains('Summary').click()
+                        waitPageProgress()
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(destinationset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(timeset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(sourceset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(bnumberset.name).should("exist")
+                        cy.get('div[data-cy="q-item-label"]').contains('Timeout').click()
+                        waitPageProgress()
+                        cy.get('button[data-cy="aui-cftimeout-delete"]').click()
+                        cy.get('button[data-cy="aui-save-button"]').click()
+                        waitPageProgress()
+                        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                        cy.get('div[data-cy="q-item-label"]').contains('Summary').click()
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(destinationset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(timeset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(sourceset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(bnumberset.name).should("not.exist")
+                    } else {
+                        cy.log('Not a SPPRO instance, exiting test...')
+                    }
+                })
+            })
+
+            it('Create/Delete Unavailable Call Forward with Source, Time, BNumber and Destination Set', () => {
+                cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
+                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.wait('@platforminfo').then(({ response }) => {
+                    if (response.body.type === 'sppro') {
+                        cy.navigateMainMenu('settings / subscriber')
+                        cy.locationShouldBe('#/subscriber')
+                        searchInDataTable(subscriber.username)
+                        cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                        cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+                        cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
+                        waitPageProgress()
+                        cy.get('div[data-cy="q-item-label"]').contains('Unavailable').click()
+                        waitPageProgress()
+                        cy.get('div[data-cy="aui-cfunavailable-destinationset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfunavailable-destinationset-destination', itemContains: 'New DestinationSet' })
+                        cy.get('input[data-cy="aui-cfunavailable-destination-name"]').type(destinationset.name)
+                        cy.get('input[data-cy="aui-cfunavailable-destination-number"]').type(destinationset.destinations[0].destination)
+                        cy.get('div[data-cy="aui-cfunavailable-timeset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfunavailable-timeset-time', itemContains: 'New TimeSet' })
+                        cy.get('input[data-cy="aui-cfunavailable-timeset-name"]').type(timeset.name)
+                        cy.get('label[data-cy="aui-cfunavailable-timeset-year"]').scrollIntoView()
+                        cy.qSelect({ dataCy: 'aui-cfunavailable-timeset-year', itemContains: timeset.times[0].year})
+                        cy.qSelect({ dataCy: 'aui-cfunavailable-timeset-month', itemContains: timeset.times[0].month})
+                        cy.qSelect({ dataCy: 'aui-cfunavailable-timeset-day', itemContains: timeset.times[0].mday})
+                        cy.qSelect({ dataCy: 'aui-cfunavailable-timeset-weekday', itemContains: timeset.times[0].wday})
+                        cy.qSelect({ dataCy: 'aui-cfunavailable-timeset-hour', itemContains: timeset.times[0].hour})
+                        cy.qSelect({ dataCy: 'aui-cfunavailable-timeset-minute', itemContains: timeset.times[0].minute})
+                        cy.qSelect({ dataCy: 'aui-cfunavailable-timeset-year-through', itemContains: timeset.times[1].year})
+                        cy.qSelect({ dataCy: 'aui-cfunavailable-timeset-month-through', itemContains: timeset.times[1].month})
+                        cy.qSelect({ dataCy: 'aui-cfunavailable-timeset-day-through', itemContains: timeset.times[1].mday})
+                        cy.qSelect({ dataCy: 'aui-cfunavailable-timeset-weekday-through', itemContains: timeset.times[1].wday})
+                        cy.qSelect({ dataCy: 'aui-cfunavailable-timeset-hour-through', itemContains: timeset.times[1].hour})
+                        cy.qSelect({ dataCy: 'aui-cfunavailable-timeset-minute-through', itemContains: timeset.times[1].minute})
+                        cy.get('div[data-cy="aui-cfunavailable-sourceset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfunavailable-sourceset-source', itemContains: 'New SourceSet' })
+                        cy.get('input[data-cy="aui-cfunavailable-source-name"]').type(sourceset.name)
+                        cy.get('div[data-cy="aui-cfunavailable-sourceset-isregex"]').click()
+                        cy.get('input[data-cy="aui-cfunavailable-source"]').type(sourceset.sources[0].source)
+                        cy.get('div[data-cy="aui-cfunavailable-bnumberset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfunavailable-bnumber', itemContains: 'New B-NumberSet' })
+                        cy.get('input[data-cy="aui-cfunavailable-bnumber-name"]').type(bnumberset.name)
+                        cy.get('div[data-cy="aui-cfunavailable-bnumberset-isregex"]').click()
+                        cy.get('input[data-cy="aui-cfunavailable-bnumberset-bnumber"]').type(bnumberset.bnumbers[0].bnumber)
+                        cy.get('button[data-cy="aui-save-button"]').click()
+                        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                        cy.get('div[data-cy="q-item-label"]').contains('Summary').click()
+                        waitPageProgress()
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(destinationset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(timeset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(sourceset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(bnumberset.name).should("exist")
+                        cy.get('div[data-cy="q-item-label"]').contains('Unavailable').click()
+                        waitPageProgress()
+                        cy.get('button[data-cy="aui-cfunavailable-delete"]').click()
+                        cy.get('button[data-cy="aui-save-button"]').click()
+                        waitPageProgress()
+                        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                        cy.get('div[data-cy="q-item-label"]').contains('Summary').click()
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(destinationset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(timeset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(sourceset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(bnumberset.name).should("not.exist")
+                    } else {
+                        cy.log('Not a SPPRO instance, exiting test...')
+                    }
+                })
+            })
+
+            it('Create/Delete SMS Call Forward with Source, Time, BNumber and Destination Set', () => {
+                cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
+                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.wait('@platforminfo').then(({ response }) => {
+                    if (response.body.type === 'sppro') {
+                        cy.navigateMainMenu('settings / subscriber')
+                        cy.locationShouldBe('#/subscriber')
+                        searchInDataTable(subscriber.username)
+                        cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                        cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+                        cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
+                        waitPageProgress()
+                        cy.get('div[data-cy="q-item-label"]').contains('Sms').click()
+                        waitPageProgress()
+                        cy.get('div[data-cy="aui-cfsms-destinationset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfsms-destinationset-destination', itemContains: 'New DestinationSet' })
+                        cy.get('input[data-cy="aui-cfsms-destination-name"]').type(destinationset.name)
+                        cy.get('input[data-cy="aui-cfsms-destination-number"]').type(destinationset.destinations[0].destination)
+                        cy.get('div[data-cy="aui-cfsms-timeset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfsms-timeset-time', itemContains: 'New TimeSet' })
+                        cy.get('input[data-cy="aui-cfsms-timeset-name"]').type(timeset.name)
+                        cy.get('label[data-cy="aui-cfsms-timeset-year"]').scrollIntoView()
+                        cy.qSelect({ dataCy: 'aui-cfsms-timeset-year', itemContains: timeset.times[0].year})
+                        cy.qSelect({ dataCy: 'aui-cfsms-timeset-month', itemContains: timeset.times[0].month})
+                        cy.qSelect({ dataCy: 'aui-cfsms-timeset-day', itemContains: timeset.times[0].mday})
+                        cy.qSelect({ dataCy: 'aui-cfsms-timeset-weekday', itemContains: timeset.times[0].wday})
+                        cy.qSelect({ dataCy: 'aui-cfsms-timeset-hour', itemContains: timeset.times[0].hour})
+                        cy.qSelect({ dataCy: 'aui-cfsms-timeset-minute', itemContains: timeset.times[0].minute})
+                        cy.qSelect({ dataCy: 'aui-cfsms-timeset-year-through', itemContains: timeset.times[1].year})
+                        cy.qSelect({ dataCy: 'aui-cfsms-timeset-month-through', itemContains: timeset.times[1].month})
+                        cy.qSelect({ dataCy: 'aui-cfsms-timeset-day-through', itemContains: timeset.times[1].mday})
+                        cy.qSelect({ dataCy: 'aui-cfsms-timeset-weekday-through', itemContains: timeset.times[1].wday})
+                        cy.qSelect({ dataCy: 'aui-cfsms-timeset-hour-through', itemContains: timeset.times[1].hour})
+                        cy.qSelect({ dataCy: 'aui-cfsms-timeset-minute-through', itemContains: timeset.times[1].minute})
+                        cy.get('div[data-cy="aui-cfsms-sourceset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfsms-sourceset-source', itemContains: 'New SourceSet' })
+                        cy.get('input[data-cy="aui-cfsms-source-name"]').type(sourceset.name)
+                        cy.get('div[data-cy="aui-cfsms-sourceset-isregex"]').click()
+                        cy.get('input[data-cy="aui-cfsms-source"]').type(sourceset.sources[0].source)
+                        cy.get('div[data-cy="aui-cfsms-bnumberset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfsms-bnumber', itemContains: 'New B-NumberSet' })
+                        cy.get('input[data-cy="aui-cfsms-bnumber-name"]').type(bnumberset.name)
+                        cy.get('div[data-cy="aui-cfsms-bnumberset-isregex"]').click()
+                        cy.get('input[data-cy="aui-cfsms-bnumberset-bnumber"]').type(bnumberset.bnumbers[0].bnumber)
+                        cy.get('button[data-cy="aui-save-button"]').click()
+                        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                        cy.get('div[data-cy="q-item-label"]').contains('Summary').click()
+                        waitPageProgress()
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(destinationset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(timeset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(sourceset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(bnumberset.name).should("exist")
+                        cy.get('div[data-cy="q-item-label"]').contains('Sms').click()
+                        waitPageProgress()
+                        cy.get('button[data-cy="aui-cfsms-delete"]').click()
+                        cy.get('button[data-cy="aui-save-button"]').click()
+                        waitPageProgress()
+                        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                        cy.get('div[data-cy="q-item-label"]').contains('Summary').click()
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(destinationset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(timeset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(sourceset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(bnumberset.name).should("not.exist")
+                    } else {
+                        cy.log('Not a SPPRO instance, exiting test...')
+                    }
+                })
+            })
+
+            it('Create/Delete On Response Call Forward with Source, Time, BNumber and Destination Set', () => {
+                cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
+                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.wait('@platforminfo').then(({ response }) => {
+                    if (response.body.type === 'sppro') {
+                        cy.navigateMainMenu('settings / subscriber')
+                        cy.locationShouldBe('#/subscriber')
+                        searchInDataTable(subscriber.username)
+                        cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                        cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+                        cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
+                        waitPageProgress()
+                        cy.get('div[data-cy="q-item-label"]').contains('On Response').click()
+                        waitPageProgress()
+                        cy.get('div[data-cy="aui-cfresponse-destinationset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfresponse-destinationset-destination', itemContains: 'New DestinationSet' })
+                        cy.get('input[data-cy="aui-cfresponse-destination-name"]').type(destinationset.name)
+                        cy.get('input[data-cy="aui-cfresponse-destination-number"]').type(destinationset.destinations[0].destination)
+                        cy.get('div[data-cy="aui-cfresponse-timeset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfresponse-timeset-time', itemContains: 'New TimeSet' })
+                        cy.get('input[data-cy="aui-cfresponse-timeset-name"]').type(timeset.name)
+                        cy.get('label[data-cy="aui-cfresponse-timeset-year"]').scrollIntoView()
+                        cy.qSelect({ dataCy: 'aui-cfresponse-timeset-year', itemContains: timeset.times[0].year})
+                        cy.qSelect({ dataCy: 'aui-cfresponse-timeset-month', itemContains: timeset.times[0].month})
+                        cy.qSelect({ dataCy: 'aui-cfresponse-timeset-day', itemContains: timeset.times[0].mday})
+                        cy.qSelect({ dataCy: 'aui-cfresponse-timeset-weekday', itemContains: timeset.times[0].wday})
+                        cy.qSelect({ dataCy: 'aui-cfresponse-timeset-hour', itemContains: timeset.times[0].hour})
+                        cy.qSelect({ dataCy: 'aui-cfresponse-timeset-minute', itemContains: timeset.times[0].minute})
+                        cy.qSelect({ dataCy: 'aui-cfresponse-timeset-year-through', itemContains: timeset.times[1].year})
+                        cy.qSelect({ dataCy: 'aui-cfresponse-timeset-month-through', itemContains: timeset.times[1].month})
+                        cy.qSelect({ dataCy: 'aui-cfresponse-timeset-day-through', itemContains: timeset.times[1].mday})
+                        cy.qSelect({ dataCy: 'aui-cfresponse-timeset-weekday-through', itemContains: timeset.times[1].wday})
+                        cy.qSelect({ dataCy: 'aui-cfresponse-timeset-hour-through', itemContains: timeset.times[1].hour})
+                        cy.qSelect({ dataCy: 'aui-cfresponse-timeset-minute-through', itemContains: timeset.times[1].minute})
+                        cy.get('div[data-cy="aui-cfresponse-sourceset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfresponse-sourceset-source', itemContains: 'New SourceSet' })
+                        cy.get('input[data-cy="aui-cfresponse-source-name"]').type(sourceset.name)
+                        cy.get('div[data-cy="aui-cfresponse-sourceset-isregex"]').click()
+                        cy.get('input[data-cy="aui-cfresponse-source"]').type(sourceset.sources[0].source)
+                        cy.get('div[data-cy="aui-cfresponse-bnumberset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfresponse-bnumber', itemContains: 'New B-NumberSet' })
+                        cy.get('input[data-cy="aui-cfresponse-bnumber-name"]').type(bnumberset.name)
+                        cy.get('div[data-cy="aui-cfresponse-bnumberset-isregex"]').click()
+                        cy.get('input[data-cy="aui-cfresponse-bnumberset-bnumber"]').type(bnumberset.bnumbers[0].bnumber)
+                        cy.get('button[data-cy="aui-save-button"]').click()
+                        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                        cy.get('div[data-cy="q-item-label"]').contains('Summary').click()
+                        waitPageProgress()
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(destinationset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(timeset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(sourceset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(bnumberset.name).should("exist")
+                        cy.get('div[data-cy="q-item-label"]').contains('On Response').click()
+                        waitPageProgress()
+                        cy.get('button[data-cy="aui-cfresponse-delete"]').click()
+                        cy.get('button[data-cy="aui-save-button"]').click()
+                        waitPageProgress()
+                        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                        cy.get('div[data-cy="q-item-label"]').contains('Summary').click()
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(destinationset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(timeset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(sourceset.name).should("not.exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(bnumberset.name).should("not.exist")
+                    } else {
+                        cy.log('Not a SPPRO instance, exiting test...')
+                    }
+                })
+            })
+
+            it('Create/Delete On Overflow Call Forward with Source, Time, BNumber and Destination Set', () => {
+                cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
+                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.wait('@platforminfo').then(({ response }) => {
+                    if (response.body.type === 'sppro') {
+                        cy.navigateMainMenu('settings / subscriber')
+                        cy.locationShouldBe('#/subscriber')
+                        searchInDataTable(subscriber.username)
+                        cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                        cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+                        cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
+                        waitPageProgress()
+                        cy.get('div[data-cy="q-item-label"]').contains('On Overflow').click()
+                        waitPageProgress()
+                        cy.get('div[data-cy="aui-cfoverflow-destinationset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfoverflow-destinationset-destination', itemContains: 'New DestinationSet' })
+                        cy.get('input[data-cy="aui-cfoverflow-destination-name"]').type(destinationset.name)
+                        cy.get('input[data-cy="aui-cfoverflow-destination-number"]').type(destinationset.destinations[0].destination)
+                        cy.get('div[data-cy="aui-cfoverflow-timeset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfoverflow-timeset-time', itemContains: 'New TimeSet' })
+                        cy.get('input[data-cy="aui-cfoverflow-timeset-name"]').type(timeset.name)
+                        cy.get('label[data-cy="aui-cfoverflow-timeset-year"]').scrollIntoView()
+                        cy.qSelect({ dataCy: 'aui-cfoverflow-timeset-year', itemContains: timeset.times[0].year})
+                        cy.qSelect({ dataCy: 'aui-cfoverflow-timeset-month', itemContains: timeset.times[0].month})
+                        cy.qSelect({ dataCy: 'aui-cfoverflow-timeset-day', itemContains: timeset.times[0].mday})
+                        cy.qSelect({ dataCy: 'aui-cfoverflow-timeset-weekday', itemContains: timeset.times[0].wday})
+                        cy.qSelect({ dataCy: 'aui-cfoverflow-timeset-hour', itemContains: timeset.times[0].hour})
+                        cy.qSelect({ dataCy: 'aui-cfoverflow-timeset-minute', itemContains: timeset.times[0].minute})
+                        cy.qSelect({ dataCy: 'aui-cfoverflow-timeset-year-through', itemContains: timeset.times[1].year})
+                        cy.qSelect({ dataCy: 'aui-cfoverflow-timeset-month-through', itemContains: timeset.times[1].month})
+                        cy.qSelect({ dataCy: 'aui-cfoverflow-timeset-day-through', itemContains: timeset.times[1].mday})
+                        cy.qSelect({ dataCy: 'aui-cfoverflow-timeset-weekday-through', itemContains: timeset.times[1].wday})
+                        cy.qSelect({ dataCy: 'aui-cfoverflow-timeset-hour-through', itemContains: timeset.times[1].hour})
+                        cy.qSelect({ dataCy: 'aui-cfoverflow-timeset-minute-through', itemContains: timeset.times[1].minute})
+                        cy.get('div[data-cy="aui-cfoverflow-sourceset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfoverflow-sourceset-source', itemContains: 'New SourceSet' })
+                        cy.get('input[data-cy="aui-cfoverflow-source-name"]').type(sourceset.name)
+                        cy.get('div[data-cy="aui-cfoverflow-sourceset-isregex"]').click()
+                        cy.get('input[data-cy="aui-cfoverflow-source"]').type(sourceset.sources[0].source)
+                        cy.get('div[data-cy="aui-cfoverflow-bnumberset"]').click()
+                        cy.wait(500)
+                        cy.qSelect({ dataCy: 'aui-cfoverflow-bnumber', itemContains: 'New B-NumberSet' })
+                        cy.get('input[data-cy="aui-cfoverflow-bnumber-name"]').type(bnumberset.name)
+                        cy.get('div[data-cy="aui-cfoverflow-bnumberset-isregex"]').click()
+                        cy.get('input[data-cy="aui-cfoverflow-bnumberset-bnumber"]').type(bnumberset.bnumbers[0].bnumber)
+                        cy.get('button[data-cy="aui-save-button"]').click()
+                        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                        cy.get('div[data-cy="q-item-label"]').contains('Summary').click()
+                        waitPageProgress()
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(destinationset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(timeset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(sourceset.name).should("exist")
+                        cy.get('span[data-cy="aui-data-table-highlighted-text--4"]').contains(bnumberset.name).should("exist")
+                    } else {
+                        cy.log('Not a SPPRO instance, exiting test...')
+                    }
+                })
+            })
+
             it('Check if invalid values are being rejected in Fax Features', () => {
                 cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
                 cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.wait('@platforminfo').then(({ response }) => {
                     if (response.body.type === 'sppro') {
                         cy.navigateMainMenu('settings / subscriber')
-
                         cy.locationShouldBe('#/subscriber')
                         searchInDataTable(subscriber.username)
                         cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -213,7 +777,6 @@ context('Subscriber details tests', () => {
                         cy.get('div[class="aui-data-table"] .q-checkbox').click()
                         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                         cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
-
                         cy.get('div[data-cy="aui-detail-page-menu"]').contains('Fax Features').click()
                         cy.get('[data-cy="faxserversettings-enable"]').click()
                         cy.get('[data-cy="faxserversettings-t38"]').click()
@@ -263,7 +826,6 @@ context('Subscriber details tests', () => {
                         cy.get('div[class="aui-data-table"] .q-checkbox').click()
                         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                         cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
-
                         cy.get('div[data-cy="aui-detail-page-menu"]').contains('Fax Features').click()
                         cy.get('div[data-cy="mailtofax-enable"]').click()
                         cy.get('input[data-cy="mailtofax-input-secret-key"]').type('testkey')
@@ -304,7 +866,6 @@ context('Subscriber details tests', () => {
                         cy.get('div[class="aui-data-table"] .q-checkbox').click()
                         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                         cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
-
                         cy.get('div[data-cy="aui-detail-page-menu"]').contains('Fax Features').click()
                         cy.get('button[data-cy="acl-add"]').scrollIntoView()
                         cy.get('button[data-cy="acl-add"]').click({ force: true })
@@ -341,13 +902,11 @@ context('Subscriber details tests', () => {
                 })
                 cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
-
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
-
                 cy.get('div[data-cy="aui-detail-page-menu"]').contains('Location Mappings').click()
                 waitPageProgress()
                 cy.get('div[data-cy="aui-list-action--add"]').click()
@@ -365,13 +924,11 @@ context('Subscriber details tests', () => {
             it('Edit Location Mapping', () => {
                 cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
-
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
-
                 cy.get('div[data-cy="aui-detail-page-menu"]').contains('Location Mappings').click()
                 waitPageProgress()
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -395,13 +952,11 @@ context('Subscriber details tests', () => {
             it('Delete Location Mapping', () => {
                 cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
-
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
-
                 cy.get('div[data-cy="aui-detail-page-menu"]').contains('Location Mappings').click()
                 waitPageProgress()
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
