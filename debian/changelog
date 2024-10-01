@@ -1,3 +1,16 @@
+ngcp-web-tests-e2e (13.0.1.0+0~mr13.0.1.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [0a98d68] MT#58247 fix "create peering inboung rule" test
+  * [8de4b2c] MT#58247 fix "clone rewrite rule set" test
+  * [c1f0c0a] MT#60644 update cypress, dependencies & docker container
+  * [c9961d4] MT#58247 update passwords for admin tests
+
+  [ Marco Capetta ]
+  * [e753151] MT#60735 Fix aui tests after password enforcements
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 01 Oct 2024 10:01:04 +0200
+
 ngcp-web-tests-e2e (13.0.0.0+0~mr13.0.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
