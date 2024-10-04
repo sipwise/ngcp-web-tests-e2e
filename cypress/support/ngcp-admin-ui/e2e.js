@@ -2674,6 +2674,7 @@ export const waitPageProgress = () => {
 }
 
 export const searchInDataTable = (searchText, searchCriteria = null) => {
+    cy.get('label[data-cy="aui-data-table-filter-criteria"][aria-disabled="true"]').should('not.exist')
     if (searchCriteria !== null) {
         cy.qSelect({ dataCy: 'aui-data-table-filter-criteria', filter: '', itemContains: searchCriteria })
         cy.get('label[data-cy="aui-input-search--datatable"][aria-disabled="true"]').should('not.exist')
