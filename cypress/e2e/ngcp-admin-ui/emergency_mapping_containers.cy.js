@@ -158,7 +158,7 @@ context('Emergency mapping tests', () => {
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--emergencyMappingContainerEdit"]').click()
         waitPageProgress()
-        cy.get('label[data-cy="aui-select-reseller"] button:first').click()
+        cy.get('label[data-cy="aui-select-reseller"] i').contains('cancel').click()
         cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: editReseller.name , itemContains: editReseller.name })
         cy.get('[data-cy="aui-save-button"]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
