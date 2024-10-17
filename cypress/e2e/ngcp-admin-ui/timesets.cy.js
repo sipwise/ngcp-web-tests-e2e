@@ -141,7 +141,7 @@ context('Timeset tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--timeSetEdit"]').click()
-            cy.get('input[data-cy="aui-select-reseller"]').parents('label').find('button:first').click()
+            cy.get('input[data-cy="aui-select-reseller"]').parents('label').find('i[role="button"]').contains('cancel').click()
             cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: editReseller.name, itemContains: editReseller.name })
             cy.get('[data-cy=aui-save-button]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
