@@ -1630,7 +1630,7 @@ export const testPreferencesTextField = (name, value = 'test', onlyNumbers = fal
     cy.get('button[data-cy="preference-save"]').click()
     cy.get('@' + cyAliasName).find('label[aria-disabled="true"]').should('not.exist')
     cy.get('@' + cyAliasName).find('input').should('have.value', value)
-    cy.get('@' + cyAliasName).contains('button[data-cy="q-icon"]', 'cancel').click()
+    cy.get('@' + cyAliasName).contains('i[data-cy="q-icon"]', 'cancel').click()
     cy.get('button[data-cy="preference-save"]').click()
     cy.get('@' + cyAliasName).find('label[aria-disabled="true"]').should('not.exist')
     cy.get('@' + cyAliasName).find('input').should('have.value', '')
