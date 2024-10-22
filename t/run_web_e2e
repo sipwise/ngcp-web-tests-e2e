@@ -20,8 +20,8 @@ echo "Found UI address '${ui_address}', processing further..."
 
 config_file="cypress.ci.${application_to_test}.config.js"
 cp cypress.template.js "${config_file}"
-sed -i -e "s|\"baseUrl\":.*|\"baseUrl\": \"${ui_address}\",|" "${config_file}"
-sed -i -e "s|\"apiHost\":.*|\"apiHost\": \"${api_address}\",|" "${config_file}"
+sed -i -e "s|baseUrl:.*|baseUrl: '${ui_address}',|" "${config_file}"
+sed -i -e "s|apiHost:.*|apiHost: '${api_address}',|" "${config_file}"
 
 task_name="ci:${application_to_test}"
 yarnpkg run "${task_name}" --browser chrome
