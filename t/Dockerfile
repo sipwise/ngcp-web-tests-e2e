@@ -37,7 +37,7 @@ RUN yarnpkg cypress install -f && \
     yarnpkg cypress verify
 
 
-RUN echo "cd /code && ./run_web_e2e" >/root/.bash_history
+RUN echo "./run_web_e2e" >/root/.bash_history
 
 ################################################################################
 # Instructions for usage
@@ -47,14 +47,14 @@ RUN echo "cd /code && ./run_web_e2e" >/root/.bash_history
 #
 # NOTE: run the following command from root folder of git repository to build docker image locally and run the container:
 # % docker build --tag="ngcp-web-tests-e2e-bookworm" -f ./t/Dockerfile .
-# % docker run --rm -i -t -v "/${PWD}/cypress:/code/cypress:rw" -v "/${PWD}/package.json:/code/package.json:ro" -v "/${PWD}/cypress.template.json:/code/cypress.template.json:ro" -v "/${PWD}/t/run_web_e2e:/code/run_web_e2e:ro" ngcp-web-tests-e2e-bullseye:latest bash
+# % docker run --rm -i -t -v "/${PWD}/cypress:/code/cypress:rw" -v "/${PWD}/package.json:/code/package.json:ro" -v "/${PWD}/cypress.template.json:/code/cypress.template.json:ro" -v "/${PWD}/t/run_web_e2e:/code/run_web_e2e:ro" ngcp-web-tests-e2e-bookworm:latest bash
 #
 # Use the existing docker image:
 # % docker pull docker.mgm.sipwise.com/ngcp-web-tests-e2e-bookworm
 #
 # NOTE: run the following command from root folder of git repository to run a new container:
-# % docker run --rm -i -t -v "/${PWD}/cypress:/code/cypress:rw" -v "/${PWD}/package.json:/code/package.json:ro" -v "/${PWD}/cypress.template.json:/code/cypress.template.json:ro" -v "/${PWD}/t/run_web_e2e:/code/run_web_e2e:ro" docker.mgm.sipwise.com/ngcp-web-tests-e2e-bullseye:latest bash
+# % docker run --rm -i -t -v "/${PWD}/cypress:/code/cypress:rw" -v "/${PWD}/package.json:/code/package.json:ro" -v "/${PWD}/cypress.template.json:/code/cypress.template.json:ro" -v "/${PWD}/t/run_web_e2e:/code/run_web_e2e:ro" docker.mgm.sipwise.com/ngcp-web-tests-e2e-bookworm:latest bash
 #
 # Inside docker:
-#   cd /code && ./run_web_e2e <parameters>
+#   ./run_web_e2e <parameters>
 ################################################################################
