@@ -15,17 +15,17 @@ import {
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 const LNPCarrier = {
-    name: "carrier" + getRandomNum(),
+    name: "carrierCypress",
     authoritative: false,
     skip_rewrite: false,
-    prefix: "prefix" + getRandomNum()
+    prefix: "prefixCypress"
 }
 
 const LNPNumber = {
-    number: getRandomNum(),
+    number: 22,
     end: "",
     start: "",
-    type: "type" + getRandomNum(),
+    type: "typeCypress",
     carrier_id: 0,
     routing_number: "string"
 }
@@ -35,6 +35,15 @@ context('LNP tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             cy.login(ngcpConfig.username, ngcpConfig.password)
+            
+            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+            cy.log('Preparing environment...')
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+                cy.log('Data clean up pre-tests completed')
+            })
+
         })
 
         beforeEach(() => {
@@ -46,12 +55,13 @@ context('LNP tests', () => {
         })
 
         after(() => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
         })
 
         afterEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveLNPNumberBy({ name: LNPNumber.number, authHeader})
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
                 apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
             })
         })
@@ -71,7 +81,7 @@ context('LNP tests', () => {
 
         it('Create a LNP carrier', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveLNPNumberBy({ name: LNPNumber.number, authHeader})
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
                 apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
             })
             cy.login(ngcpConfig.username, ngcpConfig.password)
@@ -109,7 +119,7 @@ context('LNP tests', () => {
 
         it('Delete LNP carrier and check if they are deleted', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveLNPNumberBy({ name: LNPNumber.number, authHeader})
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
             })
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
@@ -135,7 +145,7 @@ context('LNP tests', () => {
 
         it('Create a LNP number', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveLNPNumberBy({ name: LNPNumber.number, authHeader })
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
             })
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')

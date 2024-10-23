@@ -12,18 +12,19 @@ import {
     apiRemoveAdminBy,
     apiRemoveBillingProfileBy,
     apiRemoveContractBy,
-    apiRemoveCustomerBy,
-    apiRemoveCustomerContactBy,
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     getRandomNum,
     waitPageProgress,
     deleteItemOnListPageBy,
     searchInDataTable,
+    apiRemoveCustomerContactsByIds,
+    apiRemoveCustomerById,
 } from '../../support/ngcp-admin-ui/e2e'
+import { contract, reseller } from '../../support/aui-test-data';
 
 const mainResellerAdmin = {
-    login: 'admin' + getRandomNum(),
+    login: 'mainResellerAdminCypress',
     password: 'rand0mpassword12345',
     role: 'reseller',
     is_master: true,
@@ -34,54 +35,52 @@ const mainResellerAdmin = {
     reseller_id: null
 }
 
-const customer = {
-    billing_profile_definition: 'id',
-    billing_profile_id: null,
-    external_id: 'customer' + getRandomNum(),
-    contact_id: null,
-    status: 'active',
-    type: 'sipaccount',
-    customer_id: null
-}
-
-const contract = {
-    contact_id: 3,
-    status: 'active',
-    external_id: 'contract' + getRandomNum(),
-    type: 'reseller',
-    billing_profile_definition: 'id',
-    billing_profile_id: 1
-}
-
-const systemContact = {
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
-const customerContact = {
-    reseller_id: null,
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
-const reseller = {
-    contract_id: 1,
-    status: 'active',
-    name: 'reseller' + getRandomNum(),
-    enable_rtc: false
-}
-
 const billingProfile = {
-    name: 'profile' + getRandomNum(),
+    name: 'profileCypress',
     handle: 'profilehandle' + getRandomNum(),
     reseller_id: null
 }
 
+const systemContact = {
+    email: 'systemContactCustomers@example.com'
+}
+
+const randomNumber = getRandomNum()
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 context('Customer tests', () => {
+    // We have not exported this because we reassign properties
+    const customer = {
+        billing_profile_definition: 'id',
+        billing_profile_id: null,
+        external_id: 'test' + randomNumber,
+        contact_id: null,
+        status: 'active',
+        type: 'sipaccount',
+        customer_id: null
+    }
+    
+    const customerContact = {
+        id : null,
+        reseller_id: null,
+        email: 'customerContact' + randomNumber +'@'+ 'example.com',
+    }
+    
+    const customerContactIdsToRemove = []
+
     context('UI customer tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+                apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
+                cy.log('Data clean up pre-tests completed')
+
                 apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                     apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                         apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
@@ -97,32 +96,50 @@ context('Customer tests', () => {
         })
 
         beforeEach(() => {
-            customer.external_id = 'customer' + getRandomNum()
-            apiLoginAsSuperuser().then(authHeader => {
-                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
-                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
-                        customer.customer_id = id
+            if (customer.customer_id === null) {
+                apiLoginAsSuperuser().then(authHeader => {
+                    // Here we are creating multiple contacts with the same email because
+                    // we only need the id to create a customer. We delete the mall in after()
+                    apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                        customerContactIdsToRemove.push(id)
+                        customerContact.id = id
+                        customer.contact_id = id
+                        apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                            customer.customer_id = id
+                        })
                     })
+
                 })
-            })
+            }
+
+            cy.log('Skipped beforeEach()')
         })
 
         after(() => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+                // Customer contacts are considered locked when linked to an active customer.
+                // We remove all of the, at the end to give the time to the dbs to update the
+                // customer state of deleted items to "terminated"
+                apiRemoveCustomerContactsByIds({ids: customerContactIdsToRemove, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 
         afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveCustomerContactBy({ name: customer.email, authHeader })
-            })
+            if (customer.customer_id !== null) {
+                apiLoginAsSuperuser().then(authHeader => {
+                    apiRemoveCustomerById({ id: customer.customer_id, authHeader })
+                    customer.customer_id = null
+                })
+            }
+
+            cy.log('Skipped afterEach()')
         })
 
         ;[
@@ -153,8 +170,8 @@ context('Customer tests', () => {
 
                 it('Create a customer', () => {
                     apiLoginAsSuperuser().then(authHeader => {
-                        apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                        customer.external_id = 'customer' + getRandomNum()
+                        apiRemoveCustomerById({ id: customer.customer_id, authHeader })
+                        customer.external_id = 'newCustomer' + getRandomNum()
                     })
                     cy.login(login, password)
                     cy.navigateMainMenu('settings / customer')
@@ -163,14 +180,14 @@ context('Customer tests', () => {
                     cy.get('a[data-cy="aui-list-action--add"]').click()
 
                     cy.locationShouldBe('#/customer/create')
-                    cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: customerContact.email, itemContains: 'contact' })
+                    cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: customerContact.email, itemContains: randomNumber })
                     cy.get('input[data-cy="customer-external-id"]').type(customer.external_id)
                     cy.auiSelectLazySelect({ dataCy: 'aui-select-billing-profile', filter: billingProfile.name, itemContains: 'profile' })
                     cy.get('[data-cy="aui-save-button"]').click()
                     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 })
 
-                it('Edit customer status to "locked"', () => {
+                it('Edx customer status to "locked"', () => {
                     cy.login(login, password)
                     cy.navigateMainMenu('settings / customer')
 

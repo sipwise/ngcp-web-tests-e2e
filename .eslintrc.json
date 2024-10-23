@@ -19,7 +19,6 @@
         "indent": ["error", 4],
         "arrow-parens": "off",
         "one-var": ["error", { "var": "never", "let": "never", "const": "never" }],
-
         "cypress/no-unnecessary-waiting": "warn"
     }
 }
