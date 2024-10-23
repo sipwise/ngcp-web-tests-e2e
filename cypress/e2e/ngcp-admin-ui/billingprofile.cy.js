@@ -19,35 +19,16 @@ import {
     apiCreateBillingProfileFee,
     apiRemoveBillingProfileFeeBy,
 } from '../../support/ngcp-admin-ui/e2e'
-
-const contract = {
-    contact_id: 3,
-    status: 'active',
-    external_id: 'contract' + getRandomNum(),
-    type: 'reseller',
-    billing_profile_definition: 'id',
-    billing_profile_id: 1
-}
-
-const systemContact = {
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
-const reseller = {
-    contract_id: 1,
-    status: 'active',
-    name: 'reseller' + getRandomNum(),
-    enable_rtc: false
-}
+import { contract, reseller } from '../../support/aui-test-data';
 
 const billingProfile = {
-    name: 'billing' + getRandomNum(),
+    name: 'billingCypress',
     handle: 'profilehandle' + getRandomNum(),
     reseller_id: null
 }
 
 const billingProfileZone = {
-    zone: 'profilezone' + getRandomNum(),
+    zone: 'profilezoneCypress',
     detail: 'profiledetail' + getRandomNum(),
     billing_profile_id: null
 }
@@ -55,12 +36,16 @@ const billingProfileZone = {
 const billingProfileFee = {
     billing_zone_id: null,
     billing_profile_id: null,
-    destination: "profilefee" + getRandomNum(),
-    direction: "out",
+    destination: 'profilefeeCypress',
+    direction: 'out',
     offpeak_follow_interval: 1,
     offpeak_init_interval: 1,
     onpeak_follow_interval: 1,
     onpeak_init_interval: 1
+}
+
+const systemContact = {
+    email: 'systemContactBilling@example.com'
 }
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -70,6 +55,16 @@ context('Billing profile tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+                apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+                apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
+                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
+                cy.log('Data clean up pre-tests completed')
+
                 apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                     apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                         apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
@@ -94,18 +89,19 @@ context('Billing profile tests', () => {
         })
 
         after(() => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 
         afterEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
-                apiRemoveBillingProfileZoneBy({ name: billingProfileZone.zone, authHeader })
+                apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             })
         })
@@ -201,7 +197,7 @@ context('Billing profile tests', () => {
 
         it('Create a billing profile zone', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveBillingProfileZoneBy({ name: billingProfileZone.zone, authHeader })
+                apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
                 billingProfileZone.zone = 'profilezone' + getRandomNum()
                 billingProfileZone.detail = 'profiledetail' + getRandomNum()
             })

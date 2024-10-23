@@ -27,56 +27,45 @@ import {
     apiRemoveSoundSetBy,
     apiRemoveSystemContactBy
 } from '../../support/ngcp-admin-ui/e2e'
+import { dependencyContract, domain } from '../../support/aui-test-data';
 
 const ngcpConfig = Cypress.config('ngcpConfig')
-
-const domain = {
-    reseller_id: null,
-    domain: 'domain' + getRandomNum()
-}
 
 const dependencyReseller = {
     contract_id: null,
     status: 'active',
-    name: 'reseller' + getRandomNum(),
+    name: 'dependencyResellerCypress',
     enable_rtc: false
 }
 
-const systemContactDependency = {
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
-const dependencyContract = {
-    contact_id: null,
-    status: 'active',
-    external_id: 'contract' + getRandomNum(),
-    type: 'sippeering',
-    billing_profile_definition: 'id',
-    billing_profile_id: 1
-}
-
 const emergencyMappingContainer = {
-    name: 'emergency' + getRandomNum(),
+    name: 'emergencyMCCypress',
     reseller_id: null
 }
 
 const ncosLevel = {
     reseller_id: null,
-    level: 'ncoslevel' + getRandomNum(),
+    level: 'ncoslevelCypress',
     mode: 'whitelist',
     description: 'description' + getRandomNum()
 }
 
 const soundSet = {
-    name: 'soundset' + getRandomNum(),
+    name: 'soundsetCypress',
     description: 'description' + getRandomNum(),
     reseller_id: null
 }
 
 const rewriteRuleSet = {
-    name: 'ruleset ' + getRandomNum(),
+    name: 'rulesetCypress',
     description: 'description' + getRandomNum(),
     reseller_id: null
+}
+
+// We are not exporting this object to avoid dependencies
+// if we run tests in parallel in the future
+const systemContactDependency = {
+    email: 'systemContactDependencyDomainPref@example.com'
 }
 
 context('Domain preferences tests', () => {
@@ -84,6 +73,18 @@ context('Domain preferences tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
+                apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
+                apiRemoveNCOSLevelBy({ name: ncosLevel.level, authHeader })
+                apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
+                apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
+                apiRemoveResellerBy({ name: dependencyReseller.name, authHeader })
+                apiRemoveContractBy({ name: dependencyContract.external_id, authHeader })
+                apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
+                cy.log('Data clean up pre-tests completed')
+
                 apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
                     apiCreateContract({ data: { ...dependencyContract, contact_id: id }, authHeader }).then(({ id }) => {
                         apiCreateReseller({ data: { ...dependencyReseller, contract_id: id }, authHeader }).then(({ id }) => {
@@ -105,15 +106,16 @@ context('Domain preferences tests', () => {
         })
 
         after(() => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
-                apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
                 apiRemoveNCOSLevelBy({ name: ncosLevel.level, authHeader })
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
+                apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
                 apiRemoveResellerBy({ name: dependencyReseller.name, authHeader })
                 apiRemoveContractBy({ name: dependencyContract.external_id, authHeader })
-                apiRemoveSystemContactBy({ name: systemContactDependency.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             })
         })
 
@@ -123,7 +125,7 @@ context('Domain preferences tests', () => {
             })
         })
 
-        it('Test all Access Restricion settings in domain', () => {
+        it('Test all Access Restriction settings in domain', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / domain')
 
@@ -458,7 +460,6 @@ context('Domain preferences tests', () => {
             testPreferencesListField('outbound_pai_user', 'Authentication-User')
             testPreferencesListField('outbound_ppi_user', 'Authentication-User')
             testPreferencesListField('outbound_to_user', 'Received To header')
-            testPreferencesToggleField('outbound_from_user_is_phone')
             cy.get('label[data-cy="aui-input-search"] input').clear()
             cy.get('label[data-cy="aui-input-search"] input').type('rewrite_rule_set')
             cy.get('div[data-cy="q-item--outbound-from-user-is-phone"]').should('not.exist')

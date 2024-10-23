@@ -17,65 +17,42 @@ import {
     deleteItemOnListPageBy,
     searchInDataTable
 } from '../../support/ngcp-admin-ui/e2e'
+import { customer, domain, subscriber } from '../../support/aui-test-data';
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
-const customer = {
+const customerPbx = {
     billing_profile_definition: 'id',
     billing_profile_id: 1,
-    external_id: 'customer' + getRandomNum(),
-    contact_id: 1,
-    status: 'active',
-    type: 'sipaccount'
-}
-
-const pbxcustomer = {
-    billing_profile_definition: 'id',
-    billing_profile_id: 1,
-    external_id: 'customer' + getRandomNum(),
+    external_id: 'customerPbxCypress1',
     contact_id: 1,
     status: 'active',
     type: 'pbxaccount'
 }
 
-const domain = {
-    domain: 'domain' + getRandomNum(),
-    reseller_id: 1
-}
-
-const subscriber = {
-    username: 'subscriber' + getRandomNum(),
-    email: 'email' + getRandomNum() + '@test.com',
-    external_id: 'subid' + getRandomNum(),
-    password: 'sub!SUB' + getRandomNum() + '#pass$',
-    domain: domain.domain,
-    customer_id: 0,
-    subscriber_id: 0
-}
-
-const pilotsubscriber = {
-    username: 'subscriber' + getRandomNum(),
-    email: 'email' + getRandomNum() + '@test.com',
-    external_id: 'subid' + getRandomNum(),
+const pilotSubscriber = {
+    username: 'subscriberPilotCypress',
+    email: 'subscriberPilotCypress@test.com',
+    external_id: 'subid11',
     password: 'sub!SUB' + getRandomNum() + '#pass$',
     is_pbx_pilot: true,
     primary_number: {
         sn: getRandomNum(),
         ac: getRandomNum(),
-        cc: getRandomNum(4)
+        cc: 7777
     },
     domain: domain.domain,
     customer_id: 0,
     subscriber_id: 0
 }
 
-const seatsubscriber = {
-    username: 'subscriber' + getRandomNum(),
-    email: 'email' + getRandomNum() + '@test.com',
-    external_id: 'subid' + getRandomNum(),
+const seatSubscriber = {
+    username: 'subscriberSeatCypress' ,
+    email: 'subscriberSeatCypress@test.com',
+    external_id: 'subid22',
     password: 'sub!SUB' + getRandomNum() + '#pass$',
     is_pbx_pilot: false,
-    pbx_extension: getRandomNum(),
+    pbx_extension: 44,
     domain: domain.domain,
     customer_id: 0,
     subscriber_id: 0
@@ -83,16 +60,16 @@ const seatsubscriber = {
 
 const profileSet = {
     reseller_id: 1,
-    description: 'testdescription' + getRandomNum(),
-    descriptionNew: 'testdescription' + getRandomNum(),
-    name: 'set' + getRandomNum()
+    description: 'testdescriptionProfileSetCypressSubscribers',
+    descriptionNew: 'testdescriptionProfileSetCypressSubscribersNew',
+    name: 'setCypress00'
 }
 
 const subscriberProfile = {
-    name: 'profile' + getRandomNum(),
+    name: 'profileSubscriberCypress',
     profile_set_id: 0,
     set_default: true,
-    description: 'testdescription' + getRandomNum()
+    description: 'testdescriptionprofileSubscriberCypress'
 }
 
 context('Subscriber tests', () => {
@@ -100,13 +77,25 @@ context('Subscriber tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ name: seatSubscriber.username, authHeader })
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
+                apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
+                apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
+                cy.log('Data clean up pre-tests completed')
+
                 apiCreateDomain({ data: domain, authHeader })
                 apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                     subscriber.customer_id = id
                 })
-                apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
-                    pilotsubscriber.customer_id = id
-                    seatsubscriber.customer_id = id
+                apiCreateCustomer({ data: customerPbx, authHeader }).then(({ id }) => {
+                    pilotSubscriber.customer_id = id
+                    seatSubscriber.customer_id = id
                 })
             })
         })
@@ -117,25 +106,26 @@ context('Subscriber tests', () => {
                     apiCreateSubscriberProfile({ data: { ...subscriberProfile, profile_set_id: id }, authHeader })
                 })
                 apiCreateSubscriber({ data: subscriber, authHeader })
-                apiCreateSubscriber({ data: pilotsubscriber, authHeader })
-                apiCreateSubscriber({ data: seatsubscriber, authHeader })
+                apiCreateSubscriber({ data: pilotSubscriber, authHeader })
+                apiCreateSubscriber({ data: seatSubscriber, authHeader })
             })
         })
 
         after(() => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveDomainBy({ name: domain.domain, authHeader })
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
+                apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
             })
         })
 
         afterEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-                apiRemoveSubscriberBy({ name: seatsubscriber.username, authHeader })
-                apiRemoveSubscriberBy({ name: pilotsubscriber.username, authHeader })
+                apiRemoveSubscriberBy({ name: seatSubscriber.username, authHeader })
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
                 apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
                 apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
             })
@@ -212,7 +202,7 @@ context('Subscriber tests', () => {
             cy.get('input[data-cy="subscriber-email"]').clear()
             cy.get('input[data-cy="subscriber-email"]').type('newtest@mail.com')
             cy.get('input[data-cy="subscriber-web-username"]').clear()
-            cy.get('input[data-cy="subscriber-web-username"]').type(seatsubscriber.external_id)
+            cy.get('input[data-cy="subscriber-web-username"]').type(seatSubscriber.external_id)
             cy.get('input[data-cy="subscriber-web-password"]').type(subscriber.password)
             cy.qSelect({ dataCy: 'aui-selection-lock-level', itemContains: 'Global' })
             cy.qSelect({ dataCy: 'subscriber-status', itemContains: 'Locked' })
@@ -242,25 +232,25 @@ context('Subscriber tests', () => {
                     cy.navigateMainMenu('settings / customer')
         
                     cy.locationShouldBe('#/customer')
-                    searchInDataTable(pbxcustomer.external_id, 'External #')
+                    searchInDataTable(customerPbx.external_id, 'External #')
                     cy.get('div[class="aui-data-table"] .q-checkbox').click()
                     cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                     cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsSubscribers"]').click()
                     waitPageProgress()
 
-                    searchInDataTable(pilotsubscriber.external_id, 'Subscriber External ID')
+                    searchInDataTable(pilotSubscriber.external_id, 'Subscriber External ID')
                     cy.get('div[class="aui-data-table"] .q-checkbox').click()
                     cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                     cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
                     waitPageProgress()
 
                     cy.get('a[data-cy="aui-edit-button"]').click()
-                    cy.get('label[data-cy="aui-input-subscriber-username"] input').type(pilotsubscriber.external_id)
+                    cy.get('label[data-cy="aui-input-subscriber-username"] input').type(pilotSubscriber.external_id)
                     cy.get('input[data-cy="subscriber-email"]').clear()
                     cy.get('input[data-cy="subscriber-email"]').type('newtest@mail.com')
                     cy.get('input[data-cy="subscriber-web-username"]').clear()
-                    cy.get('input[data-cy="subscriber-web-username"]').type(pilotsubscriber.external_id)
-                    cy.get('input[data-cy="subscriber-web-password"]').type(pilotsubscriber.password)
+                    cy.get('input[data-cy="subscriber-web-username"]').type(pilotSubscriber.external_id)
+                    cy.get('input[data-cy="subscriber-web-password"]').type(pilotSubscriber.password)
                     cy.qSelect({ dataCy: 'aui-selection-lock-level', itemContains: 'Global' })
                     cy.qSelect({ dataCy: 'subscriber-status', itemContains: 'Locked' })
                     cy.get('label[data-cy="aui-selection-timezone"] input').type('Europe/Vienna')
@@ -293,25 +283,25 @@ context('Subscriber tests', () => {
                     cy.navigateMainMenu('settings / customer')
         
                     cy.locationShouldBe('#/customer')
-                    searchInDataTable(pbxcustomer.external_id, 'External #')
+                    searchInDataTable(customerPbx.external_id, 'External #')
                     cy.get('div[class="aui-data-table"] .q-checkbox').click()
                     cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                     cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsSubscribers"]').click()
                     waitPageProgress()
 
-                    searchInDataTable(seatsubscriber.external_id, 'Subscriber External ID')
+                    searchInDataTable(seatSubscriber.external_id, 'Subscriber External ID')
                     cy.get('div[class="aui-data-table"] .q-checkbox').click()
                     cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                     cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
                     waitPageProgress()
 
                     cy.get('a[data-cy="aui-edit-button"]').click()
-                    cy.get('label[data-cy="aui-input-subscriber-username"] input').type(seatsubscriber.external_id)
+                    cy.get('label[data-cy="aui-input-subscriber-username"] input').type(seatSubscriber.external_id)
                     cy.get('input[data-cy="subscriber-email"]').clear()
                     cy.get('input[data-cy="subscriber-email"]').type('newtest@mail.com')
                     cy.get('input[data-cy="subscriber-web-username"]').clear()
-                    cy.get('input[data-cy="subscriber-web-username"]').type(seatsubscriber.external_id)
-                    cy.get('input[data-cy="subscriber-web-password"]').type(seatsubscriber.password)
+                    cy.get('input[data-cy="subscriber-web-username"]').type(seatSubscriber.external_id)
+                    cy.get('input[data-cy="subscriber-web-password"]').type(seatSubscriber.password)
                     cy.qSelect({ dataCy: 'aui-selection-lock-level', itemContains: 'Global' })
                     cy.qSelect({ dataCy: 'subscriber-status', itemContains: 'Locked' })
                     cy.get('label[data-cy="aui-selection-timezone"] input').type('Europe/Vienna')

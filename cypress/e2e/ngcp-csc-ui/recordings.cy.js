@@ -1,5 +1,6 @@
 /// <reference types="cypress" />
 
+import { customer, domain, loginInfo, subscriber } from '../../support/csc-test-data';
 import {
     apiLoginAsSuperuser,
     apiCreateCustomer,
@@ -8,63 +9,40 @@ import {
     apiRemoveDomainBy,
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
-    getRandomNum
 } from '../../support/ngcp-csc-ui/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 const dayjs = require('dayjs')
-
-const customer = {
-    billing_profile_definition: 'id',
-    billing_profile_id: 1,
-    external_id: 'customer' + getRandomNum(),
-    contact_id: 1,
-    status: 'active',
-    type: 'sipaccount'
-}
-
-const domain = {
-    domain: 'domain' + getRandomNum(),
-    reseller_id: 1
-}
-
-const subscriber = {
-    username: 'subscriber' + getRandomNum(),
-    webusername: 'subscriber' + getRandomNum(),
-    email: 'email' + getRandomNum() + '@test.com',
-    external_id: 'subid' + getRandomNum(),
-    password: 'sub' + getRandomNum() + 'pass',
-    webpassword: 'sub' + getRandomNum() + 'pass',
-    domain: domain.domain,
-    customer_id: 0,
-    subscriber_id: 0
-}
-
-const loginInfo = {
-    username: subscriber.webusername + '@' + subscriber.domain,
-    password: subscriber.webpassword
-}
 
 context('Call recordings tests', () => {
     context('UI Call recordings tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
+                cy.log('Data clean up pre-tests completed')
+                
                 apiCreateDomain({ data: domain, authHeader })
                 apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
-                    subscriber.customer_id = id
+                     subscriber.customer_id = id
                 })
             })
         })
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiCreateSubscriber({ data: subscriber, authHeader })
+                apiCreateSubscriber({ data:  subscriber, authHeader })
             })
             cy.visit('/')
         })
 
         after(() => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveDomainBy({ name: domain.domain, authHeader })

@@ -17,16 +17,21 @@ import {
     apiRemoveContractBy,
     apiRemoveResellerBy
 } from '../../support/ngcp-admin-ui/e2e'
+import { contract, reseller } from '../../support/aui-test-data';
 
 const path = require('path')
 const ngcpConfig = Cypress.config('ngcpConfig')
+
+const systemContact = {
+    email: 'systemContactAdmin@example.com'
+}
 
 const admin1 = {
     role: 'reseller',
     password: 'Rand0m#PasswOrd#12345#',
     newpass: 'te#sTpaW0#R4638#',
-    email: 'user' + getRandomNum() + '@example.com',
-    login: 'admin' + getRandomNum(),
+    email: 'admin1@example.com',
+    login: 'admin1Cypress',
     is_master: true,
     read_only: false,
     is_active: true,
@@ -37,7 +42,7 @@ const admin1 = {
 }
 
 const admin2 = {
-    login: 'admin' + getRandomNum(),
+    login: 'admin2Cypress',
     password: 'Rand0m#pAssw#O1234#',
     role: 'reseller',
     is_master: true,
@@ -45,7 +50,7 @@ const admin2 = {
 }
 
 const mainResellerAdmin = {
-    login: 'admin' + getRandomNum(),
+    login: 'mainResellerAdminCypress',
     password: 'Rand0m#PassWO#12345#',
     role: 'reseller',
     is_master: true,
@@ -56,8 +61,8 @@ const mainResellerAdmin = {
     reseller_id: null
 }
 
-const secondaryresellerAdmin = {
-    login: 'admin' + getRandomNum(),
+const secondaryResellerAdmin = {
+    login: 'secondaryResellerAdminCypress',
     password: 'Rand0m#PassW#O1234#',
     role: 'reseller',
     is_master: false,
@@ -68,41 +73,28 @@ const secondaryresellerAdmin = {
     reseller_id: null
 }
 
-const contract = {
-    contact_id: 0,
-    status: 'active',
-    external_id: 'contract' + getRandomNum(),
-    type: 'reseller',
-    billing_profile_definition: 'id',
-    billing_profile_id: 1
-}
-
-const contact = {
-    email: 'user' + getRandomNum() + '@example.com'
-}
-
-const reseller = {
-    contract_id: 1,
-    status: 'active',
-    rtc_networks: {},
-    name: 'reseller' + getRandomNum(),
-    enable_rtc: false
-}
-
 const downloadsFolder = Cypress.config('downloadsFolder')
 
 context('Administrator tests', () => {
-    context('Simple UI admin tests', () => {
-
-    })
-
     context('Test admin actions as normal admin', () => {
         // IMPORTANT: all tests in this suite are dependent to each other, so we cannot execute them individually
 
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
-                apiCreateSystemContact({ data: contact, authHeader }).then(({ id }) => {
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+                apiRemoveAdminBy({ name: admin1.login, authHeader })
+                apiRemoveAdminBy({ name: admin2.login, authHeader })
+                apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ name: secondaryResellerAdmin.login, authHeader })
+
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
+                cy.log('Data clean up pre-tests completed')
+
+                apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                     apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                         apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
                             admin2.reseller_id = id
@@ -133,12 +125,13 @@ context('Administrator tests', () => {
 
         after(() => {
             // let's remove all data via API in case some of tests failed
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 reseller.name = 'reseller' + getRandomNum()
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveSystemContactBy({ name: contact.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 
@@ -337,11 +330,11 @@ context('Administrator tests', () => {
     context('Test admin actions as reseller admin', () => {
         before(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiCreateSystemContact({ data: contact, authHeader }).then(({ id }) => {
+                apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                     apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                         apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
                             mainResellerAdmin.reseller_id = id
-                            secondaryresellerAdmin.reseller_id = id
+                            secondaryResellerAdmin.reseller_id = id
                         })
                     })
                 })
@@ -351,7 +344,7 @@ context('Administrator tests', () => {
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiCreateAdmin({ data: mainResellerAdmin, authHeader })
-                apiCreateAdmin({ data: secondaryresellerAdmin, authHeader })
+                apiCreateAdmin({ data: secondaryResellerAdmin, authHeader })
             })
         })
 
@@ -360,17 +353,17 @@ context('Administrator tests', () => {
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
-                apiRemoveAdminBy({ name: secondaryresellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ name: secondaryResellerAdmin.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 reseller.name = 'reseller' + getRandomNum()
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveSystemContactBy({ name: contact.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 
         afterEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: secondaryresellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ name: secondaryResellerAdmin.login, authHeader })
                 apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
             })
         })
@@ -386,18 +379,18 @@ context('Administrator tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-negative')
             cy.logoutUI()
             cy.wait(500)
-            cy.loginUI(secondaryresellerAdmin.login, secondaryresellerAdmin.password)
+            cy.loginUI(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
             cy.get('input[data-cy="aui-input-search--datatable"]').clear()
-            searchInDataTable(secondaryresellerAdmin.login)
+            searchInDataTable(secondaryResellerAdmin.login)
             cy.get('div[data-cy="aui-data-table-inline-edit--toggle"]:first').should('have.attr', 'aria-disabled', 'true')
         })
 
         it('Create a reseller admin (is_master=false) and check if permissions are correct', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: secondaryresellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ name: secondaryResellerAdmin.login, authHeader })
             })
             cy.login(mainResellerAdmin.username, mainResellerAdmin.password)
             cy.navigateMainMenu('settings / administrator')
@@ -407,17 +400,17 @@ context('Administrator tests', () => {
 
             cy.locationShouldBe('#/administrator/create')
             cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: 'default', itemContains: 'default' })
-            cy.get('input[data-cy="login-field"]').type(secondaryresellerAdmin.login)
-            cy.qSelect({ dataCy: 'roles-list', filter: secondaryresellerAdmin.reseller_id, itemContains: 'reseller' })
-            cy.get('input[data-cy="password-field"]').type(secondaryresellerAdmin.password)
-            cy.get('input[data-cy="password-retype-field"]').type(secondaryresellerAdmin.password)
+            cy.get('input[data-cy="login-field"]').type(secondaryResellerAdmin.login)
+            cy.qSelect({ dataCy: 'roles-list', filter: secondaryResellerAdmin.reseller_id, itemContains: 'reseller' })
+            cy.get('input[data-cy="password-field"]').type(secondaryResellerAdmin.password)
+            cy.get('input[data-cy="password-retype-field"]').type(secondaryResellerAdmin.password)
             cy.get('[data-cy="aui-save-button"]').click()
             waitPageProgress()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 
             cy.logoutUI()
             cy.wait(500)
-            cy.loginUI(secondaryresellerAdmin.login, secondaryresellerAdmin.password)
+            cy.loginUI(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
 
             cy.navigateMainMenu('settings / administrator')
 
@@ -445,7 +438,7 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(secondaryresellerAdmin.login)
+            searchInDataTable(secondaryResellerAdmin.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
             waitPageProgress()
@@ -456,7 +449,7 @@ context('Administrator tests', () => {
 
             cy.logoutUI()
             cy.wait(500)
-            cy.loginUI(secondaryresellerAdmin.login, secondaryresellerAdmin.password)
+            cy.loginUI(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
 
             cy.navigateMainMenu('settings / administrator')
 
@@ -472,7 +465,7 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(secondaryresellerAdmin.login)
+            searchInDataTable(secondaryResellerAdmin.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
             waitPageProgress()
@@ -484,7 +477,7 @@ context('Administrator tests', () => {
 
             cy.logoutUI()
             cy.wait(500)
-            cy.loginUI(secondaryresellerAdmin.login, secondaryresellerAdmin.password, false)
+            cy.loginUI(secondaryResellerAdmin.login, secondaryResellerAdmin.password, false)
             cy.get('div[role="alert"]').contains('Wrong credentials').should('be.visible')
         })
 
@@ -493,7 +486,7 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(secondaryresellerAdmin.login)
+            searchInDataTable(secondaryResellerAdmin.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
             cy.get('input[data-cy="email-field"]').type('testemail@invalid.com')
@@ -517,7 +510,7 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(secondaryresellerAdmin.login)
+            searchInDataTable(secondaryResellerAdmin.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
             waitPageProgress()
@@ -528,11 +521,11 @@ context('Administrator tests', () => {
             cy.get('button[data-cy="aui-close-button"]').click()
 
             cy.logoutUI()
-            cy.login(secondaryresellerAdmin.login, secondaryresellerAdmin.password)
+            cy.login(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
-            searchInDataTable(secondaryresellerAdmin.login)
+            searchInDataTable(secondaryResellerAdmin.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('change-password')
             cy.get('input[data-cy="password-input"]').type('averyshinynewpwd')
@@ -546,14 +539,14 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
-            deleteItemOnListPageBy(secondaryresellerAdmin.login)
+            deleteItemOnListPageBy(secondaryResellerAdmin.login)
         })
     })
 
     context('Admin certificates tests', () => {
         before(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiCreateSystemContact({ data: contact, authHeader }).then(({ id }) => {
+                apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                     apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                         apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
                             apiCreateAdmin({ data: { ...admin1, reseller_id: id }, authHeader })
@@ -571,7 +564,7 @@ context('Administrator tests', () => {
                 apiRemoveAdminBy({ name: admin1.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveSystemContactBy({ name: contact.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 
