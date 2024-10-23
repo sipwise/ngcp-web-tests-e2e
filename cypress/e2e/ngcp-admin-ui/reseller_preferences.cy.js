@@ -17,31 +17,16 @@ import {
     testPreferencesTextField,
     testPreferencesListField
 } from '../../support/ngcp-admin-ui/e2e'
+import { contract, reseller } from '../../support/aui-test-data';
 
-const contract = {
-    contact_id: 3,
-    status: 'active',
-    external_id: 'contract' + getRandomNum(),
-    type: 'reseller',
-    billing_profile_definition: 'id',
-    billing_profile_id: 1
+const rewriteRuleSet = {
+    description: 'descriptionCypress',
+    name: 'rulset' + getRandomNum(),
+    reseller_id: null
 }
 
 const systemContact = {
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
-const reseller = {
-    contract_id: 1,
-    status: 'active',
-    name: 'reseller' + getRandomNum(),
-    enable_rtc: false
-}
-
-const rewriteRuleSet = {
-    description: 'description' + getRandomNum(),
-    name: 'rulset' + getRandomNum(),
-    reseller_id: null
+    email: 'systemContactResellerPref@example.com'
 }
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -51,6 +36,14 @@ context('Reseller preferences tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+                apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
+                cy.log('Data clean up pre-tests completed')
+
                 apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                     contract.contact_id = id
                 })
@@ -69,17 +62,18 @@ context('Reseller preferences tests', () => {
         })
 
         after(() => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
+            apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 
         afterEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
-                apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
             })
         })
 
