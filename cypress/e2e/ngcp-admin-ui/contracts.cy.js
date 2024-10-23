@@ -1,5 +1,6 @@
 /// <reference types="cypress" />
 
+import { dependencyContract } from '../../support/aui-test-data';
 import {
     getRandomNum,
     waitPageProgress,
@@ -13,13 +14,14 @@ import {
     apiLoginAsSuperuser,
     apiRemoveBillingProfileBy,
     apiRemoveContractBy,
-    apiRemoveResellerBy
+    apiRemoveResellerBy,
+    apiRemoveSystemContactBy
 } from '../../support/ngcp-admin-ui/e2e'
 
 const peeringContract = {
     contact_id: null,
     status: 'active',
-    external_id: 'contract' + getRandomNum(),
+    external_id: 'peeringContractCypress',
     type: 'reseller',
     billing_profile_definition: 'id',
     billing_profile_id: null
@@ -28,36 +30,29 @@ const peeringContract = {
 const resellerContract = {
     contact_id: null,
     status: 'active',
-    external_id: 'contract' + getRandomNum(),
+    external_id: 'resellerContractCypress',
     type: 'sippeering',
     billing_profile_definition: 'id',
     billing_profile_id: null
 }
 
-const dependencyContract = {
-    contact_id: null,
-    status: 'active',
-    external_id: 'contract' + getRandomNum(),
-    type: 'sippeering',
-    billing_profile_definition: 'id',
-    billing_profile_id: 1
-}
-
-const systemContactDependency = {
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
 const dependencyReseller = {
     contract_id: null,
     status: 'active',
-    name: 'reseller' + getRandomNum(),
+    name: 'dependencyResellerCypress',
     enable_rtc: false
 }
 
 const dependencyBillingProfile = {
-    name: 'billing' + getRandomNum(),
+    name: 'dependencyBillingProfileCypress',
     handle: 'string' + getRandomNum(),
     reseller_id: 0
+}
+
+// We are not exporting this object to avoid dependencies
+// if we run tests in parallel in the future
+const systemContactDependency = {
+    email: 'systemContactDependencyContracts@example.com'
 }
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -67,6 +62,16 @@ context('Contract tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+                apiRemoveContractBy({ name: peeringContract.external_id, authHeader })
+                apiRemoveContractBy({ name: resellerContract.external_id, authHeader })
+                apiRemoveBillingProfileBy({ name: dependencyBillingProfile.name, authHeader })
+                apiRemoveResellerBy({ name: dependencyReseller.name, authHeader })
+                apiRemoveContractBy({ name: dependencyContract.external_id, authHeader })
+                apiRemoveSystemContactBy({email:systemContactDependency.email, authHeader })
+                cy.log('Data clean up pre-tests completed')
+
                 apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
                     resellerContract.contact_id = id
                     peeringContract.contact_id = id
@@ -90,7 +95,8 @@ context('Contract tests', () => {
         })
 
         after(() => {
-            Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
+            cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveBillingProfileBy({ name: dependencyBillingProfile.name, authHeader })
                 apiRemoveResellerBy({ name: dependencyReseller.name, authHeader })

@@ -18,9 +18,10 @@ import {
     searchInDataTable,
     waitPageProgress
 } from '../../support/ngcp-admin-ui/e2e'
+import { contract, reseller } from '../../support/aui-test-data';
 
 const mainResellerAdmin = {
-    login: 'admin' + getRandomNum(),
+    login: 'mainResellerAdminCypress',
     password: 'rand0mpassword12345',
     role: 'reseller',
     is_master: true,
@@ -31,48 +32,32 @@ const mainResellerAdmin = {
     reseller_id: null
 }
 
-const contract = {
-    contact_id: 3,
-    status: 'active',
-    external_id: 'contract' + getRandomNum(),
-    type: 'reseller',
-    billing_profile_definition: 'id',
-    billing_profile_id: 1
-}
-
-const systemContact = {
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
-const reseller = {
-    contract_id: 1,
-    status: 'active',
-    name: 'reseller' + getRandomNum(),
-    enable_rtc: false
-}
-
 const billingProfile = {
-    name: 'profile' + getRandomNum(),
-    handle: 'profilehandle' + getRandomNum(),
+    name: 'profileCypress',
+    handle: 'profilehandle123',
     reseller_id: null
 }
 
 const editBillingProfile = {
-    name: 'profile' + getRandomNum(),
-    handle: 'profilehandle' + getRandomNum(),
+    name: 'editProfileCypress',
+    handle: 'profilehandle456',
     reseller_id: null
 }
 
 const profilePackage = {
-    balance_interval_unit: "minute",
+    balance_interval_unit: 'minute',
     balance_interval_value: 60,
-    description: "desc" + getRandomNum(),
-    name: "profilepackage" + getRandomNum(),
+    description: 'desc',
+    name: 'profilePackageCypress',
     initial_profiles: [
         {
           profile_id: 0,
         }
       ],
+}
+
+const systemContact = {
+    email: 'systemContactProfilePackage@example.com'
 }
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -82,6 +67,17 @@ context('Profile package tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+                apiRemoveProfilePackageBy({name: profilePackage.name, authHeader})
+                apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
+                apiRemoveBillingProfileBy({ name: editBillingProfile.name, authHeader })
+                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
+                cy.log('Data clean up pre-tests completed')
+
                 apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                     apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                         apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
@@ -109,7 +105,7 @@ context('Profile package tests', () => {
                 apiRemoveBillingProfileBy({ name: editBillingProfile.name, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 

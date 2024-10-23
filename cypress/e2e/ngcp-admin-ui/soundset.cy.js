@@ -21,33 +21,10 @@ import {
     searchInDataTable,
     waitPageProgress
 } from '../../support/ngcp-admin-ui/e2e'
+import { contract, customerPbx, reseller } from '../../support/aui-test-data';
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 const path = require('path')
-
-const contract = {
-    contact_id: 3,
-    status: 'active',
-    external_id: 'contract' + getRandomNum(),
-    type: 'reseller',
-    billing_profile_definition: 'id',
-    billing_profile_id: 1
-}
-
-const customerContact = {
-    reseller_id: null,
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
-const customer = {
-    billing_profile_definition: 'id',
-    billing_profile_id: null,
-    external_id: 'customer' + getRandomNum(),
-    contact_id: null,
-    status: 'active',
-    type: 'pbxaccount',
-    customer_id: null
-}
 
 const billingProfile = {
     name: 'profile' + getRandomNum(),
@@ -55,21 +32,23 @@ const billingProfile = {
     reseller_id: null
 }
 
-const reseller = {
-    contract_id: 1,
-    status: 'active',
-    name: 'reseller' + getRandomNum(),
-    enable_rtc: false
-}
-
-const systemContactDependency = {
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
 const soundSet = {
     reseller_id: 0,
     name: 'soundset' + getRandomNum(),
     description: 'desc' + getRandomNum()
+}
+
+// We are not exporting this object to avoid dependencies
+// if we run tests in parallel in the future
+const systemContactDependency = {
+    email: 'systemContactDependencySoundsets@example.com'
+}
+
+// We are not exporting this object to avoid dependencies
+// if we run tests in parallel in the future
+const customerContact = {
+    reseller_id: null,
+    email: 'customerContactSoundset@example.com'
 }
 
 const fixturesFolder = Cypress.config('fixturesFolder')
@@ -79,19 +58,30 @@ context('Soundset tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+                apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
+                apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerPbx.email, authHeader })
+                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
+                cy.log('Data clean up pre-tests completed')
+
                 apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
                     apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                         apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
                             soundSet.reseller_id = id
                             apiCreateBillingProfile({ data: { ...billingProfile, reseller_id: id }, authHeader }).then(({ id }) => {
-                                customer.billing_profile_id = id
+                                customerPbx.billing_profile_id = id
                             })
                             apiCreateCustomerContact({ data: { ...customerContact, reseller_id: id }, authHeader }).then(({ id }) => {
-                                customer.contact_id = id
-                                apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
-                                    customer.customer_id = id
+                                customerPbx.contact_id = id
+                                apiCreateCustomer({ data: { ...customerPbx, contact_id: id }, authHeader }).then(({ id }) => {
+                                    customerPbx.customer_id = id
                                 })
-                            })                            
+                            })
                         })
                     })
                 })
@@ -105,14 +95,15 @@ context('Soundset tests', () => {
         })
 
         after(() => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveCustomerContactBy({ name: customer.email, authHeader })
+                apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerPbx.email, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveSystemContactBy({ name: systemContactDependency.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             })
         })
 
