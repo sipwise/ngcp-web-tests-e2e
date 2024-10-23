@@ -4,7 +4,6 @@ import {
     apiCreateSubscriberProfileSet,
     apiLoginAsSuperuser,
     apiRemoveSubscriberProfileSetBy,
-    getRandomNum,
     waitPageProgress,
     deleteItemOnListPageBy,
     searchInDataTable
@@ -13,24 +12,29 @@ import {
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 const profile = {
-    descriptionInitial: 'testdescription' + getRandomNum(),
-    description: 'testdescription' + getRandomNum(),
-    profilename: 'profile' + getRandomNum(),
-    profilename2: 'secondprofile' + getRandomNum()
-
+    descriptionInitial: 'testDescriptionInitialCypress',
+    description: 'testDescriptionCypress',
+    profilename: 'profileCypress1',
+    profilename2: 'profileCypress2'
 }
 
 const profileSet = {
     reseller_id: 1,
-    description: 'testdescription' + getRandomNum(),
-    descriptionNew: 'testdescription' + getRandomNum(),
-    name: 'set' + getRandomNum()
+    description: 'testDescriptionCypress',
+    descriptionNew: 'testDescriptionCypressNew' ,
+    name: 'setCypress'
 }
 
 context('Subscriber profile tests', () => {
     context('UI subscriber profile tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+            apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+                apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
+                cy.log('Data clean up pre-tests completed')
+            })
         })
 
         beforeEach(() => {

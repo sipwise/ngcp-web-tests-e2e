@@ -324,7 +324,7 @@ export const apiCreateAdmin = ({ data, authHeader }) => {
 }
 
 export const apiRemoveAdminBy = ({ name, authHeader }) => {
-    cy.log('apiCreateAdmin', name)
+    cy.log('apiRemoveAdminBy', name)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/admins`,
@@ -335,13 +335,14 @@ export const apiRemoveAdminBy = ({ name, authHeader }) => {
     }).then(({ body }) => {
         const adminId = body?._embedded?.['ngcp:admins']?.[0]?.id
         if (body?.total_count === 1 && adminId > 1) {
+            cy.log('Deleting admin...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/admins/${adminId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Admin not found', name)
         }
     })
 }
@@ -405,6 +406,7 @@ export const apiRemoveContractBy = ({ name, authHeader }) => {
         const contractId = contractData?.id
         const contractStatus = contractData?.status
         if (body?.total_count === 1 && contractId > 1 && contractStatus !== 'terminated') {
+            cy.log('Deleting contract...', name)
             return cy.request({
                 method: 'PATCH',
                 url: `${ngcpConfig.apiHost}/api/contracts/${contractId}`,
@@ -417,7 +419,7 @@ export const apiRemoveContractBy = ({ name, authHeader }) => {
                 }
             })
         } else {
-            return null
+            return cy.log('Contact not found', name)
         }
     })
 }
@@ -451,7 +453,7 @@ export const apiGetResellerId = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/resellers`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
@@ -467,7 +469,7 @@ export const apiRemoveResellerBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/resellers`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
@@ -475,6 +477,7 @@ export const apiRemoveResellerBy = ({ name, authHeader }) => {
         const resellerId = resellerData?.id
         const resellerStatus = resellerData?.status
         if (body?.total_count === 1 && resellerId > 1 && resellerStatus !== 'terminated') {
+            cy.log('Deleting reseller...', name)
             return cy.request({
                 method: 'PATCH',
                 url: `${ngcpConfig.apiHost}/api/resellers/${resellerId}`,
@@ -487,7 +490,7 @@ export const apiRemoveResellerBy = ({ name, authHeader }) => {
                 }
             })
         } else {
-            return null
+            return cy.log('System contact not found', name)
         }
     })
 }
@@ -526,13 +529,14 @@ export const apiRemoveDomainBy = ({ name, authHeader }) => {
     }).then(({ body }) => {
         const domainId = body?._embedded?.['ngcp:domains']?.[0]?.id
         if (body?.total_count === 1 && domainId > 1) {
+            cy.log('Deleting domain...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/domains/${domainId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Domain not found', name)
         }
     })
 }
@@ -585,23 +589,18 @@ export const apiGetCustomerId = ({ name, authHeader }) => {
     })
 }
 
-export const apiRemoveCustomerBy = ({ name, authHeader }) => {
-    cy.log('apiRemoveCustomerBy', name)
+export const apiRemoveCustomerById = ({ id, authHeader }) => {
+    cy.log('apiRemoveCustomerById', id)
     return cy.request({
         method: 'GET',
-        url: `${ngcpConfig.apiHost}/api/customers`,
-        qs: {
-            external_id: name
-        },
+        url: `${ngcpConfig.apiHost}/api/customers/${id}`,
         ...authHeader
-    }).then(({ body }) => {
-        const customerData = body?._embedded?.['ngcp:customers']?.[0]
-        const customerId = customerData?.id
-        const customerStatus = customerData?.status
-        if (body?.total_count === 1 && customerId > 1 && customerStatus !== 'terminated') {
+    }).then((res) => {
+        if (res?.body?.id && res?.body.status !== 'terminated') {
+            cy.log('Terminating customer by id...', id)
             return cy.request({
                 method: 'PATCH',
-                url: `${ngcpConfig.apiHost}/api/customers/${customerId}`,
+                url: `${ngcpConfig.apiHost}/api/customers/${res.body.id}`,
                 body: [
                     { op: 'replace', path: '/status', value: 'terminated' }
                 ],
@@ -610,8 +609,41 @@ export const apiRemoveCustomerBy = ({ name, authHeader }) => {
                     'content-type': 'application/json-patch+json'
                 }
             })
+        }
+        
+        return cy.log('Customer not found or already terminated...', id)
+    })
+}
+
+export const apiRemoveCustomerBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveCustomerBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/customers`,
+        qs: {
+            external_id: name,
+            status: 'active'
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const customers = body?._embedded?.['ngcp:customers']
+        if (customers && customers.length > 0) {
+            customers.forEach((customer) => {
+                    cy.log(`Terminating customer ${customer.id}`, name)
+                    return cy.request({
+                        method: 'PATCH',
+                        url: `${ngcpConfig.apiHost}/api/customers/${customer.id}`,
+                        body: [
+                            { op: 'replace', path: '/status', value: 'terminated' }
+                        ],
+                        headers: {
+                            ...authHeader.headers,
+                            'content-type': 'application/json-patch+json'
+                        }
+                    })
+            })
         } else {
-            return null
+            return cy.log(`Customer not found`, name)
         }
     })
 }
@@ -682,13 +714,14 @@ export const apiRemoveSubscriberBy = ({ name, authHeader }) => {
     }).then(({ body }) => {
         const subscriberId = body?._embedded?.['ngcp:subscribers']?.[0]?.id
         if (body?.total_count === 1 && subscriberId > 1) {
+            cy.log('Deleting subscriber...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/subscribers/${subscriberId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return  cy.log('Subscriber not found', name)
         }
     })
 }
@@ -746,25 +779,26 @@ export const apiGetSystemContactId = ({ name, authHeader }) => {
     })
 }
 
-export const apiRemoveSystemContactBy = ({ name, authHeader }) => {
-    cy.log('apiRemoveSystemContactBy', name)
+export const apiRemoveSystemContactBy = ({ email, authHeader }) => {
+    cy.log('apiRemoveSystemContactBy', email)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/systemcontacts`,
         qs: {
-            email: name
+            email
         },
         ...authHeader
     }).then(({ body }) => {
         const contactId = body?._embedded?.['ngcp:systemcontacts']?.[0]?.id
         if (body?.total_count === 1 && contactId > 1) {
+            cy.log('Deleting system contact...', email)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/systemcontacts/${contactId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('System contact not found', email)
         }
     })
 }
@@ -823,25 +857,51 @@ export const apiGetCustomerContactId = ({ name, authHeader }) => {
     })
 }
 
-export const apiRemoveCustomerContactBy = ({ name, authHeader }) => {
-    cy.log('apiRemoveCustomerContactBy', name)
+export const apiRemoveCustomerContactsByIds = ({ ids, authHeader }) => {
+    cy.log('apiRemoveCustomerContactBy', ids)
+    ids.forEach((id) => {
+        return cy.request({
+            method: 'GET',
+            url: `${ngcpConfig.apiHost}/api/customercontacts/${id}`,
+            ...authHeader
+        }).then(({ body }) => {
+                if (body?.id) {
+                    cy.log('Deleting customer contact by id...', id)
+                    return cy.request({
+                        method: 'DELETE',
+                        url: `${ngcpConfig.apiHost}/api/customercontacts/${body.id}`,
+                        ...authHeader
+                    })
+                 }
+                return cy.log('Customer contact not found', id)
+        })
+    })
+    
+}
+
+export const apiRemoveCustomerContactBy = ({ email, authHeader }) => {
+    cy.log('apiRemoveCustomerContactBy', email)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/customercontacts`,
         qs: {
-            email: name
+            email
         },
         ...authHeader
     }).then(({ body }) => {
-        const contactId = body?._embedded?.['ngcp:customercontacts']?.[0]?.id
-        if (body?.total_count === 1 && contactId > 1) {
-            return cy.request({
-                method: 'DELETE',
-                url: `${ngcpConfig.apiHost}/api/customercontacts/${contactId}`,
-                ...authHeader
+        const contacts = body?._embedded?.['ngcp:customercontacts']
+        if (contacts && contacts.length > 0) {
+            cy.log('Deleting customer contact...', email)
+            return contacts.forEach((contact) => {
+                return cy.request({
+                    method: 'DELETE',
+                    url: `${ngcpConfig.apiHost}/api/customercontacts/${contact.id}`,
+                    ...authHeader
+                })
             })
+            
         } else {
-            return null
+            return cy.log('Customer contact not found', email)
         }
     })
 }
@@ -874,19 +934,20 @@ export const apiRemoveEmergencyMappingContainerBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/emergencymappingcontainers`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
         const emcId = body?._embedded?.['ngcp:emergencymappingcontainers']?.[0]?.id
         if (body?.total_count === 1 && emcId > 1) {
+            cy.log('Deleting emergency mapping container...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/emergencymappingcontainers/${emcId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Emergency mapping container not found', name)
         }
     })
 }
@@ -927,13 +988,14 @@ export const apiRemoveEmergencyMappingBy = ({ name, authHeader }) => {
     }).then(({ body }) => {
         const emcId = body?._embedded?.['ngcp:emergencymappings']?.[0]?.id
         if (body?.total_count === 1 && emcId >= 1) {
+            cy.log('Deleting emergency mapping...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/emergencymappings/${emcId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('No emergency mapping found')
         }
     })
 }
@@ -967,7 +1029,7 @@ export const apiGetSubscriberProfileSetId = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/subscriberprofilesets`,
         qs: {
-            username: name
+            username : name
         },
         ...authHeader
     }).then(({ body }) => {
@@ -983,19 +1045,20 @@ export const apiRemoveSubscriberProfileSetBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/subscriberprofilesets`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
         const subscriberProfileSetId = body?._embedded?.['ngcp:subscriberprofilesets']?.[0]?.id
         if (body?.total_count === 1 && subscriberProfileSetId >= 1) {
+            cy.log('Deleting subscriber profile set...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/subscriberprofilesets/${subscriberProfileSetId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('No subscriber profile set found')
         }
     })
 }
@@ -1030,7 +1093,7 @@ export const apiGetResellerPhonebookId = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/resellerphonebookentries`,
         qs: {
-            username: name
+            username : name
         },
         ...authHeader
     }).then(({ body }) => {
@@ -1046,19 +1109,20 @@ export const apiRemoveResellerPhonebookBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/resellerphonebookentries`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
         const subscriberProfileSetId = body?._embedded?.['ngcp:resellerphonebookentries']?.[0]?.id
         if (body?.total_count === 1 && subscriberProfileSetId >= 1) {
+            cy.log('Deleting reseller phonebook...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/resellerphonebookentries/${subscriberProfileSetId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('No reseller phonebook found', name)
         }
     })
 }
@@ -1092,7 +1156,7 @@ export const apiGetBillingProfileId = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/billingprofiles`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
@@ -1108,19 +1172,20 @@ export const apiRemoveBillingProfileBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/billingprofiles`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
         const billingProfileId = body?._embedded?.['ngcp:billingprofiles']?.[0]?.id
         if (body?.total_count === 1 && billingProfileId > 1) {
+            cy.log('Deleting billing profile...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/billingprofiles/${billingProfileId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Billing profile not found', name)
         }
     })
 }
@@ -1164,25 +1229,26 @@ export const apiGetBillingProfileZoneId = ({ name, authHeader }) => {
     })
 }
 
-export const apiRemoveBillingProfileZoneBy = ({ name, authHeader }) => {
-    cy.log('apiRemoveBillingProfileZoneBy', name)
+export const apiRemoveBillingProfileZoneBy = ({ zone, authHeader }) => {
+    cy.log('apiRemoveBillingProfileZoneBy', zone)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/billingzones`,
         qs: {
-            zone: name
+            zone
         },
         ...authHeader
     }).then(({ body }) => {
         const billingProfileZoneId = body?._embedded?.['ngcp:billingzones']?.[0]?.id
-        if (body?.total_count === 1 && billingProfileZoneId > 1) {  
+        if (body?.total_count === 1 && billingProfileZoneId > 1) {
+            cy.log('Deleting billing profile zone...', zone)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/billingzones/${billingProfileZoneId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Billing profile zone not found', zone)
         }
     })
 }
@@ -1257,13 +1323,14 @@ export const apiRemoveBillingProfileFeeBy = ({ name, authHeader }) => {
     }).then(({ body }) => {
         const billingProfileFeeId = body?._embedded?.['ngcp:billingfees']?.[0]?.id
         if (body?.total_count === 1 && billingProfileFeeId > 1) {  
+            cy.log('Deleting billing profile fee...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/billingfees/${billingProfileFeeId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Billing profile fee not found', name)
         }
     })
 }
@@ -1297,7 +1364,7 @@ export const apiGetRewriteRuleSetId = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/rewriterulesets`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
@@ -1313,19 +1380,20 @@ export const apiRemoveRewriteRuleSetBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/rewriterulesets`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
         const rewriteRuleSetId = body?._embedded?.['ngcp:rewriterulesets']?.[0]?.id
         if (body?.total_count === 1 && rewriteRuleSetId > 1) {
+            cy.log('Deleting rewrite rule set...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/rewriterulesets/${rewriteRuleSetId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('No rewrite rule set found', name)
         }
     })
 }
@@ -1385,14 +1453,15 @@ export const apiRemoveRewriteRulesBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const rewriteRulesId = body?._embedded?.['ngcp:rewriterules']?.[0]?.id
-        if (body?.total_count === 1 && rewriteRules > 1) {
+        if (body?.total_count === 1 && rewriteRulesId > 1) {
+            cy.log('Deleting rewrite rules...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/rewriterules/${rewriteRulesId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('No rewrite rules found', name)
         }
     })
 }
@@ -1449,13 +1518,14 @@ export const apiRemoveNCOSLevelBy = ({ name, authHeader }) => {
     }).then(({ body }) => {
         const NCOSLevelId = body?._embedded?.['ngcp:ncoslevels']?.[0]?.id
         if (body?.total_count === 1 && NCOSLevelId >= 1) {
+            cy.log('Deleting NCOS level...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/ncoslevels/${NCOSLevelId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('NCOS level not found', name)
         }
     })
 }
@@ -1483,13 +1553,13 @@ export const apiCreateNCOSLNPCarrier = ({ data, authHeader }) => {
     })
 }
 
-export const apiGetNCOSNCOSLNPCarrier = ({ name, authHeader }) => {
-    cy.log('apiGetNCOSNCOSLNPCarrier', name)
+export const apiGetNCOSNCOSLNPCarrier = ({ level, authHeader }) => {
+    cy.log('apiGetNCOSNCOSLNPCarrier', level)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/ncoslnpcarriers`,
         qs: {
-            level: name
+            level
         },
         ...authHeader
     }).then(({ body }) => {
@@ -1499,25 +1569,26 @@ export const apiGetNCOSNCOSLNPCarrier = ({ name, authHeader }) => {
     })
 }
 
-export const apiRemoveNCOSLNPCarrierBy = ({ name, authHeader }) => {
-    cy.log('apiRemoveNCOSLNPCarrierBy', name)
+export const apiRemoveNCOSLNPCarrierBy = ({ level, authHeader }) => {
+    cy.log('apiRemoveNCOSLNPCarrierBy', level)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/ncoslnpcarriers`,
         qs: {
-            level: name
+            level
         },
         ...authHeader
     }).then(({ body }) => {
         const NCOSLNPCarrierId = body?._embedded?.['ngcp:ncoslnpcarriers']?.[0]?.id
         if (body?.total_count === 1 && NCOSLNPCarrierId >= 1) {
+            cy.log('Deleting NCOS LNP carrier...', level)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/ncoslnpcarriers/${NCOSLNPCarrierId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('NCOS LNP carrier not found', level)
         }
     })
 }
@@ -1561,25 +1632,26 @@ export const apiGetNCOSLNPPattern = ({ name, authHeader }) => {
     })
 }
 
-export const apiRemoveNCOSLNPPatternBy = ({ name, authHeader }) => {
-    cy.log('apiRemoveNCOSLNPPatternBy', name)
+export const apiRemoveNCOSLNPPatternBy = ({ level, authHeader }) => {
+    cy.log('apiRemoveNCOSLNPPatternBy', level)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/ncoslnppatterns`,
         qs: {
-            level: name
+            level
         },
         ...authHeader
     }).then(({ body }) => {
         const NCOSLNPCarrierId = body?._embedded?.['ngcp:ncoslnppatterns']?.[0]?.id
         if (body?.total_count === 1 && NCOSLNPCarrierId >= 1) {
+            cy.log('Deleting NCOS LNP patttern...', level)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/ncoslnppatterns/${NCOSLNPCarrierId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return y.log('NCOS LNP patttern not found', level)
         }
     })
 }
@@ -1629,19 +1701,47 @@ export const apiRemoveNCOSPatternBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/ncospatterns`,
         qs: {
-            pattern: name
+            pattern:name
         },
         ...authHeader
     }).then(({ body }) => {
-        const NCOSPatternId = body?._embedded?.['ngcp:ncospatterns']?.[0]?.id
-        if (body?.total_count === 1 && NCOSPatternId >= 1) {
+        const NCOSSetId = body?._embedded?.['ngcp:ncospatterns']?.[0]?.id
+        if (body?.total_count === 1 && NCOSSetId >= 1) {
+            cy.log('Deleting ncos pattern...', name)
             return cy.request({
                 method: 'DELETE',
-                url: `${ngcpConfig.apiHost}/api/ncospatterns/${NCOSPatternId}`,
+                url: `${ngcpConfig.apiHost}/api/ncospatterns/${NCOSSetId}`,
                 ...authHeader
             })
         } else {
             return null
+        }
+    })
+}
+
+export const apiRemoveNCOSSetBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveNCOSSetBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/v2/ncos/sets/`,
+        qs: {
+            name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const ncosSets = body?._embedded?.['ngcp:ncos/sets']
+        if (ncosSets && ncosSets.length > 0) {
+            ncosSets.forEach((set) => {
+                cy.log('Deleting ncos set...', name)
+                return cy.request({
+                    method: 'DELETE',
+                    url: `${ngcpConfig.apiHost}/api/v2/ncos/sets/${set.id}`,
+                    ...authHeader
+                })
+            })
+            
+        } else {
+            return cy.log('Ncos set not found', name)
         }
     })
 }
@@ -1680,7 +1780,7 @@ export const apiGetSoundSetId = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/soundsets/`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
@@ -1696,19 +1796,20 @@ export const apiRemoveSoundSetBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/soundsets`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
         const SoundSetId = body?._embedded?.['ngcp:soundsets']?.[0]?.id
         if (body?.total_count === 1 && SoundSetId >= 1) {
+            cy.log('Deleting sound set...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/soundsets/${SoundSetId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Sound set not found', name)
         }
     })
 }
@@ -1757,25 +1858,26 @@ export const apiGetLocationMappingId = ({ name, authHeader }) => {
     })
 }
 
-export const apiRemoveLocationMappingBy = ({ name, authHeader }) => {
-    cy.log('apiRemoveLocationMappingBy', name)
+export const apiRemoveLocationMappingBy = ({ external_id, authHeader }) => {
+    cy.log('apiRemoveLocationMappingBy', external_id)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/subscriberlocationmappings`,
         qs: {
-            external_id: name
+            external_id
         },
         ...authHeader
     }).then(({ body }) => {
         const LocationHeaderId = body?._embedded?.['ngcp:subscriberlocationmappings']?.[0]?.id
         if (body?.total_count === 1 && LocationHeaderId > 1) {
+            cy.log('Deleting Location mapping...', external_id)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/subscriberlocationmappings/${LocationHeaderId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Location mapping not found', external_id)
         }
     })
 }
@@ -1811,7 +1913,7 @@ export const apiGetSubscriberProfileId = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/subscriberprofiles`,
         qs: {
-            username: name
+            username : name
         },
         ...authHeader
     }).then(({ body }) => {
@@ -1827,19 +1929,20 @@ export const apiRemoveSubscriberProfileBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/subscriberprofiles`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
         const subscriberProfileId = body?._embedded?.['ngcp:subscriberprofiles']?.[0]?.id
         if (body?.total_count === 1 && subscriberProfileId > 1) {
+            cy.log('Deleting subscriber profile...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/subscriberprofiles/${subscriberProfileId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Subscriber profile not found', name)
         }
     })
 }
@@ -1873,7 +1976,7 @@ export const apiGetTimesetId = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/timesets`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
@@ -1889,19 +1992,20 @@ export const apiRemoveTimesetBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/timesets`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
         const timesetID = body?._embedded?.['ngcp:timesets']?.[0]?.id
         if (body?.total_count === 1 && timesetID >= 1) {
+            cy.log('Deleting timeset...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/timesets/${timesetID}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Timeset not found', name)
         }
     })
 }
@@ -1941,7 +2045,7 @@ export const apiGetProfilePackageId = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/profilepackages`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
@@ -1957,19 +2061,20 @@ export const apiRemoveProfilePackageBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/profilepackages`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
         const profilePackageID = body?._embedded?.['ngcp:profilepackages']?.[0]?.id
         if (body?.total_count === 1 && profilePackageID > 1) {
+            cy.log('Deleting profile package...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/profilepackages/${profilePackageID}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Profile package not found', name)
         }
     })
 }
@@ -2005,7 +2110,7 @@ export const apiGetHeaderRulesetId = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/headerrulesets`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
@@ -2021,19 +2126,20 @@ export const apiRemoveHeaderRulesetBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/headerrulesets`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
         const HeaderRulesetID = body?._embedded?.['ngcp:headerrulesets']?.[0]?.id
         if (body?.total_count === 1 && HeaderRulesetID >= 1) {
+            cy.log('Deleting header rule set...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/headerrulesets/${HeaderRulesetID}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Header rule set not found', name)
         }
     })
 }
@@ -2041,7 +2147,7 @@ export const apiRemoveHeaderRulesetBy = ({ name, authHeader }) => {
 export const defaultHeaderRuleCreationData = {
     stopper: true,
     enabled: true,
-    direction: "inbound",
+    direction: "a_inbound",
     description: "string",
     name: "string",
     set_id: 0,
@@ -2071,7 +2177,7 @@ export const apiGetHeaderRuleId = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/headerrules`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
@@ -2087,19 +2193,20 @@ export const apiRemoveHeaderRuleBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/headerrules`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
         const HeaderRuleID = body?._embedded?.['ngcp:headerrules']?.[0]?.id
         if (body?.total_count === 1 && HeaderRuleID >= 1) {
+            cy.log('Deleting header rule...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/headerrules/${HeaderRuleID}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Header rule not found', name)
         }
     })
 }
@@ -2167,13 +2274,14 @@ export const apiRemoveHeaderRuleConditionBy = ({ name, authHeader }) => {
     }).then(({ body }) => {
         const HeaderRuleConditionID = body?._embedded?.['ngcp:headerruleconditions']?.[0]?.id
         if (body?.total_count === 1 && HeaderRuleConditionID >= 1) {
+            cy.log('Deleting header rule condition...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/headerruleconditions/${HeaderRuleConditionID}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Header rule condition not found', name)
         }
     })
 }
@@ -2224,25 +2332,26 @@ export const apiGetHeaderRuleActionId = ({ name, authHeader }) => {
     })
 }
 
-export const apiRemoveHeaderRuleActionBy = ({ name, authHeader }) => {
-    cy.log('apiRemoveHeaderRuleActionBy', name)
+export const apiRemoveHeaderRuleActionBy = ({ header, authHeader }) => {
+    cy.log('apiRemoveHeaderRuleActionBy', header)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/headerruleactions`,
         qs: {
-            header: name
+            header
         },
         ...authHeader
     }).then(({ body }) => {
         const HeaderRuleActionID = body?._embedded?.['ngcp:headerruleactions']?.[0]?.id
         if (body?.total_count === 1 && HeaderRuleActionID >= 1) {
+            cy.log('Deleting header rule action...', header)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/headerruleactions/${HeaderRuleActionID}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Header rule action not found', header)
         }
     })
 }
@@ -2277,7 +2386,7 @@ export const apiGetLNPCarrierId = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/lnpcarriers`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
@@ -2293,19 +2402,20 @@ export const apiRemoveLNPCarrierBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/lnpcarriers`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
         const LNPCarrierID = body?._embedded?.['ngcp:lnpcarriers']?.[0]?.id
         if (body?.total_count === 1 && LNPCarrierID >= 1) {
+            cy.log('Deleting LNP carrier...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/lnpcarriers/${LNPCarrierID}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('LNP carrier not found', name)
         }
     })
 }
@@ -2352,25 +2462,26 @@ export const apiGetLNPNumberId = ({ name, authHeader }) => {
     })
 }
 
-export const apiRemoveLNPNumberBy = ({ name, authHeader }) => {
-    cy.log('apiRemoveLNPNumberBy', name)
+export const apiRemoveLNPNumberBy = ({ number, authHeader }) => {
+    cy.log('apiRemoveLNPNumberBy', number)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/lnpnumbers`,
         qs: {
-            number: name
+            number
         },
         ...authHeader
     }).then(({ body }) => {
         const LNPNumberId = body?._embedded?.['ngcp:lnpnumbers']?.[0]?.id
         if (body?.total_count === 1 && LNPNumberId >= 1) {
+            cy.log('Deleting LNP number...', number)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/lnpnumbers/${LNPNumberId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('LNP number not found', number)
         }
     })
 }
@@ -2406,7 +2517,7 @@ export const apiGetPeeringGroupId = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/peeringgroups `,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
@@ -2422,19 +2533,20 @@ export const apiRemovePeeringGroupBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/peeringgroups`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
         const PeeringGroupId = body?._embedded?.['ngcp:peeringgroups']?.[0]?.id
         if (body?.total_count === 1 && PeeringGroupId >= 1) {
+            cy.log('Deleting peering group...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/peeringgroups/${PeeringGroupId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Peering group not found', name)
         }
     })
 }
@@ -2494,13 +2606,14 @@ export const apiRemovePeeringInboundRuleBy = ({ name, authHeader }) => {
     }).then(({ body }) => {
         const PeeringInboundRuleId = body?._embedded?.['ngcp:peeringinboundrules']?.[0]?.id
         if (body?.total_count === 1 && PeeringInboundRuleId >= 1) {
+            cy.log('Deleting peering inbound rule...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/peeringinboundrules/${PeeringInboundRuleId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Peering inbound rule not found', name)
         }
     })
 }
@@ -2560,13 +2673,14 @@ export const apiRemovePeeringOutboundRuleBy = ({ name, authHeader }) => {
     }).then(({ body }) => {
         const PeeringOutboundRuleId = body?._embedded?.['ngcp:peeringrules']?.[0]?.id
         if (body?.total_count === 1 && PeeringOutboundRuleId >= 1) {
+            cy.log('Deleting peering outbound rule...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/peeringrules/${PeeringOutboundRuleId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Peering outbound rule not found', name)
         }
     })
 }
@@ -2607,7 +2721,7 @@ export const apiGetPeeringServerId = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/peeringservers`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
@@ -2623,19 +2737,20 @@ export const apiRemovePeeringServerBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/peeringservers`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
         const PeeringServerId = body?._embedded?.['ngcp:peeringservers']?.[0]?.id
         if (body?.total_count === 1 && PeeringServerId >= 1) {
+            cy.log('Deleting peering server...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/peeringservers/${PeeringServerId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Peering server not found', name)
         }
     })
 }
@@ -2704,6 +2819,7 @@ export const deleteDownloadsFolder = () => {
     const downloadsFolder = Cypress.config('downloadsFolder')
     cy.task('deleteFolder', downloadsFolder)
 }
+
 function getPreferencesFieldInfo (fieldName) {
     const dataCy = Cypress._.kebabCase(fieldName)
     const dataCySelector = `div[data-cy="q-item--${dataCy}"]`

@@ -1,24 +1,25 @@
 /// <reference types="cypress" />
 
 import {
-    getRandomNum,
     deleteItemOnListPageBy,
     apiCreateDomain,
     apiLoginAsSuperuser,
     apiRemoveDomainBy
 } from '../../support/ngcp-admin-ui/e2e'
+import { domain } from '../../support/aui-test-data';
 
 const ngcpConfig = Cypress.config('ngcpConfig')
-
-const domain = {
-    reseller_id: 1,
-    domain: 'domain' + getRandomNum()
-}
 
 context('Domain tests', () => {
     context('UI domain tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+            apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
+                cy.log('Data clean up pre-tests completed')
+            })
         })
 
         beforeEach(() => {
@@ -32,6 +33,7 @@ context('Domain tests', () => {
                 apiRemoveDomainBy({ name: domain.domain, authHeader })
             })
         })
+        
         it('Check if domain with invalid values gets rejected', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / domain')

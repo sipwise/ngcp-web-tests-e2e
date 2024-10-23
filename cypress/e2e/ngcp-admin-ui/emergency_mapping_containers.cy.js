@@ -18,53 +18,38 @@ import {
     searchInDataTable,
     waitPageProgress
 } from '../../support/ngcp-admin-ui/e2e'
+import { contract, reseller } from '../../support/aui-test-data';
 
-const EmergencyMappingContainer = {
-    name: 'emergency' + getRandomNum(),
+const emergencyMappingContainer = {
+    name: 'EmergencyMCCypress',
     reseller_id: null
 }
 
-const EmergencyMapping = {
-    prefix: "prefix" + getRandomNum(),
-    code: getRandomNum(),
-    suffix: "suffix" + getRandomNum(),
+const emergencyMapping = {
+    prefix: "prefixCypress",
+    code: 11,
+    suffix: "suffixCypress",
     emergency_container_id: 0
 }
 
-const contract = {
+const editContract = {
     contact_id: 3,
     status: 'active',
-    external_id: 'contract' + getRandomNum(),
+    external_id: 'editContractCypress',
     type: 'reseller',
     billing_profile_definition: 'id',
     billing_profile_id: 1
 }
 
-const editcontract = {
-    contact_id: 3,
+const editReseller = {
+    contract_id: 1,
     status: 'active',
-    external_id: 'contract' + getRandomNum(),
-    type: 'reseller',
-    billing_profile_definition: 'id',
-    billing_profile_id: 1
+    name: 'editResellerCypress',
+    enable_rtc: false
 }
 
 const systemContact = {
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
-const reseller = {
-    contract_id: 1,
-    status: 'active',
-    name: 'reseller' + getRandomNum(),
-    enable_rtc: false
-}
-
-const editreseller = {
-    contract_id: 1,
-    status: 'active',
-    name: 'reseller' + getRandomNum(),
-    enable_rtc: false
+    email: 'systemContactEMC@example.com'
 }
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -73,14 +58,25 @@ context('Emergency mapping tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
+            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+            apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+            apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
+            apiRemoveResellerBy({ name: editReseller.name, authHeader })
+            apiRemoveResellerBy({ name: reseller.name, authHeader })
+            apiRemoveContractBy({ name: editContract.external_id, authHeader })
+            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
+            cy.log('Data clean up pre-tests completed')
+
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                 apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                     apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
-                        EmergencyMappingContainer.reseller_id = id
+                        emergencyMappingContainer.reseller_id = id
                     })
                 })
-                apiCreateContract({ data: { ...editcontract, contact_id: id }, authHeader }).then(({ id }) => {
-                    apiCreateReseller({ data: { ...editreseller, contract_id: id }, authHeader })
+                apiCreateContract({ data: { ...editContract, contact_id: id }, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...editReseller, contract_id: id }, authHeader })
                 })
             })
         })
@@ -88,27 +84,28 @@ context('Emergency mapping tests', () => {
 
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiCreateEmergencyMappingContainer({ data: EmergencyMappingContainer, authHeader }).then(({ id }) => {
-                apiCreateEmergencyMapping({ data: { ...EmergencyMapping, emergency_container_id: id }, authHeader })
+            apiCreateEmergencyMappingContainer({ data: emergencyMappingContainer, authHeader }).then(({ id }) => {
+                apiCreateEmergencyMapping({ data: { ...emergencyMapping, emergency_container_id: id }, authHeader })
             })
         })
     })
 
     after(() => {
-        cy.log('Data clean up...')
+        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
+            cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveResellerBy({ name: editreseller.name, authHeader })
+            apiRemoveResellerBy({ name: editReseller.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: editcontract.external_id, authHeader })
+            apiRemoveContractBy({ name: editContract.external_id, authHeader })
             apiRemoveContractBy({ name: contract.external_id, authHeader })
-            apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
+            apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
     })
 
     afterEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveEmergencyMappingBy({ name: EmergencyMapping.code, authHeader })
-            apiRemoveEmergencyMappingContainerBy({ name: EmergencyMappingContainer.name, authHeader })
+            apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+            apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
         })
     })
 
@@ -124,15 +121,15 @@ context('Emergency mapping tests', () => {
 
     it('Create a new emergency mapping container', () => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveEmergencyMappingBy({ name: EmergencyMapping.code, authHeader })
-            apiRemoveEmergencyMappingContainerBy({ name: EmergencyMappingContainer.name, authHeader })
+            apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+            apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
         })
         cy.login(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emergencymapping')
         cy.locationShouldBe('#/emergencymapping')
         cy.get('a[data-cy="aui-list-action--add"]').click()
         cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: 'default', itemContains: 'default' })
-        cy.get('input[data-cy="emergency-mapping-name"]').type(EmergencyMappingContainer.name)
+        cy.get('input[data-cy="emergency-mapping-name"]').type(emergencyMappingContainer.name)
         cy.get('[data-cy="aui-save-button"]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
     })
@@ -141,25 +138,25 @@ context('Emergency mapping tests', () => {
         cy.login(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emergencymapping')
         cy.locationShouldBe('#/emergencymapping')
-        searchInDataTable(EmergencyMappingContainer.name, 'Name')
+        searchInDataTable(emergencyMappingContainer.name, 'Name')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--emergencyMappingContainerEdit"]').click()
         waitPageProgress()
         cy.get('label[data-cy="aui-select-reseller"] button:first').click()
-        cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: editreseller.name , itemContains: editreseller.name })
+        cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: editReseller.name , itemContains: editReseller.name })
         cy.get('[data-cy="aui-save-button"]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         cy.get('[data-cy="aui-close-button"]').click()
         waitPageProgress()
-        cy.get('td[data-cy="q-td--reseller-name"]').contains(editreseller.name).should('be.visible')
+        cy.get('td[data-cy="q-td--reseller-name"]').contains(editReseller.name).should('be.visible')
     })
 
     it('Check if emergency mapping with invalid values gets rejected', () => {
         cy.login(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emergencymapping')
         cy.locationShouldBe('#/emergencymapping')
-        searchInDataTable(EmergencyMappingContainer.name)
+        searchInDataTable(emergencyMappingContainer.name)
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         clickDataTableSelectedMoreMenuItem('emergencyMappingList')
         waitPageProgress()
@@ -170,19 +167,19 @@ context('Emergency mapping tests', () => {
 
     it('Create a new emergency mapping', () => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveEmergencyMappingBy({ name: EmergencyMapping.code, authHeader })
+            apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
         })
         cy.login(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emergencymapping')
         cy.locationShouldBe('#/emergencymapping')
-        searchInDataTable(EmergencyMappingContainer.name)
+        searchInDataTable(emergencyMappingContainer.name)
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         clickDataTableSelectedMoreMenuItem('emergencyMappingList')
         waitPageProgress()
         cy.get('a[data-cy="aui-list-action--add"]').click()
-        cy.get('input[data-cy="emergency-code"]').type(EmergencyMapping.code)
-        cy.get('input[data-cy="emergency-prefix"]').type(EmergencyMapping.prefix)
-        cy.get('input[data-cy="emergency-suffix"]').type(EmergencyMapping.suffix)
+        cy.get('input[data-cy="emergency-code"]').type(emergencyMapping.code)
+        cy.get('input[data-cy="emergency-prefix"]').type(emergencyMapping.prefix)
+        cy.get('input[data-cy="emergency-suffix"]').type(emergencyMapping.suffix)
         cy.get('[data-cy="aui-save-button"]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
     })
@@ -191,11 +188,11 @@ context('Emergency mapping tests', () => {
         cy.login(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emergencymapping')
         cy.locationShouldBe('#/emergencymapping')
-        searchInDataTable(EmergencyMappingContainer.name)
+        searchInDataTable(emergencyMappingContainer.name)
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         clickDataTableSelectedMoreMenuItem('emergencyMappingList')
         waitPageProgress()
-        searchInDataTable(EmergencyMapping.code, 'Number')
+        searchInDataTable(emergencyMapping.code, 'Number')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--emergencyMappingEdit"]').click()
@@ -214,20 +211,20 @@ context('Emergency mapping tests', () => {
         cy.login(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emergencymapping')
         cy.locationShouldBe('#/emergencymapping')
-        searchInDataTable(EmergencyMappingContainer.name)
+        searchInDataTable(emergencyMappingContainer.name)
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         clickDataTableSelectedMoreMenuItem('emergencyMappingList')
         waitPageProgress()
-        deleteItemOnListPageBy(EmergencyMapping.code)
+        deleteItemOnListPageBy(emergencyMapping.code)
     })
 
     it('Delete emergency mapping container', () => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveEmergencyMappingBy({ name: EmergencyMapping.code, authHeader })
+            apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
         })
         cy.login(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emergencymapping')
         cy.locationShouldBe('#/emergencymapping')
-        deleteItemOnListPageBy(EmergencyMappingContainer.name)
+        deleteItemOnListPageBy(emergencyMappingContainer.name)
     })
 })

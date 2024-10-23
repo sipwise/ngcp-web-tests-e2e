@@ -19,32 +19,8 @@ import {
 const ngcpConfig = Cypress.config('ngcpConfig')
 const path = require('path')
 
-const customer = {
-    billing_profile_definition: 'id',
-    billing_profile_id: 1,
-    external_id: 'customer' + getRandomNum(),
-    contact_id: 1,
-    status: 'active',
-    type: 'sipaccount'
-}
-
-const domain = {
-    domain: 'domain' + getRandomNum(),
-    reseller_id: 1
-}
-
-const subscriber = {
-    username: 'subscriber' + getRandomNum(),
-    email: 'email' + getRandomNum() + '@test.com',
-    external_id: 'subid' + getRandomNum(),
-    password: 'suB#' + getRandomNum() + '#PaSs#',
-    domain: domain.domain,
-    customer_id: 0,
-    subscriber_id: 0
-}
-
 const locationmapping = {
-    external_id: 'location' + getRandomNum() + 'id',
+    external_id: 'locationCypressId',
     mode: 'add',
     location: 'location' + getRandomNum(),
     to_username: 'user' + getRandomNum(),
@@ -57,7 +33,7 @@ const locationmapping = {
 const bnumberset = {
     subscriber_id: 0,
     mode: "whitelist",
-    name: "bnumberset" + getRandomNum(),
+    name: "bnumbersetCypress",
     bnumbers: [
         {
         bnumber: getRandomNum()
@@ -68,7 +44,7 @@ const bnumberset = {
 
 const destinationset = {
     subscriber_id: 0,
-    name: "destination" + getRandomNum(),
+    name: "destinationsetCypress",
     destinations: [
         {
         simple_destination: "string",
@@ -83,7 +59,7 @@ const destinationset = {
 const sourceset = {
     subscriber_id: 0,
     mode: "whitelist",
-    name: "sourceset" + getRandomNum(),
+    name: "sourcesetCypress",
     sources: [
       {
         source: "regex"
@@ -92,7 +68,7 @@ const sourceset = {
     is_regex: true
 }
 const timeset = {
-    name: "timeset" + getRandomNum(),
+    name: "timesetCypress",
     times: [
       {
         wday: "Monday",
@@ -113,15 +89,53 @@ const timeset = {
     ],
     subscriber_id: 0
 }
+
+export const domain = {
+    reseller_id: 1,
+    domain: 'domainCypress'
+}
+
+export const customer = {
+    billing_profile_definition: 'id',
+    billing_profile_id: 1,
+    external_id: `customerCypress`,
+    contact_id: 1,
+    status: 'active',
+    type: 'sipaccount'
+}
+
+export const subscriber = {
+    username: 'subscriberCypressAui',
+    email: 'subscriberCypressAui@test.com',
+    external_id: 'subid' + getRandomNum(),
+    password: 'suB#' + getRandomNum() + '#PaSs#',
+    domain: domain.domain,
+    customer_id: 0,
+    primary_number: {
+        sn: 11,
+        ac: 22,
+        cc: 9001
+    },
+}
+
+
 const downloadsFolder = Cypress.config('downloadsFolder')
 const fixturesFolder = Cypress.config('fixturesFolder')
 
 context('Subscriber details tests', () => {
+
     context('UI subscriber  details tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
-                apiCreateDomain({ data: domain, authHeader })
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
+                cy.log('Data clean up pre-tests completed')
+                
+                apiCreateDomain({ data: domain, authHeader }).then(({ id }) => domain.id = id )
                 apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                     subscriber.customer_id = id
                 })
@@ -138,8 +152,9 @@ context('Subscriber details tests', () => {
         })
 
         after(() => {
-            cy.log('Data clean up...')
-            apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
+                cy.log('Data clean up...')
+                apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveDomainBy({ name: domain.domain, authHeader })
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
                 apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
@@ -149,8 +164,8 @@ context('Subscriber details tests', () => {
 
         afterEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveLocationMappingBy({ name: locationmapping.external_id, authHeader })
                 apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
             })
         })
 
@@ -201,7 +216,7 @@ context('Subscriber details tests', () => {
                 cy.get('div[role="alert"][class^="bg-negative"]').should('not.exist')
                 cy.get('div[data-cy="subscriber-attach-notification"]').click()
                 cy.get('[data-cy="aui-save-button"]').click()
-                cy.get('div[role="alert"]').should('have.class', 'bg-negative')
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             })
 
             it('Upload/Redownload greetings in voicemail settings', () => {
@@ -898,7 +913,7 @@ context('Subscriber details tests', () => {
 
             it('Add Location Mapping', () => {
                 apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveLocationMappingBy({ name: locationmapping.external_id, authHeader })
+                    apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
                 })
                 cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')

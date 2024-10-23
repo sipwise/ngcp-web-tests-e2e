@@ -16,41 +16,28 @@ import {
     apiRemoveResellerBy,
     apiRemoveSystemContactBy
 } from '../../support/ngcp-admin-ui/e2e'
+import { contract, reseller } from '../../support/aui-test-data';
 
 const ngcpConfig = Cypress.config('ngcpConfig')
-
-const contract = {
-    contact_id: 3,
-    status: 'active',
-    external_id: 'contract' + getRandomNum(),
-    type: 'reseller',
-    billing_profile_definition: 'id',
-    billing_profile_id: 1
-}
-
-const systemContact = {
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
-const customerContact = {
-    reseller_id: null,
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
-const reseller = {
-    contract_id: 1,
-    status: 'active',
-    name: 'reseller' + getRandomNum(),
-    enable_rtc: false
-}
-
-const systemContactDependency = {
-    email: 'contact' + getRandomNum() + '@example.com'
-}
 
 const contactNames = {
     firstname: 'first' + getRandomNum(),
     lastname: 'last' + getRandomNum()
+}
+
+// We are not exporting this object to avoid dependencies
+// if we run tests in parallel in the future
+const customerContact = {
+    reseller_id: null,
+    email: 'customerContactContacts@example.com'
+}
+
+const systemContact = {
+    email: 'systemContactContacts@example.com'
+}
+
+const systemContactDependency = {
+    email: 'systemContactDependencyContacts@example.com'
 }
 
 context('Contact tests', () => {
@@ -58,6 +45,15 @@ context('Contact tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
+                cy.log('Data clean up pre-tests completed')
+
                 apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
                     apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                         apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
@@ -76,18 +72,19 @@ context('Contact tests', () => {
         })
 
         after(() => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveSystemContactBy({ name: systemContactDependency.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             })
         })
 
         afterEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
-                apiRemoveCustomerContactBy({ name: customerContact.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
         ;[
@@ -126,8 +123,8 @@ context('Contact tests', () => {
 
                 it(`Create a ${contactType} contact`, () => {
                     apiLoginAsSuperuser().then(authHeader => {
-                        apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
-                        apiRemoveCustomerContactBy({ name: customerContact.email, authHeader })
+                        apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                        apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
                     })
                     cy.login(ngcpConfig.username, ngcpConfig.password)
                     cy.navigateMainMenu('settings / contact')

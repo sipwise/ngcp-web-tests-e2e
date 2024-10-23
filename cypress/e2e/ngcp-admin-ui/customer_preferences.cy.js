@@ -27,58 +27,44 @@ import {
     testPreferencesTextField,
     testPreferencesToggleField
 } from '../../support/ngcp-admin-ui/e2e'
+import { contract, reseller } from '../../support/aui-test-data';
 
 const customer = {
     billing_profile_definition: 'id',
     billing_profile_id: null,
-    external_id: 'customer' + getRandomNum(),
+    external_id: 'customerCypress',
     contact_id: null,
     status: 'active',
     type: 'sipaccount',
     customer_id: null
 }
 
-const contract = {
-    contact_id: 3,
-    status: 'active',
-    external_id: 'contract' + getRandomNum(),
-    type: 'reseller',
-    billing_profile_definition: 'id',
-    billing_profile_id: 1
-}
-
-const systemContact = {
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
+// We have not exported this because we reassign properties
 const customerContact = {
     reseller_id: null,
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
-const reseller = {
-    contract_id: 1,
-    status: 'active',
-    name: 'reseller' + getRandomNum(),
-    enable_rtc: false
+    email: 'customerContactCPreferences@example.com'
 }
 
 const billingProfile = {
-    name: 'profile' + getRandomNum(),
+    name: 'billingProfileCypress',
     handle: 'profilehandle' + getRandomNum(),
     reseller_id: null
 }
 
 const emergencyMappingContainer = {
-    name: 'emergency' + getRandomNum(),
+    name: 'emergencyCypress',
     reseller_id: null
 }
 
 const ncosLevel = {
     reseller_id: null,
-    level: 'ncoslevel' + getRandomNum(),
+    level: 'ncosCypress',
     mode: 'whitelist',
     description: 'description' + getRandomNum()
+}
+
+const systemContact = {
+    email: 'systemContactCustomerPref@example.com'
 }
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -87,7 +73,19 @@ context('Customer preferences tests', () => {
     context('UI customer preferences tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+            
             apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+                apiRemoveNCOSLevelBy({ name: ncosLevel.level, authHeader })
+                apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
+                cy.log('Data clean up pre-tests completed')
+
                 apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                     apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                         apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
@@ -104,7 +102,7 @@ context('Customer preferences tests', () => {
         })
 
         beforeEach(() => {
-            customer.external_id = 'customer' + getRandomNum()
+            customer.external_id = 'customerCypress' + getRandomNum()
             apiLoginAsSuperuser().then(authHeader => {
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -115,6 +113,7 @@ context('Customer preferences tests', () => {
         })
 
         after(() => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveNCOSLevelBy({ name: ncosLevel.level, authHeader })
@@ -122,7 +121,7 @@ context('Customer preferences tests', () => {
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 
@@ -130,11 +129,11 @@ context('Customer preferences tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 cy.log(customer.customer_id)
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveCustomerContactBy({ name: customerContact.email, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
 
-        it('Test all Access Restricion settings in customer', () => {
+        it('Test all Access Restriction settings in customer', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer')
 

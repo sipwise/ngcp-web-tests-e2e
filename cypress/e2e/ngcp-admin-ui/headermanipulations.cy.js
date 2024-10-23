@@ -21,42 +21,23 @@ import {
     apiRemoveHeaderRuleBy,
     apiRemoveHeaderRulesetBy
 } from '../../support/ngcp-admin-ui/e2e'
+import { contract, reseller } from '../../support/aui-test-data';
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 var issppro = null
 
-const contract = {
-    contact_id: 3,
-    status: 'active',
-    external_id: 'contract' + getRandomNum(),
-    type: 'reseller',
-    billing_profile_definition: 'id',
-    billing_profile_id: 1
-}
-
-const systemContact = {
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
-const reseller = {
-    contract_id: 1,
-    status: 'active',
-    name: 'reseller' + getRandomNum(),
-    enable_rtc: false
-}
-
 const headerRuleset = {
-    name: "headerset" + getRandomNum(),
-    description: "headerdesc" + getRandomNum(),
+    name: "headerSetCypress",
+    description: "headerDesc" + getRandomNum(),
     reseller_id: 0,
 }
 
 const headerRule = {
     stopper: true,
     enabled: true,
-    direction: "inbound",
-    description: "headerruledesc" + getRandomNum(),
-    name: "headerRule" + getRandomNum(),
+    direction: "a_inbound",
+    description: "headerruleDesc" + getRandomNum(),
+    name: "headerRuleCypress",
     set_id: 0,
     priority: 2
 }
@@ -64,7 +45,7 @@ const headerRule = {
 const headerRuleCondition = {
     match_part: "full",
     enabled: true,
-    match_name: "headerrulecondition" + getRandomNum(),
+    match_name: "headerRuleConditionCypress",
     match_type: "header",
     expression_negation: true,
     rule_id: 0,
@@ -76,11 +57,15 @@ const headerRuleAction = {
     enabled: true,
     priority: 2,
     action_type: "set",
-    header: "header" + getRandomNum(),
+    header: "headerRuleActionCypress",
     header_part: "full",
     value_part: "full",
     value: "value" + getRandomNum(),
     rule_id: 0
+}
+
+const systemContact = {
+    email: 'systemContactHManipulations@example.com'
 }
 
 context('Header manipulation tests', () => {
@@ -93,6 +78,17 @@ context('Header manipulation tests', () => {
                 if (response.body.type === 'sppro') {
                     issppro = true
                     apiLoginAsSuperuser().then(authHeader => {
+                        Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                        cy.log('Preparing environment...')
+                        apiRemoveHeaderRuleConditionBy({ name: headerRuleCondition.match_name, authHeader })
+                        apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
+                        apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                        apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+                        apiRemoveResellerBy({ name: reseller.name, authHeader })
+                        apiRemoveContractBy({ name: contract.external_id, authHeader })
+                        apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
+                        cy.log('Data clean up pre-tests completed')
+
                         apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                             apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                                 apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id}) => {
@@ -124,12 +120,15 @@ context('Header manipulation tests', () => {
         })
 
         after(() => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             if (issppro) {
+                Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
+            cy.log('Data clean up...')
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveResellerBy({ name: reseller.name, authHeader })
                     apiRemoveContractBy({ name: contract.external_id, authHeader })
-                    apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
+                    apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
                 })
             } else {
                 cy.log('Not a SPPRO instance, exiting test...')
@@ -140,7 +139,7 @@ context('Header manipulation tests', () => {
             if (issppro) {
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveHeaderRuleConditionBy({ name: headerRuleCondition.match_name, authHeader })
-                    apiRemoveHeaderRuleActionBy({ name: headerRuleAction.header, authHeader })
+                    apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
                     apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
                     apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
                 })
@@ -345,7 +344,7 @@ context('Header manipulation tests', () => {
         it('Create a header rule action', () => {
             if (issppro) {
                 apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveHeaderRuleActionBy({ name: headerRuleAction.header, authHeader })
+                    apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
                 })
                 cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
@@ -452,7 +451,7 @@ context('Header manipulation tests', () => {
         it('Create a header rule condition', () => {
             if (issppro) {
                 apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveHeaderRuleActionBy({ name: headerRuleAction.header, authHeader })
+                    apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
                 })
                 cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')

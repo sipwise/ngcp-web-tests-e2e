@@ -11,9 +11,9 @@ import {
     apiRemoveResellerPhonebookBy,
     apiRemoveSystemContactBy,
     deleteDownloadsFolder,
-    getRandomNum,
     waitPageProgress
 } from '../../support/ngcp-admin-ui/e2e'
+import { contract, reseller } from '../../support/aui-test-data';
 
 const downloadsFolder = Cypress.config('downloadsFolder')
 const fixturesFolder = Cypress.config('fixturesFolder')
@@ -21,31 +21,16 @@ const ngcpConfig = Cypress.config('ngcpConfig')
 const path = require('path')
 var issppro = null
 
-
-const contract = {
-    contact_id: 3,
-    status: 'active',
-    external_id: 'contract' + getRandomNum(),
-    type: 'reseller',
-    billing_profile_definition: 'id',
-    billing_profile_id: 1
-}
-
-const reseller = {
-    contract_id: 1,
-    status: 'active',
-    name: 'reseller' + getRandomNum(),
-    enable_rtc: false
-}
-
-const systemContactDependency = {
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
 const ResellerPhonebook = {
-    name: 'phonebook' + getRandomNum(),
+    name: 'phonebookCypress',
     reseller_id: 0,
-    number: getRandomNum()
+    number: 88
+}
+
+// We are not exporting this object to avoid dependencies
+// if we run tests in parallel in the future
+const systemContactDependency = {
+    email: 'systemContactDependencyPhonebook@example.com'
 }
 
 context('Phonebook tests', () => {
@@ -58,6 +43,14 @@ context('Phonebook tests', () => {
                 if (response.body.type === 'sppro') {
                     issppro = true
                     apiLoginAsSuperuser().then(authHeader => {
+                        Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                        cy.log('Preparing environment...')
+                        apiRemoveResellerPhonebookBy({name: ResellerPhonebook.name, authHeader})
+                        apiRemoveResellerBy({ name: reseller.name, authHeader })
+                        apiRemoveContractBy({ name: contract.external_id, authHeader })
+                        apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
+                        cy.log('Data clean up pre-tests completed')
+
                         apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
                             apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                                 apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
@@ -85,6 +78,7 @@ context('Phonebook tests', () => {
         })
 
         after(() => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             if (issppro) {
                 deleteDownloadsFolder()
@@ -94,7 +88,7 @@ context('Phonebook tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveSystemContactBy({ name: systemContactDependency.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             })
         })
 
