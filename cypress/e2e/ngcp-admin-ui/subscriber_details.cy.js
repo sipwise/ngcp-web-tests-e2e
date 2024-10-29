@@ -182,11 +182,13 @@ context('Subscriber details tests', () => {
 
                 cy.get('div[data-cy="aui-detail-page-menu"]').contains('Voicemail Settings').click()
                 cy.get('label[data-cy="subscriber-pin"][aria-disabled="true"]').should('not.exist')
-                cy.get('label[data-cy="subscriber-pin"]').type('abcd')
+                
+                // Testing the Voicemail testing form
+                cy.get('input[data-cy="subscriber-pin"]').type('abc')
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('[data-cy="subscriber-pin"] div[role="alert"]').should('be.visible')
-                cy.get('label[data-cy="subscriber-pin"]').clear()
-                cy.get('label[data-cy="subscriber-pin"]').type('1234')
+                cy.get('input[data-cy="subscriber-pin"]').clear()
+                cy.get('input[data-cy="subscriber-pin"]').type('1234')
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('label[data-cy="subscriber-email"][aria-disabled="true"]').should('not.exist')
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
