@@ -8,21 +8,28 @@ import {
     apiCreateTimeset,
     apiRemoveContractBy,
     apiRemoveResellerBy,
-    apiRemoveSystemContactBy,
     apiRemoveTimesetBy,
     deleteItemOnListPageBy,
-    getRandomNum,
     searchInDataTable,
-    waitPageProgress
+    waitPageProgress,
+    apiRemoveSystemContactBy
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract, reseller } from '../../support/aui-test-data';
 
 const ngcpConfig = Cypress.config('ngcpConfig')
+
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'contractTimeset',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
 
 const editContract = {
     contact_id: 3,
     status: 'active',
-    external_id: 'contract' + getRandomNum(),
+    external_id: 'contractEditTimeset',
     type: 'reseller',
     billing_profile_definition: 'id',
     billing_profile_id: 1
@@ -31,19 +38,25 @@ const editContract = {
 const editReseller = {
     contract_id: 1,
     status: 'active',
-    name: 'reseller' + getRandomNum(),
+    name: 'resellerEditTimeset',
+    enable_rtc: false
+}
+
+export const reseller = {
+    contract_id: 1,
+    status: 'active',
+    rtc_networks: {},
+    name: 'resellerTimeset',
     enable_rtc: false
 }
 
 const timeset = {
-    name: 'timeset' + getRandomNum(),
+    name: 'timesetTest',
     reseller_id: 0
 }
 
-// We are not exporting this object to avoid dependencies
-// if we run tests in parallel in the future
 const systemContactDependency = {
-    email: 'systemContactDependencyTimesets@example.com'
+    email: 'systemContactDependencyTimesets@11example.com'
 }
 
 context('Timeset tests', () => {
@@ -59,7 +72,7 @@ context('Timeset tests', () => {
                 apiRemoveContractBy({ name: editContract.external_id, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 //TODO find a way to delete contacts without receiving error: LOCKED - contact still in use  
-                // apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
                 cy.log('Data clean up pre-tests completed')
 
                 apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
@@ -77,6 +90,8 @@ context('Timeset tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveTimesetBy({ name: timeset.name, authHeader })
+
                 apiCreateTimeset({data: timeset, authHeader})
             })
         })
@@ -84,19 +99,13 @@ context('Timeset tests', () => {
         after(() => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
-                apiLoginAsSuperuser().then(authHeader => {
+            apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveResellerBy({ name: editReseller.name, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: editContract.external_id, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
-                //TODO find a way to delete contacts without receiving error: LOCKED - contact still in use  
-                // apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
-            })
-        })
-
-        afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveTimesetBy({ name: timeset.name, authHeader })
+                //TODO find a way to delete contacts without receiving error: LOCKED - contact still in use
+                apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             })
         })
 

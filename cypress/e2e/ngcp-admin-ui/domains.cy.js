@@ -6,9 +6,13 @@ import {
     apiLoginAsSuperuser,
     apiRemoveDomainBy
 } from '../../support/ngcp-admin-ui/e2e'
-import { domain } from '../../support/aui-test-data';
 
 const ngcpConfig = Cypress.config('ngcpConfig')
+
+export const domain = {
+    reseller_id: 1,
+    domain: 'domainDomains'
+}
 
 context('Domain tests', () => {
     context('UI domain tests', () => {
@@ -24,16 +28,22 @@ context('Domain tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                cy.log('Cleaning up db...')
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
+
+                cy.log('Seeding db...')
                 apiCreateDomain({ data: domain, authHeader })
             })
         })
 
-        afterEach(() => {
+        after(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
+                cy.log('Data clean up...')
                 apiRemoveDomainBy({ name: domain.domain, authHeader })
             })
         })
-        
+
         it('Check if domain with invalid values gets rejected', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / domain')

@@ -21,10 +21,18 @@ import {
     apiRemoveCustomerContactsByIds,
     apiRemoveCustomerById,
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract, reseller } from '../../support/aui-test-data';
+
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'customersContract',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
 
 const mainResellerAdmin = {
-    login: 'mainResellerAdminCypress',
+    login: 'testAdminCustomers',
     password: 'rand0mpassword12345',
     role: 'reseller',
     is_master: true,
@@ -36,20 +44,27 @@ const mainResellerAdmin = {
 }
 
 const billingProfile = {
-    name: 'profileCypress',
+    name: 'profileCustomers',
     handle: 'profilehandle' + getRandomNum(),
     reseller_id: null
 }
 
+export const reseller = {
+    contract_id: 1,
+    status: 'active',
+    rtc_networks: {},
+    name: 'resellerCypress',
+    enable_rtc: false
+}
+
 const systemContact = {
-    email: 'systemContactCustomers@example.com'
+    email: 'systemContactTestCustomers@example.com'
 }
 
 const randomNumber = getRandomNum()
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 context('Customer tests', () => {
-    // We have not exported this because we reassign properties
     const customer = {
         billing_profile_definition: 'id',
         billing_profile_id: null,
@@ -59,13 +74,13 @@ context('Customer tests', () => {
         type: 'sipaccount',
         customer_id: null
     }
-    
+
     const customerContact = {
         id : null,
         reseller_id: null,
         email: 'customerContact' + randomNumber +'@'+ 'example.com',
     }
-    
+
     const customerContactIdsToRemove = []
 
     context('UI customer tests', () => {

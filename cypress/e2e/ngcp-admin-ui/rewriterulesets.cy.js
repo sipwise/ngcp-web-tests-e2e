@@ -15,11 +15,27 @@ import {
     apiCreateRewriteRuleSet,
     apiRemoveRewriteRuleSetBy
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract, reseller } from '../../support/aui-test-data';
 
 var cloneCreated = false
 const path = require('path')
 const ngcpConfig = Cypress.config('ngcpConfig')
+
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'contractRewriteRules',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
+export const reseller = {
+    contract_id: 1,
+    status: 'active',
+    rtc_networks: {},
+    name: 'resellerRewriteRules',
+    enable_rtc: false
+}
 
 const rewriteRuleSet = {
     reseller_id: 0,
@@ -76,10 +92,8 @@ const rewriteRuleSet = {
         }]
 }
 
-// We are not exporting this object to avoid dependencies
-// if we run tests in parallel in the future
 const systemContactDependency = {
-    email: 'systemContactDependencyRewriteRuleStets@example.com'
+    email: 'testRewriteRuleStets@example.com'
 }
 
 context('Rewrite Rule Set tests', () => {
@@ -108,6 +122,11 @@ context('Rewrite Rule Set tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                cy.log('Cleaning up db...')
+                apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name + "clone", authHeader })
+                apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
+
+                cy.log('Seeding db...')
                 apiCreateRewriteRuleSet({ data: rewriteRuleSet, authHeader }).then(({ id }) => {
                 })
             })
@@ -117,19 +136,11 @@ context('Rewrite Rule Set tests', () => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name + "clone", authHeader })
+                apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
-            })
-        })
-
-        afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
-                if (cloneCreated) {
-                    apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name + "clone", authHeader })
-                    cloneCreated = false
-                }
-                apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
             })
         })
 

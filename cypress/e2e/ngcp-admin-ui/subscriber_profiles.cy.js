@@ -14,15 +14,15 @@ const ngcpConfig = Cypress.config('ngcpConfig')
 const profile = {
     descriptionInitial: 'testDescriptionInitialCypress',
     description: 'testDescriptionCypress',
-    profilename: 'profileCypress1',
-    profilename2: 'profileCypress2'
+    profilename: 'profileSubProf',
+    profilename2: 'profileSubProf2'
 }
 
 const profileSet = {
     reseller_id: 1,
     description: 'testDescriptionCypress',
     descriptionNew: 'testDescriptionCypressNew' ,
-    name: 'setCypress'
+    name: 'ProfileSP'
 }
 
 context('Subscriber profile tests', () => {
@@ -39,11 +39,14 @@ context('Subscriber profile tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
                 apiCreateSubscriberProfileSet({ data: profileSet, authHeader })
             })
         })
 
-        afterEach(() => {
+        after(() => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
+            cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
             })

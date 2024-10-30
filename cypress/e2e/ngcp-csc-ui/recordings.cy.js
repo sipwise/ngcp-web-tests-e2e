@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
-import { customer, domain, loginInfo, subscriber } from '../../support/csc-test-data';
 import {
+    getRandomNum,
     apiLoginAsSuperuser,
     apiCreateCustomer,
     apiCreateDomain,
@@ -10,6 +10,42 @@ import {
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
 } from '../../support/ngcp-csc-ui/e2e'
+
+export const domain = {
+    domain: 'domainRecordings',
+    reseller_id: 1
+}
+
+export const subscriber = {
+    username: 'subscriberRec',
+    webusername: 'subscriberRec',
+    email: 'subscriberRec@test.com',
+    external_id: 'subscriberRec',
+    password: 'sub' + getRandomNum() + 'pass',
+    webpassword: 'sub' + getRandomNum() + 'pass',
+    domain: domain.domain,
+    customer_id: 0,
+    subscriber_id: 0,
+    primary_number: {
+        sn: 11,
+        ac: 22,
+        cc: 6666
+    },
+}
+
+export const customer = {
+    billing_profile_definition: 'id',
+    billing_profile_id: 1,
+    external_id: 'customerRec',
+    contact_id: 1,
+    status: 'active',
+    type: 'sipaccount'
+}
+
+export const loginInfo = {
+    username: `${subscriber.webusername}@${subscriber.domain}`,
+    password: `${subscriber.webpassword}`
+}
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 const dayjs = require('dayjs')
@@ -36,6 +72,8 @@ context('Call recordings tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                
                 apiCreateSubscriber({ data:  subscriber, authHeader })
             })
             cy.visit('/')
@@ -47,12 +85,6 @@ context('Call recordings tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveDomainBy({ name: domain.domain, authHeader })
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            })
-        })
-
-        afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
             })
         })
 
