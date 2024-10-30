@@ -13,7 +13,6 @@ import {
     deleteDownloadsFolder,
     waitPageProgress
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract, reseller } from '../../support/aui-test-data';
 
 const downloadsFolder = Cypress.config('downloadsFolder')
 const fixturesFolder = Cypress.config('fixturesFolder')
@@ -21,16 +20,31 @@ const ngcpConfig = Cypress.config('ngcpConfig')
 const path = require('path')
 var issppro = null
 
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'contractPhonebook',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
 const ResellerPhonebook = {
     name: 'phonebookCypress',
     reseller_id: 0,
     number: 88
 }
 
-// We are not exporting this object to avoid dependencies
-// if we run tests in parallel in the future
+export const reseller = {
+    contract_id: 1,
+    status: 'active',
+    rtc_networks: {},
+    name: 'resellerPhonebook',
+    enable_rtc: false
+}
+
 const systemContactDependency = {
-    email: 'systemContactDependencyPhonebook@example.com'
+    email: 'systemPhonebook@example.com'
 }
 
 context('Phonebook tests', () => {
@@ -69,37 +83,30 @@ context('Phonebook tests', () => {
         beforeEach(() => {
             if (issppro) {
                 apiLoginAsSuperuser().then(authHeader => {
+                    apiRemoveResellerPhonebookBy({name: ResellerPhonebook.name, authHeader})
+
                     apiCreateResellerPhonebook({data: ResellerPhonebook, authHeader})
                 })
             } else {
                 cy.log('Not a SPPRO instance, skipping preperation...')
             }
-
         })
 
         after(() => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             if (issppro) {
+                apiLoginAsSuperuser().then(authHeader => {
+                    apiRemoveResellerPhonebookBy({name: ResellerPhonebook.name, authHeader})
+                    apiRemoveResellerBy({ name: reseller.name, authHeader })
+                    apiRemoveContractBy({ name: contract.external_id, authHeader })
+                    apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
+                })
                 deleteDownloadsFolder()
             } else {
                 cy.log('Not a SPPRO instance, skipping download folder cleanup...')
             }
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
-            })
-        })
-
-        afterEach(() => {
-            if (issppro) {
-                apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveResellerPhonebookBy({name: ResellerPhonebook.name, authHeader})
-                })                
-            } else {
-                cy.log('Not a SPPRO instance, skipping cleanup...')
-            }
+           
         })
 
         it('Check if phonebook with invalid values gets rejected', () => {
