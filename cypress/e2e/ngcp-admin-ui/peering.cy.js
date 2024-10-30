@@ -19,14 +19,23 @@ import {
     apiRemovePeeringInboundRuleBy,
     apiRemovePeeringGroupBy
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract } from '../../support/aui-test-data';
 
 const ngcpConfig = Cypress.config('ngcpConfig')
+
+
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'contractPeeringCypress',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
 
 const peeringGroup = {
     priority: "1",
     contract_id: 0,
-    name: "peeringgroupCypress",
+    name: "peeringGroupCypress",
     description: "descCypress"
 }
 
@@ -37,14 +46,14 @@ const peeringInboundRule = {
     enabled: true,
     priority: getRandomNum(3),
     group_id: 0,
-    pattern: "patternCypress"
+    pattern: "patternPeeringCypress"
 }
 
 const PeeringOutboundRule = {
     stopper: true,
     caller_pattern: "caller_patternCypress",
     callee_pattern: "callee_patternCypress",
-    callee_prefix: "prefixCypress",
+    callee_prefix: "prefixPeering",
     description: "outboundCypress",
     group_id: 0,
     enabled: true
@@ -58,12 +67,10 @@ const peeringServer = {
     host: "hostnameCypress",
     via_route: "",
     group_id: 0,
-    name: "peeringserverCypress",
+    name: "peeringServerCypress",
     ip: "10.0.0.1"
 }
 
-// We are not exporting this object to avoid dependencies
-// if we run tests in parallel in the future
 const systemContactDependency = {
     email: 'systemContactDependencyPeering@example.com'
 }
@@ -93,6 +100,13 @@ context('Peering tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                cy.log('Cleaning up db...')
+                apiRemovePeeringServerBy({ name: peeringServer.name, authHeader })
+                apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
+                apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.pattern, authHeader })
+                apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
+                
+                cy.log('Seeding db...')
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader }).then(({ id }) => {
                     peeringInboundRule.group_id = id
                     apiCreatePeeringInboundRule({ data: { ...peeringInboundRule, group_id: id}, authHeader })
@@ -106,17 +120,12 @@ context('Peering tests', () => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
-            })
-        })
-
-        afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
                 apiRemovePeeringServerBy({ name: peeringServer.name, authHeader })
                 apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
                 apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.pattern, authHeader })
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             })
         })
 

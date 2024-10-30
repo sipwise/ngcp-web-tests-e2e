@@ -18,15 +18,23 @@ import {
     apiRemoveNCOSLevelBy,
     apiRemoveNCOSSetBy,
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract, reseller } from '../../support/aui-test-data';
 
 const path = require('path')
 const ngcpConfig = Cypress.config('ngcpConfig')
 
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'contractNcosCypress',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
 const NCOSLevel = {
     id: 0,
     reseller_id: 0,
-    level: 'levelCypress',
+    level: 'levelNCOSCypress',
     mode: 'whitelist',
     description: 'desc' + getRandomNum()
 }
@@ -35,20 +43,26 @@ const NCOSPattern = {
     id: 0,
     description: "desc" + getRandomNum(),
     ncos_level_id: 0,
-    pattern: "patternCypress"
+    pattern: "patternNCOSCypress"
 }
 
 const NCOSSet = {
     id: 0,
-    name: "NCOSSetCypress",
+    name: "NCOSSetTest",
     description: "desc" + getRandomNum(),
     customer_expose: false
 }
 
-// We are not exporting this object to avoid dependencies
-// if we run tests in parallel in the future
+export const reseller = {
+    contract_id: 1,
+    status: 'active',
+    rtc_networks: {},
+    name: 'resellerNcosCypress',
+    enable_rtc: false
+}
+
 const systemContactDependency = {
-    email: 'systemContactDependencyncos@example.com'
+    email: 'systemContactyncos@example.com'
 }
 
 context('NCOS tests', () => {
@@ -57,7 +71,7 @@ context('NCOS tests', () => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-                cy.log('Preparing environment...')
+            cy.log('Preparing environment...')
             apiRemoveNCOSSetBy({ name: NCOSSet.name, authHeader })
             apiRemoveNCOSPatternBy({ name: NCOSPattern.pattern, authHeader })
             apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
@@ -78,6 +92,11 @@ context('NCOS tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                cy.log('Cleaning up db...')
+                apiRemoveNCOSPatternBy({ name: NCOSPattern.pattern, authHeader })
+                apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
+                
+                cy.log('Seeding db...')
                 apiCreateNCOSLevel({ data: NCOSLevel, authHeader }).then(({ id }) => {
                     NCOSLevel.id = id
                     apiCreateNCOSPattern({ data: { ...NCOSPattern, ncos_level_id: id }, authHeader }).then(({ id }) => {
@@ -91,16 +110,12 @@ context('NCOS tests', () => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveNCOSSetBy({ name: NCOSSet.name, authHeader })
+                apiRemoveNCOSPatternBy({ name: NCOSPattern.pattern, authHeader })
+                apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
-            })
-        })
-
-        afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveNCOSPatternBy({ name: NCOSPattern.pattern, authHeader })
-                apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
             })
         })
 

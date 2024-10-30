@@ -27,32 +27,39 @@ import {
     testPreferencesTextField,
     testPreferencesToggleField
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract, reseller } from '../../support/aui-test-data';
+
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'customerPreferences',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
 
 const customer = {
     billing_profile_definition: 'id',
     billing_profile_id: null,
-    external_id: 'customerCypress',
+    external_id: 'customerPrefCypress',
     contact_id: null,
     status: 'active',
     type: 'sipaccount',
     customer_id: null
 }
 
-// We have not exported this because we reassign properties
 const customerContact = {
     reseller_id: null,
-    email: 'customerContactCPreferences@example.com'
+    email: 'testCustomerPreferences@example.com'
 }
 
 const billingProfile = {
-    name: 'billingProfileCypress',
+    name: 'billingProfilePCustomerPref',
     handle: 'profilehandle' + getRandomNum(),
     reseller_id: null
 }
 
 const emergencyMappingContainer = {
-    name: 'emergencyCypress',
+    name: 'emergencyMCustomerPref',
     reseller_id: null
 }
 
@@ -63,8 +70,16 @@ const ncosLevel = {
     description: 'description' + getRandomNum()
 }
 
+export const reseller = {
+    contract_id: 1,
+    status: 'active',
+    rtc_networks: {},
+    name: 'resellerCustomerPref',
+    enable_rtc: false
+}
+
 const systemContact = {
-    email: 'systemContactCustomerPref@example.com'
+    email: 'systemTestCustomerPref@example.com'
 }
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -73,7 +88,7 @@ context('Customer preferences tests', () => {
     context('UI customer preferences tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-            
+
             apiLoginAsSuperuser().then(authHeader => {
                 Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
                 cy.log('Preparing environment...')
@@ -102,8 +117,12 @@ context('Customer preferences tests', () => {
         })
 
         beforeEach(() => {
-            customer.external_id = 'customerCypress' + getRandomNum()
             apiLoginAsSuperuser().then(authHeader => {
+                cy.log('Cleaning up db...')
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+
+                cy.log('Seeding db...')
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
                         customer.customer_id = id
@@ -116,23 +135,16 @@ context('Customer preferences tests', () => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiRemoveNCOSLevelBy({ name: ncosLevel.level, authHeader })
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
-
-        afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
-                cy.log(customer.customer_id)
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
-            })
-        })
-
+        
         it('Test all Access Restriction settings in customer', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer')

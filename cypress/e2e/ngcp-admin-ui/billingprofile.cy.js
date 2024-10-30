@@ -19,16 +19,15 @@ import {
     apiCreateBillingProfileFee,
     apiRemoveBillingProfileFeeBy,
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract, reseller } from '../../support/aui-test-data';
 
 const billingProfile = {
-    name: 'billingCypress',
+    name: 'billingProfileCypress',
     handle: 'profilehandle' + getRandomNum(),
     reseller_id: null
 }
 
 const billingProfileZone = {
-    zone: 'profilezoneCypress',
+    zone: 'testBFCypress',
     detail: 'profiledetail' + getRandomNum(),
     billing_profile_id: null
 }
@@ -36,7 +35,7 @@ const billingProfileZone = {
 const billingProfileFee = {
     billing_zone_id: null,
     billing_profile_id: null,
-    destination: 'profilefeeCypress',
+    destination: 'billingProfileFeeCypress',
     direction: 'out',
     offpeak_follow_interval: 1,
     offpeak_init_interval: 1,
@@ -44,8 +43,25 @@ const billingProfileFee = {
     onpeak_init_interval: 1
 }
 
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'contractBillingProfile',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
+export const reseller = {
+    contract_id: 0,
+    status: 'active',
+    rtc_networks: {},
+    name: 'testBillingProfile',
+    enable_rtc: false
+}
+
 const systemContact = {
-    email: 'systemContactBilling@example.com'
+    email: 'testBilling@example.com'
 }
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -77,6 +93,12 @@ context('Billing profile tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                cy.log('Cleaning up db...')
+                apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+                apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
+                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+
+                cy.log('Seeding db...')
                 apiCreateBillingProfile({ data: billingProfile, authHeader }).then(({ id }) => {
                     billingProfileZone.billing_profile_id = id
                     billingProfileFee.billing_profile_id = id
@@ -87,22 +109,17 @@ context('Billing profile tests', () => {
                 })
             })
         })
-
+        
         after(() => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
-            })
-        })
-
-        afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
                 apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 

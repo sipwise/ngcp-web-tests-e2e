@@ -17,38 +17,59 @@ import {
     apiRemoveSoundSetBy, 
     apiRemoveSystemContactBy,
     deleteItemOnListPageBy,
-    getRandomNum,
     searchInDataTable,
     waitPageProgress
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract, customerPbx, reseller } from '../../support/aui-test-data';
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 const path = require('path')
 
 const billingProfile = {
-    name: 'profile' + getRandomNum(),
-    handle: 'profilehandle' + getRandomNum(),
+    name: 'profileSoundset',
+    handle: 'profilehandleSoundset',
     reseller_id: null
+}
+
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'soundSetContract',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
+export const customerPbx = {
+    billing_profile_definition: 'id',
+    billing_profile_id: null,
+    external_id: 'soundSetCustomerPbx',
+    contact_id: null,
+    status: 'active',
+    type: 'pbxaccount',
+    customer_id: null
+}
+
+export const reseller = {
+    contract_id: 1,
+    status: 'active',
+    rtc_networks: {},
+    name: 'soundsetReseller',
+    enable_rtc: false
 }
 
 const soundSet = {
     reseller_id: 0,
-    name: 'soundset' + getRandomNum(),
-    description: 'desc' + getRandomNum()
+    name: 'soundsetCypress',
+    description: 'This is a description of soundset from Cyress tests'
 }
 
-// We are not exporting this object to avoid dependencies
-// if we run tests in parallel in the future
 const systemContactDependency = {
-    email: 'systemContactDependencySoundsets@example.com'
+    email: 'testSoundsets@example.com'
 }
 
-// We are not exporting this object to avoid dependencies
-// if we run tests in parallel in the future
 const customerContact = {
     reseller_id: null,
-    email: 'customerContactSoundset@example.com'
+    email: 'testContactSoundset@example.com'
 }
 
 const fixturesFolder = Cypress.config('fixturesFolder')
@@ -90,6 +111,8 @@ context('Soundset tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
+
                 apiCreateSoundSet({ data: soundSet, authHeader })
             })
         })
@@ -98,18 +121,13 @@ context('Soundset tests', () => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
                 apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerPbx.email, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
-            })
-        })
-
-        afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
             })
         })
 

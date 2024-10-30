@@ -21,13 +21,21 @@ import {
     apiRemoveHeaderRuleBy,
     apiRemoveHeaderRulesetBy
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract, reseller } from '../../support/aui-test-data';
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 var issppro = null
 
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'contractHeaderMan',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
 const headerRuleset = {
-    name: "headerSetCypress",
+    name: "headerSetHeaderMan",
     description: "headerDesc" + getRandomNum(),
     reseller_id: 0,
 }
@@ -37,7 +45,7 @@ const headerRule = {
     enabled: true,
     direction: "a_inbound",
     description: "headerruleDesc" + getRandomNum(),
-    name: "headerRuleCypress",
+    name: "headerRuleHeaderMan",
     set_id: 0,
     priority: 2
 }
@@ -45,7 +53,7 @@ const headerRule = {
 const headerRuleCondition = {
     match_part: "full",
     enabled: true,
-    match_name: "headerRuleConditionCypress",
+    match_name: "headerRuleConditionHeaderMan",
     match_type: "header",
     expression_negation: true,
     rule_id: 0,
@@ -57,11 +65,19 @@ const headerRuleAction = {
     enabled: true,
     priority: 2,
     action_type: "set",
-    header: "headerRuleActionCypress",
+    header: "headerRuleActionHeaderMan",
     header_part: "full",
     value_part: "full",
     value: "value" + getRandomNum(),
     rule_id: 0
+}
+
+export const reseller = {
+    contract_id: 1,
+    status: 'active',
+    rtc_networks: {},
+    name: 'resellerHeaderMan',
+    enable_rtc: false
 }
 
 const systemContact = {
@@ -107,6 +123,13 @@ context('Header manipulation tests', () => {
         beforeEach(() => {
             if (issppro) {
                 apiLoginAsSuperuser().then(authHeader => {
+                    cy.log('Cleaning up db...')
+                    apiRemoveHeaderRuleConditionBy({ name: headerRuleCondition.match_name, authHeader })
+                    apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
+                    apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                    apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+
+                    cy.log('Seeding db...')
                     apiCreateHeaderRuleset({ data: headerRuleset, authHeader }).then(({ id }) => {
                         apiCreateHeaderRule({ data: { ...headerRule, set_id: id }, authHeader }).then(({ id }) => {
                             apiCreateHeaderRuleAction({ data: { ...headerRuleAction, rule_id: id }, authHeader })
@@ -124,24 +147,15 @@ context('Header manipulation tests', () => {
             cy.log('Data clean up...')
             if (issppro) {
                 Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-            cy.log('Data clean up...')
-                apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveResellerBy({ name: reseller.name, authHeader })
-                    apiRemoveContractBy({ name: contract.external_id, authHeader })
-                    apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
-                })
-            } else {
-                cy.log('Not a SPPRO instance, exiting test...')
-            }
-        })
-
-        afterEach(() => {
-            if (issppro) {
+                cy.log('Data clean up...')
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveHeaderRuleConditionBy({ name: headerRuleCondition.match_name, authHeader })
                     apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
                     apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
                     apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+                    apiRemoveResellerBy({ name: reseller.name, authHeader })
+                    apiRemoveContractBy({ name: contract.external_id, authHeader })
+                    apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
                 })
             } else {
                 cy.log('Not a SPPRO instance, exiting test...')

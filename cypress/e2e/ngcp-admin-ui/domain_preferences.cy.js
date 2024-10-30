@@ -1,7 +1,6 @@
 /// <reference types="cypress" />
 
 import {
-    getRandomNum,
     waitPageProgress,
     clickDataTableSelectedMoreMenuItem,
     searchInDataTable,
@@ -27,43 +26,55 @@ import {
     apiRemoveSoundSetBy,
     apiRemoveSystemContactBy
 } from '../../support/ngcp-admin-ui/e2e'
-import { dependencyContract, domain } from '../../support/aui-test-data';
 
 const ngcpConfig = Cypress.config('ngcpConfig')
+
+export const dependencyContract = {
+    contact_id: null,
+    status: 'active',
+    external_id: 'dependencyContractDomainPref',
+    type: 'sippeering',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
 
 const dependencyReseller = {
     contract_id: null,
     status: 'active',
-    name: 'dependencyResellerCypress',
+    name: 'dependencyDomainPref',
     enable_rtc: false
 }
 
+export const domain = {
+    reseller_id: 1,
+    domain: 'domainCypress'
+}
+
+
 const emergencyMappingContainer = {
-    name: 'emergencyMCCypress',
+    name: 'emergencyMCCDomainPref',
     reseller_id: null
 }
 
 const ncosLevel = {
     reseller_id: null,
-    level: 'ncoslevelCypress',
+    level: 'ncosLevelDomainPref',
     mode: 'whitelist',
-    description: 'description' + getRandomNum()
+    description: 'This is a description of ncosLevelDomainPref'
 }
 
 const soundSet = {
-    name: 'soundsetCypress',
-    description: 'description' + getRandomNum(),
+    name: 'soundsetDomainPref',
+    description: 'This is a description of soundsetDomainPref',
     reseller_id: null
 }
 
 const rewriteRuleSet = {
-    name: 'rulesetCypress',
-    description: 'description' + getRandomNum(),
+    name: 'rulesetDomainPref',
+    description: 'This is a description of rewriteRuleSet',
     reseller_id: null
 }
 
-// We are not exporting this object to avoid dependencies
-// if we run tests in parallel in the future
 const systemContactDependency = {
     email: 'systemContactDependencyDomainPref@example.com'
 }
@@ -101,6 +112,10 @@ context('Domain preferences tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                cy.log('Cleaning up db...')
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
+
+                cy.log('Seeding db...')
                 apiCreateDomain({ data: domain, authHeader })
             })
         })
@@ -109,6 +124,7 @@ context('Domain preferences tests', () => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
                 apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
                 apiRemoveNCOSLevelBy({ name: ncosLevel.level, authHeader })
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
@@ -118,13 +134,7 @@ context('Domain preferences tests', () => {
                 apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             })
         })
-
-        afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
-            })
-        })
-
+        
         it('Test all Access Restriction settings in domain', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / domain')
@@ -146,6 +156,7 @@ context('Domain preferences tests', () => {
             testPreferencesTextField('concurrent_max_in', 123, true)
             testPreferencesTextField('concurrent_max_in_per_account', 123, true)
             testPreferencesTextField('concurrent_max_in_total', 123, true)
+            cy.wait(1000)
             testPreferencesTextField('concurrent_max_out', 123, true)
             testPreferencesTextField('concurrent_max_out_per_account', 123, true)
             testPreferencesTextField('concurrent_max_out_total', 123, true)

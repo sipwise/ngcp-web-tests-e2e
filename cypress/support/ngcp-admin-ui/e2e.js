@@ -528,7 +528,7 @@ export const apiRemoveDomainBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const domainId = body?._embedded?.['ngcp:domains']?.[0]?.id
-        if (body?.total_count === 1 && domainId > 1) {
+        if (domainId) {
             cy.log('Deleting domain...', name)
             return cy.request({
                 method: 'DELETE',

@@ -14,7 +14,6 @@ import {
     apiRemoveSystemContactBy,
     getRandomNum
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract, reseller } from '../../support/aui-test-data';
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
@@ -41,6 +40,23 @@ const admin = {
     call_data: true,
     can_reset_password: true,
     reseller_id: 0
+}
+
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'contractLogin',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
+export const reseller = {
+    contract_id: 1,
+    status: 'active',
+    rtc_networks: {},
+    name: 'resellerLogin',
+    enable_rtc: false
 }
 
 const systemContact = {
