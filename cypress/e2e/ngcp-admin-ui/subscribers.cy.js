@@ -17,9 +17,17 @@ import {
     deleteItemOnListPageBy,
     searchInDataTable
 } from '../../support/ngcp-admin-ui/e2e'
-import { customer, domain, subscriber } from '../../support/aui-test-data';
 
 const ngcpConfig = Cypress.config('ngcpConfig')
+
+export const customer = {
+    billing_profile_definition: 'id',
+    billing_profile_id: 1,
+    external_id: `customerSubTests`,
+    contact_id: 1,
+    status: 'active',
+    type: 'sipaccount'
+}
 
 const customerPbx = {
     billing_profile_definition: 'id',
@@ -28,6 +36,11 @@ const customerPbx = {
     contact_id: 1,
     status: 'active',
     type: 'pbxaccount'
+}
+
+export const domain = {
+    reseller_id: 1,
+    domain: 'domainSubscribers'
 }
 
 const pilotSubscriber = {
@@ -60,16 +73,31 @@ const seatSubscriber = {
 
 const profileSet = {
     reseller_id: 1,
-    description: 'testdescriptionProfileSetCypressSubscribers',
-    descriptionNew: 'testdescriptionProfileSetCypressSubscribersNew',
-    name: 'setCypress00'
+    description: 'testDescriptionProfileSetCypressSubscribers',
+    descriptionNew: 'testDescriptionProfileSetCypressSubscribersNew',
+    name: 'subscribersProfileSet'
+}
+
+export const subscriber = {
+    username: 'subscriberSubscribersAui',
+    email: 'subscriberCypressAui@test.com',
+    external_id: 'subid' + getRandomNum(),
+    password: 'suB#' + getRandomNum() + '#PaSs#',
+    domain: domain.domain,
+    customer_id: 0,
+    subscriber_id: 0,
+    primary_number: {
+        sn: 11,
+        ac: 22,
+        cc: getRandomNum(4)
+    },
 }
 
 const subscriberProfile = {
     name: 'profileSubscriberCypress',
     profile_set_id: 0,
     set_default: true,
-    description: 'testdescriptionprofileSubscriberCypress'
+    description: 'testDescriptionProfileSubscriberCypress'
 }
 
 context('Subscriber tests', () => {
@@ -102,6 +130,12 @@ context('Subscriber tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ name: seatSubscriber.username, authHeader })
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
+                apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
+                
                 apiCreateSubscriberProfileSet({ data: profileSet, authHeader }).then(({ id }) => {
                     apiCreateSubscriberProfile({ data: { ...subscriberProfile, profile_set_id: id }, authHeader })
                 })
@@ -115,19 +149,14 @@ context('Subscriber tests', () => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
-            })
-        })
-
-        afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
                 apiRemoveSubscriberBy({ name: seatSubscriber.username, authHeader })
                 apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
                 apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
                 apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
+                apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
             })
         })
 

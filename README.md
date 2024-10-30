@@ -21,9 +21,11 @@ Configure `cypress.tdd.csc.json` according to your needs.
 * the `baseUrl` should contain full URL to the application root like: `https://localhost:8080/v2`
 * in case the `baseUrl` is pointing to `localhost` the `username` config parameter should be with domain name, like so: `username@domain`. Otherwise, some tests might fail.
 
-To run tests in headless mode use next command
+To run tests in headless mode use commands:
 ```bash
 yarn run tdd:csc
+yarn run tdd:aui --spec "cypress/e2e/ngcp-csc-ui/call_blocking.cy.js" // to run only one specific test
+
 ```
 In case you want to choose exact tests to run OR investigate tests errors visually you should run Cypress in UI mode
 ```bash
@@ -37,9 +39,10 @@ Configure `cypress.tdd.aui.json` according to your needs.
 **Important**:
 * the `baseUrl` should contain full URL to the application root like: `https://localhost:8081/v2`
 
-To run tests in headless mode use next command
+To run tests in headless mode use commands:
 ```bash
 yarn run tdd:aui
+yarn run tdd:aui --spec "cypress/e2e/ngcp-admin-ui/domain_preferences.cy.js" // to run only one specific test
 ```
 In case you want to choose exact tests to run OR investigate tests errors visually you should run Cypress in UI mode
 ```bash

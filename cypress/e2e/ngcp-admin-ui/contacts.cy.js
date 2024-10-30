@@ -16,7 +16,6 @@ import {
     apiRemoveResellerBy,
     apiRemoveSystemContactBy
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract, reseller } from '../../support/aui-test-data';
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
@@ -24,20 +23,34 @@ const contactNames = {
     firstname: 'first' + getRandomNum(),
     lastname: 'last' + getRandomNum()
 }
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'testContacts',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
 
-// We are not exporting this object to avoid dependencies
-// if we run tests in parallel in the future
 const customerContact = {
     reseller_id: null,
-    email: 'customerContactContacts@example.com'
+    email: 'testContacts@example.com'
+}
+
+export const reseller = {
+    contract_id: 1,
+    status: 'active',
+    rtc_networks: {},
+    name: 'resellerContactsCypress',
+    enable_rtc: false
 }
 
 const systemContact = {
-    email: 'systemContactContacts@example.com'
+    email: 'systemTestContact@example.com'
 }
 
 const systemContactDependency = {
-    email: 'systemContactDependencyContacts@example.com'
+    email: 'systemDependContacts@example.com'
 }
 
 context('Contact tests', () => {
@@ -66,27 +79,29 @@ context('Contact tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                cy.log('Cleaning up db...')
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
+
+                cy.log('Seeding db...')
                 apiCreateSystemContact({ data: systemContact, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader })
             })
         })
-
+        
         after(() => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             })
         })
 
-        afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
-                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
-            })
-        })
+
         ;[
             { type: 'customer', checkUrl: '#/contact/create' },
             { type: 'system', checkUrl: '#/contact/create/noreseller' }

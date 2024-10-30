@@ -13,7 +13,15 @@ import {
     deleteItemOnListPageBy,
     searchInDataTable
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract } from '../../support/aui-test-data';
+
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'contractResellerTest',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
 
 const reseller = {
     contract_id: 1,
@@ -48,8 +56,12 @@ context('Reseller tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                cy.log('Cleaning up db...')
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
+
+                cy.log('Seeding up db...')
                 apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
-                    reseller.name = 'reseller' + getRandomNum()
                     apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
                 })
             })
@@ -59,14 +71,9 @@ context('Reseller tests', () => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
-            })
-        })
-
-        afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 

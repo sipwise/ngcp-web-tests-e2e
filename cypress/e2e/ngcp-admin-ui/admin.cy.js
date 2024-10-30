@@ -17,7 +17,6 @@ import {
     apiRemoveContractBy,
     apiRemoveResellerBy
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract, reseller } from '../../support/aui-test-data';
 
 const path = require('path')
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -49,8 +48,17 @@ const admin2 = {
     reseller_id: null
 }
 
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'contractAdminAUI',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
 const mainResellerAdmin = {
-    login: 'mainResellerAdminCypress',
+    login: 'mainResellerAdminAUI',
     password: 'Rand0m#PassWO#12345#',
     role: 'reseller',
     is_master: true,
@@ -62,7 +70,7 @@ const mainResellerAdmin = {
 }
 
 const secondaryResellerAdmin = {
-    login: 'secondaryResellerAdminCypress',
+    login: 'secondaryResellerAdminAUI',
     password: 'Rand0m#PassW#O1234#',
     role: 'reseller',
     is_master: false,
@@ -71,6 +79,14 @@ const secondaryResellerAdmin = {
     call_data: true,
     billing_data: true,
     reseller_id: null
+}
+
+export const reseller = {
+    contract_id: 1,
+    status: 'active',
+    rtc_networks: {},
+    name: 'resellerAdminCypress',
+    enable_rtc: false
 }
 
 const downloadsFolder = Cypress.config('downloadsFolder')
@@ -88,7 +104,6 @@ context('Administrator tests', () => {
                 apiRemoveAdminBy({ name: admin2.login, authHeader })
                 apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
                 apiRemoveAdminBy({ name: secondaryResellerAdmin.login, authHeader })
-
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
@@ -106,6 +121,11 @@ context('Administrator tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                cy.log('Data clean up...')
+                apiRemoveAdminBy({ name: admin1.login, authHeader })
+                apiRemoveAdminBy({ name: admin2.login, authHeader })
+
+                cy.log('Creating db entries...')
                 apiCreateAdmin({ data: admin1, authHeader })
                 apiCreateAdmin({ data: admin2, authHeader })
             })
@@ -129,16 +149,8 @@ context('Administrator tests', () => {
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
-                reseller.name = 'reseller' + getRandomNum()
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
-            })
-        })
-
-        afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin1.login, authHeader })
-                apiRemoveAdminBy({ name: admin2.login, authHeader })
             })
         })
 

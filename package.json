@@ -15,8 +15,8 @@
         "docker:run": "bash ./bin/run-docker.sh",
         "ci:csc": "cypress run --config-file cypress.ci.csc.config.js",
         "ci:aui": "cypress run --config-file cypress.ci.aui.config.js",
-        "tdd:csc": "cypress run --config-file cypress.tdd.csc.config.js",
-        "tdd:aui": "cypress run --config-file cypress.tdd.aui.config.js",
+        "tdd:csc": "cypress run --config-file cypress.tdd.csc.config.js --browser chrome",
+        "tdd:aui": "cypress run --config-file cypress.tdd.aui.config.js --browser chrome",
         "tdd:setup": "cp ./cypress.tdd.csc.template.json ./cypress.tdd.csc.json && cp ./cypress.tdd.aui.template.json ./cypress.tdd.aui.config.js"
     },
     "dependencies": {
