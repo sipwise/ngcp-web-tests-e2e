@@ -17,7 +17,23 @@ import {
     testPreferencesTextField,
     testPreferencesListField
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract, reseller } from '../../support/aui-test-data';
+
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'resellerPrefContract',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
+export const reseller = {
+    contract_id: 1,
+    status: 'active',
+    rtc_networks: {},
+    name: 'resellerPrefCypress',
+    enable_rtc: false
+}
 
 const rewriteRuleSet = {
     description: 'descriptionCypress',
@@ -52,6 +68,12 @@ context('Reseller preferences tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                cy.log('Cleaning up db...')
+                apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+
+                cy.log('Seeding up db...')
                 apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
                     reseller.name = 'reseller' + getRandomNum()
                     apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
@@ -65,15 +87,10 @@ context('Reseller preferences tests', () => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
-            })
-        })
-
-        afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 

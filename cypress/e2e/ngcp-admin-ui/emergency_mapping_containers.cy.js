@@ -14,11 +14,18 @@ import {
     apiRemoveSystemContactBy,
     clickDataTableSelectedMoreMenuItem,
     deleteItemOnListPageBy,
-    getRandomNum,
     searchInDataTable,
     waitPageProgress
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract, reseller } from '../../support/aui-test-data';
+
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'contractEmMapping',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
 
 const emergencyMappingContainer = {
     name: 'EmergencyMCCypress',
@@ -26,16 +33,16 @@ const emergencyMappingContainer = {
 }
 
 const emergencyMapping = {
-    prefix: "prefixCypress",
+    prefix: "prefixEmergencyMapping",
     code: 11,
-    suffix: "suffixCypress",
+    suffix: "suffixEmergencyMapping",
     emergency_container_id: 0
 }
 
 const editContract = {
     contact_id: 3,
     status: 'active',
-    external_id: 'editContractCypress',
+    external_id: 'editContractEmergencyMapping',
     type: 'reseller',
     billing_profile_definition: 'id',
     billing_profile_id: 1
@@ -44,7 +51,15 @@ const editContract = {
 const editReseller = {
     contract_id: 1,
     status: 'active',
-    name: 'editResellerCypress',
+    name: 'editResellerEmergencyMapping',
+    enable_rtc: false
+}
+
+export const reseller = {
+    contract_id: 1,
+    status: 'active',
+    rtc_networks: {},
+    name: 'resellerEmergencyMapping',
     enable_rtc: false
 }
 
@@ -59,7 +74,7 @@ context('Emergency mapping tests', () => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-                cy.log('Preparing environment...')
+            cy.log('Preparing environment...')
             apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
             apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             apiRemoveResellerBy({ name: editReseller.name, authHeader })
@@ -84,28 +99,28 @@ context('Emergency mapping tests', () => {
 
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
+            cy.log('Cleaning up db...')
+            apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+            apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
+
+            cy.log('Seeding db...')
             apiCreateEmergencyMappingContainer({ data: emergencyMappingContainer, authHeader }).then(({ id }) => {
                 apiCreateEmergencyMapping({ data: { ...emergencyMapping, emergency_container_id: id }, authHeader })
             })
         })
     })
-
+    
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-            cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
+            cy.log('Data clean up...')
+            apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+            apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             apiRemoveResellerBy({ name: editReseller.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
             apiRemoveContractBy({ name: editContract.external_id, authHeader })
             apiRemoveContractBy({ name: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
-        })
-    })
-
-    afterEach(() => {
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
-            apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
         })
     })
 

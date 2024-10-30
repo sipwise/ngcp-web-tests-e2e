@@ -15,7 +15,7 @@ import {
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 const LNPCarrier = {
-    name: "carrierCypress",
+    name: "carrierLNPTest",
     authoritative: false,
     skip_rewrite: false,
     prefix: "prefixCypress"
@@ -25,7 +25,7 @@ const LNPNumber = {
     number: 22,
     end: "",
     start: "",
-    type: "typeCypress",
+    type: "typeLNPTestCypress",
     carrier_id: 0,
     routing_number: "string"
 }
@@ -48,21 +48,24 @@ context('LNP tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                cy.log('Cleaning up db...')
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+
+                cy.log('Seeding db...')
                 apiCreateLNPCarrier({ data: LNPCarrier, authHeader }).then(({ id }) => {
                     apiCreateLNPNumber({ data: { ...LNPNumber, carrier_id: id }, authHeader })
                 })
             })
         })
-
+        
         after(() => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
-        })
-
-        afterEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
                 apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+                cy.log('Data clean up pre-tests completed')
             })
         })
 

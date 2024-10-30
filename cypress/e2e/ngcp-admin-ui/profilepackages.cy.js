@@ -18,10 +18,30 @@ import {
     searchInDataTable,
     waitPageProgress
 } from '../../support/ngcp-admin-ui/e2e'
-import { contract, reseller } from '../../support/aui-test-data';
+
+export const contract = {
+    contact_id: 0,
+    status: 'active',
+    external_id: 'contractProfPack',
+    type: 'reseller',
+    billing_profile_definition: 'id',
+    billing_profile_id: 1
+}
+
+const billingProfile = {
+    name: 'profileProfPackCypress',
+    handle: 'profilehandle123',
+    reseller_id: null
+}
+
+const editBillingProfile = {
+    name: 'editProfPackCypress',
+    handle: 'profilehandle456',
+    reseller_id: null
+}
 
 const mainResellerAdmin = {
-    login: 'mainResellerAdminCypress',
+    login: 'mainResellerAdminProfPack',
     password: 'rand0mpassword12345',
     role: 'reseller',
     is_master: true,
@@ -32,28 +52,24 @@ const mainResellerAdmin = {
     reseller_id: null
 }
 
-const billingProfile = {
-    name: 'profileCypress',
-    handle: 'profilehandle123',
-    reseller_id: null
-}
-
-const editBillingProfile = {
-    name: 'editProfileCypress',
-    handle: 'profilehandle456',
-    reseller_id: null
-}
-
 const profilePackage = {
     balance_interval_unit: 'minute',
     balance_interval_value: 60,
     description: 'desc',
-    name: 'profilePackageCypress',
+    name: 'profileProfPackCypress',
     initial_profiles: [
         {
           profile_id: 0,
         }
       ],
+}
+
+export const reseller = {
+    contract_id: 1,
+    status: 'active',
+    rtc_networks: {},
+    name: 'resellerProfPackCypress',
+    enable_rtc: false
 }
 
 const systemContact = {
@@ -93,25 +109,25 @@ context('Profile package tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiCreateProfilePackage({data: profilePackage, authHeader})
-                    })
-                })
+                cy.log('Cleaning up db...')
+                apiRemoveProfilePackageBy({name: profilePackage.name, authHeader})
 
-        after(() => {
-            cy.log('Data clean up...')
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
-                apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveBillingProfileBy({ name: editBillingProfile.name, authHeader })
-                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
+                cy.log('Seeding db...')
+                apiCreateProfilePackage({data: profilePackage, authHeader})
             })
         })
 
-        afterEach(() => {
+        after(() => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
+            cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveProfilePackageBy({name: profilePackage.name, authHeader})
+                apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
+                apiRemoveBillingProfileBy({ name: editBillingProfile.name, authHeader })
+                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 
