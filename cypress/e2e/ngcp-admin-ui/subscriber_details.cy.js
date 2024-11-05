@@ -134,7 +134,7 @@ context('Subscriber details tests', () => {
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
                 apiRemoveDomainBy({ name: domain.domain, authHeader })
                 cy.log('Data clean up pre-tests completed')
-                
+
                 apiCreateDomain({ data: domain, authHeader }).then(({ id }) => domain.id = id )
                 apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                     subscriber.customer_id = id
@@ -144,9 +144,11 @@ context('Subscriber details tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
-                    subscriber.subscriber_id = id
-                    apiCreateLocationMapping({ data: { ...locationmapping, subscriber_id: id }, authHeader })
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(() => {
+                    apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
+                        subscriber.subscriber_id = id
+                        apiCreateLocationMapping({ data: { ...locationmapping, subscriber_id: id }, authHeader })
+                    })
                 })
             })
         })
@@ -155,9 +157,10 @@ context('Subscriber details tests', () => {
                 Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
                 cy.log('Data clean up...')
                 apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                    apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(()=> {
+                        apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                        apiRemoveDomainBy({ name: domain.domain, authHeader })
+                    })
             })
             deleteDownloadsFolder()
         })
