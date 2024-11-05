@@ -741,7 +741,7 @@ export const apiRemoveSubscriberBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const subscriberId = body?._embedded?.['ngcp:subscribers']?.[0]?.id
-        if (body?.total_count === 1 && subscriberId > 1) {
+        if (subscriberId) {
             cy.log('Deleting subscriber...', name)
             return cy.request({
                 method: 'DELETE',
