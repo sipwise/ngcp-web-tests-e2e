@@ -72,19 +72,19 @@ context('Call blocking page tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-
-                apiCreateSubscriber({ 
-                    data: {
-                        ...subscriber,
-                        primaryNumber: {
-                            sn: 12,
-                            ac: 12,
-                            cc: 1112
-                        }
-                    },
-                    authHeader
-                 })
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(()=> {
+                    apiCreateSubscriber({
+                        data: {
+                            ...subscriber,
+                            primaryNumber: {
+                                sn: 12,
+                                ac: 12,
+                                cc: 1112
+                            }
+                        },
+                        authHeader
+                     })
+            })
             cy.visit('/')
             })
         })

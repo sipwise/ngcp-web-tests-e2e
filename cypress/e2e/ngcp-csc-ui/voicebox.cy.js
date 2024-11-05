@@ -11,7 +11,6 @@ import {
     getRandomNum,
 } from '../../support/ngcp-csc-ui/e2e'
 
-
 export const domain = {
     domain: 'domainVoiceBox',
     reseller_id: 1
@@ -75,9 +74,9 @@ context('Voicebox page tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-
-                apiCreateSubscriber({ data:  subscriber, authHeader })
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(()=>{
+                    apiCreateSubscriber({ data:  subscriber, authHeader })
+                })
             })
             cy.visit('/')
         })
