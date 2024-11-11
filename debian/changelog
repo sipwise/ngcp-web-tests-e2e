@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.5+0~mr12.5.1.5) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [1551fa8] MT#61295 Update tests following admin-ui security updates
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 11 Nov 2024 09:24:41 +0100
+
 ngcp-web-tests-e2e (12.5.1.4+0~mr12.5.1.4) unstable; urgency=medium
 
   [ Nico Schedel ]
