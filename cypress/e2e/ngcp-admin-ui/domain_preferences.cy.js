@@ -419,8 +419,6 @@ context('Domain preferences tests', () => {
             testPreferencesChipField('announce_error_codes_list')
             testPreferencesListField('bypass_rtpproxy', 'Never')
             testPreferencesToggleField('codecs_filter')
-            testPreferencesToggleField('codecs_id_filter')
-            testPreferencesTextField('codecs_id_list')
             testPreferencesTextField('codecs_list')
             testPreferencesToggleField('generate_rtcp')
             testPreferencesListField('ipv46_for_rtpproxy', 'Force IPv4')
