@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.6+0~mr12.5.1.6) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [26d3307] MT#61424 Call Forwarding tests bugfix
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 19 Nov 2024 09:44:36 +0100
+
 ngcp-web-tests-e2e (12.5.1.5+0~mr12.5.1.5) unstable; urgency=medium
 
   [ Debora Crescenzo ]
