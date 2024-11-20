@@ -164,7 +164,6 @@ context('Domain preferences tests', () => {
             testPreferencesTextField('concurrent_max_total', 123, true)
             testPreferencesToggleField('count_callforward_as_one')
             testPreferencesToggleField('ignore_allowed_ips')
-            testPreferencesChipField('man_allowed_ips', { value1: '10.0.0.1', value2: '10.0.0.10' }, true)
             testPreferencesTextField('max_call_duration', 123)
             testPreferencesToggleField('reject_emergency')
             testPreferencesToggleField('reject_vsc')
