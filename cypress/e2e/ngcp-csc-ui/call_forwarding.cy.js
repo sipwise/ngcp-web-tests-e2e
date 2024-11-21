@@ -204,12 +204,12 @@ context('Call forwarding page tests', () => {
             cy.get('div[data-cy="csc-forwarding-disable"]').click()
 
             waitPageProgress()
-            cy.get('div[data-cy="q-item-section"][disabled="disabled"]').should('be.visible')
+            cy.get('span[data-cy="csc-cf-destination"]').parents('div[data-cy="q-item-section"]').should('have.class', "disabled").should('be.visible')
             cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
             cy.get('div[data-cy="csc-forwarding-disable"]').click()
 
             waitPageProgress()
-            cy.get('div[data-cy="q-item-section"][disabled="disabled"]').should('not.exist')
+            cy.get('span[data-cy="csc-cf-destination"]').parents('div[data-cy="q-item-section"]').should('not.have.class', "disabled").should('be.visible')
         })
     })
 })
