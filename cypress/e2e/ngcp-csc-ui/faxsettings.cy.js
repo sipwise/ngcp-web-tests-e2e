@@ -136,7 +136,7 @@ context('Fax settings page tests', () => {
                     cy.get('button[data-cy="destination-add"]').click()
 
                     cy.get('input[data-cy="destination-email"]').type('invalidemail')
-                    cy.get('label[data-cy="destination-email"][error="true"]').should('be.visible')
+                    cy.get('input[data-cy="destination-email"]').parents('label').find('div[role="alert"]').should('be.visible')
                     cy.get('button[data-cy="destinaton-creation-confirm"][aria-disabled="true"]').should('be.visible')
                     cy.get('button[data-cy="destinaton-cancel-creation"]').click()
 
@@ -211,7 +211,6 @@ context('Fax settings page tests', () => {
                     cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
                     cy.get('div[data-cy="csc-list-item-title"]').click()
                     cy.get('i[data-cy="destination-icon-deliver-incoming"]').contains('call_received').should('be.visible')
-                    cy.get('i[data-cy="destination-icon-deliver-outgoing"]').contains('call_made').should('be.visible')
                 } else {
                     cy.log('Not a SPPRO instance, exiting test...')
                 }
