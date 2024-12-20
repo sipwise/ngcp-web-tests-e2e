@@ -106,8 +106,8 @@ context('Call Settings "General" page tests', () => {
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/call-blocking/privacy"]').click()
 
-            cy.get('div[data-cy="csc-privacy-hide"] svg').should('not.exist')
             cy.get('div[data-cy="csc-callee-hide"] svg').should('not.exist')
+            cy.get('div[data-cy="csc-privacy-hide"] svg').should('not.exist')
             cy.wait(1000)
             cy.get('div[data-cy="csc-privacy-hide"]').click()
             cy.get('div[data-cy="csc-privacy-hide"][aria-checked="true"]').should('be.visible')
