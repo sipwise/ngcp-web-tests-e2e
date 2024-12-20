@@ -134,15 +134,16 @@ context('Reminder tests', () => {
             cy.get('a[href="#/user/reminder"]').click()
 
             waitPageProgress()
-            cy.get('button[data-cy="csc-reminder-show-timeselector"]').click()
+
+            cy.get('button[data-cy="csc-reminder-show-timeselector"]').trigger("click")
             cy.get('div[class="q-time__clock-position row flex-center q-time__clock-pos-6"]').click()
             cy.wait(1000)
             cy.get('div[class="q-time__clock-position row flex-center q-time__clock-pos-9"]').click()
             waitPageProgress()
             cy.get('input[data-cy="csc-reminder-time"]').should('have.value', '06:45')
             cy.get('div[data-cy="csc-reminder-timeselector"] button:first').click()
-            waitPageProgress()
             const time = dayjs().format('HH:mm')
+            waitPageProgress()
             cy.get('input[data-cy="csc-reminder-time"]').should('have.value', time)
             cy.get('div[data-cy="csc-reminder-toggle"]').click()
 
