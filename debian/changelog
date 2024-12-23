@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.7+0~mr12.5.1.7) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [fd8249c] MT#61782 delete call forward tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 23 Dec 2024 09:05:01 +0100
+
 ngcp-web-tests-e2e (12.5.1.6+0~mr12.5.1.6) unstable; urgency=medium
 
   [ Nico Schedel ]
