@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (11.5.1.2+0~mr11.5.1.2) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [9944e8a] MT#57568 fix for csc login test translations
+  * [873bce4] MT#61594 Fix CSC tests after several upgrades in mr11.5 NGCP-Flow: mr11.5
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 09 Jan 2025 07:46:22 +0100
+
 ngcp-web-tests-e2e (11.5.1.1+0~mr11.5.1.1) unstable; urgency=medium
 
   [ Nico Schedel ]
