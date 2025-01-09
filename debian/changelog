@@ -1,3 +1,14 @@
+ngcp-web-tests-e2e (11.5.1.3+0~mr11.5.1.3) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [d13697c] MT#55492 fix file copy to docker container
+  * [0b0b61a] MT#57568 fix csc ci and tdd templates, remove unused json config
+
+  [ Marco Capetta ]
+  * [e632320] MT#60551 Fix target machine where ci tests are excuted
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 09 Jan 2025 15:39:44 +0100
+
 ngcp-web-tests-e2e (11.5.1.2+0~mr11.5.1.2) unstable; urgency=medium
 
   [ Nico Schedel ]
