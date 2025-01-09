@@ -1,3 +1,24 @@
+ngcp-web-tests-e2e (13.0.1.2+0~mr13.0.1.2) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [15f59ff] MT#60617 add subscriber call forwarding tests
+  * [8766611] MT#58247 add extra check for searchInDataTable
+  * [f3bf106] MT#61225 security updates for web tests
+  * [c200a23] MT#61424 Call Forwarding tests bugfix
+  * [b31ece5] MT#61782 delete call forward tests
+
+  [ Marco Capetta ]
+  * [ea805c1] MT#60551 Fix target machine where ci tests are excuted
+
+  [ Debora Crescenzo ]
+  * [18c6313] MT#61350 Improve E2E tests
+  * [6d846db] MT#61399 'Fix subscriber_details - Change voicemail setting' test
+  * [cb7f0a6] MT#61413 [E2E] Add pre-tests cleanups to avoid conflicts in db
+  * [69a49df] MT#61417 General E2E testing improvements
+  * [783bdc2] MT#61295 Update tests following admin-ui security updates
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 09 Jan 2025 16:27:22 +0100
+
 ngcp-web-tests-e2e (13.0.1.1+0~mr13.0.1.1) unstable; urgency=medium
 
   * New release.
