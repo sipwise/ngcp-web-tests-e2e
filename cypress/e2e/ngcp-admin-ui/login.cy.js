@@ -106,9 +106,13 @@ context('Login page tests', () => {
         })
 
         beforeEach(() => {
-            cy.visit('/')
-            // adding wait here, to be sure that inputs are intractable \ accessible
-            cy.wait(500)
+            if (Cypress.currentTest.title == 'Check if unknown URL will route to login page') {
+                cy.log('Skip beforeEach visit for this test to prevent freezing')
+            } else {
+                cy.visit('/')
+                // adding wait here, to be sure that inputs are intractable \ accessible
+                cy.wait(500)
+            }
         })
 
         after(() => {
@@ -129,7 +133,11 @@ context('Login page tests', () => {
         })
 
         it('Check if unknown URL will route to login page', () => {
+<<<<<<< HEAD
             cy.visit('/#/some-another-page')
+=======
+            cy.visit('/#/some-other-page')
+>>>>>>> fee47d3 (MT#61847 fix freezing in login tests)
             cy.url().should('match', /\/#\/login\/admin/)
         })
 
@@ -169,7 +177,7 @@ context('Login page tests', () => {
 
         it('Login through UI with no password', () => {
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
-            cy.get('input:first').type('not-exists-user')
+            cy.get('input:first').type(ngcpConfig.username)
             cy.get('input:last').clear()
             cy.get('[data-cy=sign-in]').click()
 
