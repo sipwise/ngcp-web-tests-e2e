@@ -133,11 +133,7 @@ context('Login page tests', () => {
         })
 
         it('Check if unknown URL will route to login page', () => {
-<<<<<<< HEAD
-            cy.visit('/#/some-another-page')
-=======
             cy.visit('/#/some-other-page')
->>>>>>> fee47d3 (MT#61847 fix freezing in login tests)
             cy.url().should('match', /\/#\/login\/admin/)
         })
 
