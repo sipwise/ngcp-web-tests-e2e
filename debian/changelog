@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (11.5.1.5+0~mr11.5.1.5) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [1ea84e6] MT#61888 [CSC] backport call blocking test from master to mr11.5
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 15 Jan 2025 14:19:33 +0100
+
 ngcp-web-tests-e2e (11.5.1.4+0~mr11.5.1.4) unstable; urgency=medium
 
   [ Nico Schedel ]
