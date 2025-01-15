@@ -4,52 +4,65 @@ import {
     apiLoginAsSuperuser,
     apiCreateCustomer,
     apiCreateDomain,
-    apiCreateSubscriber,
     apiRemoveDomainBy,
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
+    waitPageProgress,
+    apiCreateSubscriber,
     getRandomNum,
-    waitPageProgress
 } from '../../support/ngcp-csc-ui/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
-const customer = {
+export const domain = {
+    domain: 'domainCallBlocking',
+    reseller_id: 1
+}
+
+export const subscriber = {
+    username: 'subscriberCallBlocking',
+    webusername: 'subscriberCallBlocking',
+    email: 'subscriberCallBlocking@test.com',
+    external_id: 'subscriberCallBlocking',
+    password: 'sub' + getRandomNum() + 'pass',
+    webpassword: 'sub' + getRandomNum() + 'pass',
+    domain: domain.domain,
+    customer_id: 0,
+    subscriber_id: 0,
+    primary_number: {
+        sn: 11,
+        ac: 22,
+        cc: 1111
+    },
+}
+
+export const customer = {
     billing_profile_definition: 'id',
     billing_profile_id: 1,
-    external_id: 'customer' + getRandomNum(),
+    external_id: 'customerCallBlocking',
     contact_id: 1,
     status: 'active',
     type: 'sipaccount'
 }
 
-const domain = {
-    domain: 'domain' + getRandomNum(),
-    reseller_id: 1
+export const loginInfo = {
+    username: `${subscriber.webusername}@${subscriber.domain}`,
+    password: `${subscriber.webpassword}`
 }
 
-const subscriber = {
-    username: 'subscriber' + getRandomNum(),
-    webusername: 'subscriber' + getRandomNum(),
-    email: 'email' + getRandomNum() + '@test.com',
-    external_id: 'subid' + getRandomNum(),
-    password: 'sub' + getRandomNum() + 'pass',
-    webpassword: 'sub' + getRandomNum() + 'pass',
-    domain: domain.domain,
-    customer_id: 0,
-    subscriber_id: 0
-}
-
-const loginInfo = {
-    username: subscriber.webusername + '@' + subscriber.domain,
-    password: subscriber.webpassword
-}
 
 context('Call blocking page tests', () => {
     context('UI call blocking tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
+                cy.log('Data clean up pre-tests completed')
+
                 apiCreateDomain({ data: domain, authHeader })
                 apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                     subscriber.customer_id = id
@@ -59,22 +72,29 @@ context('Call blocking page tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiCreateSubscriber({ data: subscriber, authHeader })
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(()=> {
+                    apiCreateSubscriber({
+                        data: {
+                            ...subscriber,
+                            primaryNumber: {
+                                sn: 12,
+                                ac: 12,
+                                cc: 1112
+                            }
+                        },
+                        authHeader
+                     })
             })
             cy.visit('/')
+            })
         })
 
         after(() => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            })
-        })
-
-        afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
             })
         })
 
@@ -156,13 +176,12 @@ context('Call blocking page tests', () => {
             cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
             cy.get('button[data-cy="csc-block-number-save"]').click()
 
-            waitPageProgress()
+            cy.contains('testnumber').should('be.visible')
             cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
             cy.get('div[data-cy="csc-blocked-number-delete"]').click()
             cy.get('div[data-cy="q-card"]').contains('OK').click()
             cy.contains('testnumber').should('not.exist')
 
-            waitPageProgress()
             cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
             cy.get('div[data-cy="csc-blocked-number-delete"]').click()
             cy.get('div[data-cy="q-card"]').contains('OK').click()
@@ -226,13 +245,12 @@ context('Call blocking page tests', () => {
             cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
             cy.get('button[data-cy="csc-block-number-save"]').click()
 
-            waitPageProgress()
+            cy.contains('testnumber').should('be.visible')
             cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
             cy.get('div[data-cy="csc-blocked-number-delete"]').click()
             cy.get('div[data-cy="q-card"]').contains('OK').click()
             cy.contains('testnumber').should('not.exist')
 
-            waitPageProgress()
             cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
             cy.get('div[data-cy="csc-blocked-number-delete"]').click()
             cy.get('div[data-cy="q-card"]').contains('OK').click()
