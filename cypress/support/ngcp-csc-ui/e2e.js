@@ -583,14 +583,15 @@ export const apiRemoveDomainBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const domainId = body?._embedded?.['ngcp:domains']?.[0]?.id
-        if (body?.total_count === 1 && domainId > 1) {
+        if (domainId) {
+            cy.log('Deleting domain...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/domains/${domainId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Domain not found', name)
         }
     })
 }
@@ -739,14 +740,15 @@ export const apiRemoveSubscriberBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const subscriberId = body?._embedded?.['ngcp:subscribers']?.[0]?.id
-        if (body?.total_count === 1 && subscriberId > 1) {
+        if (subscriberId) {
+            cy.log('Deleting subscriber...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/subscribers/${subscriberId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Subscriber not found', name)
         }
     })
 }
