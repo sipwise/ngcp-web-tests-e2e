@@ -65,7 +65,11 @@ context('Login page tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
-            cy.visit('/')
+            if (Cypress.currentTest.title === 'Check if unknown URL will route to login page') {
+                cy.log('Skip beforeEach visit for this test to prevent freezing')
+            } else {
+                cy.visit('/')
+            }
         })
 
         after(() => {
