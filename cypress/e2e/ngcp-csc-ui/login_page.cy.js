@@ -76,10 +76,13 @@ context('Login page tests', () => {
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-                
                 apiCreateSubscriber({ data:  subscriber, authHeader })
             })
-            cy.visit('/')
+            if (Cypress.currentTest.title === 'Check if unknown URL will route to login page') {
+                cy.log('Skip beforeEach visit for this test to prevent freezing')
+            } else {
+                cy.visit('/')
+            }
         })
 
         after(() => {
@@ -97,7 +100,7 @@ context('Login page tests', () => {
             cy.url().should('match', /\/#\/login$/)
         })
 
-        xit('Check if unknown URL will route to login page', () => { //disabled for now, cypress redirect detection is wonky
+        it('Check if unknown URL will route to login page', () => {
             cy.visit('/#/some-another-page')
             cy.url().should('match', /\/#\/login$/)
         })
