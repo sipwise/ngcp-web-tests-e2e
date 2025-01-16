@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (11.5.1.8+0~mr11.5.1.8) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [c06e5ab] MT#61903 voicebox tests bugfix2
+  * [5169f49] MT#61903 Remove .only from voicebox.cy
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 16 Jan 2025 21:19:54 +0100
+
 ngcp-web-tests-e2e (11.5.1.7+0~mr11.5.1.7) unstable; urgency=medium
 
   [ Nico Schedel ]
