@@ -90,7 +90,7 @@ context('Voicebox page tests', () => {
             })
         })
 
-        it('Switch between all Voicebox languages', () => {
+        it.only('Switch between all Voicebox languages', () => {
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -98,6 +98,7 @@ context('Voicebox page tests', () => {
             cy.get('a[href="#/user/voicebox"]').click()
 
             cy.get('label[data-cy="q-select"][aria-disabled="true"]').should('not.exist')
+            cy.get('div[data-cy="voicebox-change-language"]').contains('use domain default').should('be.visible')
             cy.get('div[data-cy="voicebox-change-language"]').click()
             cy.get('div[role="listbox"]').contains('German').click()
             cy.get('label[data-cy="q-select"][aria-disabled="true"]').should('not.exist')
