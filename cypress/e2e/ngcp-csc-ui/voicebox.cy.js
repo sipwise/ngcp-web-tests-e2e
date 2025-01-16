@@ -90,7 +90,7 @@ context('Voicebox page tests', () => {
             })
         })
 
-        it.only('Switch between all Voicebox languages', () => {
+        it('Switch between all Voicebox languages', () => {
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
