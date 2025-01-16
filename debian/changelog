@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.9+0~mr12.5.1.9) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [5fcb9cf] MT#61903 Switch between all Voicebox languages Bugfix
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 16 Jan 2025 11:23:47 +0100
+
 ngcp-web-tests-e2e (12.5.1.8+0~mr12.5.1.8) unstable; urgency=medium
 
   [ Nico Schedel ]
