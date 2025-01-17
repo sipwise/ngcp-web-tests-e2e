@@ -1,7 +1,6 @@
 /// <reference types="cypress" />
 
 import {
-    getRandomNum,
     waitPageProgress,
     clickDataTableSelectedMoreMenuItem,
     searchInDataTable,
@@ -30,53 +29,54 @@ import {
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
-const domain = {
-    reseller_id: null,
-    domain: 'domain' + getRandomNum()
-}
-
-const dependencyReseller = {
-    contract_id: null,
-    status: 'active',
-    name: 'reseller' + getRandomNum(),
-    enable_rtc: false
-}
-
-const systemContactDependency = {
-    email: 'contact' + getRandomNum() + '@example.com'
-}
-
-const dependencyContract = {
+export const dependencyContract = {
     contact_id: null,
     status: 'active',
-    external_id: 'contract' + getRandomNum(),
+    external_id: 'dependencyContractDomainPref',
     type: 'sippeering',
     billing_profile_definition: 'id',
     billing_profile_id: 1
 }
 
+const dependencyReseller = {
+    contract_id: null,
+    status: 'active',
+    name: 'dependencyDomainPref',
+    enable_rtc: false
+}
+
+export const domain = {
+    reseller_id: 1,
+    domain: 'domainCypress'
+}
+
+
 const emergencyMappingContainer = {
-    name: 'emergency' + getRandomNum(),
+    name: 'emergencyMCCDomainPref',
     reseller_id: null
 }
 
 const ncosLevel = {
     reseller_id: null,
-    level: 'ncoslevel' + getRandomNum(),
+    level: 'ncosLevelDomainPref',
     mode: 'whitelist',
-    description: 'description' + getRandomNum()
+    description: 'This is a description of ncosLevelDomainPref'
 }
 
 const soundSet = {
-    name: 'soundset' + getRandomNum(),
-    description: 'description' + getRandomNum(),
+    name: 'soundsetDomainPref',
+    description: 'This is a description of soundsetDomainPref',
     reseller_id: null
 }
 
 const rewriteRuleSet = {
-    name: 'ruleset ' + getRandomNum(),
-    description: 'description' + getRandomNum(),
+    name: 'rulesetDomainPref',
+    description: 'This is a description of rewriteRuleSet',
     reseller_id: null
+}
+
+const systemContactDependency = {
+    email: 'systemContactDependencyDomainPref@example.com'
 }
 
 context('Domain preferences tests', () => {
@@ -84,6 +84,18 @@ context('Domain preferences tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                cy.log('Preparing environment...')
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
+                apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
+                apiRemoveNCOSLevelBy({ name: ncosLevel.level, authHeader })
+                apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
+                apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
+                apiRemoveResellerBy({ name: dependencyReseller.name, authHeader })
+                apiRemoveContractBy({ name: dependencyContract.external_id, authHeader })
+                apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
+                cy.log('Data clean up pre-tests completed')
+
                 apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
                     apiCreateContract({ data: { ...dependencyContract, contact_id: id }, authHeader }).then(({ id }) => {
                         apiCreateReseller({ data: { ...dependencyReseller, contract_id: id }, authHeader }).then(({ id }) => {
@@ -100,30 +112,30 @@ context('Domain preferences tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
+                cy.log('Cleaning up db...')
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
+
+                cy.log('Seeding db...')
                 apiCreateDomain({ data: domain, authHeader })
             })
         })
 
         after(() => {
+            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveDomainBy({ name: domain.domain, authHeader })
                 apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
-                apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
                 apiRemoveNCOSLevelBy({ name: ncosLevel.level, authHeader })
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
+                apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
                 apiRemoveResellerBy({ name: dependencyReseller.name, authHeader })
                 apiRemoveContractBy({ name: dependencyContract.external_id, authHeader })
-                apiRemoveSystemContactBy({ name: systemContactDependency.email, authHeader })
+                apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             })
         })
 
-        afterEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
-            })
-        })
-
-        it('Test all Access Restricion settings in domain', () => {
+        it('Test all Access Restriction settings in domain', () => {
             cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / domain')
 
@@ -144,6 +156,7 @@ context('Domain preferences tests', () => {
             testPreferencesTextField('concurrent_max_in', 123, true)
             testPreferencesTextField('concurrent_max_in_per_account', 123, true)
             testPreferencesTextField('concurrent_max_in_total', 123, true)
+            cy.wait(1000)
             testPreferencesTextField('concurrent_max_out', 123, true)
             testPreferencesTextField('concurrent_max_out_per_account', 123, true)
             testPreferencesTextField('concurrent_max_out_total', 123, true)
@@ -245,6 +258,7 @@ context('Domain preferences tests', () => {
             cy.get('label[data-cy="aui-input-search"] input').clear()
             cy.get('label[data-cy="aui-input-search"] input').type('f')
             cy.get('div[data-cy="q-item--emergency-mode-enabled"]').should('not.exist')
+            cy.get('div[data-cy="q-item--force-inbound-calls-to-peer"]').scrollIntoView()
             testPreferencesListField('force_inbound_calls_to_peer', 'Always')
             testPreferencesListField('force_outbound_calls_to_peer', 'Always')
             cy.get('label[data-cy="aui-input-search"] input').clear()
@@ -282,11 +296,13 @@ context('Domain preferences tests', () => {
             cy.get('label[data-cy="aui-input-search"] input').clear()
             cy.get('label[data-cy="aui-input-search"] input').type('re')
             cy.get('div[data-cy="q-item--mobile-push-expiry"]').should('not.exist')
+            cy.get('div[data-cy="q-item--recent-calls-by-upn"]').scrollIntoView()
             testPreferencesToggleField('recent_calls_by_upn')
             testPreferencesChipField('rerouting_codes', { value1: '123', value2: '54321' })
             cy.get('label[data-cy="aui-input-search"] input').clear()
             cy.get('label[data-cy="aui-input-search"] input').type('s')
             cy.wait(2)
+            cy.get('div[data-cy="q-item--serial-forking-by-q-value"]').scrollIntoView()
             testPreferencesListField('serial_forking_by_q_value', 'Standard')
             testPreferencesListField('smsc_peer', 'default')
             testPreferencesToggleField('stir_check')
@@ -354,6 +370,7 @@ context('Domain preferences tests', () => {
             cy.get('label[data-cy="aui-input-search"] input').clear()
             cy.get('label[data-cy="aui-input-search"] input').type('T38')
             cy.get('div[data-cy="q-item--ptime"]').should('not.exist')
+            cy.get('div[data-cy="q-item--t-38-fec"]').scrollIntoView()
             testPreferencesToggleField('T38_FEC')
             testPreferencesToggleField('T38_decode')
             testPreferencesToggleField('T38_force')
@@ -366,6 +383,7 @@ context('Domain preferences tests', () => {
             cy.get('label[data-cy="aui-input-search"] input').clear()
             cy.get('label[data-cy="aui-input-search"] input').type('transcode')
             cy.get('div[data-cy="q-item--T38-no-V34"]').should('not.exist')
+            cy.get('div[data-cy="q-item--transcode-amr"]').scrollIntoView()
             testPreferencesToggleField('transcode_AMR')
             testPreferencesToggleField('transcode_AMR_WB')
             testPreferencesToggleField('transcode_G722')
@@ -444,6 +462,7 @@ context('Domain preferences tests', () => {
             cy.get('label[data-cy="aui-input-search"] input').clear()
             cy.get('label[data-cy="aui-input-search"] input').type('outbound')
             cy.get('div[data-cy="q-item--no-404-fallback"]').should('not.exist')
+            cy.get('div[data-cy="q-item--outbound-diversion"]').scrollIntoView()
             testPreferencesListField('outbound_diversion', 'UPRN')
             testPreferencesListField('outbound_from_display', 'Authentication-User')
             testPreferencesListField('outbound_from_user', 'Authentication-User')
