@@ -2597,6 +2597,183 @@ export const apiRemovePeeringServerBy = ({ name, authHeader }) => {
     })
 }
 
+export const apiCreatePbxDeviceFirmware = ({ parameters, datablob, authHeader }) => {
+    cy.log('apiCreatePbxDeviceFirmware', parameters)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/pbxdevicefirmwares/`,
+        headers: {
+            ...authHeader.headers,
+            'Accept': 'application/octet-stream',
+            'Accept-Encoding': 'gzip, deflate, br, zstd',
+            'content-type': 'application/octet-stream',
+            'Prefer': 'return=representation'
+        },
+        qs: {
+            device_id: parameters.device_id,
+            version: parameters.version,
+            tag: parameters.tag,
+            filename: parameters.filename
+        },
+        body: 'message',
+        data: datablob
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiRemovePbxDeviceFirmwareBy = ({ name, authHeader }) => {
+    cy.log('apiRemovePbxDeviceFirmwareBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/pbxdevicefirmwares`,
+        qs: {
+            tag: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const pbxDeviceFirmwareId = body?._embedded?.['ngcp:pbxdevicefirmwares']?.[0]?.id
+        if (pbxDeviceFirmwareId) {
+            cy.log('Deleting sound set...', name)
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/pbxdevicefirmwares/${pbxDeviceFirmwareId}`,
+                ...authHeader
+            })
+        } else {
+            return cy.log('PBX Device Model not found', name)
+        }
+    })
+}
+
+export const apiCreatePbxDeviceModel = ({ data, authHeader }) => {
+    cy.log('apiCreatePbxDeviceModel', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/pbxdevicemodels/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'multipart/form-data'
+        }
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiRemovePbxDeviceModelBy = ({ name, authHeader }) => {
+    cy.log('apiRemovePbxDeviceModelBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/pbxdevicemodels`,
+        qs: {
+            model: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const pbxDeviceModelId = body?._embedded?.['ngcp:pbxdevicemodels']?.[0]?.id
+        if (pbxDeviceModelId) {
+            cy.log('Deleting sound set...', name)
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/pbxdevicemodels/${pbxDeviceModelId}`,
+                ...authHeader
+            })
+        } else {
+            return cy.log('PBX Device Model not found', name)
+        }
+    })
+}
+
+export const apiCreatePbxDeviceConfig = ({ parameters, data, authHeader }) => {
+    cy.log('apiCreatePbxDeviceConfig', data, parameters)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/pbxdeviceconfigs/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'text/xml'
+        },
+        qs: {
+            device_id: parameters.device_id,
+            version: parameters.version
+        },
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiRemovePbxDeviceConfigBy = ({ name, authHeader }) => {
+    cy.log('apiRemovePbxDeviceConfigBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/pbxdeviceconfigs`,
+        qs: {
+            version: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const pbxDeviceConfigId = body?._embedded?.['ngcp:pbxdeviceconfigs']?.[0]?.id
+        if (pbxDeviceConfigId) {
+            cy.log('Deleting sound set...', name)
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/pbxdeviceconfigs/${pbxDeviceConfigId}`,
+                ...authHeader
+            })
+        } else {
+            return cy.log('PBX Device Model not found', name)
+        }
+    })
+}
+
+export const apiCreatePbxDeviceProfile = ({ data, authHeader }) => {
+    cy.log('apiCreatePbxDeviceProfile', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/pbxdeviceprofiles/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiRemovePbxDeviceProfileBy = ({ name, authHeader }) => {
+    cy.log('apiRemovePbxDeviceProfileBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/pbxdeviceprofiles`,
+        qs: {
+            name: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const pbxDeviceProfileId = body?._embedded?.['ngcp:pbxdeviceprofiles']?.[0]?.id
+        if (pbxDeviceProfileId) {
+            cy.log('Deleting peering server...', name)
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/pbxdeviceprofiles/${pbxDeviceProfileId}`,
+                ...authHeader
+            })
+        } else {
+            return cy.log('Peering server not found', name)
+        }
+    })
+}
+
 export const apiCreateCFBnumberSet = ({ data, authHeader }) => {
     cy.log('apiCreateCFBnumberSet', data)
     return cy.request({
