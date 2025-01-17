@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.10+0~mr12.5.1.10) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [89e7943] MT#61903 voicebox tests bugfix2
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 17 Jan 2025 09:07:31 +0100
+
 ngcp-web-tests-e2e (12.5.1.9+0~mr12.5.1.9) unstable; urgency=medium
 
   [ Debora Crescenzo ]
