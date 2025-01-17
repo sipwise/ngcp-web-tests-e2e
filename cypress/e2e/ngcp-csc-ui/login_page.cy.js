@@ -132,7 +132,7 @@ context('Login page tests', () => {
 
         it('Trying to login through UI with no password', () => {
             cy.intercept('POST', '**/login_jwt?lang=en').as('loginRequest')
-            cy.get('input:first').type('not-exists-user')
+            cy.get('input:first').type(loginInfo.username)
             cy.get('input:last').clear()
             cy.get('.q-btn:last').click()
 

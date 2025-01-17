@@ -102,7 +102,9 @@ Cypress.Commands.add('auiSelectLazySelect',
         const inputElementSelector = `input[data-cy="${dataCy}"]`
         ;(subject ? cy.wrap(subject) : cy.get('body')).then($parent => {
             if (filter) {
-                cy.wrap($parent).find(inputElementSelector).type(filter)
+                cy.wrap($parent).find(inputElementSelector).click()
+                cy.wait(1000)
+                cy.wrap($parent).find(inputElementSelector).type(filter + '{enter}')
             } else {
                 cy.wrap($parent).find(inputElementSelector).click()
             }
@@ -115,6 +117,7 @@ Cypress.Commands.add('auiSelectLazySelect',
                 const dropdownListId = `#${id}_lb`
                 cy.get(dropdownListId).should('be.visible')
                     .find('.q-linear-progress').should('not.exist')
+                cy.wait(500)
                 cy.contains(`${dropdownListId} .q-item`, itemContains).click()
             })
         })
@@ -520,14 +523,15 @@ export const apiRemoveDomainBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const domainId = body?._embedded?.['ngcp:domains']?.[0]?.id
-        if (body?.total_count === 1 && domainId > 1) {
+        if (domainId) {
+            cy.log('Deleting domain...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/domains/${domainId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Domain not found', name)
         }
     })
 }
@@ -676,14 +680,15 @@ export const apiRemoveSubscriberBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const subscriberId = body?._embedded?.['ngcp:subscribers']?.[0]?.id
-        if (body?.total_count === 1 && subscriberId > 1) {
+        if (subscriberId) {
+            cy.log('Deleting subscriber...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/subscribers/${subscriberId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return  cy.log('Subscriber not found', name)
         }
     })
 }
@@ -1502,19 +1507,20 @@ export const apiRemoveSubscriberProfileBy = ({ name, authHeader }) => {
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/subscriberprofiles`,
         qs: {
-            name: name
+            name
         },
         ...authHeader
     }).then(({ body }) => {
         const subscriberProfileId = body?._embedded?.['ngcp:subscriberprofiles']?.[0]?.id
-        if (body?.total_count === 1 && subscriberProfileId > 1) {
+        if (subscriberProfileId) {
+            cy.log('Deleting subscriber profile...', name)
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/subscriberprofiles/${subscriberProfileId}`,
                 ...authHeader
             })
         } else {
-            return null
+            return cy.log('Subscriber profile not found', name)
         }
     })
 }
