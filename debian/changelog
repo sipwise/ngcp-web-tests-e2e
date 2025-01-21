@@ -1,3 +1,12 @@
+ngcp-web-tests-e2e (11.5.1.9+0~mr11.5.1.9) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [edcb3e3] MT#57568 fix reminder and call settings tests
+  * [791d725] MT#61915 backport certain aui code to mr11.5
+  * [61e8de0] MT#61915 fix apiRemoveSubscriberProfile(Set) deletion
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 21 Jan 2025 10:30:14 +0100
+
 ngcp-web-tests-e2e (11.5.1.8+0~mr11.5.1.8) unstable; urgency=medium
 
   [ Debora Crescenzo ]
