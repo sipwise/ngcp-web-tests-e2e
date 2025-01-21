@@ -46,7 +46,6 @@ const rewriteRuleSet = {
             enabled: true,
             direction: "in",
             replace_pattern: "stringreplace" + getRandomNum(),
-            priority: 0,
             description: "desc",
             match_pattern: "stringmatch" + getRandomNum()
         },{
@@ -54,7 +53,6 @@ const rewriteRuleSet = {
             enabled: true,
             direction: "out",
             replace_pattern: "stringreplace" + getRandomNum(),
-            priority: 0,
             description: "desc",
             match_pattern: "stringmatch" + getRandomNum()
         },{
@@ -62,7 +60,6 @@ const rewriteRuleSet = {
             enabled: true,
             direction: "out",
             replace_pattern: "firstcallreplace",
-            priority: 0,
             description: "desc",
             match_pattern: "firstcallmatch"
         },{
@@ -70,7 +67,6 @@ const rewriteRuleSet = {
             enabled: true,
             direction: "out",
             replace_pattern: "secondcallreplace",
-            priority: 0,
             description: "desc",
             match_pattern: "secondcallmatch"
         },{
@@ -78,7 +74,6 @@ const rewriteRuleSet = {
             enabled: true,
             direction: "lnp",
             replace_pattern: "stringreplace" + getRandomNum(),
-            priority: 0,
             description: "desc",
             match_pattern: "stringmatch" + getRandomNum()
         },{
@@ -86,7 +81,6 @@ const rewriteRuleSet = {
             enabled: true,
             direction: "lnp",
             replace_pattern: "stringreplace" + getRandomNum(),
-            priority: 0,
             description: "desc",
             match_pattern: "stringmatch" + getRandomNum()
         }]
