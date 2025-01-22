@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (11.5.1.10+0~mr11.5.1.10) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [7421a49] MT#61915 fix reseller branding not inputting values correctly
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 22 Jan 2025 16:17:23 +0100
+
 ngcp-web-tests-e2e (11.5.1.9+0~mr11.5.1.9) unstable; urgency=medium
 
   [ Nico Schedel ]
