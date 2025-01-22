@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (13.1.1.5+0~mr13.1.1.5) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [4faee25] MT#57568 fix reminder and call settings tests
+  * [348e0b3] MT#61915 fix reseller branding not inputting values correctly
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 22 Jan 2025 16:17:13 +0100
+
 ngcp-web-tests-e2e (13.1.1.4+0~mr13.1.1.4) unstable; urgency=medium
 
   [ Debora Crescenzo ]
