@@ -3168,8 +3168,8 @@ export const apiCreateBillingVoucher = ({ data, authHeader }) => {
     })
 }
 
-export const apiRemoveBillingVoucherBy = ({ reseller_id, authHeader, code }) => {
-    cy.log('apiRemoveBillingVoucherBy', reseller_id)
+export const apiRemoveBillingVoucherByResellerId = ({ reseller_id, authHeader, code }) => {
+    cy.log('apiRemoveBillingVoucherByResellerId', code)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/vouchers`,
@@ -3178,7 +3178,37 @@ export const apiRemoveBillingVoucherBy = ({ reseller_id, authHeader, code }) => 
             order_by_direction: 'desc',
             page: 1,
             rows:100,
-            reseller_id,
+            reseller_id
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const billingVouchers = body?._embedded?.['ngcp:vouchers']
+        console.debug('billingVouchers', billingVouchers)
+        const billingVoucher = billingVouchers ? billingVouchers.find(voucher => voucher?.code === code) : null
+        if (billingVoucher) {
+            cy.log('Deleting billing voucher...', billingVoucher.code)
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/vouchers/${billingVoucher.id}`,
+                ...authHeader
+            })
+        } else {
+            return cy.log('No billing vouchers found', code)
+        }
+    })
+}
+
+export const apiRemoveBillingVoucherByPackageId = ({package_id, authHeader, code }) => {
+    cy.log('apiRemoveBillingVoucherByPackageId', code)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/vouchers`,
+        qs: {
+            order_by: 'created_at',
+            order_by_direction: 'desc',
+            page: 1,
+            rows:100,
+            package_id
         },
         ...authHeader
     }).then(({ body }) => {

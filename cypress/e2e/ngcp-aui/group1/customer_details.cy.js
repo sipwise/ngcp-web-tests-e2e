@@ -10,7 +10,7 @@ import {
     waitPageProgress,
     searchInDataTable,
     apiCreateBillingVoucher,
-    apiRemoveBillingVoucherBy,
+    apiRemoveBillingVoucherByResellerId,
     apiCreateCustomerLocation,
     apiRemoveCustomerLocationBy,
     apiCreateDomain,
@@ -209,7 +209,7 @@ context('Customer Details tests', () => {
             }
             apiRemoveSoundSetBy({ name: soundset.name, authHeader })
             apiRemoveCustomerLocationBy({ name: location.name, authHeader })
-            apiRemoveBillingVoucherBy({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
+            apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
             apiRemoveCustomerBy({ name: customer.external_id, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
@@ -297,7 +297,7 @@ context('Customer Details tests', () => {
                 cy.log("Instance is CE, not PRO. Skipping Customer Phonebook deletion...")
             }
             apiRemoveCustomerLocationBy({ name: location.name, authHeader })
-            apiRemoveBillingVoucherBy({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
+            apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
             apiRemoveCustomerBy({ name: customer.external_id, authHeader })
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
         })
