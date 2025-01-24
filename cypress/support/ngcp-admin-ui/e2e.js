@@ -2788,7 +2788,7 @@ export const waitPageProgress = () => {
     cy.get('div[class="q-linear-progress"][role="progressbar"]').should('not.exist')
 }
 
-export const searchInDataTable = (searchText, searchCriteria = null) => {
+export const searchInDataTable = (searchText, searchCriteria = null, waitPageProgress = true) => {
     cy.get('label[data-cy="aui-data-table-filter-criteria"][aria-disabled="true"]').should('not.exist')
     if (searchCriteria !== null) {
         cy.qSelect({ dataCy: 'aui-data-table-filter-criteria', filter: '', itemContains: searchCriteria })
@@ -2796,8 +2796,11 @@ export const searchInDataTable = (searchText, searchCriteria = null) => {
     }
     cy.get('input[data-cy="aui-input-search--datatable"]').clear()
     cy.get('input[data-cy="aui-input-search--datatable"]').type(searchText)
-    waitPageProgress()
+    if (waitPageProgress) {
+        waitPageProgress()
+    }
 }
+
 export const deleteItemOnListPageBy = (searchText = null, searchCriteria = null) => {
     if (searchText !== null) {
         searchInDataTable(searchText, searchCriteria)
@@ -2811,10 +2814,12 @@ export const deleteItemOnListPageBy = (searchText = null, searchCriteria = null)
         cy.contains('.q-table__bottom--nodata', 'No data available').should('be.visible')
     }
 }
+
 export const clickDataTableSelectedMoreMenuItem = (actionName) => {
     cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
     return cy.get(`.q-menu [data-cy="aui-data-table-row-menu--${actionName}"]`).click()
 }
+
 export const deleteDownloadsFolder = () => {
     const downloadsFolder = Cypress.config('downloadsFolder')
     cy.task('deleteFolder', downloadsFolder)
