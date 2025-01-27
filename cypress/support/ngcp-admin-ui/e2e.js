@@ -2755,6 +2755,212 @@ export const apiRemovePeeringServerBy = ({ name, authHeader }) => {
     })
 }
 
+export const apiCreateCFBnumberSet = ({ data, authHeader }) => {
+    cy.log('apiCreateCFBnumberSet', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/cfbnumbersets/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiRemoveCFBnumberSetBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveCFBnumberSetBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/cfbnumbersets`,
+        qs: {
+            name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const CFBnumberSetId = body?._embedded?.['ngcp:cfbnumbersets']?.[0]?.id
+        if (CFBnumberSetId) {
+            cy.log('Deleting CF BNumber set...', name)
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/cfbnumbersets/${CFBnumberSetId}`,
+                ...authHeader
+            })
+        } else {
+            return cy.log('No CF BNumber set found', name)
+        }
+    })
+}
+
+export const apiCreateCFDestinationSet = ({ data, authHeader }) => {
+    cy.log('apiCreateCFDestinationSet', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/cfdestinationsets/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiRemoveCFDestinationSetBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveCFDestinationSetBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/cfdestinationsets`,
+        qs: {
+            name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const CFBDestinationSetId = body?._embedded?.['ngcp:cfdestinationsets']?.[0]?.id
+        if (CFBDestinationSetId) {
+            cy.log('Deleting CF destination set...', name)
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/cfdestinationsets/${CFBDestinationSetId}`,
+                ...authHeader
+            })
+        } else {
+            return cy.log('No CF destination set found', name)
+        }
+    })
+}
+
+export const apiCreateCFSourceSet = ({ data, authHeader }) => {
+    cy.log('apiCreateCFSourceSet', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/cfsourcesets/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiRemoveCFSourceSetBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveCFSourceSetBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/cfsourcesets`,
+        qs: {
+            name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const CFSourceSetId = body?._embedded?.['ngcp:cfsourcesets']?.[0]?.id
+        if (CFSourceSetId) {
+            cy.log('Deleting CF source set...', name)
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/cfsourcesets/${CFSourceSetId}`,
+                ...authHeader
+            })
+        } else {
+            return cy.log('No CF source set found', name)
+        }
+    })
+}
+
+export const apiCreateCFTimeSet = ({ data, authHeader }) => {
+    cy.log('apiCreateCFTimeSet', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/cftimesets/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiRemoveCFTimeSetBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveCFTimeSetBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/cftimesets`,
+        qs: {
+            name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const CFTimeSetId = body?._embedded?.['ngcp:cftimesets']?.[0]?.id
+        if (CFTimeSetId) {
+            cy.log('Deleting CF time set...', name)
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/cftimesets/${CFTimeSetId}`,
+                ...authHeader
+            })
+        } else {
+            return cy.log('No CF time set found', name)
+        }
+    })
+}
+
+export const apiPutCFMapping = ({ name, data, authHeader }) => {
+    cy.log('apiRemoveContractBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/subscribers`,
+        qs: {
+            username: name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const subscriberData = body?._embedded?.['ngcp:subscribers']?.[0]
+        const subscriberId = subscriberData?.id
+        if (subscriberId) {
+            cy.log('Patching CFMapping of subscriber...', name)
+            return cy.request({
+                method: 'PUT',
+                url: `${ngcpConfig.apiHost}/api/cfmappings/${id}`,
+                body: data,
+                headers: {
+                    ...authHeader.headers,
+                    'content-type': 'application/json'
+                }
+            })
+        } else {
+            return cy.log('Subscriber not found', name)
+        }
+    })
+}
+
+export const apiPutCFMappingByID = ({ id, data, authHeader }) => {
+    cy.log('Patching CFMapping of subscriber ID...', id)
+    return cy.request({
+        method: 'PUT',
+        url: `${ngcpConfig.apiHost}/api/cfmappings/${id}`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+    })
+}
+
 export const apiGetMailboxLastItem = ({ mailboxName, filterSubject }) => {
     cy.log('apiGetMailboxLastItem', mailboxName)
     return cy.request({
