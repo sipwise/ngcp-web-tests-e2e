@@ -1,3 +1,26 @@
+ngcp-web-tests-e2e (13.3.0.0+0~mr13.3.0.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [a85b2db] MT#61782 delete call forward tests
+  * [fee47d3] MT#61847 fix freezing in login tests
+  * [746c278] MT#61847 fix freezing in CSC login tests
+  * [104b68a] MT#57568 fix reminder and call settings tests
+  * [0d9d610] MT#61915 fix apiRemoveSubscriberProfile(Set) deletion
+  * [b2fa530] MT#61915 fix reseller branding not inputting values correctly
+
+  [ Debora Crescenzo ]
+  * [482fe59] MT#61903 Switch between all Voicebox languages Bugfix
+  * [d5cfcfb] MT#61903 voicebox tests bugfix2
+  * [edeab21] MT#61903 Remove .only from voicebox.cy
+
+  [ Marco Capetta ]
+  * [43ce4ca] MT#61259 Remove test of man_allowed_ips
+
+  [ nidrissi-zouggari ]
+  * [d001353] MT#61931 Fix rewrite rule sets tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 28 Jan 2025 15:15:48 +0100
+
 ngcp-web-tests-e2e (13.2.0.0+0~mr13.2.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
