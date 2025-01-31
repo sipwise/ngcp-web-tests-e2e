@@ -2788,7 +2788,7 @@ export const waitPageProgress = () => {
     cy.get('div[class="q-linear-progress"][role="progressbar"]').should('not.exist')
 }
 
-export const searchInDataTable = (searchText, searchCriteria = null, waitPageProgress = true) => {
+export const searchInDataTable = (searchText, searchCriteria = null, waitPageProgressCheck = true) => {
     cy.get('label[data-cy="aui-data-table-filter-criteria"][aria-disabled="true"]').should('not.exist')
     if (searchCriteria !== null) {
         cy.qSelect({ dataCy: 'aui-data-table-filter-criteria', filter: '', itemContains: searchCriteria })
@@ -2796,7 +2796,7 @@ export const searchInDataTable = (searchText, searchCriteria = null, waitPagePro
     }
     cy.get('input[data-cy="aui-input-search--datatable"]').clear()
     cy.get('input[data-cy="aui-input-search--datatable"]').type(searchText)
-    if (waitPageProgress) {
+    if (waitPageProgressCheck) {
         waitPageProgress()
     }
 }
