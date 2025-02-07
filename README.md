@@ -90,7 +90,7 @@ For that please follow next steps:
 2. Build your local Docker image with `$ yarn run docker:rebuild:local`
 3. Run tests in Docker container with `$ yarn run docker:run:local <tests parameters>`
 
-For example:
+For example CSC:
 ```bash
 $ yarn run docker:rebuild:local
 $ yarn run docker:run:local csc https://host.docker.internal:8080/v2 https://dev-web-trunk.mgm.sipwise.com group2
@@ -98,4 +98,4 @@ $ yarn run docker:run:local csc https://host.docker.internal:8080/v2 https://dev
 
 **Note**: if you would like to test CSC or AUI applications started locally you should pass `https://host.docker.internal:8080` instead of `https://localhost:8080` to the tests running script!
 
-**Important**: if you test locally started application (CSC UI URL: `https://host.docker.internal:8080` or `https://localhost:8080`) you should change CSC user logins in your test's config template `cypress.ci.csc.template.json` to be with domain name, like so: `username@domain`. Otherwise, some tests might fail.
+**Important**: if you test locally started application (CSC UI URL: `https://host.docker.internal:8080` or `https://localhost:8080`) you should change CSC user logins in your test's config template `cypress.ci.csc.template.js` to be with domain name, like so: `username@domain`. Otherwise, some tests might fail.
