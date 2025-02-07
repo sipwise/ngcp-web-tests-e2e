@@ -15,7 +15,7 @@ yarn run tdd:setup
 
 ### Run CSC tests
 
-Configure `cypress.tdd.csc.json` according to your needs.
+Configure `cypress.tdd.csc.config.js` according to your needs.
 
 **Important**:
 * the `baseUrl` should contain full URL to the application root like: `https://localhost:8080/v2`
@@ -24,7 +24,7 @@ Configure `cypress.tdd.csc.json` according to your needs.
 To run tests in headless mode use commands:
 ```bash
 yarn run tdd:csc
-yarn run tdd:aui --spec "cypress/e2e/ngcp-csc-ui/call_blocking.cy.js" // to run only one specific test
+yarn run tdd:csc --spec "cypress/e2e/ngcp-csc-ui/call_blocking.cy.js" // to run only one specific test
 
 ```
 In case you want to choose exact tests to run OR investigate tests errors visually you should run Cypress in UI mode
@@ -34,7 +34,7 @@ yarn run start:csc
 
 ### Run AUI tests
 
-Configure `cypress.tdd.aui.json` according to your needs.
+Configure `cypress.tdd.aui.config.js` according to your needs.
 
 **Important**:
 * the `baseUrl` should contain full URL to the application root like: `https://localhost:8081/v2`
@@ -53,15 +53,21 @@ yarn run start:aui
 ### Running test in Docker
 To run tests in already prepared docker image you just need to execute next command:
 ```bash
-yarn run docker:run <parameters for the tests>
+yarn run docker:run <tests parameters>
 ```
+Where tests parameter are 3 in the following order:
+1. application to test: aui or csc
+2. app URL
+3. api URL
+
 For example our parameters might be next:
 * "csc \<CSC UI URL\>  \<CSC API URL\>"
 * "aui \<AUI UI URL\>  \< AUI API URL\>"
 
 ```bash
+# CSC
 yarn run docker:run csc https://dev-web-trunk.mgm.sipwise.com/v2 https://dev-web-trunk.mgm.sipwise.com
-# OR
+# OR AUI 
 yarn run docker:run aui https://dev-web-trunk.mgm.sipwise.com:1443/v2 https://dev-web-trunk.mgm.sipwise.com:1443
 ```
 
@@ -71,7 +77,7 @@ For that please follow next steps:
 2. Build your local Docker image with `yarn run docker:rebuild:local`
 3. Run tests in Docker container with `yarn run docker:run:local <tests parameters>`
 
-For example:
+For example CSC:
 ```bash
 yarn run docker:rebuild:local
 yarn run docker:run:local csc https://host.docker.internal:8080/v2 https://dev-web-trunk.mgm.sipwise.com
@@ -79,4 +85,4 @@ yarn run docker:run:local csc https://host.docker.internal:8080/v2 https://dev-w
 
 **Note**: if you would like to test CSC or AUI applications started locally you should pass `https://host.docker.internal:8080` instead of `https://localhost:8080` to the tests running script!
 
-**Important**: if you test locally started application (CSC UI URL: `https://host.docker.internal:8080` or `https://localhost:8080`) you should change CSC user logins in your test's config template `cypress.ci.csc.template.json` to be with domain name, like so: `username@domain`. Otherwise, some tests might fail.
+**Important**: if you test locally started application (CSC UI URL: `https://host.docker.internal:8080` or `https://localhost:8080`) you should change CSC user logins in your test's config template `cypress.ci.csc.template.js` to be with domain name, like so: `username@domain`. Otherwise, some tests might fail.
