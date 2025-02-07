@@ -41,20 +41,31 @@ RUN echo "./run_web_e2e" >/root/.bash_history
 
 ################################################################################
 # Instructions for usage
-# ----------------------
-# When you want to build the base image from scratch
-# (jump to the next section if you don't want to build yourself!):
+# ------------------------------------------------------------------------------  
+# to run the tests, you need to follow 3 STEPS:
 #
-# NOTE: run the following command from root folder of git repository to build docker image locally and run the container:
+# Go to 1a if you want to build the base image from scratch or
+# Go to 1b if you want to use the existing docker image.
+#
+# 1a. Build the base image from scratch
 # % docker build --tag="ngcp-web-tests-e2e-bookworm" -f ./t/Dockerfile .
-# % docker run --rm -i -t -v "/${PWD}/cypress:/code/cypress:rw" -v "/${PWD}/package.json:/code/package.json:ro" -v "/${PWD}/cypress.template.json:/code/cypress.template.json:ro" -v "/${PWD}/t/run_web_e2e:/code/run_web_e2e:ro" ngcp-web-tests-e2e-bookworm:latest bash
 #
-# Use the existing docker image:
+# 1b. Use the existing docker image:
 # % docker pull docker.mgm.sipwise.com/ngcp-web-tests-e2e-bookworm
 #
-# NOTE: run the following command from root folder of git repository to run a new container:
-# % docker run --rm -i -t -v "/${PWD}/cypress:/code/cypress:rw" -v "/${PWD}/package.json:/code/package.json:ro" -v "/${PWD}/cypress.template.json:/code/cypress.template.json:ro" -v "/${PWD}/t/run_web_e2e:/code/run_web_e2e:ro" docker.mgm.sipwise.com/ngcp-web-tests-e2e-bookworm:latest bash
+# 2. Run the container:
+# CSC - run the following command from root folder of git repository to run a new container:
+# % docker run --rm -i -t -v "/${PWD}/cypress:/code/cypress:rw" -v "/${PWD}/package.json:/code/package.json:ro" -v "/${PWD}/cypress.ci.csc.template.js:/code/cypress.template.js:ro" -v "/${PWD}/t/run_web_e2e:/code/run_web_e2e:ro" docker.mgm.sipwise.com/ngcp-web-tests-e2e-bookworm:latest bash
 #
-# Inside docker:
+# AUI - run the following command from root folder of git repository to run a new container:
+# % docker run --rm -i -t -v "/${PWD}/cypress:/code/cypress:rw" -v "/${PWD}/package.json:/code/package.json:ro" -v "/${PWD}/cypress.ci.aui.template.js:/code/cypress.template.js:ro" -v "/${PWD}/t/run_web_e2e:/code/run_web_e2e:ro" docker.mgm.sipwise.com/ngcp-web-tests-e2e-bookworm:latest bash
+#
+# NOTE: When you are working on Mac, add the --platform linux/amd64 flag  after "docker run" and it will create an amd64 image instead of an arm64 image.
+#
+# 3. Once you are inside the docker run:
 #   ./run_web_e2e <parameters>
+# The parameters are:
+#    application_to_test="$1" ( aui || csc)
+#    ui_address="$2" (include :1443 if you are testing aui)
+#    api_address="$3" (include :1443 if you are testing aui)
 ################################################################################
