@@ -8,7 +8,6 @@ fi
 set -e
 set -u
 
-echo "Checking CSC address configuration"
 application_to_test="$1"
 ui_address="$2"
 api_address="$3"
