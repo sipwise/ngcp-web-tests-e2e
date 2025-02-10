@@ -11,6 +11,10 @@ set -u
 application_to_test="$1"
 ui_address="$2"
 api_address="$3"
+# this is used for the --spec flag that filters which tests to run
+# if no group is specified the --spec flag is removed and all tests are run
+group="$4"
+
 echo "Checking '${application_to_test}' address configuration"
 if [ -z "${ui_address}" ] ; then
   echo "ERROR: Missing UI address, please check the script parameters. Aborting."
@@ -23,5 +27,12 @@ cp cypress.template.js "${config_file}"
 sed -i -e "s|baseUrl:.*|baseUrl: '${ui_address}',|" "${config_file}"
 sed -i -e "s|apiHost:.*|apiHost: '${api_address}',|" "${config_file}"
 
+# remove --spec flag if no group is specified
+if [ -z "${group}" ]; then
+  spec_details=""
+else
+  spec_details="--spec cypress/e2e/ngcp-${application_to_test}/${group}/"
+fi
+
 task_name="ci:${application_to_test}"
-yarnpkg run "${task_name}" --browser chrome
+yarnpkg run "${task_name}" ${spec_details} --browser chrome

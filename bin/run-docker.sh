@@ -2,15 +2,15 @@
 
 set -e
 
-readonly DOCKER_GLOBAL_IMAGE_NAME='docker.mgm.sipwise.com/ngcp-web-tests-e2e-bullseye:latest'
-readonly DOCKER_LOCAL_IMAGE_NAME='ngcp-web-tests-e2e-bullseye:latest'
+readonly DOCKER_GLOBAL_IMAGE_NAME='docker.mgm.sipwise.com/ngcp-web-tests-e2e-bookworm:latest'
+readonly DOCKER_LOCAL_IMAGE_NAME='ngcp-web-tests-e2e-bookworm:latest'
 
 echo "Running Cypress test headless in Docker"
 
 if [ $# -eq 0 ] || { [ $# -eq 1 ] && [ "$1" = "local" ]; }; then
   echo "Error: configuration parameters are missing. " >&2
-  echo "    Parameters format: '[local] <CSC UI URL> <CSC API URL>' " >&2
-  echo "    Example: 'local https://host.docker.internal:8080 https://dev-web-trunk.mgm.sipwise.com'" >&2
+  echo "    Parameters format: '[local] <app URL> <API URL> <group> (where group is optional)' " >&2
+  echo "    Example: 'local https://host.docker.internal:8080 https://dev-web-trunk.mgm.sipwise.com' group2" >&2
   exit 1
 fi
 
@@ -35,12 +35,17 @@ touch "${RESULTS_FOLDER}/console.log"
 mkdir -p "${PWD}/cypress/screenshots" "${PWD}/cypress/videos" # we need it to keep "cypress" folder in RO mounting mode
 
 application_to_test="$1"
-config_file_name="cypress.ci.${application_to_test}.template.json"
+config_file_name="cypress.ci.${application_to_test}.template.js"
+ui_address="$2"
+api_address="$3"
+# group is optional: this is used for the --spec flag that filters which tests to run
+# if no group is specified the --spec flag is removed and all tests are run
+group="$4"
 
 docker run --rm -i -t \
   -v "/${PWD}/cypress:/code/cypress:ro" \
   -v "/${PWD}/package.json:/code/package.json:ro" \
-  -v "/${PWD}/${config_file_name}:/code/cypress.template.json:ro" \
+  -v "/${PWD}/${config_file_name}:/code/cypress.template.js:ro" \
   -v "/${PWD}/t/run_web_e2e:/code/run_web_e2e:ro" \
   -v "/${RESULTS_FOLDER}/screenshots:/code/cypress/screenshots:rw" \
   -v "/${RESULTS_FOLDER}/videos:/code/cypress/videos:rw" \
