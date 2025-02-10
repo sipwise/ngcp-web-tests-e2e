@@ -57,4 +57,9 @@ RUN echo "./run_web_e2e" >/root/.bash_history
 #
 # Inside docker:
 #   ./run_web_e2e <parameters>
+# The parameters are:
+#    application_to_test="$1" ( mandatory: aui || csc)
+#    ui_address="$2" (mandatory)
+#    api_address="$3" (mandatory, eg. https://{ip}:1443)
+#    group="$4" (optional: if no group is added all tests will be executed)
 ################################################################################

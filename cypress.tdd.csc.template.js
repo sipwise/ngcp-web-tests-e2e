@@ -23,7 +23,7 @@ module.exports = defineConfig({
         },
         experimentalRunAllSpecs: true,
         baseUrl: 'https://pro-trunk.mgm.sipwise.com',
-        specPattern: 'cypress/e2e/ngcp-csc-ui/**/*.cy.{js,jsx,ts,tsx}',
-        supportFile: 'cypress/support/ngcp-csc-ui'
+        specPattern: 'cypress/e2e/ngcp-csc/**/*.cy.{js,jsx,ts,tsx}',
+        supportFile: 'cypress/support/ngcp-csc'
     }
 })
