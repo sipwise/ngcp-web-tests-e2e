@@ -130,7 +130,7 @@ context('Peering tests', () => {
         })
 
         it('Check if Peering group with invalid values gets rejected', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
@@ -149,7 +149,7 @@ context('Peering tests', () => {
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
                 peeringGroup.name = "peeringgroup" + getRandomNum()
             })
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
@@ -166,7 +166,7 @@ context('Peering tests', () => {
         })
 
         it('Edit a Peering group', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
@@ -188,7 +188,7 @@ context('Peering tests', () => {
         })
 
         it('Check if Inbound peering rule with invalid values gets rejected', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
@@ -218,7 +218,7 @@ context('Peering tests', () => {
                 apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.pattern, authHeader })
                 peeringInboundRule.pattern = "pattern" + getRandomNum()
             })
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
@@ -242,7 +242,7 @@ context('Peering tests', () => {
         })
 
         it('Edit an Inbound peering rule', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
@@ -269,7 +269,7 @@ context('Peering tests', () => {
         })
 
         it('Check if Outbound peering rule with invalid values gets rejected', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
@@ -292,7 +292,7 @@ context('Peering tests', () => {
                 apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
                 PeeringOutboundRule.description = "outbound" + getRandomNum()
             })
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
@@ -316,7 +316,7 @@ context('Peering tests', () => {
         })
 
         it('Edit an Outbound peering rule', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
@@ -343,7 +343,7 @@ context('Peering tests', () => {
         })
 
         it('Check if Peering server with invalid values gets rejected', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
@@ -372,7 +372,7 @@ context('Peering tests', () => {
                 apiRemovePeeringServerBy({ name: peeringServer.name, authHeader })
                 peeringServer.name = "peeringserver" + getRandomNum()
             })
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
@@ -397,7 +397,7 @@ context('Peering tests', () => {
         })
 
         it('Edit an Peering server', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
@@ -426,7 +426,7 @@ context('Peering tests', () => {
         })
 
         it('Delete Peering server', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
@@ -444,7 +444,7 @@ context('Peering tests', () => {
         })
 
         it('Delete Outbound peering rule', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
@@ -460,7 +460,7 @@ context('Peering tests', () => {
         })
 
         it('Delete Inbound peering rule', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
@@ -476,7 +476,7 @@ context('Peering tests', () => {
         })
 
         it('Delete Peering group', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')

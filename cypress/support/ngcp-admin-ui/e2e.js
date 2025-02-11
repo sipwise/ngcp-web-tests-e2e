@@ -39,18 +39,24 @@ Cypress.Commands.add('navigateMainMenu', (path = '', waitForPageLoading = true) 
         displayName: 'navigateMainMenu',
         message: ' : ' + path,
         autoEnd: true
-    })
+    });
 
-    const pathParts = String(path).split('/').map(e => e.trim())
+    const pathParts = String(path).split('/').map(e => e.trim());
     if (pathParts.length === 2) {
-        const [groupKey, subItemKey] = pathParts
-        cy.get('div').contains('Settings').click()
-        cy.wait(500)
-        cy.get('a[href="#/' + subItemKey + '"]:first').click()
+        const [ _ , subItemKey] = pathParts;
+        cy.get('div').contains('Settings').click();
+        cy.get('a[href="#/' + subItemKey + '"]:first').click();
+
     } else if (pathParts.length === 1) {
-        cy.get('a').should('have.attr', 'href', '#/' + subItemKey).click()
+        const subItemKey = pathParts[0];
+        cy.get('a').should('have.attr', 'href', '#/' + subItemKey).click();
     }
-})
+
+    if (waitForPageLoading) {
+        cy.get('div[class="q-linear-progress"][role="progressbar"]').should('be.visible');
+        cy.get('div[class="q-linear-progress"][role="progressbar"]').should('not.exist')
+    }
+});
 
 Cypress.Commands.add('locationShouldBe', (urlHash) => {
     Cypress.log({
@@ -126,6 +132,31 @@ Cypress.Commands.add('auiSelectLazySelect',
     }
 )
 
+/*
+
+The `loginAPI`, `loginUI` and `quickLogin` commands are used to authenticate a user,
+but they do so in different ways:
+
+### `quickLogin` Command
+- This command performs authentication by directly making an API request to the backend.
+- It calls loginAPI() to authenticate the user and then navigates to the home page.
+- This method bypasses the UI, but then checks the login succeeded by checking the presence of the side menu.
+- Useful for all those cases where we are not interested in testing the UI login flow.
+
+### `loginUI` Command
+- This command performs authentication by interacting with the UI elements of the login page.
+- It receives as argument username, password and a boolean to indicate if it should wait for the side menu to be visible.
+- It fills in the username and password fields and clicks the sign-in button.
+- It waits for the login request to complete and verifies the presence of the JWT token in the response.
+- This method is useful where you want to simulate a real user logging in through the UI.
+
+### `loginAPI` Command
+- This command performs authentication by directly making an API request to the backend.
+- It sends a POST request to the `/login_jwt` endpoint with the username and password.
+- If the response is successful, it decodes the JWT token and stores it in the local storage.
+- This method bypasses the UI completely.
+*/
+
 Cypress.Commands.add('loginAPI', (username, password) => {
     const log = Cypress.log({
         name: 'loginAPI',
@@ -196,61 +227,52 @@ Cypress.Commands.add('loginUI', (username, password, waitForSidemenu = true) => 
     cy.get('input[data-cy=aui-input-username]', quiet).type(username, quiet)
     cy.get('input[data-cy=aui-input-password]', quiet).type(password, quiet)
     cy.get('[data-cy=sign-in]', quiet).click(quiet)
-    // eslint-disable-next-line cypress/no-assigning-return-values
-    const reqResponse =
-        cy.wait('@loginRequest', quiet).then(({ response }) => {
-            const statusCode = response.status || response.statusCode
-            let jwt
-            let adminId
-            if (Number(statusCode) === 200) {
-                jwt = response.body.jwt
-                const decodedJwt = jwtDecode(jwt)
-                adminId = decodedJwt.id
-            }
 
-            const logData = {
-                apiURL: undefined,
-                username,
-                password,
-                jwt,
-                adminId
-            }
-            log.set({
-                consoleProps () {
-                    return logData
-                }
-            })
+    cy.wait('@loginRequest', quiet).then(({ response }) => {
+        const statusCode = response.status || response.statusCode
+        let jwt
+        let adminId
+        if (Number(statusCode) === 200) {
+            jwt = response.body.jwt
+            const decodedJwt = jwtDecode(jwt)
+            adminId = decodedJwt.id
+        }
 
-            return { ...logData, response }
+        const logData = {
+            apiURL: undefined,
+            username,
+            password,
+            jwt,
+            adminId
+        }
+        log.set({
+            consoleProps () {
+                return logData
+            }
         })
+
+        return { ...logData, response }
+    })
 
     if (waitForSidemenu) {
         // Waiting for user data requesting \ initialization.
         // Note: Unfortunately we cannot fully relay on requests waiting because we might have different amount of requests
-        //       according to the user type.
-        //       So, to be sure that we are logged in we are waiting for an unique UI element of MainLayout
+        // according to the user type.
+        // So, to be sure that we are logged in we are waiting for an unique UI element of MainLayout
         cy.get('.q-drawer', quiet, { timeout: 10000 }).should('be.visible', quiet)
     }
 
     log.end()
-    return reqResponse
 })
 
-const defaultLoginMode = 'api'
-// const loginMode = 'ui'
-Cypress.Commands.add('login', (username, password, loginMode = defaultLoginMode) => {
-    let loginResponse
-    if (String(loginMode).toLowerCase() === 'api') {
-        loginResponse = cy.loginAPI(username, password)
-        cy.visit('/')
-        // adding wait here, to be sure that inputs are intractable \ accessible
-        cy.wait(500)
-    } else {
-        cy.visit('/')
-        // adding wait here, to be sure that inputs are intractable \ accessible
-        cy.wait(500)
-        loginResponse = cy.loginUI(username, password, false)
-    }
+Cypress.Commands.add('quickLogin', (username, password) => {
+    cy.clearLocalStorage()
+    const loginResponse = cy.loginAPI(username, password)
+    cy.visit('/')
+    // adding wait here, to be sure that inputs are intractable \ accessible
+    cy.wait(500)
+
+
     cy.get('.q-drawer', { timeout: 10000 }).should('be.visible')
     return loginResponse
 })
@@ -276,10 +298,6 @@ Cypress.Commands.add('logoutUI', () => {
     })
 
     log.end()
-})
-
-Cypress.Commands.add('logout', () => {
-    return cy.logoutUI()
 })
 
 export const apiLoginAsSuperuser = () => {
@@ -334,7 +352,7 @@ export const apiRemoveAdminBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const adminId = body?._embedded?.['ngcp:admins']?.[0]?.id
-        if (body?.total_count === 1 && adminId > 1) {
+        if (adminId) {
             cy.log('Deleting admin...', name)
             return cy.request({
                 method: 'DELETE',
@@ -1385,7 +1403,7 @@ export const apiRemoveRewriteRuleSetBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const rewriteRuleSetId = body?._embedded?.['ngcp:rewriterulesets']?.[0]?.id
-        if (body?.total_count === 1 && rewriteRuleSetId > 1) {
+        if (rewriteRuleSetId) {
             cy.log('Deleting rewrite rule set...', name)
             return cy.request({
                 method: 'DELETE',

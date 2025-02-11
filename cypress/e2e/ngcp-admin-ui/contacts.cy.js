@@ -111,7 +111,7 @@ context('Contact tests', () => {
 
             context(`Contact type: ${contactType}`, () => {
                 it(`Check if ${contactType} contact with invalid values gets rejected`, () => {
-                    cy.login(ngcpConfig.username, ngcpConfig.password)
+                    cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                     cy.navigateMainMenu('settings / contact')
 
                     cy.locationShouldBe('#/contact')
@@ -141,7 +141,7 @@ context('Contact tests', () => {
                         apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                         apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
                     })
-                    cy.login(ngcpConfig.username, ngcpConfig.password)
+                    cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                     cy.navigateMainMenu('settings / contact')
 
                     cy.locationShouldBe('#/contact')
@@ -162,7 +162,7 @@ context('Contact tests', () => {
                 })
 
                 it(`Add First and last name to ${contactType} contact`, () => {
-                    cy.login(ngcpConfig.username, ngcpConfig.password)
+                    cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                     cy.navigateMainMenu('settings / contact')
 
                     cy.locationShouldBe('#/contact')
@@ -188,7 +188,7 @@ context('Contact tests', () => {
                 })
 
                 it(`Delete ${contactType} contact`, () => {
-                    cy.login(ngcpConfig.username, ngcpConfig.password)
+                    cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                     cy.navigateMainMenu('settings / contact')
 
                     cy.locationShouldBe('#/contact')
