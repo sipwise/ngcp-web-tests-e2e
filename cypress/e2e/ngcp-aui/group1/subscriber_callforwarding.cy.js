@@ -337,7 +337,7 @@ context('Subscriber details tests', () => {
 
         context('Subscriber call forward settings', () => {
             it('Check if source set with empty values gets rejected', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -358,7 +358,7 @@ context('Subscriber details tests', () => {
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 })
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -382,7 +382,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Edit a source Set', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -406,7 +406,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Delete a source Set', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -424,7 +424,7 @@ context('Subscriber details tests', () => {
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 })
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -445,7 +445,7 @@ context('Subscriber details tests', () => {
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 })
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -475,7 +475,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Edit a timeset', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -499,7 +499,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Delete a timeset', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -514,7 +514,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Check if Bnumber set with empty values gets rejected', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -535,7 +535,7 @@ context('Subscriber details tests', () => {
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveCFBnumberSetBy({ name: bnumberset.name, authHeader })
                 })
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -559,7 +559,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Edit a Bnumber set', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -583,7 +583,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Delete a Bnumber set', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -598,7 +598,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Check if destinationset with empty values gets rejected', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -619,7 +619,7 @@ context('Subscriber details tests', () => {
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
                 })
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -646,7 +646,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Edit a destinationset', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -670,7 +670,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Delete a destinationset', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -685,7 +685,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Add all elements to cfb', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -712,7 +712,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Add all elements to cft', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -741,7 +741,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Check if popup appears when clicking "add" button inside cfb', () =>{
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -765,7 +765,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Edit cfb', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -790,7 +790,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Edit cfb via summary menu', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -814,7 +814,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Edit cft', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -841,7 +841,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Delete cfb', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -865,7 +865,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Delete cfb via summary menu', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -885,7 +885,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Delete cft', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)

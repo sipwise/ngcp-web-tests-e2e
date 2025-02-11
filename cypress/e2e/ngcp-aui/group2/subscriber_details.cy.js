@@ -114,7 +114,7 @@ context('Subscriber details tests', () => {
 
         context('Voicemail settings', () => {
             it('Change voicemail settings', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
 
                 cy.locationShouldBe('#/subscriber')
@@ -165,7 +165,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Upload/Redownload greetings in voicemail settings', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
 
                 cy.locationShouldBe('#/subscriber')
@@ -198,7 +198,7 @@ context('Subscriber details tests', () => {
 
             it('Check if invalid values are being rejected in Fax Features', () => {
                 cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.wait('@platforminfo').then(({ response }) => {
                     if (response.body.type === 'sppro') {
                         cy.navigateMainMenu('settings / subscriber')
@@ -221,7 +221,7 @@ context('Subscriber details tests', () => {
 
             it('Add/Delete Destination to Fax Features', () => {
                 cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.wait('@platforminfo').then(({ response }) => {
                     if (response.body.type === 'sppro') {
                         cy.navigateMainMenu('settings / subscriber')
@@ -268,9 +268,9 @@ context('Subscriber details tests', () => {
                 })
             })
 
-            it.skip('Add/Delete Secret Key Renew Notify Email to Fax Features', () => {
+            it('Add/Delete Secret Key Renew Notify Email to Fax Features', () => {
                 cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.wait('@platforminfo').then(({ response }) => {
                     if (response.body.type === 'sppro') {
                         cy.navigateMainMenu('settings / subscriber')
@@ -310,7 +310,7 @@ context('Subscriber details tests', () => {
 
             it('Add/Delete ACL to Fax Features', () => {
                 cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.wait('@platforminfo').then(({ response }) => {
                     if (response.body.type === 'sppro') {
                         cy.navigateMainMenu('settings / subscriber')
@@ -353,7 +353,7 @@ context('Subscriber details tests', () => {
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
                 })
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -375,7 +375,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Edit Location Mapping', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -403,7 +403,7 @@ context('Subscriber details tests', () => {
             })
 
             it('Delete Location Mapping', () => {
-                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)

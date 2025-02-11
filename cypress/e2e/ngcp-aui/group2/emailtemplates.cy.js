@@ -85,9 +85,9 @@ context('Email template tests', () => {
         })
 
         it('Check if email template with invalid values gets rejected', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / emailtemplate')
-            waitPageProgress()
+
             cy.locationShouldBe('#/emailtemplate/custom')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy=aui-save-button]').click()
@@ -103,9 +103,8 @@ context('Email template tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveEmailTemplateBy({ name: emailTemplate.name, authHeader })
             })
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / emailtemplate')
-            waitPageProgress()
             cy.locationShouldBe('#/emailtemplate/custom')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: reseller.name, itemContains: reseller.name })
@@ -114,7 +113,7 @@ context('Email template tests', () => {
             cy.get('input[data-cy="emailtemplates-from-email"]').type(emailTemplate.from_email)
             cy.get('textarea[data-cy="emailtemplates-body"]').type(emailTemplate.body)
             cy.get('[data-cy=aui-save-button]').click()
-            waitPageProgress()
+
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             searchInDataTable(emailTemplate.name, 'Name')
             cy.get('td[data-cy="q-td--name"]').contains(emailTemplate.name).should('be.visible')
@@ -123,25 +122,25 @@ context('Email template tests', () => {
         })
 
         it('Edit a email template', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / emailtemplate')
-            waitPageProgress()
+
             cy.locationShouldBe('#/emailtemplate/custom')
             searchInDataTable(emailTemplate.name, 'Name')
             cy.get('td[data-cy="q-td--more-menu-left"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--emailTemplateEditCustom"]').click()
             cy.get('input[data-cy="emailtemplates-subject"]').clear().type("testsubject")
             cy.get('[data-cy=aui-save-button]').click()
-            waitPageProgress()
+
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
             cy.get('td[data-cy="q-td--subject"]').contains('testsubject').should('be.visible')
         })
 
         it('Delete email template', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / emailtemplate')
-            waitPageProgress()
+
             cy.locationShouldBe('#/emailtemplate/custom')
             deleteItemOnListPageBy(emailTemplate.name, 'Name')
         })

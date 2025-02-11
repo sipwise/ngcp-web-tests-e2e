@@ -34,8 +34,8 @@ context('LNP tests', () => {
     context('UI LNP tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-            cy.login(ngcpConfig.username, ngcpConfig.password)
-            
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
             apiLoginAsSuperuser().then(authHeader => {
@@ -70,7 +70,7 @@ context('LNP tests', () => {
         })
 
         it('Check if LNP carrier with invalid values gets rejected', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp')
@@ -87,7 +87,7 @@ context('LNP tests', () => {
                 apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
                 apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
             })
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp')
@@ -104,7 +104,7 @@ context('LNP tests', () => {
         })
 
         it('Edit LNP carrier', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp')
@@ -124,7 +124,7 @@ context('LNP tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
             })
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp')
@@ -132,7 +132,7 @@ context('LNP tests', () => {
         })
 
         it('Check if LNP Number with invalid values gets rejected', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp')
@@ -150,7 +150,7 @@ context('LNP tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
             })
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp')
@@ -159,7 +159,7 @@ context('LNP tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--lnpNumberList"]').click()
             waitPageProgress()
-            
+
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="lnpnumber-number"]').type(LNPNumber.number)
             cy.get('input[data-cy="lnpnumber-type"]').type(LNPNumber.type)
@@ -170,7 +170,7 @@ context('LNP tests', () => {
         })
 
         it('Edit LNP number', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp')
@@ -194,7 +194,7 @@ context('LNP tests', () => {
         })
 
         it('Delete LNP number and check if they are deleted', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp')
