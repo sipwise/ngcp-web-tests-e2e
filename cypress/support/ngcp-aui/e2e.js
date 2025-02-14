@@ -2802,6 +2802,46 @@ export const apiPutCFMappingByID = ({ id, data, authHeader }) => {
     })
 }
 
+export const apiCreateEmailTemplate = ({ data, authHeader }) => {
+    cy.log('apiCreateEmailTemplate', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/emailtemplates/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiRemoveEmailTemplateBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveEmailTemplateBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/emailtemplates`,
+        qs: {
+            name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const EmailTemplateId = body?._embedded?.['ngcp:emailtemplates']?.[0]?.id
+        if (EmailTemplateId) {
+            cy.log('Deleting email template...', name)
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/emailtemplates/${EmailTemplateId}`,
+                ...authHeader
+            })
+        } else {
+            return cy.log('No email template found', name)
+        }
+    })
+}
+
 export const apiGetMailboxLastItem = ({ mailboxName, filterSubject }) => {
     cy.log('apiGetMailboxLastItem', mailboxName)
     return cy.request({
@@ -2852,8 +2892,8 @@ export const deleteItemOnListPageBy = (searchText = null, searchCriteria = null)
     if (searchText !== null) {
         searchInDataTable(searchText, searchCriteria)
     }
-    cy.get('div[class="aui-data-table"] .q-checkbox').click()
-    cy.get('button[data-cy="aui-list-action--delete"]').click()
+    cy.get('td[data-cy="q-td--more-menu-left"]').click()
+    cy.get('div[data-cy="aui-data-table-row-menu--delete"]').click()
     cy.get('[data-cy="btn-confirm"]').click()
     if (searchText !== null) {
         cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
