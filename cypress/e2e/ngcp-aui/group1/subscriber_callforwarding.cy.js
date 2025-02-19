@@ -21,7 +21,7 @@ import {
     apiCreateCFDestinationSet,
     apiPutCFMappingByID,
     apiRemoveCFDestinationSetBy
-} from '../../support/ngcp-admin-ui/e2e'
+} from '../../../support/ngcp-aui/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 const ip = Cypress.config('baseUrl').split('//')[1].split(':')[0]
