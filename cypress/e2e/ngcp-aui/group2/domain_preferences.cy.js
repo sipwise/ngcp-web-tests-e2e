@@ -47,7 +47,7 @@ const dependencyReseller = {
 
 export const domain = {
     reseller_id: 1,
-    domain: 'domainCypress'
+    domain: 'domainCypressTests'
 }
 
 
