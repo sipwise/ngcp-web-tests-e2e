@@ -52,7 +52,7 @@ const pilotSubscriber = {
     primary_number: {
         sn: getRandomNum(),
         ac: getRandomNum(),
-        cc: 7777
+        cc: 7717
     },
     domain: domain.domain,
     customer_id: 0,
