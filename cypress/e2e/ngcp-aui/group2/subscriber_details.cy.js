@@ -32,7 +32,7 @@ const locationmapping = {
 
 export const domain = {
     reseller_id: 1,
-    domain: 'domainCypress'
+    domain: 'domainSubscriberDetailsCypress'
 }
 
 const customer = {
@@ -45,8 +45,8 @@ const customer = {
 }
 
 const subscriber = {
-    username: 'subscriberCypressAui',
-    email: 'subscriberCypressAui@test.com',
+    username: 'subscriberDetailsCypressAui',
+    email: 'subscriberDetailsCypressAui@test.com',
     external_id: 'subid' + getRandomNum(),
     password: 'suB#' + getRandomNum() + '#PaSs#',
     domain: domain.domain,
