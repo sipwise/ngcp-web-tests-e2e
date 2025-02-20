@@ -217,7 +217,7 @@ const CFMapping = {
 
 const domain = {
     reseller_id: 1,
-    domain: 'domainCypressCF'
+    domain: 'domainCFCypress'
 }
 
 const customer = {
@@ -230,8 +230,8 @@ const customer = {
 }
 
 const subscriber = {
-    username: 'subscriberCypressAuiCF',
-    email: 'subscriberCypressAuiCF@test.com',
+    username: 'subscriberCFCypressAui',
+    email: 'subscriberCFCypressAui@test.com',
     external_id: 'subid' + getRandomNum(),
     password: 'suB#' + getRandomNum() + '#PaSs#',
     domain: domain.domain,

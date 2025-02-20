@@ -40,7 +40,7 @@ const customerPbx = {
 
 export const domain = {
     reseller_id: 1,
-    domain: 'domainSubscribers'
+    domain: 'domainSubscribersTests'
 }
 
 const pilotSubscriber = {
@@ -79,8 +79,8 @@ const profileSet = {
 }
 
 export const subscriber = {
-    username: 'subscriberSubscribersAui',
-    email: 'subscriberCypressAui@test.com',
+    username: 'subscriberTestsCypressAui',
+    email: 'subscriberTestsCypressAui@test.com',
     external_id: 'subid' + getRandomNum(),
     password: 'suB#' + getRandomNum() + '#PaSs#',
     domain: domain.domain,
