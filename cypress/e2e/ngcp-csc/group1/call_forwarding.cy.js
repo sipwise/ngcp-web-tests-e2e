@@ -15,7 +15,7 @@ import {
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 const domain = {
-    domain: 'domainCallForw',
+    domain: 'domainCallForwarding',
     reseller_id: 1
 }
 
