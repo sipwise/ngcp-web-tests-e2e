@@ -12,7 +12,7 @@ import {
 } from '../../../support/ngcp-csc/e2e'
 
 export const domain = {
-    domain: 'domainDash',
+    domain: 'domainDashboard',
     reseller_id: 1
 }
 
