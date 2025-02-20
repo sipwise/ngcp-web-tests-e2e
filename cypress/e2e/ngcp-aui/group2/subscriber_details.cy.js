@@ -54,7 +54,7 @@ const subscriber = {
     primary_number: {
         sn: 11,
         ac: 22,
-        cc: 9001
+        cc: 9071
     }
 }
 
