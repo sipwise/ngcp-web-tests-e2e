@@ -53,7 +53,7 @@ context('Subscriber profile tests', () => {
         })
 
         it('Check if subscriber profile set with invalid values gets rejected', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriberprofile')
 
             cy.locationShouldBe('#/subscriberprofile')
@@ -68,7 +68,7 @@ context('Subscriber profile tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriberprofile')
 
             cy.locationShouldBe('#/subscriberprofile')
@@ -82,7 +82,7 @@ context('Subscriber profile tests', () => {
         })
 
         it('Edit subscriber profile set', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriberprofile')
 
             cy.locationShouldBe('#/subscriberprofile')
@@ -100,7 +100,7 @@ context('Subscriber profile tests', () => {
         })
 
         it('Check if subscriber profile with invalid values gets rejected', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriberprofile')
             cy.locationShouldBe('#/subscriberprofile')
             searchInDataTable(profileSet.name)
@@ -115,7 +115,7 @@ context('Subscriber profile tests', () => {
         })
 
         it('Create two subscriber profiles and mark one as default', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriberprofile')
 
             cy.locationShouldBe('#/subscriberprofile')
@@ -145,7 +145,7 @@ context('Subscriber profile tests', () => {
         })
 
         it('Delete subscriber profile set and check if they are deleted', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriberprofile')
 
             cy.locationShouldBe('#/subscriberprofile')

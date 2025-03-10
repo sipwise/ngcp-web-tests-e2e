@@ -89,7 +89,7 @@ context('Header manipulation tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
                     issppro = true
@@ -164,7 +164,7 @@ context('Header manipulation tests', () => {
 
         it('Check if header rule set with invalid values gets rejected', () => {
             if (issppro) {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
 
                 cy.locationShouldBe('#/header')
@@ -185,7 +185,7 @@ context('Header manipulation tests', () => {
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
                 })
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
 
                 cy.locationShouldBe('#/header')
@@ -207,7 +207,7 @@ context('Header manipulation tests', () => {
 
         it('Edit header ruleset', () => {
             if (issppro) {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
 
                 cy.locationShouldBe('#/header')
@@ -228,8 +228,8 @@ context('Header manipulation tests', () => {
 
         it('Delete header rule set and check if they are deleted', () => {
             if (issppro) {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
 
                 cy.locationShouldBe('#/header')
@@ -241,7 +241,7 @@ context('Header manipulation tests', () => {
 
         it('Check if header rule with invalid values gets rejected', () => {
             if (issppro) {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
 
                 cy.locationShouldBe('#/header')
@@ -265,7 +265,7 @@ context('Header manipulation tests', () => {
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
                 })
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
 
                 cy.locationShouldBe('#/header')
@@ -289,7 +289,7 @@ context('Header manipulation tests', () => {
 
         it('Edit header rule priority and check if it gets applied properly', () => {
             if (issppro) {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
 
                 cy.locationShouldBe('#/header')
@@ -316,7 +316,7 @@ context('Header manipulation tests', () => {
 
         it('Delete header rule and check if they are deleted', () => {
             if (issppro) {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
 
                 cy.locationShouldBe('#/header')
@@ -333,7 +333,7 @@ context('Header manipulation tests', () => {
 
         it('Check if header rule action with invalid values gets rejected', () => {
             if (issppro) {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
 
                 cy.locationShouldBe('#/header')
@@ -360,7 +360,7 @@ context('Header manipulation tests', () => {
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
                 })
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
 
                 cy.locationShouldBe('#/header')
@@ -388,7 +388,7 @@ context('Header manipulation tests', () => {
 
         it('Edit header rule action priority and check if it gets applied properly', () => {
             if (issppro) {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
 
                 cy.locationShouldBe('#/header')
@@ -418,7 +418,7 @@ context('Header manipulation tests', () => {
 
         it('Delete header rule action and check if they are deleted', () => {
             if (issppro) {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
 
                 cy.locationShouldBe('#/header')
@@ -440,7 +440,7 @@ context('Header manipulation tests', () => {
 
         it('Check if header rule condition with invalid values gets rejected', () => {
             if (issppro) {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
 
                 cy.locationShouldBe('#/header')
@@ -467,7 +467,7 @@ context('Header manipulation tests', () => {
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
                 })
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
 
                 cy.locationShouldBe('#/header')
@@ -495,7 +495,7 @@ context('Header manipulation tests', () => {
 
         it('Edit header rule condition', () => {
             if (issppro) {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
 
                 cy.locationShouldBe('#/header')
@@ -525,7 +525,7 @@ context('Header manipulation tests', () => {
 
         it('Delete header rule condition and check if they are deleted', () => {
             if (issppro) {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / header')
 
                 cy.locationShouldBe('#/header')

@@ -52,7 +52,7 @@ context('Phonebook tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
                     issppro = true
@@ -106,14 +106,14 @@ context('Phonebook tests', () => {
             } else {
                 cy.log('Not a SPPRO instance, skipping download folder cleanup...')
             }
-
+           
         })
 
         it('Check if phonebook with invalid values gets rejected', () => {
             if (issppro) {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / phonebook')
-
+                waitPageProgress()
                 cy.locationShouldBe('#/phonebook')
                 cy.get('a[data-cy="aui-list-action--add"]').click()
                 cy.get('[data-cy=aui-save-button]').click()
@@ -131,9 +131,9 @@ context('Phonebook tests', () => {
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveResellerPhonebookBy({name: ResellerPhonebook.name, authHeader})
                 })
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / phonebook')
-
+                waitPageProgress()
                 cy.locationShouldBe('#/phonebook')
                 cy.get('a[data-cy="aui-list-action--add"]').click()
                 cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: reseller.name, itemContains: reseller.name })
@@ -149,9 +149,9 @@ context('Phonebook tests', () => {
 
         it('Download a phonebook CSV', () => {
             if (issppro) {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / phonebook')
-
+                waitPageProgress()
                 cy.locationShouldBe('#/phonebook')
                 cy.get('button[data-cy="phonebook-download-csv"]').click()
                 const filename = path.join(downloadsFolder, 'reseller_phonebook_entries.csv')
@@ -165,15 +165,15 @@ context('Phonebook tests', () => {
 
         it('Upload a phonebook CSV', () => {
             if (issppro) {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / phonebook')
-
+                waitPageProgress()
                 cy.locationShouldBe('#/phonebook')
                 cy.get('a[data-cy="phonebook-upload-csv"]').click()
                 cy.get('input[type="file"][data-cy="phonebook-upload-field"]').selectFile(path.join(fixturesFolder, 'reseller_phonebook_entries.csv'), { force: 'true' })
                 cy.get('div[data-cy="phonebook-purge"]').click()
                 cy.get('button[data-cy="aui-save-button"]').click()
-
+                waitPageProgress()
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveResellerPhonebookBy({name: 'phonebooktestr', authHeader})
                 })
@@ -188,9 +188,9 @@ context('Phonebook tests', () => {
 
         it('Delete phonebook', () => {
             if (issppro) {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / phonebook')
-
+                waitPageProgress()
                 cy.locationShouldBe('#/phonebook')
                 cy.get('span[data-cy="aui-data-table-highlighted-text"]').contains(ResellerPhonebook.name).parents('tr').find('td[data-cy="q-td--more-menu-left"]').click()
                 cy.get('div[data-cy="aui-data-table-row-menu--delete"]').click()

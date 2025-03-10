@@ -135,7 +135,7 @@ context('Login page tests', () => {
         })
 
         it('Check if using "/" will route to login page', () => {
-            cy.logoutUI()
+            cy.logout()
             cy.visit('/')
             cy.url().should('match', /\/#\/login\/admin/)
         })
@@ -255,10 +255,9 @@ context('Login page tests', () => {
                  */
             ).then(resetPasswordURL => {
                 cy.visit(resetPasswordURL)
-                console.debug('-----', resetPasswordURL)
                 // adding wait here, to be sure that inputs are intractable \ accessible
-                cy.wait(1000)
-                cy.get('input[data-cy="aui-password-input"]').type(admin.newpassword)
+                cy.wait(500)
+                cy.get('input[data-cy="password-input"]').type(admin.newpassword)
                 cy.get('input[data-cy="password-retype-input"]').type(admin.newpassword)
                 cy.get('button[data-cy="save-button"]').click()
                 cy.url().should('match', /\/#\/login\/admin/)

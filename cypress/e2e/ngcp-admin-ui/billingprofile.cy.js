@@ -22,13 +22,13 @@ import {
 
 const billingProfile = {
     name: 'billingProfileCypress',
-    handle: 'profilehandle1',
+    handle: 'profilehandle' + getRandomNum(),
     reseller_id: null
 }
 
 const billingProfileZone = {
     zone: 'testBFCypress',
-    detail: 'profiledetailbillingProfileZone',
+    detail: 'profiledetail' + getRandomNum(),
     billing_profile_id: null
 }
 
@@ -124,7 +124,7 @@ context('Billing profile tests', () => {
         })
 
         it('Check if billing profile with invalid values gets rejected', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -138,7 +138,7 @@ context('Billing profile tests', () => {
         })
 
         it('Check if billing profile zone with invalid values gets rejected', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -155,7 +155,7 @@ context('Billing profile tests', () => {
         })
 
         it('Check if billing profile fee with invalid values gets rejected', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -179,7 +179,7 @@ context('Billing profile tests', () => {
                 billingProfile.name = 'billing' + getRandomNum()
                 billingProfile.handle = 'profilehandle' + getRandomNum()
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -194,7 +194,7 @@ context('Billing profile tests', () => {
         })
 
         it('Make billing profile prepaid', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -218,7 +218,7 @@ context('Billing profile tests', () => {
                 billingProfileZone.zone = 'profilezone' + getRandomNum()
                 billingProfileZone.detail = 'profiledetail' + getRandomNum()
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -237,7 +237,7 @@ context('Billing profile tests', () => {
         })
 
         it('Edit a billing profile zone', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -264,7 +264,7 @@ context('Billing profile tests', () => {
                 apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
                 billingProfileFee.destination = "profilefee" + getRandomNum()
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -283,7 +283,7 @@ context('Billing profile tests', () => {
         })
 
         it('Edit a billing profile fee direction', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -306,7 +306,7 @@ context('Billing profile tests', () => {
         })
 
         it('Delete a billing profile fee and check if it is deleted', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -320,7 +320,7 @@ context('Billing profile tests', () => {
         })
 
         it('Delete a billing profile zone and check if it is deleted', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -334,7 +334,7 @@ context('Billing profile tests', () => {
         })
 
         it('Delete billing profile and check if it is deleted', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')

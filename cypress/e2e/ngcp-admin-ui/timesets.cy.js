@@ -110,7 +110,7 @@ context('Timeset tests', () => {
         })
 
         it('Check if timeset with invalid values gets rejected', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / timeset')
             cy.locationShouldBe('#/timeset')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -123,7 +123,7 @@ context('Timeset tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveTimesetBy({ name: timeset.name, authHeader })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / timeset')
             cy.locationShouldBe('#/timeset')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -134,7 +134,7 @@ context('Timeset tests', () => {
         })
 
         it('Edit timeset', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / timeset')
             cy.locationShouldBe('#/timeset')
             searchInDataTable(timeset.name)
@@ -151,7 +151,7 @@ context('Timeset tests', () => {
         })
 
         it('Delete timeset', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / timeset')
             cy.locationShouldBe('#/timeset')
             deleteItemOnListPageBy(timeset.name)

@@ -95,7 +95,7 @@ context('Reseller preferences tests', () => {
         })
 
         it('Test all access restrictions preferences in reseller', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
@@ -113,7 +113,7 @@ context('Reseller preferences tests', () => {
         })
 
         it('Test all CDR/EDR export settings in reseller', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')

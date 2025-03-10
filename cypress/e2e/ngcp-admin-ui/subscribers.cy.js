@@ -161,7 +161,7 @@ context('Subscriber tests', () => {
         })
 
         it('Check if subscriber with invalid values gets rejected', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer')
 
             cy.locationShouldBe('#/customer')
@@ -188,7 +188,7 @@ context('Subscriber tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer')
 
             cy.locationShouldBe('#/customer')
@@ -211,7 +211,7 @@ context('Subscriber tests', () => {
         })
 
         it('Edit Subscriber Master Data', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer')
 
             cy.locationShouldBe('#/customer')
@@ -254,12 +254,12 @@ context('Subscriber tests', () => {
         it('Edit Pilot Subscriber Master Data', () => {
             cy.intercept('GET', '**/api/platforminfo/').as('platforminfo')
             cy.reload()
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
-                    cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                    cy.login(ngcpConfig.username, ngcpConfig.password)
                     cy.navigateMainMenu('settings / customer')
-
+        
                     cy.locationShouldBe('#/customer')
                     searchInDataTable(customerPbx.external_id, 'External #')
                     cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -305,12 +305,12 @@ context('Subscriber tests', () => {
         it('Edit Seat Subscriber Master Data', () => {
             cy.intercept('GET', '**/api/platforminfo/').as('platforminfo')
             cy.reload()
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
-                    cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                    cy.login(ngcpConfig.username, ngcpConfig.password)
                     cy.navigateMainMenu('settings / customer')
-
+        
                     cy.locationShouldBe('#/customer')
                     searchInDataTable(customerPbx.external_id, 'External #')
                     cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -354,7 +354,7 @@ context('Subscriber tests', () => {
         })
 
         it('Delete subscriber and check if they are deleted', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
 
             cy.locationShouldBe('#/subscriber')

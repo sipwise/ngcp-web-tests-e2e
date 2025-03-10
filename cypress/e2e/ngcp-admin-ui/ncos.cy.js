@@ -120,7 +120,7 @@ context('NCOS tests', () => {
         })
 
         it('Create a NCOS Set', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / ncossets')
 
             cy.locationShouldBe('#/ncossets')
@@ -138,7 +138,7 @@ context('NCOS tests', () => {
         })
 
         it('Edit NCOS Set', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / ncossets')
 
             cy.locationShouldBe('#/ncossets')
@@ -163,7 +163,7 @@ context('NCOS tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / ncos')
 
             cy.locationShouldBe('#/ncos')
@@ -181,7 +181,7 @@ context('NCOS tests', () => {
         })
 
         it('Edit a NCOS Level', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / ncos')
 
             cy.locationShouldBe('#/ncos')
@@ -205,7 +205,7 @@ context('NCOS tests', () => {
 
 
         it('Add/Remove NCOS level to NCOS set', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / ncossets')
 
             cy.locationShouldBe('#/ncossets')
@@ -230,7 +230,7 @@ context('NCOS tests', () => {
         })
 
         it('Delete NCOS Level', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / ncos')
 
             cy.locationShouldBe('#/ncos')
@@ -238,7 +238,7 @@ context('NCOS tests', () => {
         })
 
         it('Delete NCOS Set', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.login(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / ncossets')
 
             cy.locationShouldBe('#/ncossets')
