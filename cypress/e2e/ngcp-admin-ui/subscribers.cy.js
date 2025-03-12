@@ -161,7 +161,7 @@ context('Subscriber tests', () => {
         })
 
         it('Check if subscriber with invalid values gets rejected', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer')
 
             cy.locationShouldBe('#/customer')
@@ -188,7 +188,7 @@ context('Subscriber tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
             })
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer')
 
             cy.locationShouldBe('#/customer')
@@ -211,7 +211,7 @@ context('Subscriber tests', () => {
         })
 
         it('Edit Subscriber Master Data', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer')
 
             cy.locationShouldBe('#/customer')
@@ -254,10 +254,10 @@ context('Subscriber tests', () => {
         it('Edit Pilot Subscriber Master Data', () => {
             cy.intercept('GET', '**/api/platforminfo/').as('platforminfo')
             cy.reload()
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
-                    cy.login(ngcpConfig.username, ngcpConfig.password)
+                    cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                     cy.navigateMainMenu('settings / customer')
         
                     cy.locationShouldBe('#/customer')
@@ -305,10 +305,10 @@ context('Subscriber tests', () => {
         it('Edit Seat Subscriber Master Data', () => {
             cy.intercept('GET', '**/api/platforminfo/').as('platforminfo')
             cy.reload()
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
-                    cy.login(ngcpConfig.username, ngcpConfig.password)
+                    cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                     cy.navigateMainMenu('settings / customer')
         
                     cy.locationShouldBe('#/customer')
@@ -354,7 +354,7 @@ context('Subscriber tests', () => {
         })
 
         it('Delete subscriber and check if they are deleted', () => {
-            cy.login(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
 
             cy.locationShouldBe('#/subscriber')
