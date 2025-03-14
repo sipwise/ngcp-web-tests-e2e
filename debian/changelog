@@ -1,3 +1,13 @@
+ngcp-web-tests-e2e (12.5.1.12+0~mr12.5.1.12) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [b4d35f9] MT#62081 update data-cys for header manipulation tests
+
+  [ Debora Crescenzo ]
+  * [f4ee75c] MT#62124 Tests Improvements Manual backport
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 14 Mar 2025 11:18:03 +0100
+
 ngcp-web-tests-e2e (12.5.1.11+0~mr12.5.1.11) unstable; urgency=medium
 
   [ Nico Schedel ]
