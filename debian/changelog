@@ -1,3 +1,13 @@
+ngcp-web-tests-e2e (13.2.1.3+0~mr13.2.1.3) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [330da56] MT#61286 Enable parallel testing
+  * [6a1b0c5] MT#61417 Fix misplaced file and duplicated names
+  * [195f646] MT#61417 Remove duplicate subscriber number
+  * [2589506] MT#61417 Remove similar subscriber and domain names
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 17 Mar 2025 13:12:09 +0100
+
 ngcp-web-tests-e2e (13.2.1.2+0~mr13.2.1.2) unstable; urgency=medium
 
   [ nidrissi-zouggari ]
