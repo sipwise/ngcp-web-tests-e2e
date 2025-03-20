@@ -7,14 +7,12 @@ import {
     apiCreateReseller,
     apiCreateSystemContact,
     apiLoginAsSuperuser,
-    apiRemoveAdminBy,
     apiRemoveBillingProfileBy,
     apiRemoveContractBy,
     apiRemoveProfilePackageBy,
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     deleteItemOnListPageBy,
-    getRandomNum,
     searchInDataTable,
     waitPageProgress
 } from '../../../support/ngcp-aui/e2e'
@@ -29,7 +27,7 @@ export const contract = {
 }
 
 const billingProfile = {
-    name: 'profileProfPackCypress',
+    name: 'billingProfileProfCypress',
     handle: 'profilehandle123',
     reseller_id: null
 }
@@ -40,18 +38,6 @@ const editBillingProfile = {
     reseller_id: null
 }
 
-const mainResellerAdmin = {
-    login: 'mainResellerAdminProfPack',
-    password: 'rand0mpassword12345',
-    role: 'reseller',
-    is_master: true,
-    is_active: true,
-    show_passwords: true,
-    call_data: true,
-    billing_data: true,
-    reseller_id: null
-}
-
 const profilePackage = {
     balance_interval_unit: 'minute',
     balance_interval_value: 60,
@@ -59,7 +45,8 @@ const profilePackage = {
     name: 'profileProfPackCypress',
     initial_profiles: [
         {
-          profile_id: 0,
+            profile_id: null,
+            network_id: null
         }
       ],
 }
@@ -86,7 +73,6 @@ context('Profile package tests', () => {
                 Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
                 cy.log('Preparing environment...')
                 apiRemoveProfilePackageBy({name: profilePackage.name, authHeader})
-                apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
                 apiRemoveBillingProfileBy({ name: editBillingProfile.name, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
@@ -97,6 +83,7 @@ context('Profile package tests', () => {
                 apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                     apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                         apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                            reseller.id = id
                             apiCreateBillingProfile({ data: { ...billingProfile, reseller_id: id }, authHeader }).then(({ id }) => {
                                 profilePackage.initial_profiles[0].profile_id = id
                             })
@@ -109,11 +96,14 @@ context('Profile package tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                cy.log('Cleaning up db...')
-                apiRemoveProfilePackageBy({name: profilePackage.name, authHeader})
+                apiRemoveProfilePackageBy({ name: profilePackage.name, authHeader })
+                apiCreateProfilePackage({ data: profilePackage, authHeader })
+            })
+        })
 
-                cy.log('Seeding db...')
-                apiCreateProfilePackage({data: profilePackage, authHeader})
+        afterEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveProfilePackageBy({ name: profilePackage.name, authHeader })
             })
         })
 
@@ -122,7 +112,6 @@ context('Profile package tests', () => {
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveProfilePackageBy({name: profilePackage.name, authHeader})
-                apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
                 apiRemoveBillingProfileBy({ name: editBillingProfile.name, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
@@ -148,9 +137,9 @@ context('Profile package tests', () => {
 
         it('Create a profile package', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveProfilePackageBy({name: profilePackage.name, authHeader})
-                profilePackage.name = "profilepackage" + getRandomNum()
+                apiRemoveProfilePackageBy({ name: profilePackage.name, authHeader })
             })
+
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / package')
 
@@ -178,12 +167,12 @@ context('Profile package tests', () => {
             cy.get('input[data-cy="profilepackages-description"]').clear().type('testDescription')
             cy.get('input[data-cy="profilepackages-balanceinterval"]').clear().type('10')
             cy.get('input[data-cy="aui-select-initial-billing-profile"]').click().type('{backspace}')
-            cy.auiSelectLazySelect({ dataCy: 'aui-select-initial-billing-profile', filter: editBillingProfile.name, itemContains: editBillingProfile.name })
+            cy.auiSelectLazySelect({ dataCy: 'aui-select-initial-billing-profile', filter: billingProfile.name, itemContains: billingProfile.name })
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
             waitPageProgress()
-            cy.get('td[data-cy="q-td--initial-profiles-grp"]').contains(editBillingProfile.name).should('be.visible')
+            cy.get('td[data-cy="q-td--initial-profiles-grp"]').contains(billingProfile.name).should('be.visible')
         })
 
         it('Delete profile package and check if they are deleted', () => {
