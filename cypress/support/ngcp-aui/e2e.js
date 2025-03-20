@@ -112,7 +112,7 @@ Cypress.Commands.add('auiSelectLazySelect',
             if (filter) {
                 cy.wrap($parent).find(inputElementSelector).click()
                 cy.wait(1000)
-                cy.wrap($parent).find(inputElementSelector).type(filter + '{enter}')
+                cy.wrap($parent).find(inputElementSelector).type(filter)
             } else {
                 cy.wrap($parent).find(inputElementSelector).click()
             }
@@ -1891,26 +1891,9 @@ export const apiCreateProfilePackage = ({ data, authHeader }) => {
             ...authHeader.headers,
             'content-type': 'application/json'
         }
-        // followRedirect: false
     }).then(({ headers }) => {
         const id = headers?.location.split('/')[3]
         return { id }
-    })
-}
-
-export const apiGetProfilePackageId = ({ name, authHeader }) => {
-    cy.log('apiGetProfilePackageId', name)
-    return cy.request({
-        method: 'GET',
-        url: `${ngcpConfig.apiHost}/api/profilepackages`,
-        qs: {
-            name
-        },
-        ...authHeader
-    }).then(({ body }) => {
-        const profilePackageData = body?._embedded?.['ngcp:profilepackages']?.[0]
-        const profilePackageId = profilePackageData?.id
-        return profilePackageId
     })
 }
 
@@ -1924,12 +1907,12 @@ export const apiRemoveProfilePackageBy = ({ name, authHeader }) => {
         },
         ...authHeader
     }).then(({ body }) => {
-        const profilePackageID = body?._embedded?.['ngcp:profilepackages']?.[0]?.id
-        if (body?.total_count === 1 && profilePackageID > 1) {
+        const profilePackageId = body?._embedded?.['ngcp:profilepackages']?.[0]?.id
+        if (profilePackageId) {
             cy.log('Deleting profile package...', name)
             return cy.request({
                 method: 'DELETE',
-                url: `${ngcpConfig.apiHost}/api/profilepackages/${profilePackageID}`,
+                url: `${ngcpConfig.apiHost}/api/profilepackages/${profilePackageId}`,
                 ...authHeader
             })
         } else {
