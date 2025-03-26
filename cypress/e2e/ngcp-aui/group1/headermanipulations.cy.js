@@ -305,7 +305,7 @@ context('Header manipulation tests', () => {
                 waitPageProgress()
                 cy.get('input[data-cy="headerrules-priority"]').clear().type('0')
                 cy.get('[data-cy="aui-save-button"]').click()
-                waitPageProgress()
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 cy.get('[data-cy="aui-close-button"]').click()
                 waitPageProgress()
                 cy.get('td[data-cy="q-td--priority"]').should('contain.text', '0')
@@ -408,7 +408,7 @@ context('Header manipulation tests', () => {
                 waitPageProgress()
                 cy.get('input[data-cy="headerruleactions-priority"]').clear().type('0')
                 cy.get('[data-cy="aui-save-button"]').click()
-                waitPageProgress()
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 cy.get('[data-cy="aui-close-button"]').click()
                 cy.get('td[data-cy="q-td--priority"]').should('contain.text', '0')
             } else {
