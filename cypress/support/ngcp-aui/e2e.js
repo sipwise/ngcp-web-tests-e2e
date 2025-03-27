@@ -797,7 +797,7 @@ export const apiGetCustomerContactId = ({ name, authHeader }) => {
 }
 
 export const apiRemoveCustomerContactsByIds = ({ ids, authHeader }) => {
-    cy.log('apiRemoveCustomerContactBy', ids)
+    cy.log('apiRemoveCustomerContactsByIds', ids)
     ids.forEach((id) => {
         return cy.request({
             method: 'GET',
@@ -815,7 +815,6 @@ export const apiRemoveCustomerContactsByIds = ({ ids, authHeader }) => {
                 return cy.log('Customer contact not found', id)
         })
     })
-    
 }
 
 export const apiRemoveCustomerContactBy = ({ email, authHeader }) => {
@@ -829,7 +828,7 @@ export const apiRemoveCustomerContactBy = ({ email, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const contacts = body?._embedded?.['ngcp:customercontacts']
-        if (contacts && contacts.length > 0) {
+        if (contacts) {
             cy.log('Deleting customer contact...', email)
             return contacts.forEach((contact) => {
                 return cy.request({
@@ -838,7 +837,6 @@ export const apiRemoveCustomerContactBy = ({ email, authHeader }) => {
                     ...authHeader
                 })
             })
-            
         } else {
             return cy.log('Customer contact not found', email)
         }
@@ -1867,18 +1865,6 @@ export const apiRemoveTimesetBy = ({ name, authHeader }) => {
             return cy.log('Timeset not found', name)
         }
     })
-}
-
-export const defaultProfilePackageCreationData = {
-    balance_interval_unit: "minute",
-    balance_interval_value: 0,
-    description: "string",
-    name: "string",
-    initial_profiles: [
-        {
-          profile_id: 0,
-        }
-      ],
 }
 
 export const apiCreateProfilePackage = ({ data, authHeader }) => {
@@ -3016,6 +3002,127 @@ export const apiRemoveEmailTemplateBy = ({ name, authHeader }) => {
             })
         } else {
             return cy.log('No email template found', name)
+        }
+    })
+}
+
+export const apiCreateBillingVoucher = ({ data, authHeader }) => {
+    cy.log('apiCreateBillingVoucher', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/vouchers/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiRemoveBillingVoucherBy = ({ resellerId, authHeader }) => {
+    cy.log('apiRemoveBillingVoucherBy', resellerId)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/vouchers`,
+        qs: {
+            resellr_id: resellerId
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        cy.log('apiRemoveBillingVoucherBy', resellerId)
+        const billingVoucherId = body?._embedded?.['ngcp:vouchers']?.[0]?.id
+        if (billingVoucherId) {
+            cy.log('Deleting email template...', resellerId)
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/vouchers/${billingVoucherId}`,
+                ...authHeader
+            })
+        } else {
+            return cy.log('No billing vouchers found', resellerId)
+        }
+    })
+}
+
+export const apiCreateCustomerLocation = ({ data, authHeader }) => {
+    cy.log('apiCreateCustomerLocation', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/customerlocations/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiRemoveCustomerLocationBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveCustomerLocationBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/customerlocations`,
+        qs: {
+            name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const customerLocationId = body?._embedded?.['ngcp:customerlocations']?.[0]?.id
+        if (customerLocationId) {
+            cy.log('Deleting email template...', name)
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/customerlocations/${customerLocationId}`,
+                ...authHeader
+            })
+        } else {
+            return cy.log('No customer locations found', name)
+        }
+    })
+}
+
+export const apiCreateCustomerPhonebook = ({ data, authHeader }) => {
+    cy.log('apiCreateCustomerPhonebook', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/customerphonebookentries/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiRemoveCustomerPhonebookBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveCustomerPhonebookBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/customerphonebookentries`,
+        qs: {
+            name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const customerPhonebookId = body?._embedded?.['ngcp:customerphonebookentries']?.[0]?.id
+        if (customerPhonebookId) {
+            cy.log('Deleting customer phonebook...', name)
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/customerphonebookentries/${customerPhonebookId}`,
+                ...authHeader
+            })
+        } else {
+            return cy.log('No customer phonebook found', name)
         }
     })
 }
