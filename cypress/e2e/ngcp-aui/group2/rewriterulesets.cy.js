@@ -309,6 +309,7 @@ context('Rewrite Rule Set tests', () => {
             
             waitPageProgress()
             cy.contains('Outbound for Caller').click()
+            cy.get('td[data-cy="q-td--match-pattern"]:first').contains('firstcallmatch').should('be.visible')
             cy.get('div[class="aui-data-table"] .q-checkbox:first').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('div[data-cy="aui-data-table-row-menu--rewriteRuleSetRuleDown"]').click()

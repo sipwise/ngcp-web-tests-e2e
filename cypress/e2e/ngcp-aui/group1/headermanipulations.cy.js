@@ -307,7 +307,6 @@ context('Header manipulation tests', () => {
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 cy.get('[data-cy="aui-close-button"]').click()
-                waitPageProgress()
                 cy.get('td[data-cy="q-td--priority"]').should('contain.text', '0')
             } else {
                 cy.log('Not a SPPRO instance, exiting test...')
