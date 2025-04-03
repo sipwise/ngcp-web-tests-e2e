@@ -160,7 +160,7 @@ context('Rewrite Rule Set tests', () => {
 
         it('Edit a Rewrite Rule Set', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / rewrite')
+            cy.navigateMainMenu('settings / rewrite', false)
 
             cy.locationShouldBe('#/rewrite')
             searchInDataTable(rewriteRuleSet.name)
@@ -183,7 +183,7 @@ context('Rewrite Rule Set tests', () => {
 
         it('Clone a Rewrite Rule Set', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / rewrite')
+            cy.navigateMainMenu('settings / rewrite', false)
 
             cy.locationShouldBe('#/rewrite')
             searchInDataTable(rewriteRuleSet.name)
@@ -238,7 +238,7 @@ context('Rewrite Rule Set tests', () => {
 
         it('Create a Rewrite Rule', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / rewrite')
+            cy.navigateMainMenu('settings / rewrite', false)
 
             cy.locationShouldBe('#/rewrite')
             searchInDataTable(rewriteRuleSet.name)
@@ -248,7 +248,7 @@ context('Rewrite Rule Set tests', () => {
 
             waitPageProgress()
             cy.contains('Inbound for Caller').click()
-            
+
             waitPageProgress()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
@@ -262,7 +262,7 @@ context('Rewrite Rule Set tests', () => {
 
         it('Edit a Rewrite Rule', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / rewrite')
+            cy.navigateMainMenu('settings / rewrite', false)
 
             cy.locationShouldBe('#/rewrite')
             searchInDataTable(rewriteRuleSet.name)
@@ -291,7 +291,7 @@ context('Rewrite Rule Set tests', () => {
 
         it('Move a Rewrite Rule', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / rewrite')
+            cy.navigateMainMenu('settings / rewrite', false)
 
             cy.locationShouldBe('#/rewrite')
             searchInDataTable(rewriteRuleSet.name)
@@ -316,7 +316,7 @@ context('Rewrite Rule Set tests', () => {
 
         it('Delete a Rewrite Rule', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / rewrite')
+            cy.navigateMainMenu('settings / rewrite', false)
 
             cy.locationShouldBe('#/rewrite')
             searchInDataTable(rewriteRuleSet.name)
@@ -334,7 +334,7 @@ context('Rewrite Rule Set tests', () => {
 
         it('Delete Rewrite Rule Set', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / rewrite')
+            cy.navigateMainMenu('settings / rewrite', false)
 
             cy.locationShouldBe('#/rewrite')
             deleteItemOnListPageBy(rewriteRuleSet.name)
