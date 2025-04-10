@@ -175,7 +175,6 @@ context('Rewrite Rule Set tests', () => {
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
-            waitPageProgress()
 
             cy.locationShouldBe('#/rewrite')
             cy.get('span[data-cy="aui-data-table-inline-edit--input"]').contains('testdescription').should('be.visible')
@@ -198,7 +197,7 @@ context('Rewrite Rule Set tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cloneCreated = true
 
-            cy.locationShouldBe('#/rewrite')            
+            cy.locationShouldBe('#/rewrite')
             searchInDataTable(rewriteRuleSet.name + "clone")
             cy.get('span[data-cy="aui-data-table-inline-edit--input"]').contains(rewriteRuleSet.description + 'clone').should('be.visible')
             cy.get('span[data-cy="aui-data-table-inline-edit--input"]').contains(rewriteRuleSet.name + 'clone').should('be.visible')
@@ -210,8 +209,8 @@ context('Rewrite Rule Set tests', () => {
             waitPageProgress()
             cy.get('td[data-cy="q-td--match-pattern"] span').contains(rewriteRuleSet.rewriterules[0].match_pattern).should('be.visible')
             cy.get('td[data-cy="q-td--replace-pattern"] span').contains(rewriteRuleSet.rewriterules[0].replace_pattern).should('be.visible')
-            cy.get('td[data-cy="q-td--description"] span').contains(rewriteRuleSet.rewriterules[0].description).should('be.visible')      
-            
+            cy.get('td[data-cy="q-td--description"] span').contains(rewriteRuleSet.rewriterules[0].description).should('be.visible')
+
             cy.contains('Outbound for Callee').click()
             cy.get('td[data-cy="q-td--match-pattern"] span').contains(rewriteRuleSet.rewriterules[1].match_pattern).should('be.visible')
             cy.get('td[data-cy="q-td--replace-pattern"] span').contains(rewriteRuleSet.rewriterules[1].replace_pattern).should('be.visible')
@@ -248,8 +247,6 @@ context('Rewrite Rule Set tests', () => {
 
             waitPageProgress()
             cy.contains('Inbound for Caller').click()
-
-            waitPageProgress()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
             cy.get('input[data-cy="rewrite-rule-match_pattern"]').type("stringmatch")
