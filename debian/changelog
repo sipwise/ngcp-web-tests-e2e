@@ -1,3 +1,35 @@
+ngcp-web-tests-e2e (13.3.1.0+0~mr13.3.1.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [c301626] MT#57568 allow waitPageProgress to be skipped in searchInDataTable
+  * [f864c91] MT#57568 fixes for searchInDataTable waitPageProgress skip
+  * [7f1d04b] MT#62081 update data-cys for header manipulation tests
+  * [4bf1058] MT#62049 [AUI] add new call forward tests
+  * [4657151] MT#62160 [AUI] add email template tests
+  * [5b23fcc] MT#61483 add device management page tests
+  * [7956fa4] MT#61915 remove more waitPageProgress() calls that could cause hangs
+  * [31f94c8] MT#61483 run device management tests on cloudpbx machines only
+  * [0212ec7] MT#61915 remove even more waitPageProgress() calls that could cause hangs
+  * [1b14889] MT#61915 more fixes for header manipulation and rewrite rule sets
+  * [35a1378] MT#61915 remove wait page progresses when using navbar in rewrite rulesets
+
+  [ Debora Crescenzo ]
+  * [a0997cd] MT#62078 Resolve 3 High vulnerabilities
+  * [7b6f321] MT#61286 Enable parallel testing
+  * [5d66fa8] MT#61417 Fix misplaced file and duplicated names
+  * [2a89a5f] MT#61417 Fix support/ngcp-aui/e2e import
+  * [6b03e41] MT#61417 Remove duplicate subscriber number
+  * [0955f16] MT#61417 Remove similar subscriber and domain names
+  * [d2c1863] MT#62409 ProfilePackage E2E tests fix
+
+  [ Marco Capetta ]
+  * [5b28484] MT#61286 Update docker file instructions and README
+
+  [ nidrissi-zouggari ]
+  * [610f8c7] MT#62124 Tests Improvements
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 10 Apr 2025 08:29:06 +0200
+
 ngcp-web-tests-e2e (13.3.0.0+0~mr13.3.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
