@@ -1883,6 +1883,21 @@ export const apiCreateProfilePackage = ({ data, authHeader }) => {
     })
 }
 
+export const apiGetProfilePackageId = ({ name, authHeader }) => {
+    cy.log('apiGetProfilePackageId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/profilepackages`,
+        qs: {
+            name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const id = body?._embedded?.['ngcp:profilepackages']?.[0]?.id
+        return { id }
+    })
+}
+
 export const apiRemoveProfilePackageBy = ({ name, authHeader }) => {
     cy.log('apiRemoveProfilePackageBy', name)
     return cy.request({
@@ -3022,27 +3037,27 @@ export const apiCreateBillingVoucher = ({ data, authHeader }) => {
     })
 }
 
-export const apiRemoveBillingVoucherBy = ({ resellerId, authHeader }) => {
-    cy.log('apiRemoveBillingVoucherBy', resellerId)
+export const apiRemoveBillingVoucherBy = ({ package_id, authHeader, code }) => {
+    cy.log('apiRemoveBillingVoucherBy', package_id)
     return cy.request({
         method: 'GET',
         url: `${ngcpConfig.apiHost}/api/vouchers`,
         qs: {
-            resellr_id: resellerId
+            package_id,
         },
         ...authHeader
     }).then(({ body }) => {
-        cy.log('apiRemoveBillingVoucherBy', resellerId)
-        const billingVoucherId = body?._embedded?.['ngcp:vouchers']?.[0]?.id
-        if (billingVoucherId) {
-            cy.log('Deleting email template...', resellerId)
+        const billingVouchers = body?._embedded?.['ngcp:vouchers']
+        const billingVoucher = billingVouchers ? billingVouchers.find(voucher => voucher?.code === code) : null
+        if (billingVoucher) {
+            cy.log('Deleting billing voucher...', billingVoucher.code)
             return cy.request({
                 method: 'DELETE',
-                url: `${ngcpConfig.apiHost}/api/vouchers/${billingVoucherId}`,
+                url: `${ngcpConfig.apiHost}/api/vouchers/${billingVoucher.id}`,
                 ...authHeader
             })
         } else {
-            return cy.log('No billing vouchers found', resellerId)
+            return cy.log('No billing vouchers found', package_id)
         }
     })
 }

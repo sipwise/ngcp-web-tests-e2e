@@ -13,6 +13,8 @@ import {
     apiRemoveBillingVoucherBy,
     apiCreateCustomerLocation,
     apiRemoveCustomerLocationBy,
+    apiCreateDomain,
+    apiRemoveDomainBy,
     apiCreateSystemContact,
     apiRemoveSystemContactBy,
     apiCreateCustomerContact,
@@ -22,11 +24,14 @@ import {
     apiCreateCustomerPhonebook,
     apiRemoveCustomerPhonebookBy,
     apiCreateSubscriber,
-    apiRemoveSubscriberBy
+    apiRemoveSubscriberBy,
+    apiCreateProfilePackage,
+    apiRemoveProfilePackageBy,
+    apiGetProfilePackageId
 } from '../../../support/ngcp-aui/e2e'
 
 export const billingProfile = {
-    name: 'profileCustomerDetails',
+    name: 'billingProfileCustomerDetails',
     handle: 'profilehandle' + getRandomNum(),
     reseller_id: 1
 }
@@ -34,9 +39,10 @@ export const billingProfile = {
 export const billingVoucher = {
     valid_until: "2026-06-05 23:59:59",
     amount: 10000,
-    code: "billingVoucherCustomerDetails",
+    code: "voucherCustomerDetails",
     customer_id: 0,
-    reseller_id: 1,
+    package_id: 0,
+    reseller_id: 1
 }
 
 export const customer = {
@@ -51,7 +57,7 @@ export const customer = {
 
 export const customerContact = {
     reseller_id: 1,
-    email: 'customerDetailsContact@example.com',
+    email: 'customerDetailsContact@example.com'
 }
 
 export const customerPhonebook = {
@@ -60,8 +66,13 @@ export const customerPhonebook = {
     name: "CustomerDetailsPhonebook"
 }
 
+export const domain = {
+    reseller_id: 1,
+    domain: 'domainCustomerDetails'
+}
+
 export const location = {
-    contract_id: 0,
+    contract_id: 1,
     description: "description",
     blocks: [
       {
@@ -75,8 +86,8 @@ export const location = {
 export const pbxGroup = {
     customer_id: 0,
     display_name: 'customerDetailsPbxGroup',
-    domain_id: 1,
-    is_pbx_group: true,    
+    domain_id: 0,
+    is_pbx_group: true,
     password: 'sub!SUB' + getRandomNum() + '#pass$',
     pbx_extension: "1",
     pbx_hunt_cancel_mode: "cancel",
@@ -96,47 +107,79 @@ export const pilotSubscriber = {
         ac: 11,
         cc: 1
     },
-    domain_id: 1,
-    customer_id: 0,
+    domain_id: 0,
+    customer_id: 0
 }
-
 export const systemContact = {
     email: 'systemContactTestCustomersDetails@example.com'
 }
 
 const ngcpConfig = Cypress.config('ngcpConfig')
+var iscloudpbx = false
 
 context('Customer Details tests', () => {
+    const profilePackage = {
+        reseller_id: 1,
+        balance_interval_unit: 'minute',
+        balance_interval_value: 60,
+        description: 'desc',
+        name: 'profilePackageCustomerDetails',
+        initial_profiles: [
+            {
+                profile_id: 0,
+                network_id: null
+            }
+          ],
+    }
+
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+        cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
+        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.wait('@platforminfo').then(({ response }) => {
+            if (response.body.cloudpbx === true) {
+                var iscloudpbx = true
+            }
+        })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
             apiRemoveCustomerLocationBy({ name: location.name, authHeader })
-            apiRemoveBillingVoucherBy({ resellerId: billingVoucher.reseller_id, authHeader })
+            apiGetProfilePackageId({ name: profilePackage.name, authHeader }).then(({ id }) => {
+                apiRemoveBillingVoucherBy({ package_id: id, authHeader, code: billingVoucher.code })
+            })
             apiRemoveCustomerBy({ name: customer.external_id, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
+            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveProfilePackageBy({ name: profilePackage.name, authHeader })
             cy.log('Data clean up pre-tests completed')
-            apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
-                apiCreateBillingProfile({ data: billingProfile, authHeader }).then(({ id }) => {
-                    customer.billing_profile_id = id
-                })
+            apiCreateSystemContact({ data: systemContact, authHeader })
+            apiCreateDomain({ data: domain, authHeader }).then(({ id }) => {
+                pilotSubscriber.domain_id = id
+                pbxGroup.domain_id = id
+            })
+            apiCreateBillingProfile({ data: billingProfile, authHeader }).then(({ id }) => {
+                customer.billing_profile_id = id
+                profilePackage.initial_profiles[0].profile_id = id
             })
         })
     })
 
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
-                apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
-                    apiCreateBillingVoucher({ data: { ...billingVoucher, customer_id: id }, authHeader })
-                    apiCreateCustomerLocation({ data: { ...location, contract_id: id }, authHeader })
-                    apiCreateCustomerPhonebook({ data: { ...customerPhonebook, customer_id: id }, authHeader })
-                    apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader})
-                    apiCreateSubscriber({ data: { ...pbxGroup, customer_id: id }, authHeader})
-                    customer.customer_id = id
+            apiCreateProfilePackage({ data: profilePackage, authHeader }).then(({ id }) => {
+                billingVoucher.package_id = id
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateBillingVoucher({ data: { ...billingVoucher, customer_id: id }, authHeader })
+                        apiCreateCustomerLocation({ data: { ...location, contract_id: id }, authHeader })
+                        apiCreateCustomerPhonebook({ data: { ...customerPhonebook, customer_id: id }, authHeader })
+                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader})
+                        apiCreateSubscriber({ data: { ...pbxGroup, customer_id: id }, authHeader})
+                        customer.customer_id = id
+                    })
                 })
             })
         })
@@ -148,6 +191,7 @@ context('Customer Details tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
+            apiRemoveDomainBy({ name: domain.domain, authHeader })
         })
     })
 
@@ -157,9 +201,10 @@ context('Customer Details tests', () => {
             apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader})
             apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
             apiRemoveCustomerLocationBy({ name: location.name, authHeader })
-            apiRemoveBillingVoucherBy({ resellerId: billingVoucher.reseller_id, authHeader })
+            apiRemoveBillingVoucherBy({ package_id: billingVoucher.package_id, authHeader, code: billingVoucher.code })
             apiRemoveCustomerBy({ name: customer.external_id, authHeader })
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            apiRemoveProfilePackageBy({ name: profilePackage.name, authHeader })
         })
     })
 
@@ -401,7 +446,8 @@ context('Customer Details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
             cy.get('td[data-cy="q-td--description"]').contains('testdescription').should('be.visible')
-            cy.get('td[data-cy="q-td--blocks-grp"]').contains("192.168.1.1/24, " + location.blocks[0].ip + "/" + location.blocks[0].mask ).should('be.visible')
+            cy.get('td[data-cy="q-td--blocks-grp"]').contains("192.168.1.1/24").should('be.visible')
+            cy.get('td[data-cy="q-td--blocks-grp"]').contains(location.blocks[0].ip + "/" + location.blocks[0].mask).should('be.visible')
         })
 
         it('Delete a location', () => {
@@ -421,79 +467,95 @@ context('Customer Details tests', () => {
 
     context('PBX Groups', () => {
         it('Try to create pbx group invalid values', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
-            cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.external_id, 'External #')
-            cy.get('div[class="aui-data-table"] .q-checkbox').click()
-            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
-            waitPageProgress()
-            cy.get('div').contains('PBX Groups').click()
-            waitPageProgress()
-            cy.get('a[data-cy="aui-list-action--add"]').click()
-            cy.get('button[data-cy="aui-save-button"]').click()
-            cy.get('label[data-cy="pbxgroup-display_name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
-            cy.get('label[data-cy="pbxgroup-pbx_extension"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+            if (iscloudpbx) {
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / customer')
+                cy.locationShouldBe('#/customer')
+                searchInDataTable(customer.external_id, 'External #')
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+                waitPageProgress()
+                cy.get('div').contains('PBX Groups').click()
+                waitPageProgress()
+                cy.get('a[data-cy="aui-list-action--add"]').click()
+                cy.get('button[data-cy="aui-save-button"]').click()
+                cy.get('label[data-cy="pbxgroup-display_name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+                cy.get('label[data-cy="pbxgroup-pbx_extension"]').find('div[role="alert"]').contains('Input is required').should('be.visible')                
+            } else {
+                cy.log('CloudPBX is not enabled, skipping cleanup...')
+            }
         })
 
         it('Create a pbx group', () => {
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader})
-            })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
-            cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.external_id, 'External #')
-            cy.get('div[class="aui-data-table"] .q-checkbox').click()
-            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
-            waitPageProgress()
-            cy.get('div').contains('PBX Groups').click()
-            waitPageProgress()
-            cy.get('a[data-cy="aui-list-action--add"]').click()
-            cy.get('input[data-cy="pbxgroup-display_name"]').type(pbxGroup.display_name)
-            cy.get('input[data-cy="pbxgroup-pbx_extension"]').type(pbxGroup.pbx_extension)
-            cy.get('button[data-cy="aui-save-button"]').click()
-            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-            cy.get('td[data-cy="q-td--display-name"]').contains(pbxGroup.display_name).should('be.visible')
-            cy.get('td[data-cy="q-td--pbx-extension"]').contains(pbxGroup.pbx_extension).should('be.visible')
+            if (iscloudpbx) {
+                apiLoginAsSuperuser().then(authHeader => {
+                    apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader})
+                })
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / customer')
+                cy.locationShouldBe('#/customer')
+                searchInDataTable(customer.external_id, 'External #')
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+                waitPageProgress()
+                cy.get('div').contains('PBX Groups').click()
+                waitPageProgress()
+                cy.get('a[data-cy="aui-list-action--add"]').click()
+                cy.get('input[data-cy="pbxgroup-display_name"]').type(pbxGroup.display_name)
+                cy.get('input[data-cy="pbxgroup-pbx_extension"]').type(pbxGroup.pbx_extension)
+                cy.get('button[data-cy="aui-save-button"]').click()
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('td[data-cy="q-td--display-name"]').contains(pbxGroup.display_name).should('be.visible')
+                cy.get('td[data-cy="q-td--pbx-extension"]').contains(pbxGroup.pbx_extension).should('be.visible')                
+            } else {
+                cy.log('CloudPBX is not enabled, skipping cleanup...')
+            }
         })
 
         it('Edit a pbx group', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
-            cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.external_id, 'External #')
-            cy.get('div[class="aui-data-table"] .q-checkbox').click()
-            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
-            waitPageProgress()
-            cy.get('div').contains('PBX Groups').click()
-            waitPageProgress()
-            searchInDataTable(pbxGroup.username)
-            cy.get('div[class="aui-data-table"] .q-checkbox').click()
-            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsPbxGroupEdit"]').click()
-            cy.get('input[data-cy="pbxgroup-pbx_hunt_timeout"]').clear().type('5')
-            cy.get('button[data-cy="aui-save-button"]').click()
-            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-            cy.get('[data-cy="aui-close-button"]').click()
-            cy.get('td[data-cy="q-td--pbx-hunt-timeout"]').contains(5).should('be.visible')
+            if (iscloudpbx) {
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / customer')
+                cy.locationShouldBe('#/customer')
+                searchInDataTable(customer.external_id, 'External #')
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+                waitPageProgress()
+                cy.get('div').contains('PBX Groups').click()
+                waitPageProgress()
+                searchInDataTable(pbxGroup.username)
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsPbxGroupEdit"]').click()
+                cy.get('input[data-cy="pbxgroup-pbx_hunt_timeout"]').clear().type('5')
+                cy.get('button[data-cy="aui-save-button"]').click()
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('[data-cy="aui-close-button"]').click()
+                cy.get('td[data-cy="q-td--pbx-hunt-timeout"]').contains(5).should('be.visible')                
+            } else {
+                cy.log('CloudPBX is not enabled, skipping cleanup...')
+            }
         })
 
         it('Delete a pbx group', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
-            cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.external_id, 'External #')
-            cy.get('div[class="aui-data-table"] .q-checkbox').click()
-            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
-            waitPageProgress()
-            cy.get('div').contains('PBX Groups').click()
-            waitPageProgress()
-            deleteItemOnListPageBy(pbxGroup.username, 'Name')
+            if (iscloudpbx) {
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / customer')
+                cy.locationShouldBe('#/customer')
+                searchInDataTable(customer.external_id, 'External #')
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+                waitPageProgress()
+                cy.get('div').contains('PBX Groups').click()
+                waitPageProgress()
+                deleteItemOnListPageBy(pbxGroup.username, 'Name')                
+            } else {
+                cy.log('CloudPBX is not enabled, skipping cleanup...')
+            }
         })
     })
 
@@ -585,7 +647,7 @@ context('Customer Details tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
             waitPageProgress()
-            cy.get('a[data-cy="aui-main-menu-item--8"]').contains('Reseller').click()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Reseller').click()
             cy.get('td[class="text-left"]').contains(billingVoucher.reseller_id).should('be.visible')
             cy.get('td[class="text-left"]').contains('default').should('be.visible')
             cy.get('td[class="text-left"]').contains('active').should('be.visible')
