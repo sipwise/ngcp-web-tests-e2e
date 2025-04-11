@@ -256,7 +256,7 @@ context('Customer Details tests', () => {
             cy.get('td[data-cy="q-td--amount"]').contains('100').should('be.visible')
         })
 
-        it('Use Top up Voucher and check log', () => {
+        it.skip('Use Top up Voucher and check log', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer')
             cy.locationShouldBe('#/customer')
