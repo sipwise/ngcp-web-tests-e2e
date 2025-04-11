@@ -25,9 +25,6 @@ import {
     apiRemoveCustomerPhonebookBy,
     apiCreateSubscriber,
     apiRemoveSubscriberBy,
-    apiCreateProfilePackage,
-    apiRemoveProfilePackageBy,
-    apiGetProfilePackageId
 } from '../../../support/ngcp-aui/e2e'
 
 export const billingProfile = {
@@ -41,7 +38,6 @@ export const billingVoucher = {
     amount: 10000,
     code: "voucherCustomerDetails",
     customer_id: 0,
-    package_id: 0,
     reseller_id: 1
 }
 
@@ -114,46 +110,35 @@ export const systemContact = {
     email: 'systemContactTestCustomersDetails@example.com'
 }
 
-const ngcpConfig = Cypress.config('ngcpConfig')
 var iscloudpbx = false
+var issppro = null
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 context('Customer Details tests', () => {
-    const profilePackage = {
-        reseller_id: 1,
-        balance_interval_unit: 'minute',
-        balance_interval_value: 60,
-        description: 'desc',
-        name: 'profilePackageCustomerDetailsTest',
-        initial_profiles: [
-            {
-                profile_id: 0,
-                network_id: null
-            }
-          ],
-    }
-
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.wait('@platforminfo').then(({ response }) => {
             if (response.body.cloudpbx === true) {
-                var iscloudpbx = true
+                iscloudpbx = true
+            }
+            if (response.body.type === 'sppro') {
+                issppro = true
+            } else {
+                issppro = false
             }
         })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
             apiRemoveCustomerLocationBy({ name: location.name, authHeader })
-            apiGetProfilePackageId({ name: profilePackage.name, authHeader }).then(({ id }) => {
-                apiRemoveBillingVoucherBy({ package_id: id, authHeader, code: billingVoucher.code })
-            })
+            apiRemoveBillingVoucherBy({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
             apiRemoveCustomerBy({ name: customer.external_id, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
             apiRemoveDomainBy({ name: domain.domain, authHeader })
-            apiRemoveProfilePackageBy({ name: profilePackage.name, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContact, authHeader })
             apiCreateDomain({ data: domain, authHeader }).then(({ id }) => {
@@ -162,24 +147,24 @@ context('Customer Details tests', () => {
             })
             apiCreateBillingProfile({ data: billingProfile, authHeader }).then(({ id }) => {
                 customer.billing_profile_id = id
-                profilePackage.initial_profiles[0].profile_id = id
             })
         })
     })
 
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiCreateProfilePackage({ data: profilePackage, authHeader }).then(({ id }) => {
-                billingVoucher.package_id = id
-                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
-                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
-                        apiCreateBillingVoucher({ data: { ...billingVoucher, customer_id: id }, authHeader })
-                        apiCreateCustomerLocation({ data: { ...location, contract_id: id }, authHeader })
+            apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                    apiCreateBillingVoucher({ data: { ...billingVoucher, customer_id: id }, authHeader })
+                    apiCreateCustomerLocation({ data: { ...location, contract_id: id }, authHeader })
+                    if (issppro) {
                         apiCreateCustomerPhonebook({ data: { ...customerPhonebook, customer_id: id }, authHeader })
-                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader})
-                        apiCreateSubscriber({ data: { ...pbxGroup, customer_id: id }, authHeader})
-                        customer.customer_id = id
-                    })
+                    } else {
+                        cy.log("Instance is CE, not PRO. Skipping Customer Phonebook creation...")
+                    }
+                    apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader})
+                    apiCreateSubscriber({ data: { ...pbxGroup, customer_id: id }, authHeader})
+                    customer.customer_id = id
                 })
             })
         })
@@ -198,13 +183,17 @@ context('Customer Details tests', () => {
     afterEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader})
-            apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader})
-            apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
+            apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+
+            if (issppro) {
+                apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
+            } else {
+                cy.log("Instance is CE, not PRO. Skipping Customer Phonebook deletion...")
+            }
             apiRemoveCustomerLocationBy({ name: location.name, authHeader })
-            apiRemoveBillingVoucherBy({ package_id: billingVoucher.package_id, authHeader, code: billingVoucher.code })
+            apiRemoveBillingVoucherBy({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
             apiRemoveCustomerBy({ name: customer.external_id, authHeader })
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
-            apiRemoveProfilePackageBy({ name: profilePackage.name, authHeader })
         })
     })
 
@@ -483,7 +472,7 @@ context('Customer Details tests', () => {
                 cy.get('label[data-cy="pbxgroup-display_name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
                 cy.get('label[data-cy="pbxgroup-pbx_extension"]').find('div[role="alert"]').contains('Input is required').should('be.visible')                
             } else {
-                cy.log('CloudPBX is not enabled, skipping cleanup...')
+                cy.log('CloudPBX is not enabled, skipping PBX group tests...')
             }
         })
 
@@ -510,7 +499,7 @@ context('Customer Details tests', () => {
                 cy.get('td[data-cy="q-td--display-name"]').contains(pbxGroup.display_name).should('be.visible')
                 cy.get('td[data-cy="q-td--pbx-extension"]').contains(pbxGroup.pbx_extension).should('be.visible')                
             } else {
-                cy.log('CloudPBX is not enabled, skipping cleanup...')
+                cy.log('CloudPBX is not enabled, skipping PBX group tests...')
             }
         })
 
@@ -536,7 +525,7 @@ context('Customer Details tests', () => {
                 cy.get('[data-cy="aui-close-button"]').click()
                 cy.get('td[data-cy="q-td--pbx-hunt-timeout"]').contains(5).should('be.visible')                
             } else {
-                cy.log('CloudPBX is not enabled, skipping cleanup...')
+                cy.log('CloudPBX is not enabled, skipping PBX group tests...')
             }
         })
 
@@ -554,86 +543,102 @@ context('Customer Details tests', () => {
                 waitPageProgress()
                 deleteItemOnListPageBy(pbxGroup.username, 'Name')                
             } else {
-                cy.log('CloudPBX is not enabled, skipping cleanup...')
+                cy.log('CloudPBX is not enabled, skipping PBX group tests...')
             }
         })
     })
 
     context('Phonebook', () => {
         it('Try to create phonebook entry with invalid values', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
-            cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.external_id, 'External #')
-            cy.get('div[class="aui-data-table"] .q-checkbox').click()
-            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
-            waitPageProgress()
-            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
-            waitPageProgress()
-            cy.get('a[data-cy="aui-list-action--add"]').click()
-            cy.get('button[data-cy="aui-save-button"]').click()
-            cy.get('label[data-cy="phonebook-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
-            cy.get('label[data-cy="phonebook-number"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+            if (issppro) {
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / customer')
+                cy.locationShouldBe('#/customer')
+                searchInDataTable(customer.external_id, 'External #')
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+                waitPageProgress()
+                cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
+                waitPageProgress()
+                cy.get('a[data-cy="aui-list-action--add"]').click()
+                cy.get('button[data-cy="aui-save-button"]').click()
+                cy.get('label[data-cy="phonebook-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+                cy.get('label[data-cy="phonebook-number"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+            } else {
+                cy.log("Instance is CE, not PRO. Skipping phonebook tests...")
+            }
         })
 
         it('Create a phonebook', () => {
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
-            })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
-            cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.external_id, 'External #')
-            cy.get('div[class="aui-data-table"] .q-checkbox').click()
-            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
-            waitPageProgress()
-            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
-            waitPageProgress()
-            cy.get('a[data-cy="aui-list-action--add"]').click()
-            cy.get('input[data-cy="phonebook-name"]').type(customerPhonebook.name)
-            cy.get('input[data-cy="phonebook-number"]').type(customerPhonebook.number)
-            cy.get('button[data-cy="aui-save-button"]').click()
-            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-            cy.get('td[data-cy="q-td--name"]').contains(customerPhonebook.name).should('be.visible')
-            cy.get('td[data-cy="q-td--number"]').contains(customerPhonebook.number).should('be.visible')
+            if (issppro) {
+                apiLoginAsSuperuser().then(authHeader => {
+                    apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
+                })
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / customer')
+                cy.locationShouldBe('#/customer')
+                searchInDataTable(customer.external_id, 'External #')
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+                waitPageProgress()
+                cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
+                waitPageProgress()
+                cy.get('a[data-cy="aui-list-action--add"]').click()
+                cy.get('input[data-cy="phonebook-name"]').type(customerPhonebook.name)
+                cy.get('input[data-cy="phonebook-number"]').type(customerPhonebook.number)
+                cy.get('button[data-cy="aui-save-button"]').click()
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('td[data-cy="q-td--name"]').contains(customerPhonebook.name).should('be.visible')
+                cy.get('td[data-cy="q-td--number"]').contains(customerPhonebook.number).should('be.visible')                
+            } else {
+                cy.log("Instance is CE, not PRO. Skipping phonebook tests...")
+            }
         })
 
         it('Edit a phonebook', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
-            cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.external_id, 'External #')
-            cy.get('div[class="aui-data-table"] .q-checkbox').click()
-            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
-            waitPageProgress()
-            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
-            waitPageProgress()
-            searchInDataTable(customerPhonebook.name, 'Name')
-            cy.get('div[class="aui-data-table"] .q-checkbox').click()
-            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsPhonebookEntryEdit"]').click()
-            cy.get('input[data-cy="phonebook-number"]').clear().type('anothertestnumber')
-            cy.get('button[data-cy="aui-save-button"]').click()
-            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-            cy.get('[data-cy="aui-close-button"]').click()
-            cy.get('td[data-cy="q-td--number"]').contains('anothertestnumber').should('be.visible')
+            if (issppro) {
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / customer')
+                cy.locationShouldBe('#/customer')
+                searchInDataTable(customer.external_id, 'External #')
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+                waitPageProgress()
+                cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
+                waitPageProgress()
+                searchInDataTable(customerPhonebook.name, 'Name')
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsPhonebookEntryEdit"]').click()
+                cy.get('input[data-cy="phonebook-number"]').clear().type('anothertestnumber')
+                cy.get('button[data-cy="aui-save-button"]').click()
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('[data-cy="aui-close-button"]').click()
+                cy.get('td[data-cy="q-td--number"]').contains('anothertestnumber').should('be.visible')                
+            } else {
+                cy.log("Instance is CE, not PRO. Skipping phonebook tests...")
+            }
         })
 
         it('Delete a phonebook', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
-            cy.locationShouldBe('#/customer')
-            searchInDataTable(customer.external_id, 'External #')
-            cy.get('div[class="aui-data-table"] .q-checkbox').click()
-            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
-            waitPageProgress()
-            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
-            waitPageProgress()
-            deleteItemOnListPageBy(customerPhonebook.name, 'Name')
+            if (issppro) {
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / customer')
+                cy.locationShouldBe('#/customer')
+                searchInDataTable(customer.external_id, 'External #')
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+                waitPageProgress()
+                cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
+                waitPageProgress()
+                deleteItemOnListPageBy(customerPhonebook.name, 'Name')                
+            } else {
+                cy.log("Instance is CE, not PRO. Skipping phonebook tests...")
+            }
         })
     })
 
