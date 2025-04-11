@@ -123,7 +123,7 @@ context('Customer Details tests', () => {
         balance_interval_unit: 'minute',
         balance_interval_value: 60,
         description: 'desc',
-        name: 'profilePackageCustomerDetails',
+        name: 'profilePackageCustomerDetailsTest',
         initial_profiles: [
             {
                 profile_id: 0,
