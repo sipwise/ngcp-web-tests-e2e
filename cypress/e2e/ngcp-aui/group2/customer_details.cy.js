@@ -155,7 +155,7 @@ context('Customer Details tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                 apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
-                    apiCreateBillingVoucher({ data: { ...billingVoucher, customer_id: id }, authHeader })
+                    apiCreateBillingVoucher({ data: { ...billingVoucher, customer_id: id }, authHeader }).then(({ id }) => billingVoucher.id = id)
                     apiCreateCustomerLocation({ data: { ...location, contract_id: id }, authHeader })
                     if (issppro) {
                         apiCreateCustomerPhonebook({ data: { ...customerPhonebook, customer_id: id }, authHeader })
@@ -256,7 +256,7 @@ context('Customer Details tests', () => {
             cy.get('td[data-cy="q-td--amount"]').contains('100').should('be.visible')
         })
 
-        it.skip('Use Top up Voucher and check log', () => {
+        it('Use Top up Voucher and check log', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer')
             cy.locationShouldBe('#/customer')
@@ -267,7 +267,7 @@ context('Customer Details tests', () => {
             waitPageProgress()
             cy.get('div').contains('Contract Balance').click()
             cy.get('a[data-cy="customer-contractbalance-topupvoucher"]').click()
-            cy.auiSelectLazySelect({ dataCy: 'aui-select-voucher', filter: billingVoucher.code, itemContains: billingVoucher.code })
+            cy.auiSelectLazySelect({ dataCy: 'aui-select-voucher', filter: billingVoucher.id, itemContains: billingVoucher.code })
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('div').contains('Top-up Log').click()
