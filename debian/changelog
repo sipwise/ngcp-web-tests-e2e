@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (13.3.1.1+0~mr13.3.1.1) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [291f898] MT#62564 [E2E] Fix rewrite rules test
+  * [779191b] MT#62533 Update CSC Call forward tests with After Ring timeout
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 23 Apr 2025 10:38:34 +0200
+
 ngcp-web-tests-e2e (13.3.1.0+0~mr13.3.1.0) unstable; urgency=medium
 
   [ Nico Schedel ]
