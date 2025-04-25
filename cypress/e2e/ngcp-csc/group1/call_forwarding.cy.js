@@ -108,7 +108,7 @@ context('Call forwarding page tests', () => {
             cy.get('div[data-cy="csc-add-forwarding-available"]').click()
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
 
-            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('If available').should('be.visible')
+            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
             cy.get('button[data-cy="csc-add-forwarding"]').click()
             cy.get('div[data-cy="csc-add-forwarding-not-available"]').click()
 
@@ -124,7 +124,7 @@ context('Call forwarding page tests', () => {
             cy.get('span[class="block"]').contains('OK').click()
 
             waitPageProgress()
-            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('If available').should('not.exist')
+            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('not.exist')
             cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
             cy.get('div[data-cy="csc-forwarding-delete"]').click()
             cy.get('span[class="block"]').contains('OK').click()
@@ -150,7 +150,7 @@ context('Call forwarding page tests', () => {
             cy.get('div[data-cy="csc-add-forwarding-available"]').click()
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
 
-            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('If available').should('be.visible')
+            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
             cy.get('span[data-cy="csc-cf-destination"]').click()
             cy.get('input').type('0123456789')
             cy.get('button').contains('Set').click()
@@ -188,7 +188,7 @@ context('Call forwarding page tests', () => {
             cy.get('div[data-cy="csc-add-forwarding-available"]').click()
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
 
-            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('If available').should('be.visible')
+            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
             cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
             cy.get('div[data-cy="csc-forwarding-to-voicebox"]').click()
 
@@ -218,7 +218,7 @@ context('Call forwarding page tests', () => {
             cy.get('div[data-cy="csc-add-forwarding-available"]').click()
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
 
-            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('If available').should('be.visible')
+            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
             cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
             cy.get('div[data-cy="csc-forwarding-disable"]').click()
 
@@ -241,7 +241,7 @@ context('Call forwarding page tests', () => {
             cy.get('button[data-cy="csc-add-forwarding"]').click()
             cy.get('div[data-cy="csc-add-forwarding-available"]').click()
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
-            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('If available').should('be.visible')
+            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
             cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
             cy.get('div[data-cy="csc-forwarding-ring-primary"]').click()
             waitPageProgress()
@@ -267,7 +267,7 @@ context('Call forwarding page tests', () => {
             cy.get('button[data-cy="csc-add-forwarding"]').click()
             cy.get('div[data-cy="csc-add-forwarding-available"]').click()
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
-            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('If available').should('be.visible')
+            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
             cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
             cy.get('div[data-cy="csc-forwarding-ring-primary"]').click()
             waitPageProgress()
@@ -293,7 +293,7 @@ context('Call forwarding page tests', () => {
             cy.get('button[data-cy="csc-add-forwarding"]').click()
             cy.get('div[data-cy="csc-add-forwarding-available"]').click()
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
-            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('If available').should('be.visible')
+            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
             cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
             cy.get('div[data-cy="csc-forwarding-ring-primary"]').click()
             waitPageProgress()
