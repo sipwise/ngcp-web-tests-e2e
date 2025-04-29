@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.15+0~mr12.5.1.15) unstable; urgency=medium
+
+  [ nidrissi-zouggari ]
+  * [df9e1e6] MT#62363 Fixing CF tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 29 Apr 2025 09:48:04 +0200
+
 ngcp-web-tests-e2e (12.5.1.14+0~mr12.5.1.14) unstable; urgency=medium
 
   [ Nico Schedel ]
