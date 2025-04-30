@@ -101,6 +101,7 @@ context('Subscriber Details tests', () => {
                 cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
 
+                waitPageProgress()
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -147,6 +148,7 @@ context('Subscriber Details tests', () => {
                 cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
 
+                waitPageProgress()
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -182,6 +184,7 @@ context('Subscriber Details tests', () => {
                     if (response.body.type === 'sppro') {
                         cy.navigateMainMenu('settings / subscriber')
 
+                        waitPageProgress()
                         cy.locationShouldBe('#/subscriber')
                         searchInDataTable(subscriber.username)
                         cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -205,6 +208,7 @@ context('Subscriber Details tests', () => {
                 cy.wait('@platforminfo').then(({ response }) => {
                     if (response.body.type === 'sppro') {
                         cy.navigateMainMenu('settings / subscriber')
+                        waitPageProgress()
                         cy.locationShouldBe('#/subscriber')
                         searchInDataTable(subscriber.username)
                         cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -249,12 +253,13 @@ context('Subscriber Details tests', () => {
                 })
             })
 
-            it('Add/Delete Secret Key Renew Notify Email to Fax Features', () => {
+            it('Add/Delete Renew Notify Email to Fax Features', () => {
                 cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
                 cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.wait('@platforminfo').then(({ response }) => {
                     if (response.body.type === 'sppro') {
                         cy.navigateMainMenu('settings / subscriber')
+                        waitPageProgress()
                         cy.locationShouldBe('#/subscriber')
                         searchInDataTable(subscriber.username)
                         cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -263,7 +268,6 @@ context('Subscriber Details tests', () => {
 
                         cy.get('div[data-cy="aui-detail-page-menu"]').contains('Fax Features').click()
                         cy.get('div[data-cy="mailtofax-enable"]').click()
-                        cy.get('input[data-cy="mailtofax-input-secret-key"]').type('testkey')
                         cy.get('label[data-cy="mailtofax-secret-key-renew-interval"]').click()
                         cy.get('div[role="listbox"]').contains('Monthly').click()
                         cy.get('[data-cy="aui-save-button"]').click()
@@ -296,6 +300,8 @@ context('Subscriber Details tests', () => {
                 cy.wait('@platforminfo').then(({ response }) => {
                     if (response.body.type === 'sppro') {
                         cy.navigateMainMenu('settings / subscriber')
+                        waitPageProgress()
+
                         cy.locationShouldBe('#/subscriber')
                         searchInDataTable(subscriber.username)
                         cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -338,6 +344,7 @@ context('Subscriber Details tests', () => {
                 })
                 cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
+                waitPageProgress()
 
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -362,6 +369,7 @@ context('Subscriber Details tests', () => {
             it('Edit Location Mapping', () => {
                 cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
+                waitPageProgress()
 
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
@@ -374,14 +382,14 @@ context('Subscriber Details tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--subscriberLocationMappingsEdit"]').click()
-                cy.get('label[data-cy="locationmapping-location"] i').contains('cancel')
+                cy.get('label[data-cy="locationmapping-location"] button').contains('cancel').click()
                 cy.get('input[data-cy="locationmapping-location"]').type('newtestlocation')
-                cy.get('label[data-cy="locationmapping-caller_pattern"] i').contains('cancel')
+                cy.get('label[data-cy="locationmapping-caller_pattern"] button').contains('cancel').click()
                 cy.get('input[data-cy="locationmapping-caller_pattern"]').type('newtestcallerpattern')
-                cy.get('label[data-cy="locationmapping-callee_pattern"] i').contains('cancel')
+                cy.get('label[data-cy="locationmapping-callee_pattern"] button').contains('cancel').click()
                 cy.get('input[data-cy="locationmapping-callee_pattern"]').type('newtestcalleepattern')
                 cy.qSelect({ dataCy: 'locationmapping-mode', filter: 'Add', itemContains: 'Add' })
-                cy.get('label[data-cy="locationmapping-to_username"] i').contains('cancel')
+                cy.get('label[data-cy="locationmapping-to_username"] button').contains('cancel').click()
                 cy.get('input[data-cy="locationmapping-to_username"]').type('newtestusername')
                 cy.get('div[aria-label="Enabled"]').click()
                 cy.get('[data-cy="aui-save-button"]').click()
@@ -392,6 +400,7 @@ context('Subscriber Details tests', () => {
             it('Delete Location Mapping', () => {
                 cy.login(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / subscriber')
+                waitPageProgress()
 
                 cy.locationShouldBe('#/subscriber')
                 searchInDataTable(subscriber.username)
