@@ -879,7 +879,7 @@ export const apiRemoveEmergencyMappingContainerBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const emcId = body?._embedded?.['ngcp:emergencymappingcontainers']?.[0]?.id
-        if (body?.total_count === 1 && emcId > 1) {
+        if (body?.total_count === 1 && emcId >= 1) {
             return cy.request({
                 method: 'DELETE',
                 url: `${ngcpConfig.apiHost}/api/emergencymappingcontainers/${emcId}`,
@@ -1556,7 +1556,7 @@ export const getRandomNum = (maxLength = 5) => Math.floor((Math.random() * Math.
 
 export const waitPageProgress = () => {
     cy.get('div[class="q-linear-progress"][role="progressbar"]').should('be.visible')
-    cy.get('div[class="q-linear-progress"][role="progressbar"]').should('not.exist')
+    cy.get('div[class="q-linear-progress"][role="progressbar"]', {timeout: 10000}).should('not.exist')
 }
 
 export const searchInDataTable = (searchText, searchCriteria = null) => {
@@ -1630,7 +1630,7 @@ export const testPreferencesTextField = (name, value = 'test', onlyNumbers = fal
     cy.get('button[data-cy="preference-save"]').click()
     cy.get('@' + cyAliasName).find('label[aria-disabled="true"]').should('not.exist')
     cy.get('@' + cyAliasName).find('input').should('have.value', value)
-    cy.get('@' + cyAliasName).contains('i[data-cy="q-icon"]', 'cancel').click()
+    cy.get('@' + cyAliasName).contains('button[data-cy="q-icon"]', 'cancel').click()
     cy.get('button[data-cy="preference-save"]').click()
     cy.get('@' + cyAliasName).find('label[aria-disabled="true"]').should('not.exist')
     cy.get('@' + cyAliasName).find('input').should('have.value', '')

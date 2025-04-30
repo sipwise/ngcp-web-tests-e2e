@@ -2,8 +2,8 @@
 
 set -e
 
-readonly DOCKER_GLOBAL_IMAGE_NAME='docker.mgm.sipwise.com/ngcp-web-tests-e2e-bullseye:latest'
-readonly DOCKER_LOCAL_IMAGE_NAME='ngcp-web-tests-e2e-bullseye:latest'
+readonly DOCKER_GLOBAL_IMAGE_NAME='docker.mgm.sipwise.com/ngcp-web-tests-e2e-bookworm:mr11.5'
+readonly DOCKER_LOCAL_IMAGE_NAME='ngcp-web-tests-e2e-bookworm:mr11.5'
 
 echo "Running Cypress test headless in Docker"
 

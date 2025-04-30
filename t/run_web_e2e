@@ -1,12 +1,12 @@
 #!/bin/bash
+# shellcheck disable=2086
+
+set -eu
 
 if ! [ -f /.dockerenv ] && ! grep -q 'devices:/docker' /proc/1/cgroup ; then
   echo "Not running inside docker, exiting to avoid data damage." >&2
   exit 1
 fi
-
-set -e
-set -u
 
 echo "Checking CSC address configuration"
 application_to_test="$1"
