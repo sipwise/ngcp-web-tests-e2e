@@ -153,6 +153,9 @@ context('Soundset tests', () => {
             cy.get('input[data-cy="soundsets-name"]').type(soundSet.name)
             cy.get('[data-cy=aui-save-button]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('td[data-cy="q-td--name"]').contains(soundSet.name).should('be.visible')
+            cy.get('td[data-cy="q-td--description"]').contains(soundSet.description).should('be.visible')
+            cy.get('td[data-cy="q-td--expose-to-customer"]').find('div[aria-checked="false"]').should('be.visible')
         })
 
         it('Edit a soundset', () => {
@@ -169,7 +172,9 @@ context('Soundset tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
             waitPageProgress()
+            cy.get('td[data-cy="q-td--name"]').contains(soundSet.name).should('be.visible')
             cy.get('td[data-cy="q-td--description"]').contains('testDescription').should('be.visible')
+            cy.get('td[data-cy="q-td--expose-to-customer"]').find('div[aria-checked="false"]').should('be.visible')
         })
 
         it('Upload/Delete sound in soundset', () => {

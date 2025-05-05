@@ -15,8 +15,6 @@ import {
     apiRemoveCustomerLocationBy,
     apiCreateDomain,
     apiRemoveDomainBy,
-    apiCreateSystemContact,
-    apiRemoveSystemContactBy,
     apiCreateCustomerContact,
     apiRemoveCustomerContactBy,
     apiRemoveCustomerBy,
@@ -25,6 +23,8 @@ import {
     apiRemoveCustomerPhonebookBy,
     apiCreateSubscriber,
     apiRemoveSubscriberBy,
+    apiCreateSoundSet,
+    apiRemoveSoundSetBy
 } from '../../../support/ngcp-aui/e2e'
 
 export const billingProfile = {
@@ -106,8 +106,14 @@ export const pilotSubscriber = {
     domain_id: 0,
     customer_id: 0
 }
-export const systemContact = {
-    email: 'systemContactTestCustomersDetails@example.com'
+
+export const soundset = {
+    reseller_id: 1,
+    customer_id: 0,
+    name: "customerDetailsSoundsetCypress",
+    description: "testdescription",
+    expose_to_customer: true,
+    contract_default: true
 }
 
 var iscloudpbx = false
@@ -132,15 +138,14 @@ context('Customer Details tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
+            apiRemoveSoundSetBy({ name: soundset.name, authHeader })
             apiRemoveCustomerLocationBy({ name: location.name, authHeader })
             apiRemoveBillingVoucherBy({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
             apiRemoveCustomerBy({ name: customer.external_id, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
-            apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
             apiRemoveDomainBy({ name: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
-            apiCreateSystemContact({ data: systemContact, authHeader })
             apiCreateDomain({ data: domain, authHeader }).then(({ id }) => {
                 pilotSubscriber.domain_id = id
                 pbxGroup.domain_id = id
@@ -162,8 +167,9 @@ context('Customer Details tests', () => {
                     } else {
                         cy.log("Instance is CE, not PRO. Skipping Customer Phonebook creation...")
                     }
-                    apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader})
-                    apiCreateSubscriber({ data: { ...pbxGroup, customer_id: id }, authHeader})
+                    apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
+                    apiCreateSubscriber({ data: { ...pbxGroup, customer_id: id }, authHeader })
+                    apiCreateSoundSet({ data: { ...soundset, customer_id: id }, authHeader })
                     customer.customer_id = id
                 })
             })
@@ -175,14 +181,14 @@ context('Customer Details tests', () => {
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-            apiRemoveSystemContactBy({ name: systemContact.email, authHeader })
             apiRemoveDomainBy({ name: domain.domain, authHeader })
         })
     })
 
     afterEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader})
+            apiRemoveSoundSetBy({ name: soundset.name, authHeader })
+            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
             apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
 
             if (issppro) {
@@ -217,7 +223,7 @@ context('Customer Details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
             waitPageProgress()
-            cy.navigateMainMenu('settings / customer')
+            cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -232,10 +238,10 @@ context('Customer Details tests', () => {
 
     })
 
-    context('Contract Balance', () => {
-        it('Set contract cash balance and check log', () => {
+    context('Contract Balance, Top-up Log and Balance Intervals', () => {
+        it('Set contract cash balance and check log & balance', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
+            cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -254,11 +260,14 @@ context('Customer Details tests', () => {
             cy.get('td[data-cy="q-td--type"]').contains('set_balance').should('be.visible')
             cy.get('td[data-cy="q-td--outcome"]').contains('ok').should('be.visible')
             cy.get('td[data-cy="q-td--amount"]').contains('100').should('be.visible')
+            cy.get('div').contains('Balance Intervals').click()
+            cy.get('td[data-cy="q-td--cash-balance"]').contains('100.00').should('be.visible')
+            cy.get('td[data-cy="q-td--free-time-balance"]').contains('50').should('exist')
         })
 
-        it('Use Top up Voucher and check log', () => {
+        it('Use Top up Voucher and check log & balance', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
+            cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -274,11 +283,13 @@ context('Customer Details tests', () => {
             cy.get('td[data-cy="q-td--type"]').contains('voucher').should('be.visible')
             cy.get('td[data-cy="q-td--outcome"]').contains('ok').should('be.visible')
             cy.get('td[data-cy="q-td--amount"]').contains('100').should('be.visible')
+            cy.get('div').contains('Balance Intervals').click()
+            cy.get('td[data-cy="q-td--cash-balance"]').contains('100.00').should('be.visible')
         })
 
-        it('Use Top up Cash and check log', () => {
+        it('Use Top up Cash and check log & balance', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
+            cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -299,11 +310,15 @@ context('Customer Details tests', () => {
             cy.get('td[data-cy="q-td--type"]').contains('cash').should('be.visible')
             cy.get('td[data-cy="q-td--outcome"]').contains('ok').should('be.visible')
             cy.get('td[data-cy="q-td--amount"]').contains('100').should('be.visible')
+            cy.get('div').contains('Balance Intervals').click()
+            cy.get('td[data-cy="q-td--cash-balance"]').contains('101.00').should('be.visible')
         })
+    })
 
+    context('Fraud Limits', () => {
         it('Try to edit Fraud limits with invalid values', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
+            cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -320,12 +335,10 @@ context('Customer Details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('input[data-cy="aui-customerfraudlimits-notify-email"][value="testmail@mail.com"]').should('not.exist')
         })
-    })
 
-    context('Fraud Limits', () => {
         it('Add/Delete/Reset fraud limits and emails to customer details', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
+            cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -365,7 +378,7 @@ context('Customer Details tests', () => {
     context('Locations', () => {
         it('Try to create location with invalid values', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
+            cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -391,7 +404,7 @@ context('Customer Details tests', () => {
                 apiRemoveCustomerLocationBy({ name: location.name, authHeader })
             })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
+            cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -414,7 +427,7 @@ context('Customer Details tests', () => {
 
         it('Edit a location', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
+            cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -441,7 +454,7 @@ context('Customer Details tests', () => {
 
         it('Delete a location', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
+            cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -458,7 +471,7 @@ context('Customer Details tests', () => {
         it('Try to create pbx group invalid values', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / customer')
+                cy.navigateMainMenu('settings / customer', false)
                 cy.locationShouldBe('#/customer')
                 searchInDataTable(customer.external_id, 'External #')
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -482,7 +495,7 @@ context('Customer Details tests', () => {
                     apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader})
                 })
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / customer')
+                cy.navigateMainMenu('settings / customer', false)
                 cy.locationShouldBe('#/customer')
                 searchInDataTable(customer.external_id, 'External #')
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -506,7 +519,7 @@ context('Customer Details tests', () => {
         it('Edit a pbx group', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / customer')
+                cy.navigateMainMenu('settings / customer', false)
                 cy.locationShouldBe('#/customer')
                 searchInDataTable(customer.external_id, 'External #')
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -529,10 +542,10 @@ context('Customer Details tests', () => {
             }
         })
 
-        it('Delete a pbx group', () => {
+       it('Delete a pbx group', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / customer')
+                cy.navigateMainMenu('settings / customer', false)
                 cy.locationShouldBe('#/customer')
                 searchInDataTable(customer.external_id, 'External #')
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -552,7 +565,7 @@ context('Customer Details tests', () => {
         it('Try to create phonebook entry with invalid values', () => {
             if (issppro) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / customer')
+                cy.navigateMainMenu('settings / customer', false)
                 cy.locationShouldBe('#/customer')
                 searchInDataTable(customer.external_id, 'External #')
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -576,7 +589,7 @@ context('Customer Details tests', () => {
                     apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
                 })
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / customer')
+                cy.navigateMainMenu('settings / customer', false)
                 cy.locationShouldBe('#/customer')
                 searchInDataTable(customer.external_id, 'External #')
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -600,7 +613,7 @@ context('Customer Details tests', () => {
         it('Edit a phonebook', () => {
             if (issppro) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / customer')
+                cy.navigateMainMenu('settings / customer', false)
                 cy.locationShouldBe('#/customer')
                 searchInDataTable(customer.external_id, 'External #')
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -626,7 +639,7 @@ context('Customer Details tests', () => {
         it('Delete a phonebook', () => {
             if (issppro) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / customer')
+                cy.navigateMainMenu('settings / customer', false)
                 cy.locationShouldBe('#/customer')
                 searchInDataTable(customer.external_id, 'External #')
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -642,10 +655,10 @@ context('Customer Details tests', () => {
         })
     })
 
-    context('Reseller', () => {
+    context('Resellers', () => {
         it('Check if reseller values are correct', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / customer')
+            cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -656,6 +669,159 @@ context('Customer Details tests', () => {
             cy.get('td[class="text-left"]').contains(billingVoucher.reseller_id).should('be.visible')
             cy.get('td[class="text-left"]').contains('default').should('be.visible')
             cy.get('td[class="text-left"]').contains('active').should('be.visible')
+        })
+    })
+
+    context('Soundsets', () => {
+        it('Check if soundset with invalid values gets rejected', () => {
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / customer', false)
+            cy.locationShouldBe('#/customer')
+            searchInDataTable(customer.external_id, 'External #')
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+            waitPageProgress()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Sound Sets').click()
+            waitPageProgress()
+            cy.get('a[data-cy="aui-list-action--add"]').click()
+            cy.get('[data-cy=aui-save-button]').click()
+            cy.get('label[data-cy="soundsets-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+        })
+
+        it('Create a soundset, check if its applied to subscriber', () => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSoundSetBy({ name: soundset.name, authHeader })
+            })
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / customer', false)
+            cy.locationShouldBe('#/customer')
+            searchInDataTable(customer.external_id, 'External #')
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+            waitPageProgress()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Sound Sets').click()
+            waitPageProgress()
+            cy.get('a[data-cy="aui-list-action--add"]').click()
+            cy.get('input[data-cy="soundsets-name"]').type(soundset.name)
+            cy.get('input[data-cy="soundsets-description"]').type(soundset.description)
+            cy.get('div[data-cy="soundsets-expose_to_customer"]').click()
+            cy.get('div[data-cy="soundsets-default_for_subscribers"]').click()
+            cy.get('[data-cy=aui-save-button]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('td[data-cy="q-td--name"]').contains(soundset.name).should('exist')
+            cy.get('td[data-cy="q-td--description"]').contains(soundset.description).should('exist')
+            cy.get('td[data-cy="q-td--expose-to-customer"]').find('div[aria-checked="true"]').should('exist')
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Subscribers').click()
+            waitPageProgress()
+            searchInDataTable(pilotSubscriber.username, 'Username')
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--subscriberPreferences"]').click()
+            waitPageProgress()
+            cy.get('input[aria-label="Search"]').type('contract_sound_set')
+            cy.get('input[aria-label="Customer Sound Set"]').parents('label').find('span').contains(soundset.name).should('be.visible')
+
+        })
+
+        it('Edit a soundset', () => {
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / customer', false)
+            cy.locationShouldBe('#/customer')
+            searchInDataTable(customer.external_id, 'External #')
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+            waitPageProgress()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Sound Sets').click()
+            waitPageProgress()
+            searchInDataTable(soundset.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsSoundSetEdit"]').click()
+            cy.get('input[data-cy="soundsets-description"]').clear().type('testDescription')
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('[data-cy="aui-close-button"]').click()
+            cy.get('td[data-cy="q-td--name"]').contains(soundset.name).should('exist')
+            cy.get('td[data-cy="q-td--description"]').contains('testDescription').should('exist')
+            cy.get('td[data-cy="q-td--expose-to-customer"]').find('div[aria-checked="true"]').should('exist')
+        })
+
+        it('Delete Soundset', () => {
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / customer', false)
+            cy.locationShouldBe('#/customer')
+            searchInDataTable(customer.external_id, 'External #')
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+            waitPageProgress()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Sound Sets').click()
+            waitPageProgress()
+            deleteItemOnListPageBy(soundset.name)
+        })
+    })
+
+    context('Subscribers', () => {
+        it('Check if add page redirect to correct page', () => {
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / customer', false)
+            cy.locationShouldBe('#/customer')
+            searchInDataTable(customer.external_id, 'External #')
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+            waitPageProgress()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Subscribers').click()
+            waitPageProgress()
+            cy.get('a[data-cy="aui-list-action--add"]').click()
+            cy.get('label[data-cy="aui-select-domain"]').should('exist')
+            cy.get('label[data-cy="aui-input-subscriber-username"]').should('exist')
+            cy.get('label[data-cy="subscriber-sip-username"]').should('exist')
+            cy.get('label[data-cy="subscriber-sip-password"]').should('exist')
+            cy.get('label[data-cy="subscriber-web-username"]').should('exist')
+            cy.get('label[data-cy="subscriber-web-password"]').should('exist')
+        })
+
+        it('Check if edit page contents are correct', () => {
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / customer', false)
+            cy.locationShouldBe('#/customer')
+            searchInDataTable(customer.external_id, 'External #')
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+            waitPageProgress()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Subscribers').click()
+            waitPageProgress()
+            searchInDataTable(pilotSubscriber.username, 'Username')
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--customerSubscriberEdit"]').click()
+            cy.get('label[data-cy="aui-select-domain"] span').contains(domain.domain).should('be.visible')
+            cy.get('input[data-cy="subscriber-email"][value="' + pilotSubscriber.email + '"').should('be.visible')
+            cy.get('input[data-cy="subscriber-sip-username"][value="' + pilotSubscriber.username + '"]').should('be.visible')
+            cy.get('input[data-cy="subscriber-sip-password"][value="' + pilotSubscriber.password + '"]').should('be.visible')
+            cy.get('input[data-cy="subscriber-web-username"][value="' + pilotSubscriber.username + '"]').should('be.visible')
+        })
+
+        it('Delete subscriber', () => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
+            })
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / customer', false)
+            cy.locationShouldBe('#/customer')
+            searchInDataTable(customer.external_id, 'External #')
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+            waitPageProgress()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Subscribers').click()
+            waitPageProgress()
+            deleteItemOnListPageBy(pilotSubscriber.username, 'Username')
         })
     })
 })
