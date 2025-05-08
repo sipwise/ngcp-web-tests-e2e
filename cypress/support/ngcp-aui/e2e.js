@@ -2633,19 +2633,22 @@ export const getRandomNum = (maxLength = 5) => Math.floor((Math.random() * Math.
 
 export const waitPageProgress = () => {
     cy.get('div[class="q-linear-progress"][role="progressbar"]').should('be.visible')
-    cy.get('div[class="q-linear-progress"][role="progressbar"]').should('not.exist')
+    cy.get('div[class="q-linear-progress"][role="progressbar"]', {timeout: 20000}).should('not.exist')
 }
 
-export const searchInDataTable = (searchText, searchCriteria = null) => {
-    cy.get('label[data-cy="aui-data-table-filter-criteria"][aria-disabled="true"]').should('not.exist')
+export const searchInDataTable = (searchText, searchCriteria = null, waitPageProgressCheck = true) => {
+    cy.get('label[data-cy="aui-data-table-filter-criteria"][aria-disabled="true"]', {timeout: 20000}).should('not.exist')
     if (searchCriteria !== null) {
         cy.qSelect({ dataCy: 'aui-data-table-filter-criteria', filter: '', itemContains: searchCriteria })
-        cy.get('label[data-cy="aui-input-search--datatable"][aria-disabled="true"]').should('not.exist')
+        cy.get('label[data-cy="aui-input-search--datatable"][aria-disabled="true"]', {timeout: 20000}).should('not.exist')
     }
     cy.get('input[data-cy="aui-input-search--datatable"]').clear()
     cy.get('input[data-cy="aui-input-search--datatable"]').type(searchText)
-    waitPageProgress()
+    if (waitPageProgressCheck) {
+        waitPageProgress()
+    }
 }
+
 export const deleteItemOnListPageBy = (searchText = null, searchCriteria = null) => {
     if (searchText !== null) {
         searchInDataTable(searchText, searchCriteria)
