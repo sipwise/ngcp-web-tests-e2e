@@ -1,19 +1,19 @@
 #!/bin/bash
+# shellcheck disable=2086
+
+set -eu
 
 if ! [ -f /.dockerenv ] && ! grep -q 'devices:/docker' /proc/1/cgroup ; then
   echo "Not running inside docker, exiting to avoid data damage." >&2
   exit 1
 fi
 
-set -e
-set -u
-
 application_to_test="$1"
 ui_address="$2"
 api_address="$3"
 # this is used for the --spec flag that filters which tests to run
 # if no group is specified the --spec flag is removed and all tests are run
-group="$4"
+group="${4-}"
 
 echo "Checking '${application_to_test}' address configuration"
 if [ -z "${ui_address}" ] ; then

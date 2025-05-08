@@ -22,20 +22,20 @@
         "setup": "cp ./cypress.csc.template.js ./cypress.csc.config.js && cp ./cypress.aui.template.js ./cypress.aui.config.js"
     },
     "dependencies": {
-        "@nuintun/qrcode": "^3.3.1",
-        "adm-zip": "0.5.15",
-        "cypress": "13.15.0",
+        "@nuintun/qrcode": "5.0.2",
+        "adm-zip": "0.5.16",
+        "cypress": "14.3.3",
         "cypress-wait-until": "3.0.2",
         "jwt-decode": "3.1.2",
         "yarn": "1.22.19"
     },
     "devDependencies": {
-        "eslint": "^9.12.0",
-        "eslint-plugin-cypress": "^3.5.0",
+        "eslint": "^9.26.0",
+        "eslint-plugin-cypress": "^4.3.0",
         "eslint-plugin-import": "^2.31.0",
-        "eslint-plugin-promise": "^7.1.0",
+        "eslint-plugin-promise": "7.2.1",
         "eslint-plugin-standard": "^5.0.0",
-        "semver": "7.6.3",
+        "semver": "7.7.1",
         "word-wrap": "1.2.5"
     },
     "engines": {
