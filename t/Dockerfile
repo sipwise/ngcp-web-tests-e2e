@@ -5,29 +5,30 @@ FROM docker.mgm.sipwise.com/sipwise-bookworm:latest
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT=2024-10-09
+ENV REFRESHED_AT=2025-05-20
 
 RUN apt-get update && \
     apt-get install --assume-yes --no-install-recommends \
         bzip2 \
-        nodejs \
-        yarnpkg \
         libdbus-glib-1-2 libgtk2.0-0 libgtk-3-0 libnotify-dev libgconf-2-4 libgbm-dev libnss3 libxss1 libasound2 libxtst6 \
+        nodejs \
         wget \
+        yarnpkg \
         xauth \
-        xvfb && \
+        xvfb \
+        xz-utils && \
     apt-get clean
 
-# installing Chrome (127.0.6533.88)
-RUN wget https://deb.sipwise.com/files/google-chrome-stable_127_amd64.deb && \
-    apt install -y ./google-chrome-stable_127_amd64.deb  && \
-    rm -f google-chrome-stable_127_amd64.deb
+# installing Chrome (136.0.7103.59)
+RUN wget https://deb.sipwise.com/files/google-chrome-stable_136_amd64.deb && \
+    apt install -y ./google-chrome-stable_136_amd64.deb  && \
+    rm -f google-chrome-stable_current_amd64.deb
 
-# installing firefox (lang=en_US) (128.0.2)
-RUN wget https://deb.sipwise.com/files/firefox-128.0.2.tar.bz2 && \
-    tar xvf firefox-128.0.2.tar.bz2 && \
+# installing firefox (lang=en_US) (138.0.1)
+RUN wget https://deb.sipwise.com/files/firefox-138.0.1.tar.xz && \
+    tar xvf firefox-138.0.1.tar.xz && \
     ln -s /home/selenium/firefox/firefox /usr/bin/firefox && \
-    rm -f firefox-128.0.2.tar.bz2
+    rm -f firefox-138.0.1.tar.xz
 
 WORKDIR /code
 ADD package.json /code/
