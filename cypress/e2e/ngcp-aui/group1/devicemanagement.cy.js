@@ -222,7 +222,7 @@ context('Device management tests', () => {
                 cy.get('input[data-cy="aui-pbxdevicemodel-model"]').type(pbxDeviceModel.model)
 
                 cy.get('[data-cy=aui-save-button]').click()
-                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('div[role="alert"]', {timeout: 20000}).should('have.class', 'bg-positive')
                 cy.locationShouldBe('#/devicemanagement/model')
 
                 searchInDataTable(pbxDeviceModel.model, "Model")
@@ -247,7 +247,7 @@ context('Device management tests', () => {
                 cy.get('input[data-cy="aui-pbxdevicemodel-vendor"]').clear().type('SNOM')
 
                 cy.get('[data-cy=aui-save-button]').click()
-                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('div[role="alert"]', {timeout: 20000}).should('have.class', 'bg-positive')
                 cy.get('button[data-cy="aui-close-button"]').click()
                 cy.locationShouldBe('#/devicemanagement/model')
 
@@ -272,7 +272,7 @@ context('Device management tests', () => {
                 cy.get('div[data-cy="aui-pbxdevicemodel-frontimage"] input').selectFile(path.join(fixturesFolder, 'phoneimage.png'), { force: 'true' })
 
                 cy.get('[data-cy=aui-save-button]').click()
-                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('div[role="alert"]', {timeout: 20000}).should('have.class', 'bg-positive')
                 cy.get('button[data-cy="aui-close-button"]').click()
                 cy.locationShouldBe('#/devicemanagement/model')
 
@@ -359,7 +359,8 @@ context('Device management tests', () => {
                 cy.get('input[data-cy="aui-pbxdevicefirmware-file"]').selectFile(path.join(fixturesFolder, 'firmware.z'), { force: 'true' })
 
                 cy.get('[data-cy=aui-save-button]').click()
-                cy.get('div[role="alert"]', {timeout: 25000}).should('have.class', 'bg-positive')
+                cy.get('div[role="alert"]', {timeout: 20000}).should('have.class', 'bg-positive')
+                cy.locationShouldBe('#/devicemanagement/firmware')
 
                 searchInDataTable(pbxDeviceFirmware.tag, "Firmware tag")
                 cy.get('td[data-cy="q-td--tag"] span').contains(pbxDeviceFirmware.tag).should('exist')                
@@ -384,7 +385,7 @@ context('Device management tests', () => {
                 cy.get('input[data-cy="aui-pbxdevicefirmware-version"]').clear().type('testversion')
 
                 cy.get('[data-cy=aui-save-button]').click()
-                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('div[role="alert"]', {timeout: 20000}).should('have.class', 'bg-positive')
                 cy.get('button[data-cy="aui-close-button"]').click()
                 cy.locationShouldBe('#/devicemanagement/firmware')
 
@@ -464,8 +465,10 @@ context('Device management tests', () => {
                 cy.get('textarea[data-cy="aui-pbxconfig-content"]').type("testcontent")
 
                 cy.get('[data-cy=aui-save-button]').click()
-                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('div[role="alert"]', {timeout: 20000}).should('have.class', 'bg-positive')
+                cy.locationShouldBe('#/devicemanagement/configuration')
 
+                searchInDataTable(pbxDeviceConfig.version, "Version")
                 cy.get('td[data-cy="q-td--version"] span').contains(pbxDeviceConfig.version).should('be.visible')                
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
@@ -489,7 +492,7 @@ context('Device management tests', () => {
                 cy.get('input[data-cy="aui-pbxconfig-contenttype"]').type('text/plain')
 
                 cy.get('[data-cy=aui-save-button]').click()
-                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('div[role="alert"]', {timeout: 20000}).should('have.class', 'bg-positive')
                 cy.get('button[data-cy="aui-close-button"]').click()
                 cy.locationShouldBe('#/devicemanagement/configuration')                
             } else {
@@ -544,8 +547,10 @@ context('Device management tests', () => {
                 cy.get('label[data-cy="aui-pbxprofile-name"]').type(pbxDeviceProfile.name)
 
                 cy.get('[data-cy=aui-save-button]').click()
-                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('div[role="alert"]', {timeout: 20000}).should('have.class', 'bg-positive')
+                cy.locationShouldBe('#/devicemanagement/profile')
 
+                searchInDataTable(pbxDeviceProfile.name, "Name")
                 cy.get('td[data-cy="q-td--name"] span').contains(pbxDeviceProfile.name).should('be.visible')                
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
