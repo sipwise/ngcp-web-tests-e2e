@@ -876,7 +876,7 @@ export const apiRemoveEmergencyMappingContainerBy = ({ name, authHeader }) => {
         ...authHeader
     }).then(({ body }) => {
         const emcId = body?._embedded?.['ngcp:emergencymappingcontainers']?.[0]?.id
-        if (body?.total_count === 1 && emcId > 1) {
+        if (body?.total_count === 1 && emcId >= 1) {
             cy.log('Deleting emergency mapping container...', name)
             return cy.request({
                 method: 'DELETE',
