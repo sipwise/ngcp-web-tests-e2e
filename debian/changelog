@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (12.5.1.18+0~mr12.5.1.18) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [f023576] MT#58247 small fix for emergency mapping container deletion
+  * [f6697a8] MT#62720 update cypress, dependencies, browsers and dockerfile
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 22 May 2025 17:06:44 +0200
+
 ngcp-web-tests-e2e (12.5.1.17+0~mr12.5.1.17) unstable; urgency=medium
 
   [ Nico Schedel ]
