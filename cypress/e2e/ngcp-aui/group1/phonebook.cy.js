@@ -154,7 +154,7 @@ context('Phonebook tests', () => {
 
                 cy.locationShouldBe('#/phonebook')
                 cy.get('button[data-cy="phonebook-download-csv"]').click()
-                const filename = path.join(downloadsFolder, 'reseller_phonebook_entries.csv')
+                const filename = path.join(downloadsFolder, 'reseller_phonebook.csv')
                 cy.readFile(filename, 'binary', { timeout: 2000 })
                     .should(buffer => expect(buffer.length).to.be.gt(20))
             } else {
@@ -170,7 +170,7 @@ context('Phonebook tests', () => {
 
                 cy.locationShouldBe('#/phonebook')
                 cy.get('a[data-cy="phonebook-upload-csv"]').click()
-                cy.get('input[type="file"][data-cy="phonebook-upload-field"]').selectFile(path.join(fixturesFolder, 'reseller_phonebook_entries.csv'), { force: 'true' })
+                cy.get('input[type="file"][data-cy="phonebook-upload-field"]').selectFile(path.join(fixturesFolder, 'reseller_phonebook.csv'), { force: 'true' })
                 cy.get('div[data-cy="phonebook-purge"]').click()
                 cy.get('button[data-cy="aui-save-button"]').click()
 
