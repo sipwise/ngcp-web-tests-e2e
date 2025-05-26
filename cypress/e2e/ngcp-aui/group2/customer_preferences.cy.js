@@ -155,6 +155,7 @@ context('Customer preferences tests', () => {
             clickDataTableSelectedMoreMenuItem('customerPreferences')
 
             waitPageProgress()
+            cy.wait(1000)
             cy.qSelect({ dataCy: 'category-selection', itemContains: 'Access Restrictions' })
             testPreferencesChipField('allowed_clis"]')
             testPreferencesListField('allowed_clis_reject_policy', 'Force CLIR')
@@ -179,6 +180,7 @@ context('Customer preferences tests', () => {
             clickDataTableSelectedMoreMenuItem('customerPreferences')
 
             waitPageProgress()
+            cy.wait(1000)
             cy.qSelect({ dataCy: 'category-selection', itemContains: 'Applications' })
             testPreferencesToggleField('malicious_call_identification')
             testPreferencesToggleField('play_announce_before_call_setup')
@@ -197,6 +199,7 @@ context('Customer preferences tests', () => {
             clickDataTableSelectedMoreMenuItem('customerPreferences')
 
             waitPageProgress()
+            cy.wait(1000)
             cy.qSelect({ dataCy: 'category-selection', itemContains: 'Call Blockings' })
             testPreferencesToggleField('adm_block_in_clir')
             testPreferencesChipField('adm_block_in_list')
@@ -224,6 +227,7 @@ context('Customer preferences tests', () => {
             clickDataTableSelectedMoreMenuItem('customerPreferences')
 
             waitPageProgress()
+            cy.wait(1000)
             cy.qSelect({ dataCy: 'category-selection', itemContains: 'Internals' })
             testPreferencesListField('advice_of_charge', 'Currency')
             testPreferencesTextField('concurrent_calls_quota', 123)
@@ -242,6 +246,7 @@ context('Customer preferences tests', () => {
             clickDataTableSelectedMoreMenuItem('customerPreferences')
 
             waitPageProgress()
+            cy.wait(1000)
             cy.qSelect({ dataCy: 'category-selection', itemContains: 'Number Manipulations' })
             testPreferencesTextField('emergency_cli')
             testPreferencesListField('emergency_mapping_container', emergencyMappingContainer.name)
