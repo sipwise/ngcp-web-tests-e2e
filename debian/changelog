@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (11.5.1.12+0~mr11.5.1.12) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [856d96d] MT#62720 Upgrade Cypress in mr11.5X
+  * [1cc4afa] MT#62720 clear out branding color fields before typing
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 27 May 2025 12:09:57 +0200
+
 ngcp-web-tests-e2e (11.5.1.11+0~mr11.5.1.11) unstable; urgency=medium
 
   [ Debora Crescenzo ]
