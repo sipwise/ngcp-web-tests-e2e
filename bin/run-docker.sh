@@ -36,11 +36,6 @@ mkdir -p "${PWD}/cypress/screenshots" "${PWD}/cypress/videos" # we need it to ke
 
 application_to_test="$1"
 config_file_name="cypress.ci.${application_to_test}.template.js"
-ui_address="$2"
-api_address="$3"
-# group is optional: this is used for the --spec flag that filters which tests to run
-# if no group is specified the --spec flag is removed and all tests are run
-group="$4"
 
 docker run --rm -i -t \
   -v "/${PWD}/cypress:/code/cypress:ro" \

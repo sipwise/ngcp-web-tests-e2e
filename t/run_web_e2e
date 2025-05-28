@@ -29,10 +29,10 @@ sed -i -e "s|apiHost:.*|apiHost: '${api_address}',|" "${config_file}"
 
 # remove --spec flag if no group is specified
 if [ -z "${group}" ]; then
-  spec_details=""
+  spec_details=()
 else
-  spec_details="--spec cypress/e2e/ngcp-${application_to_test}/${group}/"
+  spec_details=(--spec "cypress/e2e/ngcp-${application_to_test}/${group}/")
 fi
 
 task_name="ci:${application_to_test}"
-yarnpkg run "${task_name}" ${spec_details} --browser chrome
+yarnpkg run "${task_name}" "${spec_details[@]}" --browser chrome
