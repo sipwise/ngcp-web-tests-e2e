@@ -250,7 +250,7 @@ Cypress.Commands.add('loginUI', (username, password, waitForSidemenu = true) => 
         autoEnd: false
     })
 
-    cy.intercept('POST', '**/login_jwt?lang=en').as('loginRequest')
+    cy.intercept('POST', '**/login_jwt').as('loginRequest')
     cy.get('input[data-cy="csc-login-username"]', quiet).type(username, quiet)
     cy.get('input[data-cy="csc-login-password"]', quiet).type(password, quiet)
     cy.get('button[data-cy="csc-login-button"]', quiet).click(quiet)

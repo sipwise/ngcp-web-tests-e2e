@@ -106,7 +106,7 @@ context('Login page tests', () => {
         })
 
         it('Trying to login through UI with no credentials', () => {
-            cy.intercept('POST', '**/login_jwt?lang=en').as('loginRequest')
+            cy.intercept('POST', '**/login_jwt').as('loginRequest')
             cy.get('.q-btn:last').click()
 
             cy.wait('@loginRequest').then(({ response }) => {
@@ -116,7 +116,7 @@ context('Login page tests', () => {
         })
 
         it('Trying to login through UI with incorrect user and password', () => {
-            cy.intercept('POST', '**/login_jwt?lang=en').as('loginRequest')
+            cy.intercept('POST', '**/login_jwt').as('loginRequest')
             cy.get('input:first').type('not-exists-user')
             cy.get('input:last').type('not-exists-password')
             cy.get('.q-btn:last').click()
@@ -128,7 +128,7 @@ context('Login page tests', () => {
         })
 
         it('Trying to login through UI with incorrect password', () => {
-            cy.intercept('POST', '**/login_jwt?lang=en').as('loginRequest')
+            cy.intercept('POST', '**/login_jwt').as('loginRequest')
             cy.get('input:first').type(loginInfo.username)
             cy.get('input:last').type('not-exists-password')
             cy.get('.q-btn:last').click()
@@ -140,7 +140,7 @@ context('Login page tests', () => {
         })
 
         it('Trying to login through UI with no password', () => {
-            cy.intercept('POST', '**/login_jwt?lang=en').as('loginRequest')
+            cy.intercept('POST', '**/login_jwt').as('loginRequest')
             cy.get('input:first').type('not-exists-user')
             cy.get('input:last').clear()
             cy.get('.q-btn:last').click()
@@ -152,7 +152,7 @@ context('Login page tests', () => {
         })
 
         it('Trying to login through UI with correct credentials', () => {
-            cy.intercept('POST', '**/login_jwt?lang=en').as('loginRequest')
+            cy.intercept('POST', '**/login_jwt').as('loginRequest')
             cy.get('input:first').type(loginInfo.username)
             cy.get('input:last').type(loginInfo.password)
             cy.get('.q-btn:last').click()
@@ -164,7 +164,7 @@ context('Login page tests', () => {
         })
 
         it('Test cy.loginUI function', () => {
-            cy.intercept('POST', '**/login_jwt?lang=en').as('loginRequest')
+            cy.intercept('POST', '**/login_jwt').as('loginRequest')
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.wait('@loginRequest').then(({ response }) => {
                 checkLoginAPIResponse(response)

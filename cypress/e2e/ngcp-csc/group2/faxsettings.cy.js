@@ -87,7 +87,7 @@ context('Fax settings page tests', () => {
         })
 
         it('Try to enable fax to mail', () => {
-            cy.intercept('GET', '**/api/platforminfo?lang=en').as('platforminfo')
+            cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
@@ -104,7 +104,7 @@ context('Fax settings page tests', () => {
         })
 
         it('Try to disable and enable T38 and ECM', () => {
-            cy.intercept('GET', '**/api/platforminfo?lang=en').as('platforminfo')
+            cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
@@ -134,7 +134,7 @@ context('Fax settings page tests', () => {
         })
 
         it('Try to create a destination with invalid values', () => {
-            cy.intercept('GET', '**/api/platforminfo?lang=en').as('platforminfo')
+            cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
@@ -158,7 +158,7 @@ context('Fax settings page tests', () => {
         })
 
         it('Try to create a destination', () => {
-            cy.intercept('GET', '**/api/platforminfo?lang=en').as('platforminfo')
+            cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
@@ -181,7 +181,7 @@ context('Fax settings page tests', () => {
         })
 
         it('Try to edit a destination', () => {
-            cy.intercept('GET', '**/api/platforminfo?lang=en').as('platforminfo')
+            cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
@@ -228,7 +228,7 @@ context('Fax settings page tests', () => {
         })
 
         it('Try to delete a destination', () => {
-            cy.intercept('GET', '**/api/platforminfo?lang=en').as('platforminfo')
+            cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
             cy.loginUI(loginInfo.username, loginInfo.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
