@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (13.3.1.4+0~mr13.3.1.4) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [8e71c77] MT#62720 Reseller branding bugfix
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 09 Jun 2025 17:37:29 +0200
+
 ngcp-web-tests-e2e (13.3.1.3+0~mr13.3.1.3) unstable; urgency=medium
 
   [ Nico Schedel ]
