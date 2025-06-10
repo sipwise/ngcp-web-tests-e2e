@@ -708,6 +708,46 @@ export const apiRemoveSubscriberBy = ({ name, authHeader }) => {
     })
 }
 
+export const apiCreateSubscriberPhonebook = ({ data, authHeader }) => {
+    cy.log('apiCreateSubscriberPhonebook', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/subscriberphonebookentries/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiRemoveSubscriberPhonebookBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveSubscriberPhonebookBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/subscriberphonebookentries`,
+        qs: {
+            name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const subscriberPhonebookId = body?._embedded?.['ngcp:subscriberphonebookentries']?.[0]?.id
+        if (subscriberPhonebookId) {
+            cy.log('Deleting subscriber phonebook...', name)
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/subscriberphonebookentries/${subscriberPhonebookId}`,
+                ...authHeader
+            })
+        } else {
+            return cy.log('No subscriber phonebook found', name)
+        }
+    })
+}
+
 export const apiCreateSystemContact = ({ data, authHeader }) => {
     cy.log('apiCreateSystemContact', data)
     return cy.request({
