@@ -1,3 +1,39 @@
+ngcp-web-tests-e2e (13.4.1.0+0~mr13.4.1.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [8a20a14] MT#62564 [E2E] Fix rewrite rules test
+  * [d30930a] MT#62410 add customer details tests
+  * [eb8d753] MT#62410 fixes for customer details tests
+  * [3d2ddf3] MT#62410 change profile package name in customer details tests
+  * [5aba676] MT#62410 even more fixes for customer details tests
+  * [2851631] MT#58247 little template improvments
+  * [e4d280a] MT#62533 Update CSC Call forward tests with After Ring timeout
+  * [0efd2af] MT#61483 fixes for device management tests
+  * [8d5ae99] MT#62720 update cypress, dependencies, browsers and dockerfile
+  * [3392106] MT#58247 small fix for emergency mapping container deletion
+  * [d9081f2] MT#62900 adapt tests for new phonebook v2 page
+  * [94eb6bf] MT#61915 small fixes for contract tests
+  * [3103761] MT#61915 small fix for customer preferences
+  * [3773de4] MT#62720 clear out branding color fields before typing
+  * [a5dc436] MT#62410 update customer details tests
+  * [02283e2] MT#61915 fixes for soundsets and customer details
+  * [a57f0fd] MT#61915 waitPageProgress() NCOS fixes
+  * [611081b] MT#62909 add subscriber phonebook tests
+
+  [ Debora Crescenzo ]
+  * [a4f2362] MT#62410 temporarily skip use voucher
+  * [e793072] MT#62410 Re-activate use voucher test
+  * [e94da1b] MT#62972 Remove '?lang=en' param
+  * [420c6c8] MT#62720 Reseller branding bugfix
+
+  [ nidrissi-zouggari ]
+  * [2b774e3] MT#62363 Fixing CF tests
+
+  [ Guillem Jover ]
+  * [2818582] MT#62763 Fix shellcheck issues
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 20 Jun 2025 10:44:41 +0200
+
 ngcp-web-tests-e2e (13.4.0.0+0~mr13.4.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
