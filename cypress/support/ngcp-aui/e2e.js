@@ -494,7 +494,7 @@ export const apiRemoveResellerBy = ({ name, authHeader }) => {
         const resellerData = body?._embedded?.['ngcp:resellers']?.[0]
         const resellerId = resellerData?.id
         const resellerStatus = resellerData?.status
-        if (body?.total_count === 1 && resellerId > 1 && resellerStatus !== 'terminated') {
+        if (resellerId && resellerStatus !== 'terminated') {
             cy.log('Deleting reseller...', name)
             return cy.request({
                 method: 'PATCH',
@@ -508,7 +508,7 @@ export const apiRemoveResellerBy = ({ name, authHeader }) => {
                 }
             })
         } else {
-            return cy.log('System contact not found', name)
+            return cy.log('Reseller not found', name)
         }
     })
 }
@@ -625,7 +625,7 @@ export const apiRemoveCustomerBy = ({ name, authHeader }) => {
         url: `${ngcpConfig.apiHost}/api/customers`,
         qs: {
             external_id: name,
-            status: 'active'
+            status: 'active,locked'
         },
         ...authHeader
     }).then(({ body }) => {
@@ -1141,10 +1141,61 @@ export const apiRemoveBillingProfileBy = ({ name, authHeader }) => {
     })
 }
 
-export const defaultBillingProfileZoneCreationData = {
-    detail: 'string',
-    zone: 'string',
-    billingprofile_id: 0
+export const apiCreateBillingNetwork = ({ data, authHeader }) => {
+    cy.log('apiCreateBillingNetwork', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/billingnetworks/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiGetBillingNetworkId = ({ name, authHeader }) => {
+    cy.log('apiGetBillingNetworkId', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/billingnetworks`,
+        qs: {
+            name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const billingNetworkeData = body?._embedded?.['ngcp:billingnetworks']?.[0]
+        const billingNetworkId = billingNetworkeData?.id
+        return billingNetworkId
+    })
+}
+
+export const apiRemoveBillingNetworkBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveBillingNetworkBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/billingnetworks`,
+        qs: {
+            name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const billingNetworkId = body?._embedded?.['ngcp:billingnetworks']?.[0]?.id
+        if (billingNetworkId) {
+            cy.log('Deleting billing network...', name)
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/billingnetworks/${billingNetworkId}`,
+                ...authHeader
+            })
+        } else {
+            return cy.log('Billing network not found', name)
+        }
+    })
 }
 
 export const apiCreateBillingProfileZone = ({ data, authHeader }) => {
