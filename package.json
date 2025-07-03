@@ -10,7 +10,7 @@
         "start": "cypress open",
         "start:csc": "cypress open --config-file cypress.tdd.csc.config.js",
         "start:aui": "cypress open --config-file cypress.tdd.aui.config.js",
-        "docker:rebuild:local": "docker build -f ./t/Dockerfile . -t ngcp-web-tests-e2e-bookworm",
+        "docker:rebuild:local": "docker build -f ./t/Dockerfile . -t ngcp-web-tests-e2e-trixie",
         "docker:run:local": "bash ./bin/run-docker.sh local",
         "docker:run": "bash ./bin/run-docker.sh",
         "ci:csc": "cypress run --config-file cypress.ci.csc.config.js",
