@@ -130,6 +130,9 @@ context('Reseller tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
                 cy.log('Preparing environment...')
+                if (issppro) {
+                    apiRemoveResellerPhonebookBy({ name: resellerPhonebook.name, authHeader })
+                }
                 apiRemoveBillingProfileBy({ name: internalBillingProfile.name, authHeader })
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
@@ -138,7 +141,6 @@ context('Reseller tests', () => {
                 apiRemoveBillingNetworkBy({ name: billingNetwork.name + "2", authHeader })
                 apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader })
                 apiRemoveAdminBy({ name: testadmin.login, authHeader })
-                apiRemoveResellerPhonebookBy({ name: resellerPhonebook.name, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
@@ -153,6 +155,9 @@ context('Reseller tests', () => {
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
                 cy.log('Cleaning up db...')
+                if (issppro) {
+                    apiRemoveResellerPhonebookBy({ name: resellerPhonebook.name, authHeader })
+                }
                 apiRemoveBillingProfileBy({ name: internalBillingProfile.name, authHeader })
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
@@ -161,15 +166,16 @@ context('Reseller tests', () => {
                 apiRemoveBillingNetworkBy({ name: billingNetwork.name + "2", authHeader })
                 apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader})
                 apiRemoveAdminBy({ name: testadmin.login, authHeader })
-                apiRemoveResellerPhonebookBy({name: resellerPhonebook.name, authHeader})
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
 
                 cy.log('Seeding up db...')
                 apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
                     apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                        if (issppro) {
+                            apiCreateResellerPhonebook({ data: { ...resellerPhonebook, reseller_id: id }, authHeader })
+                        }
                         apiCreateAdmin({ data: { ...testadmin, reseller_id: id }, authHeader })
-                        apiCreateResellerPhonebook({ data: { ...resellerPhonebook, reseller_id: id }, authHeader })
                         apiCreateBillingNetwork({ data: { ...billingNetwork, reseller_id: id }, authHeader })
                         apiCreateBillingProfile({ data: { ...billingProfile, reseller_id: id }, authHeader })
                         apiCreateBillingProfile({ data: { ...internalBillingProfile, reseller_id: id }, authHeader }).then(({ id }) => {
@@ -190,6 +196,9 @@ context('Reseller tests', () => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
+                if (issppro) {
+                    apiRemoveResellerPhonebookBy({ name: resellerPhonebook.name, authHeader })
+                }
                 apiRemoveBillingProfileBy({ name: internalBillingProfile.name, authHeader })
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
@@ -198,7 +207,6 @@ context('Reseller tests', () => {
                 apiRemoveAdminBy({ name: testadmin.login, authHeader })
                 apiRemoveBillingNetworkBy({ name: billingNetwork.name + "2", authHeader })
                 apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader})
-                apiRemoveResellerPhonebookBy({ name: resellerPhonebook.name, authHeader})
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 apiRemoveContractBy({ name: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
