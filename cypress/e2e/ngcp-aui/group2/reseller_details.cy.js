@@ -216,7 +216,7 @@ context('Reseller tests', () => {
         context('Administrator', () => {
             it('Try to create an administrator with invalid values', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -238,7 +238,7 @@ context('Reseller tests', () => {
                     apiRemoveAdminBy({ name: testadmin.login, authHeader })
                 })
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -261,7 +261,7 @@ context('Reseller tests', () => {
 
             it('Enable read only. Check if read only is enabled', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -277,7 +277,7 @@ context('Reseller tests', () => {
                 cy.logoutUI()
                 cy.wait(500)
                 cy.loginUI(testadmin.login, testadmin.password, false)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
                 cy.get('a[data-cy="aui-list-action--add"]').should('not.exist')
                 cy.get('a[data-cy="aui-list-action--edit-menu-btn"]').should('not.exist')
                 cy.get('a[data-cy="aui-list-action--delete"]').should('not.exist')
@@ -285,7 +285,7 @@ context('Reseller tests', () => {
 
             it('Delete administrator', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -304,7 +304,7 @@ context('Reseller tests', () => {
         context('Billing Network', () => {
             it('Try to create a billing network with invalid values', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -335,7 +335,7 @@ context('Reseller tests', () => {
                     apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader})
                 })
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -360,7 +360,7 @@ context('Reseller tests', () => {
 
             it('Edit a billing network', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -384,7 +384,7 @@ context('Reseller tests', () => {
 
             it('Delete a billing network', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -400,7 +400,7 @@ context('Reseller tests', () => {
         context('Billing Profile', () => {
             it('Try to create a billing profile with invalid values', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -420,7 +420,7 @@ context('Reseller tests', () => {
                     apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 })
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -440,7 +440,7 @@ context('Reseller tests', () => {
 
             it('Enable and disable prepaid', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -466,7 +466,7 @@ context('Reseller tests', () => {
 
             it('Delete billing profile', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -482,7 +482,7 @@ context('Reseller tests', () => {
         context('Branding', () => {
             it('Change branding color', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -510,7 +510,7 @@ context('Reseller tests', () => {
         context('Customer', () => {
             it('Check if customer with invalid values gets rejected', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -530,7 +530,7 @@ context('Reseller tests', () => {
                     apiRemoveCustomerBy({ name: customer.external_id, authHeader })
                 })
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -549,7 +549,7 @@ context('Reseller tests', () => {
 
             it('Edit customer status to "locked"', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -573,7 +573,7 @@ context('Reseller tests', () => {
 
             it('Delete customer and check if they are deleted', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -590,7 +590,7 @@ context('Reseller tests', () => {
         context('Domain', () => {
             it('Check if domain with invalid values gets rejected', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -609,7 +609,7 @@ context('Reseller tests', () => {
                     apiRemoveDomainBy({ name: domain.domain, authHeader })
                 })
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -626,7 +626,7 @@ context('Reseller tests', () => {
 
             it('Check if clicking "Preferences" redirects to correct URL', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -644,7 +644,7 @@ context('Reseller tests', () => {
 
             it('Delete domain', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
@@ -661,7 +661,7 @@ context('Reseller tests', () => {
             it('Try to create phonebook entry with invalid values', () => {
                 if (issppro) {
                     cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                    cy.navigateMainMenu('settings / reseller')
+                    cy.navigateMainMenu('settings / reseller', false)
 
                     cy.locationShouldBe('#/reseller')
                     searchInDataTable(reseller.name)
@@ -686,7 +686,7 @@ context('Reseller tests', () => {
                         apiRemoveResellerPhonebookBy({name: resellerPhonebook.name, authHeader})
                     })
                     cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                    cy.navigateMainMenu('settings / reseller')
+                    cy.navigateMainMenu('settings / reseller', false)
 
                     cy.locationShouldBe('#/reseller')
                     searchInDataTable(reseller.name)
@@ -711,7 +711,7 @@ context('Reseller tests', () => {
             it('Edit a phonebook', () => {
                 if (issppro) {
                     cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                    cy.navigateMainMenu('settings / reseller')
+                    cy.navigateMainMenu('settings / reseller', false)
 
                     cy.locationShouldBe('#/reseller')
                     searchInDataTable(reseller.name)
@@ -738,7 +738,7 @@ context('Reseller tests', () => {
             it('Delete a phonebook', () => {
                 if (issppro) {
                     cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                    cy.navigateMainMenu('settings / reseller')
+                    cy.navigateMainMenu('settings / reseller', false)
 
                     cy.locationShouldBe('#/reseller')
                     searchInDataTable(reseller.name)
@@ -758,7 +758,7 @@ context('Reseller tests', () => {
         context('Information', () => {
             it('Check if reseller, reseller contract and reseller contact info are correct', () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / reseller')
+                cy.navigateMainMenu('settings / reseller', false)
 
                 cy.locationShouldBe('#/reseller')
                 searchInDataTable(reseller.name)
