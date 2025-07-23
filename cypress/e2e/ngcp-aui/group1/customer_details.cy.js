@@ -24,7 +24,17 @@ import {
     apiCreateSubscriber,
     apiRemoveSubscriberBy,
     apiCreateSoundSet,
-    apiRemoveSoundSetBy
+    apiRemoveSoundSetBy,
+    apiCreatePbxDeviceConfig,
+    apiCreatePbxDeviceModel,
+    apiCreatePbxDeviceProfile,
+    apiRemovePbxDeviceProfileBy,
+    apiRemovePbxDeviceConfigBy,
+    apiRemovePbxDeviceModelBy,
+    apiRemovePbxDeviceBy,
+    apiCreatePbxDevice,
+    testPreferencesTextField,
+    testPreferencesToggleField
 } from '../../../support/ngcp-aui/e2e'
 
 export const billingProfile = {
@@ -116,11 +126,64 @@ export const soundset = {
     contract_default: true
 }
 
+const pbxDeviceConfig = {
+    id: 0,
+    version: "ConfigCustomerDetailsCypress",
+    device_id: 0
+}
+
+const pbxDeviceProfile = {
+    config_id: 0,
+    name: "ProfileCustomerDetailsCypress"
+}
+
+const pbxDevice = {
+    identifier: "3c28a600222e",
+    profile_id: 0,
+    customer_id: 0,
+    station_name: "deviceCustomerDetailsCypress",
+    lines: []
+}
+
 var iscloudpbx = false
-var issppro = null
+var issppro = false
 const ngcpConfig = Cypress.config('ngcpConfig')
+const deviceModelFormData = new FormData()
 
 context('Customer Details tests', () => {
+    const pbxDeviceModel = {
+    reseller_id: 1,
+    bootstrap_config_http_sync_method: "GET",
+    bootstrap_config_http_sync_params: "http://client.ip/admin/resync",
+    bootstrap_config_http_sync_uri: "http://client.ip/admin/resync",
+    bootstrap_method: "http",
+    bootstrap_uri: null,
+    connectable_models: [],
+    extensions_num: 0,
+    linerange: [
+        {
+        can_blf: false,
+        can_forward: false,
+        can_private: true,
+        can_shared: false,
+        can_speeddial: false,
+        can_transfer: false,
+        keys: [
+            {
+            labelpos: "top",
+            x: 0,
+            y: 0
+            }
+        ],
+        name: "Phone keys",
+        num_lines: 1
+        }
+    ],
+    model: "testmodelH2PCustomerDetailsCypress",
+    type: "phone",
+    vendor: "ALE"
+}
+
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
@@ -131,13 +194,19 @@ context('Customer Details tests', () => {
             }
             if (response.body.type === 'sppro') {
                 issppro = true
-            } else {
-                issppro = false
             }
         })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
+            if (iscloudpbx) {
+                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
+                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+            } else {
+                cy.log("CloudPBX is not enabled, skipping device deletion...")
+            }
             apiRemoveSoundSetBy({ name: soundset.name, authHeader })
             apiRemoveCustomerLocationBy({ name: location.name, authHeader })
             apiRemoveBillingVoucherBy({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
@@ -152,6 +221,14 @@ context('Customer Details tests', () => {
             })
             apiCreateBillingProfile({ data: billingProfile, authHeader }).then(({ id }) => {
                 customer.billing_profile_id = id
+            })
+            deviceModelFormData.append("json", JSON.stringify(pbxDeviceModel))
+            cy.fixture("phoneimage.png", 'base64').then((file) => {
+                deviceModelFormData.append("front_image", Cypress.Blob.base64StringToBlob(file, 'image/png'), 'phoneimage.png')
+            })
+            cy.fixture("empty.txt").then((file) => {
+                deviceModelFormData.append("mac_image", new Blob([file], { type: "text/plain" }), 'empty.txt')
+                deviceModelFormData.append("front_thumbnail", new Blob([file], { type: "text/plain" }), 'empty.txt')
             })
         })
     })
@@ -171,8 +248,23 @@ context('Customer Details tests', () => {
                     apiCreateSubscriber({ data: { ...pbxGroup, customer_id: id }, authHeader })
                     apiCreateSoundSet({ data: { ...soundset, customer_id: id }, authHeader })
                     customer.customer_id = id
+                    pbxDevice.customer_id = id
                 })
             })
+            if (iscloudpbx) {
+                apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader}).then(({ id }) => {
+                    cy.fixture("deviceconfigtestfile.xml").then((text) => {
+                        apiCreatePbxDeviceConfig({ parameters: { ...pbxDeviceConfig, device_id: id }, data: text, authHeader }).then(({ id }) => {
+                            pbxDeviceConfig.id = id
+                            apiCreatePbxDeviceProfile({ data: { ...pbxDeviceProfile, config_id: id }, authHeader }).then(({ id }) => {
+                                apiCreatePbxDevice({ data: { ...pbxDevice, profile_id: id }, authHeader })
+                            })
+                        })
+                    })
+                })
+            } else {
+                cy.log("CloudPBX is not enabled, skipping device creation...")
+            }
         })
     })
 
@@ -187,6 +279,14 @@ context('Customer Details tests', () => {
 
     afterEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
+            if (iscloudpbx) {
+                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
+                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+            } else {
+                cy.log("CloudPBX is not enabled, skipping device deletion...")
+            }
             apiRemoveSoundSetBy({ name: soundset.name, authHeader })
             apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
             apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
@@ -468,7 +568,7 @@ context('Customer Details tests', () => {
     })
 
     context('PBX Groups', () => {
-        it('Try to create pbx group invalid values', () => {
+        it('Try to create pbx group with invalid values', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / customer', false)
@@ -555,6 +655,137 @@ context('Customer Details tests', () => {
                 cy.get('div').contains('PBX Groups').click()
                 waitPageProgress()
                 deleteItemOnListPageBy(pbxGroup.username, 'Name')                
+            } else {
+                cy.log('CloudPBX is not enabled, skipping PBX group tests...')
+            }
+        })
+    })
+
+    context('PBX Devices', () => {
+        it('Try to create PBX device with invalid values', () => {
+            if (iscloudpbx) {
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / customer', false)
+                cy.locationShouldBe('#/customer')
+                searchInDataTable(customer.external_id, 'External #')
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+                waitPageProgress()
+                cy.get('div').contains('PBX Devices').click()
+                waitPageProgress()
+                cy.get('a[data-cy="aui-list-action--add"]').click()
+                cy.get('button[data-cy="aui-save-button"]').click()
+                cy.get('label[data-cy="pbx-profile-id"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+                cy.get('label[data-cy="pbx-identifier"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+                cy.get('label[data-cy="pbx-station-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+            } else {
+                cy.log('CloudPBX is not enabled, skipping PBX group tests...')
+            }
+        })
+
+        it('Create a PBX device', () => {
+            if (iscloudpbx) {
+                apiLoginAsSuperuser().then(authHeader => {
+                    apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                })
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / customer', false)
+                cy.locationShouldBe('#/customer')
+                searchInDataTable(customer.external_id, 'External #')
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+                waitPageProgress()
+                cy.get('div').contains('PBX Devices').click()
+                waitPageProgress()
+                cy.get('a[data-cy="aui-list-action--add"]').click()
+                cy.auiSelectLazySelect({ dataCy: 'pbx-profile-id', filter: pbxDeviceModel.model, itemContains: pbxDeviceModel.model })
+                cy.get('input[data-cy="pbx-identifier"]').type(pbxDevice.identifier)
+                cy.get('input[data-cy="pbx-station-name"]').type(pbxDevice.station_name)
+                cy.get('button[data-cy="aui-save-button"]').click()
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('td[data-cy="q-td--station-name"]').contains(pbxDevice.station_name).should('be.visible')
+                cy.get('td[data-cy="q-td--identifier"]').contains(pbxDevice.identifier).should('be.visible')
+                cy.get('td[data-cy="q-td--profile"]').contains(pbxDeviceProfile.name).should('be.visible')
+            } else {
+                cy.log('CloudPBX is not enabled, skipping PBX group tests...')
+            }
+        })
+
+        it('Add subscriber to PBX device', () => {
+            if (iscloudpbx) {
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / customer', false)
+                cy.locationShouldBe('#/customer')
+                searchInDataTable(customer.external_id, 'External #')
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+                waitPageProgress()
+                cy.get('div').contains('PBX Devices').click()
+                waitPageProgress()
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsPbxDeviceEdit"]').click()
+                cy.get('div[class="button"]').contains('1').click()
+                cy.auiSelectLazySelect({ dataCy: 'pbx-device-subscriber', filter: '', itemContains: pilotSubscriber.username })
+                cy.get('button[data-cy="pbx-device-close"]').click()
+                cy.get('button[data-cy="aui-save-button"]').click()
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('div[class="button"]').contains('1').click()
+                cy.get('label[data-cy="pbx-device-subscriber"] span').contains(pilotSubscriber.username).should('be.visible')
+            } else {
+                cy.log('CloudPBX is not enabled, skipping PBX group tests...')
+            }
+        })
+
+        it('Test all PBX device preferences', () => {
+            if (iscloudpbx) {
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / customer', false)
+                cy.locationShouldBe('#/customer')
+                searchInDataTable(customer.external_id, 'External #')
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+                waitPageProgress()
+                cy.get('div').contains('PBX Devices').click()
+                waitPageProgress()
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsPbxDevicePreferences"]').click()
+                waitPageProgress()
+                testPreferencesToggleField('DNS_SRV_enable')
+                testPreferencesTextField('admin_name', 'admin', false)
+                testPreferencesTextField('admin_pass', 'admin', false)
+                testPreferencesTextField('ntp_server', 'testserver.com', false)
+                testPreferencesTextField('ntp_sync', 10, true)
+                testPreferencesTextField('syslog_level', 5, true)
+                testPreferencesTextField('syslog_server', 'testserver.com', false)
+                testPreferencesToggleField('user_conf_priority')
+                testPreferencesToggleField('web_gui_dis')
+                testPreferencesToggleField('FW_upg_dis')
+                testPreferencesToggleField('vnd_Panasonic_FW_autoupg_dis')
+                testPreferencesTextField('vnd_Panasonic_FW_ver', '1.232.4', false)
+            } else {
+                cy.log('CloudPBX is not enabled, skipping PBX group tests...')
+            }
+        })
+
+       it('Delete a PBX device', () => {
+            if (iscloudpbx) {
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / customer', false)
+                cy.locationShouldBe('#/customer')
+                searchInDataTable(customer.external_id, 'External #')
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+                waitPageProgress()
+                cy.get('div').contains('PBX Devices').click()
+                waitPageProgress()
+                deleteItemOnListPageBy(pbxDevice.station_name, 'Station Name')
             } else {
                 cy.log('CloudPBX is not enabled, skipping PBX group tests...')
             }
