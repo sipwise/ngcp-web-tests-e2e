@@ -165,7 +165,7 @@ context('Device management tests', () => {
                             })
                         })
                     })
-                })                
+                })
             } else {
                 cy.log('CloudPBX is not enabled, skipping preperation...')
             }
@@ -183,7 +183,7 @@ context('Device management tests', () => {
                     apiRemoveResellerBy({ name: reseller.name, authHeader })
                     apiRemoveContractBy({ name: contract.external_id, authHeader })
                     apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
-                })                
+                })
             } else {
                 cy.log('CloudPBX is not enabled, skipping cleanup...')
             }
@@ -192,7 +192,7 @@ context('Device management tests', () => {
         it('Check if device model with invalid values gets rejected', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
 
                 cy.locationShouldBe('#/devicemanagement/model')
 
@@ -200,7 +200,7 @@ context('Device management tests', () => {
                 cy.get('[data-cy=aui-save-button]').click()
                 cy.get('input[data-cy="aui-select-reseller"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
                 cy.get('label[data-cy="aui-pbxdevicemodel-vendor"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
-                cy.get('label[data-cy="aui-pbxdevicemodel-model"]').find('div[role="alert"]').contains('Input is required').should('be.visible')                
+                cy.get('label[data-cy="aui-pbxdevicemodel-model"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -212,7 +212,7 @@ context('Device management tests', () => {
                     apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
                 })
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
 
                 cy.locationShouldBe('#/devicemanagement/model')
 
@@ -226,7 +226,7 @@ context('Device management tests', () => {
                 cy.locationShouldBe('#/devicemanagement/model')
 
                 searchInDataTable(pbxDeviceModel.model, "Model")
-                cy.get('td[data-cy="q-td--model"] span').contains(pbxDeviceModel.model).should('be.visible')                
+                cy.get('td[data-cy="q-td--model"] span').contains(pbxDeviceModel.model).should('be.visible')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -235,7 +235,7 @@ context('Device management tests', () => {
         it('Edit device model', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
 
                 cy.locationShouldBe('#/devicemanagement/model')
 
@@ -251,7 +251,7 @@ context('Device management tests', () => {
                 cy.get('button[data-cy="aui-close-button"]').click()
                 cy.locationShouldBe('#/devicemanagement/model')
 
-                cy.get('td[data-cy="q-td--vendor"] span').contains('SNOM').should('be.visible')                
+                cy.get('td[data-cy="q-td--vendor"] span').contains('SNOM').should('be.visible')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -260,7 +260,7 @@ context('Device management tests', () => {
         it('Upload picture to device model', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
 
                 cy.locationShouldBe('#/devicemanagement/model')
 
@@ -278,7 +278,7 @@ context('Device management tests', () => {
 
                 cy.get('div[data-cy="q-checkbox"]').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-                cy.get('a[data-cy="aui-data-table-row-menu--deviceManagementModelFrontimage"]').click()                
+                cy.get('a[data-cy="aui-data-table-row-menu--deviceManagementModelFrontimage"]').click()
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -287,7 +287,7 @@ context('Device management tests', () => {
         it('Edit preferences for device model', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
 
                 cy.locationShouldBe('#/devicemanagement/model')
 
@@ -304,7 +304,7 @@ context('Device management tests', () => {
                 testPreferencesTextField('ntp-sync', '10')
                 testPreferencesTextField('syslog-level', '5')
                 testPreferencesTextField('syslog-server')
-                testPreferencesToggleField('user-conf-priority')                
+                testPreferencesToggleField('user-conf-priority')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -313,11 +313,11 @@ context('Device management tests', () => {
         it('Delete device model', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
 
                 cy.locationShouldBe('#/devicemanagement/model')
 
-                deleteItemOnListPageBy(pbxDeviceModel.model, 'Model')                
+                deleteItemOnListPageBy(pbxDeviceModel.model, 'Model')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -326,7 +326,7 @@ context('Device management tests', () => {
         it('Check if device firmware with invalid values gets rejected', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
                 cy.get('a[href="#/devicemanagement/firmware"]').click()
 
                 cy.locationShouldBe('#/devicemanagement/firmware')
@@ -335,7 +335,7 @@ context('Device management tests', () => {
                 cy.get('[data-cy=aui-save-button]').click()
                 cy.get('label[data-cy="aui-select-pbxdevicemodel"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
                 cy.get('label[data-cy="aui-pbxdevicefirmware-version"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
-                cy.get('label[data-cy="aui-pbxdevicefirmware-file"]').find('div[role="alert"]').contains('Input is required').should('be.visible')                
+                cy.get('label[data-cy="aui-pbxdevicefirmware-file"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -347,7 +347,7 @@ context('Device management tests', () => {
                     apiRemovePbxDeviceFirmwareBy({ name: pbxDeviceFirmware.tag, authHeader })
                 })
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
                 cy.get('a[href="#/devicemanagement/firmware"]').click()
 
                 cy.locationShouldBe('#/devicemanagement/firmware')
@@ -363,7 +363,7 @@ context('Device management tests', () => {
                 cy.locationShouldBe('#/devicemanagement/firmware')
 
                 searchInDataTable(pbxDeviceFirmware.tag, "Firmware tag")
-                cy.get('td[data-cy="q-td--tag"] span').contains(pbxDeviceFirmware.tag).should('exist')                
+                cy.get('td[data-cy="q-td--tag"] span').contains(pbxDeviceFirmware.tag).should('exist')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -372,7 +372,7 @@ context('Device management tests', () => {
         it('Edit device firmware', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
                 cy.get('a[href="#/devicemanagement/firmware"]').click()
 
                 cy.locationShouldBe('#/devicemanagement/firmware')
@@ -389,7 +389,7 @@ context('Device management tests', () => {
                 cy.get('button[data-cy="aui-close-button"]').click()
                 cy.locationShouldBe('#/devicemanagement/firmware')
 
-                cy.get('td[data-cy="q-td--version"] span').contains('testversion').should('be.visible')                
+                cy.get('td[data-cy="q-td--version"] span').contains('testversion').should('be.visible')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -398,7 +398,7 @@ context('Device management tests', () => {
         xit('Download device firmware', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
                 cy.get('a[href="#/devicemanagement/firmware"]').click()
 
                 cy.locationShouldBe('#/devicemanagement/firmware')
@@ -410,7 +410,7 @@ context('Device management tests', () => {
 
                 const filename = path.join(downloadsFolder, 'firmware.z')
                 cy.readFile(filename, 'binary', { timeout: 1000 })
-                    .should(buffer => expect(buffer.length).to.be.gt(50))                
+                    .should(buffer => expect(buffer.length).to.be.gt(50))
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -419,7 +419,7 @@ context('Device management tests', () => {
         it('Delete device firmware', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
                 cy.get('a[href="#/devicemanagement/firmware"]').click()
 
                 cy.locationShouldBe('#/devicemanagement/firmware')
@@ -433,7 +433,7 @@ context('Device management tests', () => {
         it('Check if device config with invalid values gets rejected', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
                 cy.get('a[href="#/devicemanagement/configuration"]').click()
 
                 cy.locationShouldBe('#/devicemanagement/configuration')
@@ -442,7 +442,7 @@ context('Device management tests', () => {
                 cy.get('[data-cy=aui-save-button]').click()
                 cy.get('input[data-cy="aui-select-pbxdevicemodel"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
                 cy.get('label[data-cy="aui-pbxconfig-version"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
-                cy.get('label[data-cy="aui-pbxconfig-content"]').find('div[role="alert"]').contains('Input is required').should('be.visible')                
+                cy.get('label[data-cy="aui-pbxconfig-content"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -454,7 +454,7 @@ context('Device management tests', () => {
                     apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
                 })
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
                 cy.get('a[href="#/devicemanagement/configuration"]').click()
 
                 cy.locationShouldBe('#/devicemanagement/configuration')
@@ -469,7 +469,7 @@ context('Device management tests', () => {
                 cy.locationShouldBe('#/devicemanagement/configuration')
 
                 searchInDataTable(pbxDeviceConfig.version, "Version")
-                cy.get('td[data-cy="q-td--version"] span').contains(pbxDeviceConfig.version).should('be.visible')                
+                cy.get('td[data-cy="q-td--version"] span').contains(pbxDeviceConfig.version).should('be.visible')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -478,7 +478,7 @@ context('Device management tests', () => {
         it('Edit device config', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
                 cy.get('a[href="#/devicemanagement/configuration"]').click()
 
                 cy.locationShouldBe('#/devicemanagement/configuration')
@@ -494,7 +494,7 @@ context('Device management tests', () => {
                 cy.get('[data-cy=aui-save-button]').click()
                 cy.get('div[role="alert"]', {timeout: 20000}).should('have.class', 'bg-positive')
                 cy.get('button[data-cy="aui-close-button"]').click()
-                cy.locationShouldBe('#/devicemanagement/configuration')                
+                cy.locationShouldBe('#/devicemanagement/configuration')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -503,12 +503,12 @@ context('Device management tests', () => {
         it('Delete device config', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
                 cy.get('a[href="#/devicemanagement/configuration"]').click()
 
                 cy.locationShouldBe('#/devicemanagement/configuration')
 
-                deleteItemOnListPageBy(pbxDeviceConfig.version, 'Version')                
+                deleteItemOnListPageBy(pbxDeviceConfig.version, 'Version')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -517,7 +517,7 @@ context('Device management tests', () => {
         it('Check if device profile with invalid values gets rejected', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
                 cy.get('a[href="#/devicemanagement/profile"]').click()
 
                 cy.locationShouldBe('#/devicemanagement/profile')
@@ -525,7 +525,7 @@ context('Device management tests', () => {
                 cy.get('a[data-cy="aui-list-action--add"]').click()
                 cy.get('[data-cy=aui-save-button]').click()
                 cy.get('input[data-cy="aui-select-pbxdeviceconfig"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
-                cy.get('label[data-cy="aui-pbxprofile-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')                
+                cy.get('label[data-cy="aui-pbxprofile-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -537,7 +537,7 @@ context('Device management tests', () => {
                     apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
                 })
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
                 cy.get('a[href="#/devicemanagement/profile"]').click()
 
                 cy.locationShouldBe('#/devicemanagement/profile')
@@ -551,7 +551,7 @@ context('Device management tests', () => {
                 cy.locationShouldBe('#/devicemanagement/profile')
 
                 searchInDataTable(pbxDeviceProfile.name, "Name")
-                cy.get('td[data-cy="q-td--name"] span').contains(pbxDeviceProfile.name).should('be.visible')                
+                cy.get('td[data-cy="q-td--name"] span').contains(pbxDeviceProfile.name).should('be.visible')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -560,7 +560,7 @@ context('Device management tests', () => {
         it('Edit preferences for device profile', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
                 cy.get('a[href="#/devicemanagement/profile"]').click()
 
                 cy.locationShouldBe('#/devicemanagement/profile')
@@ -579,7 +579,7 @@ context('Device management tests', () => {
                 testPreferencesTextField('syslog-level', '5')
                 testPreferencesTextField('syslog-server')
                 testPreferencesToggleField('user-conf-priority')
-                testPreferencesToggleField('web-gui-dis')                
+                testPreferencesToggleField('web-gui-dis')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
@@ -588,12 +588,12 @@ context('Device management tests', () => {
         it('Delete device profile', () => {
             if (iscloudpbx) {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                cy.navigateMainMenu('settings / devicemanagement')
+                cy.navigateMainMenu('settings / devicemanagement', false)
                 cy.get('a[href="#/devicemanagement/profile"]').click()
 
                 cy.locationShouldBe('#/devicemanagement/profile')
 
-                deleteItemOnListPageBy(pbxDeviceProfile.name, 'Name')                
+                deleteItemOnListPageBy(pbxDeviceProfile.name, 'Name')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
