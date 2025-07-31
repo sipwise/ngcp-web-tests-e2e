@@ -132,15 +132,14 @@ context('Call blocking page tests', () => {
             cy.get('button[data-cy="csc-block-number-save"]').click()
 
             cy.contains('testnumber').should('be.visible')
-            cy.get('i[role="presentation"]').contains('block').should('be.visible')
-
+            cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('block').should('be.visible')
             cy.get('div[data-cy="csc-block-listed"]').click()
             cy.get('div[data-cy="csc-block-listed"][aria-checked="true"]').should('be.visible')
-            cy.get('i[role="presentation"]').contains('check').should('be.visible')
+            cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('check').should('be.visible')
 
             cy.get('div[data-cy="csc-block-all"]').click()
             cy.get('div[data-cy="csc-block-all"][aria-checked="true"]').should('be.visible')
-            cy.get('i[role="presentation"]').contains('block').should('be.visible')
+            cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('block').should('be.visible')
         })
 
         it('Add/Edit/Delete blocked numbers for incoming calls', () => {
@@ -201,16 +200,14 @@ context('Call blocking page tests', () => {
             cy.get('button[data-cy="csc-block-number-save"]').click()
 
             cy.contains('testnumber').should('be.visible')
-            cy.get('i[role="presentation"]').contains('block').should('be.visible')
-
+            cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('block').should('be.visible')
             cy.get('div[data-cy="csc-block-listed"]').click()
             cy.get('div[data-cy="csc-block-listed"][aria-checked="true"]').should('be.visible')
-            cy.get('i[role="presentation"]').contains('check').should('be.visible')
+            cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('check').should('be.visible')
 
             cy.get('div[data-cy="csc-block-all"]').click()
             cy.get('div[data-cy="csc-block-all"][aria-checked="true"]').should('be.visible')
-            cy.get('i[role="presentation"]').contains('block').should('be.visible')
-        })
+            cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('block').should('be.visible')        })
 
         it('Add/Edit/Delete blocked numbers for outgoing calls', () => {
             cy.loginUiCSC(loginInfo.username, loginInfo.password)
