@@ -116,7 +116,7 @@ context('Dashboard page tests', () => {
         })
 
         it('Try to access every page in conversations tab', () => {
-            cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
+            cy.intercept('GET', '**/api/platforminfo?lang=en').as('platforminfo')
             cy.loginUI(loginInfo.username, loginInfo.password)
             let isSpPro = false
             cy.wait('@platforminfo').then(({ response }) => {
