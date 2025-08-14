@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.22+0~mr12.5.1.22) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [8d50c1c] MT#63356 Adapt disable fax convesation is CE
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 14 Aug 2025 17:11:14 +0200
+
 ngcp-web-tests-e2e (12.5.1.21+0~mr12.5.1.21) unstable; urgency=medium
 
   [ Debora Crescenzo ]
