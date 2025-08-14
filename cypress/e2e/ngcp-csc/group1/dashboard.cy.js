@@ -115,8 +115,15 @@ context('Dashboard page tests', () => {
             cy.get('input[data-cy="csc-call-number-input"]').should('be.visible')
         })
 
-        it('Try to acces every page in conversations tab', () => {
+        it('Try to access every page in conversations tab', () => {
+            cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
             cy.loginUI(loginInfo.username, loginInfo.password)
+            let isSpPro = false
+            cy.wait('@platforminfo').then(({ response }) => {
+                if (response.body.type === 'sppro') {
+                    isSpPro = true
+                }
+            })
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('a[href="#/user/conversations"]:first').click()
@@ -127,13 +134,14 @@ context('Dashboard page tests', () => {
 
             cy.get('div[data-cy="q-tab-voicemail"]').click()
             cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Voicemails found')
-
-            cy.get('div[data-cy="q-tab-fax"]').click()
-            cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Faxes found')
+ 
+            if (isSpPro) {
+               cy.get('div[data-cy="q-tab-fax"]').click()
+               cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Faxes found')
+            }
 
             cy.get('div[data-cy="q-tab-call-fax-voicemail"]').click()
             cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
-
             cy.get('input[data-cy="filter-from"]').click()
             cy.get('div[class="q-date__calendar-item q-date__calendar-item--in"] span').contains('1').click({ force: true })
             cy.wait(1000)
