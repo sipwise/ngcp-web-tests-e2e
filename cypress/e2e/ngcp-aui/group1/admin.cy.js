@@ -409,7 +409,6 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
-            cy.get('div[role="alert"] button').click()
             searchInDataTable(mainResellerAdmin.login)
             cy.get('div[data-cy="aui-data-table-inline-edit--toggle"]:first').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-negative')
