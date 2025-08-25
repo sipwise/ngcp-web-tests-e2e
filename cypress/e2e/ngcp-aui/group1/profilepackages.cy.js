@@ -14,8 +14,8 @@ import {
     apiRemoveSystemContactBy,
     deleteItemOnListPageBy,
     searchInDataTable,
-    waitPageProgress
-} from '../../../support/ngcp-aui/e2e'
+    waitPageProgressAUI
+} from '../../../support/e2e'
 
 export const contract = {
     contact_id: 0,
@@ -171,7 +171,7 @@ context('Profile package tests', () => {
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('td[data-cy="q-td--initial-profiles-grp"]').contains(billingProfile.name).should('be.visible')
         })
 

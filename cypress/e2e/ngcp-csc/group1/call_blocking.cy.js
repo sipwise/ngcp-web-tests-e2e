@@ -7,10 +7,10 @@ import {
     apiRemoveDomainBy,
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
-    waitPageProgress,
+    waitPageProgressCSC,
     apiCreateSubscriber,
     getRandomNum,
-} from '../../../support/ngcp-csc/e2e'
+} from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
@@ -99,13 +99,13 @@ context('Call blocking page tests', () => {
         })
 
         it('Enable incoming call block', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/call-blocking/incoming"]').click()
 
-            waitPageProgress()
+            waitPageProgressCSC()
             cy.get('div[data-cy="csc-enable-incoming"]').click()
             cy.get('div[data-cy="csc-enable-incoming"][aria-checked="true"]').should('be.visible')
 
@@ -120,13 +120,13 @@ context('Call blocking page tests', () => {
         })
 
         it('Add blocked number and enable blocklist for incoming calls', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/call-blocking/incoming"]').click()
 
-            waitPageProgress()
+            waitPageProgressCSC()
             cy.get('button[data-cy="csc-add-number"]').click()
             cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
             cy.get('button[data-cy="csc-block-number-save"]').click()
@@ -143,13 +143,13 @@ context('Call blocking page tests', () => {
         })
 
         it('Add/Edit/Delete blocked numbers for incoming calls', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/call-blocking/incoming"]').click()
 
-            waitPageProgress()
+            waitPageProgressCSC()
             cy.get('button[data-cy="csc-add-number"]').click()
             cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
             cy.get('button[data-cy="csc-block-number-save"]').click()
@@ -188,13 +188,13 @@ context('Call blocking page tests', () => {
         })
 
         it('Add blocked number and enable blocklist for outgoing calls', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/call-blocking/outgoing"]').click()
 
-            waitPageProgress()
+            waitPageProgressCSC()
             cy.get('button[data-cy="csc-add-number"]').click()
             cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
             cy.get('button[data-cy="csc-block-number-save"]').click()
@@ -210,13 +210,13 @@ context('Call blocking page tests', () => {
             cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('block').should('be.visible')        })
 
         it('Add/Edit/Delete blocked numbers for outgoing calls', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/call-blocking/outgoing"]').click()
 
-            waitPageProgress()
+            waitPageProgressCSC()
             cy.get('button[data-cy="csc-add-number"]').click()
             cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
             cy.get('button[data-cy="csc-block-number-save"]').click()

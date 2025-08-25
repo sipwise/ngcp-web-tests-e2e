@@ -13,10 +13,10 @@ import {
     apiCreateSubscriberProfile,
     apiRemoveSubscriberProfileBy,
     getRandomNum,
-    waitPageProgress,
+    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
@@ -169,9 +169,9 @@ context('Subscriber tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsSubscribers"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="aui-select-domain"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('label[data-cy="subscriber-sip-username"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -196,9 +196,9 @@ context('Subscriber tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsSubscribers"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.auiSelectLazySelect({ dataCy: 'aui-select-domain', filter: domain.domain, itemContains: domain.domain })
             cy.get('input[data-cy="subscriber-web-username"]').type(subscriber.username)
             cy.get('[data-cy="subscriber-password-generate"]:first').click()
@@ -219,13 +219,13 @@ context('Subscriber tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsSubscribers"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             searchInDataTable(subscriber.external_id, 'Subscriber External ID')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             cy.get('a[data-cy="aui-edit-button"]').click()
             cy.get('input[data-cy="subscriber-email"]').clear()
@@ -265,13 +265,13 @@ context('Subscriber tests', () => {
                     cy.get('div[class="aui-data-table"] .q-checkbox').click()
                     cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                     cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsSubscribers"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
 
                     searchInDataTable(pilotSubscriber.external_id, 'Subscriber External ID')
                     cy.get('div[class="aui-data-table"] .q-checkbox').click()
                     cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                     cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
 
                     cy.get('a[data-cy="aui-edit-button"]').click()
                     cy.get('label[data-cy="aui-input-subscriber-username"] input').type(pilotSubscriber.external_id)
@@ -316,13 +316,13 @@ context('Subscriber tests', () => {
                     cy.get('div[class="aui-data-table"] .q-checkbox').click()
                     cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                     cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsSubscribers"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
 
                     searchInDataTable(seatSubscriber.external_id, 'Subscriber External ID')
                     cy.get('div[class="aui-data-table"] .q-checkbox').click()
                     cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                     cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
 
                     cy.get('a[data-cy="aui-edit-button"]').click()
                     cy.get('label[data-cy="aui-input-subscriber-username"] input').type(seatSubscriber.external_id)

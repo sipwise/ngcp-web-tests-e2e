@@ -8,9 +8,9 @@ import {
     apiRemoveDomainBy,
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
-    waitPageProgress,
+    waitPageProgressCSC,
     getRandomNum
-} from '../../../support/ngcp-csc/e2e'
+} from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
@@ -88,7 +88,7 @@ context('Fax settings page tests', () => {
 
         it('Try to enable fax to mail', () => {
             cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
                     cy.get('a[href="#/user/fax-settings"]').should('be.visible')
@@ -105,7 +105,7 @@ context('Fax settings page tests', () => {
 
         it('Try to disable and enable T38 and ECM', () => {
             cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
                     cy.get('a[href="#/user/fax-settings"]').should('be.visible')
@@ -135,7 +135,7 @@ context('Fax settings page tests', () => {
 
         it('Try to create a destination with invalid values', () => {
             cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
                     cy.get('a[href="#/user/fax-settings"]').should('be.visible')
@@ -159,7 +159,7 @@ context('Fax settings page tests', () => {
 
         it('Try to create a destination', () => {
             cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
                     cy.get('a[href="#/user/fax-settings"]').should('be.visible')
@@ -182,7 +182,7 @@ context('Fax settings page tests', () => {
 
         it('Try to edit a destination', () => {
             cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
                     cy.get('a[href="#/user/fax-settings"]').should('be.visible')
@@ -229,7 +229,7 @@ context('Fax settings page tests', () => {
 
         it('Try to delete a destination', () => {
             cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {
                     cy.get('a[href="#/user/fax-settings"]').should('be.visible')
@@ -248,7 +248,7 @@ context('Fax settings page tests', () => {
                     cy.get('div[data-cy="destination-delete"]').click()
 
                     cy.get('button[data-cy="csc-dialog-delete"]').click()
-                    waitPageProgress()
+                    waitPageProgressCSC()
                     cy.get('div[data-cy="csc-list-item-title"]').should('not.exist')
                 } else {
                     cy.log('Not a SPPRO instance, exiting test...')

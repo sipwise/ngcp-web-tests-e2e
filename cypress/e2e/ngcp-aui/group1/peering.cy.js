@@ -2,7 +2,7 @@
 
 import {
     getRandomNum,
-    waitPageProgress,
+    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiCreateContract,
@@ -18,7 +18,7 @@ import {
     apiRemovePeeringOutboundRuleBy,
     apiRemovePeeringInboundRuleBy,
     apiRemovePeeringGroupBy
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
@@ -181,7 +181,7 @@ context('Peering tests', () => {
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             cy.locationShouldBe('#/peering')
             cy.get('span[data-cy="aui-data-table-inline-edit--input"]').contains('testdescription').should('be.visible')
@@ -197,9 +197,9 @@ context('Peering tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[href="#/peering/' + peeringInboundRule.group_id + '/details/inboundrules"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
             cy.get('[data-cy="aui-save-button"]').click()
@@ -227,9 +227,9 @@ context('Peering tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[href="#/peering/' + peeringInboundRule.group_id + '/details/inboundrules"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
             cy.get('input[data-cy="inbound-pattern"]').type(peeringInboundRule.pattern)
@@ -251,9 +251,9 @@ context('Peering tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[href="#/peering/' + peeringInboundRule.group_id + '/details/inboundrules"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetailsInboundRuleEdit"]').click()
@@ -263,7 +263,7 @@ context('Peering tests', () => {
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             cy.get('td[data-cy="q-td--reject-reason"]').contains('newrejectreason').should('be.visible')
         })
@@ -278,9 +278,9 @@ context('Peering tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[href="#/peering/' + peeringInboundRule.group_id + '/details/outboundrules"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
             cy.get('[data-cy="aui-save-button"]').click()
@@ -301,9 +301,9 @@ context('Peering tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[href="#/peering/' + peeringInboundRule.group_id + '/details/outboundrules"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
             cy.get('input[data-cy="outbound-callee_prefix"]').type(PeeringOutboundRule.callee_prefix)
@@ -325,9 +325,9 @@ context('Peering tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[href="#/peering/' + peeringInboundRule.group_id + '/details/outboundrules"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetailsOutboundRuleEdit"]').click()
@@ -337,7 +337,7 @@ context('Peering tests', () => {
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             cy.get('td[data-cy="q-td--callee-prefix"]').contains('newcalleeprefix').should('be.visible')
         })
@@ -352,11 +352,11 @@ context('Peering tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[href="#/peering/' + peeringInboundRule.group_id + '/details/inboundrules"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[href="#/peering/' + peeringInboundRule.group_id + '/details/server"]:first').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
             cy.get('[data-cy="aui-save-button"]').click()
@@ -381,11 +381,11 @@ context('Peering tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[href="#/peering/' + peeringInboundRule.group_id + '/details/inboundrules"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[href="#/peering/' + peeringInboundRule.group_id + '/details/server"]:first').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
             cy.get('input[data-cy="server-name"]').type(peeringServer.name)
@@ -406,11 +406,11 @@ context('Peering tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[href="#/peering/' + peeringInboundRule.group_id + '/details/inboundrules"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[href="#/peering/' + peeringInboundRule.group_id + '/details/server"]:first').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupServerEdit"]').click()
@@ -420,7 +420,7 @@ context('Peering tests', () => {
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             cy.get('td[data-cy="q-td--host"]').contains('PeeringServerHost').should('be.visible')
         })
@@ -435,11 +435,11 @@ context('Peering tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[href="#/peering/' + peeringInboundRule.group_id + '/details/inboundrules"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[href="#/peering/' + peeringInboundRule.group_id + '/details/server"]:first').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             deleteItemOnListPageBy()
         })
 
@@ -453,9 +453,9 @@ context('Peering tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[href="#/peering/' + peeringInboundRule.group_id + '/details/outboundrules"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             deleteItemOnListPageBy()
         })
 
@@ -469,9 +469,9 @@ context('Peering tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[href="#/peering/' + peeringInboundRule.group_id + '/details/inboundrules"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             deleteItemOnListPageBy()
         })
 

@@ -24,6 +24,6 @@ module.exports = defineConfig({
         // For AUI tests, baseUrl NEEDS to have :1443 at the end
         baseUrl: 'https://pro-trunk.mgm.sipwise.com:1443',
         specPattern: 'cypress/e2e/ngcp-aui/**/*.cy.{js,jsx,ts,tsx}',
-        supportFile: 'cypress/support/ngcp-aui'
+        supportFile: 'cypress/support/e2e.js'
     }
 })

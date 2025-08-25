@@ -13,7 +13,7 @@ import {
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     getRandomNum
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
@@ -135,7 +135,7 @@ context('Login page tests', () => {
         })
 
         it('Check if using "/" will route to login page', () => {
-            cy.logoutUI()
+            cy.logoutUiAUI()
             cy.visit('/')
             cy.url().should('match', /\/#\/login\/admin/)
         })
@@ -203,14 +203,14 @@ context('Login page tests', () => {
             CheckLoggedInUI()
         })
 
-        it('Test helper functions cy.loginUi / cy.logoutUI', () => {
+        it('Test helper functions cy.loginUiAUI / cy.logoutUiAUI', () => {
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
-            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
+            cy.loginUiAUI(ngcpConfig.username, ngcpConfig.password)
             cy.wait('@loginRequest').then(({ response }) => {
                 checkLoginAPIResponse(response)
                 CheckLoggedInUI()
             })
-            cy.logoutUI()
+            cy.logoutUiAUI()
             cy.url().should('match', /\/#\/login\/admin/)
         })
 
@@ -296,7 +296,7 @@ context('Login page tests', () => {
         })
 
         it('Check if main page is available in all different languges', () => {
-            cy.loginUI(ngcpConfig.username, ngcpConfig.password)
+            cy.loginUiAUI(ngcpConfig.username, ngcpConfig.password)
             cy.get('[data-cy="aui-selection-language"]').click()
             cy.contains('div[role="listitem"]', 'Deutsch').click()
             cy.contains('a[href="#/dashboard"]', 'Übersicht').should('be.visible')

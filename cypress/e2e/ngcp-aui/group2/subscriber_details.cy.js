@@ -14,10 +14,10 @@ import {
     deleteDownloadsFolder,
     deleteItemOnListPageBy,
     searchInDataTable,
-    waitPageProgress,
+    waitPageProgressAUI,
     apiCreateSubscriberPhonebook,
     apiRemoveSubscriberPhonebookBy
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 const path = require('path')
@@ -195,13 +195,13 @@ context('Subscriber details tests', () => {
                 cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
 
                 cy.get('div[data-cy="aui-detail-page-menu"]').contains('Voicemail Settings').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('div[data-cy="aui-sound-file-upload--unavail"] input[type="file"]').selectFile(path.join(fixturesFolder, 'ring.wav'), { force: 'true' })
                 cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="file-reset-button"]').click()
                 cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="file-select-button"]').should('be.visible')
                 cy.get('div[data-cy="aui-sound-file-upload--unavail"] input[type="file"]').selectFile(path.join(fixturesFolder, 'ring.wav'), { force: 'true' })
                 cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="file-upload-button"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="player-play-button"]').click()
                 cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="player-pause-button"]').should('be.visible')
                 cy.wait(2000)
@@ -297,22 +297,22 @@ context('Subscriber details tests', () => {
                     cy.get('label[data-cy="mailtofax-secret-key-renew-interval"]').click()
                     cy.get('div[role="listbox"]').contains('Monthly').click()
                     cy.get('[data-cy="aui-save-button"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
                     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                     cy.get('button[data-cy="secret-key-reniew-notify-add"]').click()
                     cy.get('input[data-cy="secret-key-notify-email"]').type('test.mail@invalid.com')
                     cy.get('[data-cy="aui-save-button"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
                     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                     cy.get('button[data-cy="secret-key-reniew-notify-add"]').click()
                     cy.get('input[data-cy="secret-key-notify-email"]:last').type('test.mail2@invalid.com')
                     cy.get('[data-cy="aui-save-button"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
                     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                     cy.get('button[data-cy="secret-key-reniew-notify-delete"]:last').click()
                     cy.get('button[data-cy="secret-key-reniew-notify-delete"]').click()
                     cy.get('[data-cy="aui-save-button"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
                     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 } else {
                     cy.log('Not a SPPRO instance, exiting test...')
@@ -336,7 +336,7 @@ context('Subscriber details tests', () => {
                     cy.get('input[data-cy="acl-destination"]').type('0123456789')
                     cy.get('div[data-cy="acl-regex-enable"]').click()
                     cy.get('[data-cy="aui-save-button"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
                     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                     cy.get('button[data-cy="acl-add"]').scrollIntoView()
                     cy.get('button[data-cy="acl-add"]').click({ force: true })
@@ -345,12 +345,12 @@ context('Subscriber details tests', () => {
                     cy.get('input[data-cy="acl-destination"]:last').type('012345678')
                     cy.get('div[data-cy="acl-regex-enable"]:last').click()
                     cy.get('[data-cy="aui-save-button"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
                     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                     cy.get('button[data-cy="acl-delete"]:last').click()
                     cy.get('button[data-cy="acl-delete"]').click()
                     cy.get('[data-cy="aui-save-button"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
                     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 } else {
                     cy.log('Not a SPPRO instance, exiting test...')
@@ -371,7 +371,7 @@ context('Subscriber details tests', () => {
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
                 cy.get('div[data-cy="aui-detail-page-menu"]').contains('Location Mappings').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('div[data-cy="aui-list-action--add"]').click()
                 cy.get('input[data-cy="locationmapping-location"]').type('testlocation')
                 cy.get('input[data-cy="locationmapping-caller_pattern"]').type('testcallerpattern')
@@ -380,7 +380,7 @@ context('Subscriber details tests', () => {
                 cy.get('input[data-cy="locationmapping-to_username"]').type('testusername')
                 cy.get('input[data-cy="locationmapping-external_id"]').type(locationmapping.external_id)
                 cy.get('[data-cy="aui-save-button"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             })
 
@@ -393,7 +393,7 @@ context('Subscriber details tests', () => {
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
                 cy.get('div[data-cy="aui-detail-page-menu"]').contains('Location Mappings').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--subscriberLocationMappingsEdit"]').click()
@@ -421,7 +421,7 @@ context('Subscriber details tests', () => {
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
                 cy.get('div[data-cy="aui-detail-page-menu"]').contains('Location Mappings').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--delete"]').click()
                 cy.get('button[data-cy="btn-confirm"]').click()

@@ -18,10 +18,10 @@ import {
     deleteItemOnListPageBy,
     testPreferencesTextField,
     testPreferencesToggleField,
-    waitPageProgress,
+    waitPageProgressAUI,
     apiCreatePbxDeviceProfile,
     apiRemovePbxDeviceProfileBy
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 const downloadsFolder = Cypress.config('downloadsFolder')
 const fixturesFolder = Cypress.config('fixturesFolder')
@@ -220,6 +220,7 @@ context('Device management tests', () => {
                 cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: 'resellerDeviceManagementCypress', itemContains: 'resellerDeviceManagementCypress' })
                 cy.get('input[data-cy="aui-pbxdevicemodel-vendor"]').type(pbxDeviceModel.vendor)
                 cy.get('input[data-cy="aui-pbxdevicemodel-model"]').type(pbxDeviceModel.model)
+                cy.get('div[data-cy="aui-pbxdevicemodel-frontimage"]').find('input[data-cy="q-uploader-add-trigger--0"]').selectFile(path.join(fixturesFolder, 'phoneimage.png'), { force: 'true' })
 
                 cy.get('[data-cy=aui-save-button]').click()
                 cy.get('div[role="alert"]', {timeout: 20000}).should('have.class', 'bg-positive')
@@ -296,7 +297,7 @@ context('Device management tests', () => {
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--deviceManagementModelPreferences"]').click()
 
-                waitPageProgress()
+                waitPageProgressAUI()
                 testPreferencesToggleField('DNS-SRV-enable')
                 testPreferencesTextField('admin-name')
                 testPreferencesTextField('admin-pass')
@@ -570,7 +571,7 @@ context('Device management tests', () => {
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--deviceManagementProfilePreferences"]').click()
 
-                waitPageProgress()
+                waitPageProgressAUI()
                 testPreferencesToggleField('DNS-SRV-enable')
                 testPreferencesTextField('admin-name')
                 testPreferencesTextField('admin-pass')

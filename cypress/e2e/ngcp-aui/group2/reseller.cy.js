@@ -9,10 +9,10 @@ import {
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     getRandomNum,
-    waitPageProgress,
+    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 export const contract = {
     contact_id: 0,
@@ -118,7 +118,7 @@ context('Reseller tests', () => {
             cy.auiSelectLazySelect({ dataCy: 'aui-select-contract', filter: reseller.contract_id, itemContains: 'default-system' })
             cy.get('[data-cy="reseller-name"] input').type(reseller.name)
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.locationShouldBe('#/reseller')
@@ -133,10 +133,10 @@ context('Reseller tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerEdit"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.qSelect({ dataCy: 'reseller-status', filter: '', itemContains: 'Locked' })
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('[data-cy="aui-close-button"]').click()
             cy.get('[data-cy="aui-data-table-inline-edit--select"]').should('contain.text', 'Locked')
         })

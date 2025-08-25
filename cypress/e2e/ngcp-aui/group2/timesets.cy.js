@@ -11,9 +11,9 @@ import {
     apiRemoveTimesetBy,
     deleteItemOnListPageBy,
     searchInDataTable,
-    waitPageProgress,
+    waitPageProgressAUI,
     apiRemoveSystemContactBy
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
@@ -146,7 +146,7 @@ context('Timeset tests', () => {
             cy.get('[data-cy=aui-save-button]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('td[data-cy="q-td--reseller-name"]').contains(editReseller.name).should('be.visible')
         })
 

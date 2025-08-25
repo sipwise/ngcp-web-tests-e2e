@@ -5,7 +5,7 @@ import {
     apiCreateDomain,
     apiLoginAsSuperuser,
     apiRemoveDomainBy
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 

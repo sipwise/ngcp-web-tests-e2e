@@ -9,7 +9,7 @@ import {
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     getRandomNum,
-    waitPageProgress,
+    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiCreateHeaderRule,
@@ -20,7 +20,7 @@ import {
     apiRemoveHeaderRuleActionBy,
     apiRemoveHeaderRuleBy,
     apiRemoveHeaderRulesetBy
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 var issppro = null
@@ -196,7 +196,7 @@ context('Header manipulation tests', () => {
                 cy.get('input[data-cy="header-rule-set-name"]').type(headerRuleset.name)
                 cy.get('input[data-cy="header-rule-set-description"]').type(headerRuleset.description)
                 cy.get('[data-cy="aui-save-button"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
 
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 cy.locationShouldBe('#/header')
@@ -215,7 +215,7 @@ context('Header manipulation tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerSetEdit"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('input[data-cy="header-rule-set-description"]').clear().type('testdescription')
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
@@ -249,7 +249,7 @@ context('Header manipulation tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('a[data-cy="aui-list-action--add"]').click()
 
                 cy.get('[data-cy="aui-save-button"]').click()
@@ -273,13 +273,13 @@ context('Header manipulation tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('a[data-cy="aui-list-action--add"]').click()
 
                 cy.get('input[data-cy="headerrules-name"]').type(headerRule.name)
                 cy.get('input[data-cy="headerrules-description"]').type(headerRule.description)
                 cy.get('[data-cy="aui-save-button"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
 
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             } else {
@@ -297,12 +297,12 @@ context('Header manipulation tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 searchInDataTable(headerRule.name)
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRuleEdit"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('input[data-cy="headerrules-priority"]').clear().type('0')
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
@@ -323,7 +323,7 @@ context('Header manipulation tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 deleteItemOnListPageBy(headerRule.name)
             } else {
                 cy.log('Not a SPPRO instance, exiting test...')
@@ -340,12 +340,12 @@ context('Header manipulation tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 searchInDataTable(headerRule.name)
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActions"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('a[data-cy="aui-list-action--add"]').click()
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('label[data-cy="headerruleactions-header"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -367,17 +367,17 @@ context('Header manipulation tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 searchInDataTable(headerRule.name)
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActions"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('a[data-cy="aui-list-action--add"]').click()
 
                 cy.get('input[data-cy="headerruleactions-header"]').type(headerRuleAction.header)
                 cy.get('[data-cy="aui-save-button"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
 
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             } else {
@@ -395,16 +395,16 @@ context('Header manipulation tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 searchInDataTable(headerRule.name)
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActions"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActionEdit"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('input[data-cy="headerruleactions-priority"]').clear().type('0')
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
@@ -425,12 +425,12 @@ context('Header manipulation tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 searchInDataTable(headerRule.name)
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActions"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 deleteItemOnListPageBy()
             } else {
                 cy.log('Not a SPPRO instance, exiting test...')
@@ -447,12 +447,12 @@ context('Header manipulation tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 searchInDataTable(headerRule.name)
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditions"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('a[data-cy="aui-list-action--add"]').click()
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('label[data-cy="headerruleconditions-matchName"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -474,17 +474,17 @@ context('Header manipulation tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 searchInDataTable(headerRule.name)
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditions"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('a[data-cy="aui-list-action--add"]').click()
 
                 cy.get('input[data-cy="headerruleconditions-matchName"]').type(headerRuleCondition.match_part)
                 cy.get('[data-cy="aui-save-button"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
 
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             } else {
@@ -502,16 +502,16 @@ context('Header manipulation tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 searchInDataTable(headerRule.name)
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditions"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditionEdit"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 cy.qSelect({ dataCy: 'headerruleconditions-expression', itemContains: 'contains' })
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
@@ -532,12 +532,12 @@ context('Header manipulation tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 searchInDataTable(headerRule.name)
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditions"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 deleteItemOnListPageBy()
             } else {
                 cy.log('Not a SPPRO instance, exiting test...')
