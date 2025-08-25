@@ -2,15 +2,14 @@
 
 import {
     apiLoginAsSuperuser,
-    waitPageProgress,
+    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiCreateLNPCarrier,
     apiCreateLNPNumber,
     apiRemoveLNPNumberBy,
-    apiRemoveLNPCarrierBy,
-    getRandomNum
-} from '../../../support/ngcp-aui/e2e'
+    apiRemoveLNPCarrierBy
+} from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
@@ -97,7 +96,7 @@ context('LNP tests', () => {
             cy.get('input[data-cy="lnpcarrier-name"]').type(LNPCarrier.name)
             cy.get('input[data-cy="lnpcarrier-prefix"]').type(LNPCarrier.prefix)
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.locationShouldBe('#/lnp')
@@ -112,7 +111,7 @@ context('LNP tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--lnpCarrierEdit"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('input[data-cy="lnpcarrier-prefix"]').clear().type('testdescription')
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
@@ -140,7 +139,7 @@ context('LNP tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--lnpNumberList"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="lnpnumber-number"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -158,13 +157,13 @@ context('LNP tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--lnpNumberList"]').click()
-            waitPageProgress()
-            
+            waitPageProgressAUI()
+
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="lnpnumber-number"]').type(LNPNumber.number)
             cy.get('input[data-cy="lnpnumber-type"]').type(LNPNumber.type)
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
@@ -178,13 +177,13 @@ context('LNP tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--lnpNumberList"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             searchInDataTable(LNPNumber.number)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--lnpNumberEdit"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('input[data-cy="lnpnumber-type"]').type('testtype')
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
@@ -202,7 +201,7 @@ context('LNP tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--lnpNumberList"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             deleteItemOnListPageBy(LNPNumber.number)
         })
     })

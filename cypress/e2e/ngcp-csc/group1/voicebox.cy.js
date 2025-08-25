@@ -9,7 +9,7 @@ import {
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
     getRandomNum,
-} from '../../../support/ngcp-csc/e2e'
+} from '../../../support/e2e'
 
 export const domain = {
     domain: 'domainVoiceBox',
@@ -90,8 +90,8 @@ context('Voicebox page tests', () => {
             })
         })
 
-        it.only('Switch between all Voicebox languages', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+        it('Switch between all Voicebox languages', () => {
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
@@ -170,7 +170,7 @@ context('Voicebox page tests', () => {
         })
 
         it('Change and Undo PIN', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
@@ -202,7 +202,7 @@ context('Voicebox page tests', () => {
         })
 
         it('Change and Undo Email', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
@@ -237,7 +237,7 @@ context('Voicebox page tests', () => {
         })
 
         it('Enable/Disable attach/delete voicemail', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
@@ -266,7 +266,7 @@ context('Voicebox page tests', () => {
         })
 
         it('Upload/Delete busy greeting sound', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
@@ -293,7 +293,7 @@ context('Voicebox page tests', () => {
         })
 
         it('Upload/Delete unavailable greeting sound', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()

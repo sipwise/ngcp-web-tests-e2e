@@ -2,7 +2,7 @@
 
 import {
     getRandomNum,
-    waitPageProgress,
+    waitPageProgressAUI,
     searchInDataTable,
     deleteItemOnListPageBy,
     clickDataTableSelectedMoreMenuItem,
@@ -15,7 +15,7 @@ import {
     apiRemoveContractBy,
     apiRemoveResellerBy,
     apiRemoveSystemContactBy
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 const peeringContract = {
     contact_id: null,
@@ -186,18 +186,11 @@ context('Contract tests', () => {
                     }
                     cy.get('div[class="aui-data-table"] .q-checkbox').click()
                     clickDataTableSelectedMoreMenuItem('contractEdit')
-                    waitPageProgress()
-                    cy.get('div[data-cy="contract-status"]').click()
-                    cy.wait(200)
-                    cy.get('div[data-cy="contract-status"]').parents('label').then($el => {
-                        const id = $el.attr('for')
-                        const dropdownListId = `#${id}_lb`
-                        cy.get(dropdownListId).should('be.visible')
-                        cy.contains(`${dropdownListId} .q-item`, 'Pending').should('be.visible')
-                        cy.contains(`${dropdownListId} .q-item`, 'Pending').click()
-                    })
+                    waitPageProgressAUI()
+                    cy.wait(500)
+                    cy.qSelect({ dataCy: 'contract-status', filter: 'Pending', itemContains: 'Pending' })
                     cy.get('[data-cy="aui-save-button"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
                     cy.get('[data-cy="aui-close-button"]').click()
                     cy.get('span[data-cy="aui-data-table-inline-edit--select"] span').contains('Pending')
                 })

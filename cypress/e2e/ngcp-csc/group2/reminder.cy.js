@@ -8,9 +8,9 @@ import {
     apiRemoveDomainBy,
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
-    waitPageProgress,
+    waitPageProgressCSC,
     getRandomNum
-} from '../../../support/ngcp-csc/e2e'
+} from '../../../support/e2e'
 
 export const domain = {
     domain: 'domainReminder',
@@ -89,65 +89,65 @@ context('Reminder tests', () => {
         })
 
         it('Enable/Disable reminder', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/reminder"]').click()
 
-            waitPageProgress()
+            waitPageProgressCSC()
             cy.get('div[data-cy="csc-reminder-toggle"]').click()
 
-            waitPageProgress()
+            waitPageProgressCSC()
             cy.get('div[data-cy="csc-reminder-toggle"][aria-checked="true"]').should('be.visible')
             cy.get('div[data-cy="csc-reminder-toggle"]').click()
 
-            waitPageProgress()
+            waitPageProgressCSC()
             cy.get('div[data-cy="csc-reminder-toggle"][aria-checked="false"]').should('be.visible')
         })
 
         it('Set occurance and then enable reminder', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/reminder"]').click()
 
-            waitPageProgress()
+            waitPageProgressCSC()
             cy.get('div[data-cy="csc-reminder-occurance"][aria-label="On weekdays"]').click()
-            waitPageProgress()
+            waitPageProgressCSC()
             cy.get('div[data-cy="csc-reminder-occurance"][aria-label="On weekdays"][aria-checked="true"]').should('be.visible')
             cy.get('div[data-cy="csc-reminder-occurance"][aria-label="Always"]').click()
-            waitPageProgress()
+            waitPageProgressCSC()
             cy.get('div[data-cy="csc-reminder-occurance"][aria-label="Always"][aria-checked="true"]').should('be.visible')
             cy.get('div[data-cy="csc-reminder-toggle"]').click()
 
-            waitPageProgress()
+            waitPageProgressCSC()
             cy.get('div[data-cy="csc-reminder-toggle"][aria-checked="true"]').should('be.visible')
         })
 
         it('Set time and then enable reminder', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/reminder"]').click()
 
-            waitPageProgress()
+            waitPageProgressCSC()
 
             cy.get('button[data-cy="csc-reminder-show-timeselector"]').trigger("click")
             cy.get('div[class="q-time__clock-position row flex-center q-time__clock-pos-6"]').click()
             cy.wait(1000)
             cy.get('div[class="q-time__clock-position row flex-center q-time__clock-pos-9"]').click()
-            waitPageProgress()
+            waitPageProgressCSC()
             cy.get('input[data-cy="csc-reminder-time"]').should('have.value', '06:45')
             cy.get('div[data-cy="csc-reminder-timeselector"] button:first').click()
             const time = dayjs().format('HH:mm')
-            waitPageProgress()
+            waitPageProgressCSC()
             cy.get('input[data-cy="csc-reminder-time"]').should('have.value', time)
             cy.get('div[data-cy="csc-reminder-toggle"]').click()
 
-            waitPageProgress()
+            waitPageProgressCSC()
             cy.get('div[data-cy="csc-reminder-toggle"][aria-checked="true"]').should('be.visible')
         })
     })

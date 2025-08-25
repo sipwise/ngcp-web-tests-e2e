@@ -2,7 +2,7 @@
 
 import {
     getRandomNum,
-    waitPageProgress,
+    waitPageProgressAUI,
     deleteDownloadsFolder,
     deleteItemOnListPageBy,
     clickDataTableSelectedMoreMenuItem,
@@ -16,7 +16,7 @@ import {
     apiRemoveSystemContactBy,
     apiRemoveContractBy,
     apiRemoveResellerBy
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 const path = require('path')
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -182,7 +182,7 @@ context('Administrator tests', () => {
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin1.login)
             cy.get('[data-cy="aui-data-table-inline-edit--toggle"]:first').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-negative')
             cy.get('div[data-cy="aui-data-table-inline-edit--toggle"]:first[aria-checked="true"]').should('be.visible')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -212,34 +212,44 @@ context('Administrator tests', () => {
             searchInDataTable(admin1.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('[data-cy="master-flag"]').click()
             cy.get('[data-cy="active-flag"]').click()
 
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 
-            cy.logoutUI()
+            cy.logoutUiAUI()
             cy.wait(500)
-            cy.loginUI(admin1.login, admin1.password, false)
+
+            cy.loginUiAUI(admin1.login, admin1.password, false)
             cy.get('div[role="alert"]').contains('Wrong credentials').should('be.visible')
         })
 
         it('Enable customer care for administrator and check if customer care has been activated', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password);
-            cy.navigateMainMenu('settings / administrator');
-            cy.locationShouldBe('#/administrator');
-            searchInDataTable(admin1.login);
-            cy.get('div[class="aui-data-table"] .q-checkbox').click();
-            clickDataTableSelectedMoreMenuItem('adminEdit');
-            waitPageProgress();
-            cy.qSelect({ dataCy: 'roles-list', filter: 'ccareadmin', itemContains: 'ccareadmin' });
-            cy.get('[data-cy="aui-save-button"]').click();
-            cy.get('div[role="alert"]').should('have.class', 'bg-positive');
-            cy.contains('Settings').click();
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / administrator')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(admin1.login)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            clickDataTableSelectedMoreMenuItem('adminEdit')
+            waitPageProgressAUI()
+            cy.qSelect({ dataCy: 'roles-list', filter: 'ccareadmin', itemContains: 'ccareadmin' })
+
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.contains('Settings').click()
+            cy.navigateMainMenu('settings / customer')
+            cy.locationShouldBe('#/customer')
+
+            cy.logoutUiAUI()
+            cy.wait(500)
+
+            cy.quickLogin(admin1.login, admin1.password)
             cy.navigateMainMenu('settings / customer');
             cy.locationShouldBe('#/customer');
-            cy.logoutUI();
+            cy.logoutUiAUI();
             cy.wait(500);
             cy.quickLogin(admin1.login, admin1.password);
             cy.navigateMainMenu('settings / customer');
@@ -251,20 +261,23 @@ context('Administrator tests', () => {
         })
 
         it('Enable read-only for administrator and check if read-only has been activated', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password);
-            cy.navigateMainMenu('settings / administrator');
-            cy.locationShouldBe('#/administrator');
-            searchInDataTable(admin1.login);
-            cy.get('div[class="aui-data-table"] .q-checkbox').click();
-            clickDataTableSelectedMoreMenuItem('adminEdit');
-            waitPageProgress();
-            cy.get('[data-cy="readonly-flag"]').click();
-            cy.get('div[data-cy="readonly-flag"][aria-checked="true"]').should('be.visible');
-            cy.get('[data-cy="aui-save-button"]').click();
-            cy.get('div[role="alert"]').should('have.class', 'bg-positive');
-            cy.logoutUI();
-            cy.wait(500);
-            cy.quickLogin(admin1.login, admin1.password);
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / administrator')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(admin1.login)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            clickDataTableSelectedMoreMenuItem('adminEdit')
+            waitPageProgressAUI()
+            cy.get('[data-cy="readonly-flag"]').click()
+            cy.get('div[data-cy="readonly-flag"][aria-checked="true"]').should('be.visible')
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            cy.logoutUiAUI()
+            cy.wait(500)
+            cy.quickLogin(admin1.login, admin1.password)
+
             // we don't need for resources to load, hence the false flag
             cy.navigateMainMenu('settings / administrator', false);
             cy.locationShouldBe('#/administrator');
@@ -307,25 +320,27 @@ context('Administrator tests', () => {
         })
 
         it('Change password of administrator and check if admin password has been changed', () => {
-            cy.quickLogin(admin1.login, admin1.password);
-            cy.navigateMainMenu('settings / administrator');
-            cy.locationShouldBe('#/administrator');
-            searchInDataTable(admin1.login);
-            cy.get('div[class="aui-data-table"] .q-checkbox').click();
-            clickDataTableSelectedMoreMenuItem('adminResetPassword');
+            cy.quickLogin(admin1.login, admin1.password)
+            cy.navigateMainMenu('settings / administrator')
 
-            cy.get('input[data-cy="password-input"]').type('test');
-            cy.get('[data-cy="vue-password-strength-meter"]').should('be.visible');
-            cy.get('input[data-cy="password-input"]').clear();
-            cy.get('input[data-cy="password-input"]').type(admin1.newpass);
-            cy.get('input[data-cy="password-retype-input"]').type(admin1.newpass);
-            cy.get('[data-cy="save-button"]').click();
-            cy.get('div[data-cy="change-password-form"]').should('not.exist');
-            cy.get('div[role="alert"]').should('have.class', 'bg-positive');
-            cy.logoutUI();
-            cy.wait(500);
-            cy.quickLogin(admin1.login, admin1.newpass);
-            cy.url().should('match', /\/#\/dashboard/);
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(admin1.login)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            clickDataTableSelectedMoreMenuItem('adminResetPassword')
+
+            cy.get('input[data-cy="password-input"]').type('test')
+            cy.get('[data-cy="vue-password-strength-meter"]').should('be.visible')
+            cy.get('input[data-cy="password-input"]').clear()
+            cy.get('input[data-cy="password-input"]').type(admin1.newpass)
+            cy.get('input[data-cy="password-retype-input"]').type(admin1.newpass)
+            cy.get('[data-cy="save-button"]').click()
+            cy.get('div[data-cy="change-password-form"]').should('not.exist')
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            cy.logoutUiAUI()
+            cy.wait(500)
+            cy.quickLogin(admin1.login, admin1.newpass)
+            cy.url().should('match', /\/#\/dashboard/)
         })
 
         it('Make sure that admins cannot delete themselves', () => {
@@ -393,63 +408,71 @@ context('Administrator tests', () => {
         })
 
         it('Check if reseller admin is not allowed to change their own permissions (with is_master=true/false)', () => {
-            cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password);
-            cy.navigateMainMenu('settings / administrator');
-            cy.locationShouldBe('#/administrator');
-            cy.get('div[role="alert"] button').click();
-            searchInDataTable(mainResellerAdmin.login);
-            cy.get('div[data-cy="aui-data-table-inline-edit--toggle"]:first').click();
-            cy.get('div[role="alert"]').should('have.class', 'bg-negative');
-            cy.logoutUI();
-            cy.wait(500);
-            cy.quickLogin(secondaryResellerAdmin.login, secondaryResellerAdmin.password);
-            cy.navigateMainMenu('settings / administrator');
-            cy.locationShouldBe('#/administrator');
-            cy.get('input[data-cy="aui-input-search--datatable"]').clear();
-            searchInDataTable(secondaryResellerAdmin.login);
-            cy.get('div[data-cy="aui-data-table-inline-edit--toggle"]:first').should('have.attr', 'aria-disabled', 'true');
+            cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password)
+            cy.navigateMainMenu('settings / administrator')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(mainResellerAdmin.login)
+            cy.get('div[data-cy="aui-data-table-inline-edit--toggle"]:first').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-negative')
+            cy.logoutUiAUI()
+            cy.wait(500)
+
+            cy.quickLogin(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
+            cy.navigateMainMenu('settings / administrator')
+
+            cy.locationShouldBe('#/administrator')
+            cy.get('input[data-cy="aui-input-search--datatable"]').clear()
+            searchInDataTable(secondaryResellerAdmin.login)
+            cy.get('div[data-cy="aui-data-table-inline-edit--toggle"]:first').should('have.attr', 'aria-disabled', 'true')
         })
 
         it('Create a reseller admin (is_master=false) and check if permissions are correct', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: secondaryResellerAdmin.login, authHeader });
-            });
-            cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password);
-            cy.navigateMainMenu('settings / administrator');
-            cy.locationShouldBe('#/administrator');
-            cy.get('a[href="#/administrator/create"]').click();
-            cy.locationShouldBe('#/administrator/create');
-            cy.get('input[data-cy="login-field"]').type(secondaryResellerAdmin.login);
-            cy.get('input[data-cy="password-field"]').type(secondaryResellerAdmin.password);
-            cy.get('input[data-cy="password-retype-field"]').type(secondaryResellerAdmin.password);
-            cy.get('div[data-cy="can-reset-password-flag"]').click();
-            cy.get('[data-cy="aui-save-button"]').click();
-            waitPageProgress();
-            cy.get('div[role="alert"]').should('have.class', 'bg-positive');
-            cy.logoutUI();
-            cy.wait(500);
-            cy.quickLogin(secondaryResellerAdmin.login, secondaryResellerAdmin.password);
+                apiRemoveAdminBy({ name: secondaryResellerAdmin.login, authHeader })
+            })
+            cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password)
+            cy.navigateMainMenu('settings / administrator')
+
+            cy.locationShouldBe('#/administrator')
+            cy.get('a[href="#/administrator/create"]').click()
+
+            cy.locationShouldBe('#/administrator/create')
+            cy.get('input[data-cy="login-field"]').type(secondaryResellerAdmin.login)
+            cy.get('input[data-cy="password-field"]').type(secondaryResellerAdmin.password)
+            cy.get('input[data-cy="password-retype-field"]').type(secondaryResellerAdmin.password)
+            cy.get('div[data-cy="can-reset-password-flag"]').click()
+            cy.get('[data-cy="aui-save-button"]').click()
+            waitPageProgressAUI()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            cy.logoutUiAUI()
+            cy.wait(500)
+
+            cy.quickLogin(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
             // Close the Settings menu or the cy.navigateMainMenu in the next line
             // will close it instead of opening it
             cy.get('div').contains('Settings').click();
             // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('settings / administrator', false);
-            cy.locationShouldBe('#/administrator');
-            cy.get('div[data-cy="aui-list-action--admin-creation"]').should('not.exist');
-            cy.get('button[data-cy="row-more-menu-btn"]:first').click();
-            cy.get('div[data-cy="aui-list-action--delete"]').should('not.exist');
-            cy.get('a[data-cy="aui-data-table-row-menu--adminEdit"]').click();
-            waitPageProgress();
-            cy.get('label[data-cy="aui-select-reseller"]').should('not.exist');
-            cy.get('div[data-cy="roles-list"]').should('not.exist');
-            cy.get('label[data-cy="password-field"]').should('not.exist');
-            cy.get('div[data-cy="master-flag"]').should('not.exist');
-            cy.get('div[data-cy="active-flag"]').should('not.exist');
-            cy.get('div[data-cy="readonly-flag"]').should('not.exist');
-            cy.get('div[data-cy="show-password-flag"]').should('not.exist');
-            cy.get('div[data-cy="can-change-password-flag"]').should('not.exist');
-            cy.get('div[data-cy="show-cdrs-flag"]').should('not.exist');
-            cy.get('div[data-cy="show-billing-info-flag"]').should('not.exist');
+            cy.navigateMainMenu('settings / administrator',false)
+
+            cy.locationShouldBe('#/administrator')
+            cy.get('div[data-cy="aui-list-action--admin-creation"]').should('not.exist')
+            cy.get('button[data-cy="row-more-menu-btn"]:first').click()
+            cy.get('div[data-cy="aui-list-action--delete"]').should('not.exist')
+            cy.get('a[data-cy="aui-data-table-row-menu--adminEdit"]').click()
+
+            waitPageProgressAUI()
+            cy.get('label[data-cy="aui-select-reseller"]').should('not.exist')
+            cy.get('div[data-cy="roles-list"]').should('not.exist')
+            cy.get('label[data-cy="password-field"]').should('not.exist')
+            cy.get('div[data-cy="master-flag"]').should('not.exist')
+            cy.get('div[data-cy="active-flag"]').should('not.exist')
+            cy.get('div[data-cy="readonly-flag"]').should('not.exist')
+            cy.get('div[data-cy="show-password-flag"]').should('not.exist')
+            cy.get('div[data-cy="can-reset-password-flag"]').should('not.exist')
+            cy.get('div[data-cy="show-cdrs-flag"]').should('not.exist')
+            cy.get('div[data-cy="show-billing-info-flag"]').should('not.exist')
         })
 
         it('Enable master for reseller admin and check if permission is applied correctly', () => {
@@ -460,15 +483,15 @@ context('Administrator tests', () => {
             searchInDataTable(secondaryResellerAdmin.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('[data-cy="master-flag"]').click()
 
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 
-            cy.logoutUI()
+            cy.logoutUiAUI()
             cy.wait(500)
-            cy.loginUI(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
+            cy.loginUiAUI(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
 
             cy.navigateMainMenu('settings / administrator')
 
@@ -487,17 +510,17 @@ context('Administrator tests', () => {
             searchInDataTable(secondaryResellerAdmin.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('[data-cy="master-flag"]').click()
             cy.get('[data-cy="active-flag"]').click()
 
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 
-            cy.logoutUI()
+            cy.logoutUiAUI()
             cy.wait(500)
             // We add false as we are expecting the login to fail
-            cy.loginUI(secondaryResellerAdmin.login, secondaryResellerAdmin.password, false)
+            cy.loginUiAUI(secondaryResellerAdmin.login, secondaryResellerAdmin.password, false)
             cy.get('div[role="alert"]').contains('Wrong credentials').should('be.visible')
         })
 
@@ -516,29 +539,34 @@ context('Administrator tests', () => {
         })
 
         it('First check if password reset is disabled, then enable password reset for reseller admin and check if permission is applied correctly', () => {
-            cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password);
-            cy.navigateMainMenu('settings / administrator');
-            cy.locationShouldBe('#/administrator');
-            searchInDataTable(mainResellerAdmin.login);
-            cy.get('div[class="aui-data-table"] .q-checkbox').click();
-            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click();
-            cy.get('div[data-cy="aui-data-table-row-menu--adminResetPassword"]').should('not.exist');
-            cy.logoutUI();
-            cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password);
-            cy.navigateMainMenu('settings / administrator');
-            cy.locationShouldBe('#/administrator');
-            searchInDataTable(secondaryResellerAdmin.login);
-            cy.get('div[class="aui-data-table"] .q-checkbox').click();
-            clickDataTableSelectedMoreMenuItem('adminEdit');
-            waitPageProgress();
-            cy.get('div[data-cy="master-flag"]').click();
-            cy.get('div[data-cy="can-reset-password-flag"]').click();
-            cy.get('[data-cy="aui-save-button"]').click();
-            waitPageProgress();
-            cy.get('button[data-cy="aui-close-button"]').click();
-            cy.logoutUI();
-            cy.quickLogin(secondaryResellerAdmin.login, secondaryResellerAdmin.password);
-            cy.navigateMainMenu('settings / administrator');
+            cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password)
+            cy.navigateMainMenu('settings / administrator')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(mainResellerAdmin.login)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('div[data-cy="aui-data-table-row-menu--adminResetPassword"]').should('not.exist')
+            cy.logoutUiAUI()
+
+            cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password)
+            cy.navigateMainMenu('settings / administrator')
+
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(secondaryResellerAdmin.login)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            clickDataTableSelectedMoreMenuItem('adminEdit')
+            waitPageProgressAUI()
+            cy.get('div[data-cy="master-flag"]').click()
+            cy.get('div[data-cy="can-reset-password-flag"]').click()
+            cy.get('[data-cy="aui-save-button"]').click()
+            waitPageProgressAUI()
+            cy.get('button[data-cy="aui-close-button"]').click()
+
+            cy.logoutUiAUI()
+            cy.quickLogin(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
+            cy.navigateMainMenu('settings / administrator')
+
             cy.locationShouldBe('#/administrator');
             searchInDataTable(secondaryResellerAdmin.login);
             cy.get('div[class="aui-data-table"] .q-checkbox').click();

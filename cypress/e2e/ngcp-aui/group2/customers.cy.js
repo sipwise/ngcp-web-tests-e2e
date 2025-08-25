@@ -15,12 +15,12 @@ import {
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     getRandomNum,
-    waitPageProgress,
+    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiRemoveCustomerContactsByIds,
     apiRemoveCustomerById,
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 export const contract = {
     contact_id: 0,
@@ -211,13 +211,13 @@ context('Customer tests', () => {
                     cy.get('div[class="aui-data-table"] .q-checkbox').click()
                     cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                     cy.get('a[data-cy="aui-data-table-row-menu--customerEdit"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
 
                     cy.qSelect({ dataCy: 'customer-status', filter: '', itemContains: 'Locked' })
                     cy.get('[data-cy="aui-save-button"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
                     cy.get('[data-cy="aui-close-button"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
                     cy.get('span[data-cy="aui-data-table-inline-edit--select"] span').contains('Locked')
                 })
 
