@@ -2,7 +2,7 @@
 
 import {
     getRandomNum,
-    waitPageProgress,
+    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiCreateContract,
@@ -17,7 +17,7 @@ import {
     apiRemoveNCOSPatternBy,
     apiRemoveNCOSLevelBy,
     apiRemoveNCOSSetBy,
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 const path = require('path')
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -214,13 +214,13 @@ context('NCOS tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--ncosSetLevelsList"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('button[data-cy="row-more-menu-btn"]:first').click()
             cy.get('div[data-cy="aui-data-table-row-menu--addLevel"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('div[data-cy="ncos-set-levels-list"] input:last').type('thisshouldneverexist123')
-            waitPageProgress()
+            waitPageProgressAUI()
 
             cy.get('button[data-cy="row-more-menu-btn"]:first').click()
             cy.get('div[data-cy="aui-data-table-row-menu--delete"]').click()

@@ -10,9 +10,8 @@ import {
     apiRemoveResellerBy,
     apiRemoveResellerPhonebookBy,
     apiRemoveSystemContactBy,
-    deleteDownloadsFolder,
-    waitPageProgress
-} from '../../../support/ngcp-aui/e2e'
+    deleteDownloadsFolder
+} from '../../../support/e2e'
 
 const downloadsFolder = Cypress.config('downloadsFolder')
 const fixturesFolder = Cypress.config('fixturesFolder')
@@ -169,7 +168,7 @@ context('Phonebook tests', () => {
                 cy.get('input[type="file"][data-cy="phonebook-upload-field"]').selectFile(path.join(fixturesFolder, 'reseller_phonebook_entries.csv'), { force: 'true' })
                 cy.get('div[data-cy="phonebook-purge"]').click()
                 cy.get('button[data-cy="aui-save-button"]').click()
-                waitPageProgress()
+                waitPageProgressAUI()
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveResellerPhonebookBy({name: 'phonebooktestr', authHeader})
                 })

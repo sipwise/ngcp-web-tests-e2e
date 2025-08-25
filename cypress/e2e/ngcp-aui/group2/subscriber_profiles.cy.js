@@ -4,10 +4,10 @@ import {
     apiCreateSubscriberProfileSet,
     apiLoginAsSuperuser,
     apiRemoveSubscriberProfileSetBy,
-    waitPageProgress,
+    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
@@ -95,7 +95,7 @@ context('Subscriber profile tests', () => {
             cy.get('[data-cy="aui-save-button"]').click()
             cy.contains('.q-notification', 'Subscriber Profile Set saved successfully').should('be.visible')
             cy.get('[data-cy="aui-close-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.contains('[data-cy="q-td--description"]', profileSet.descriptionNew).should('be.visible')
         })
 
@@ -107,7 +107,7 @@ context('Subscriber profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberProfileList"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy=aui-save-button]').click()
             cy.get('label[data-cy="profile-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -123,20 +123,20 @@ context('Subscriber profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberProfileList"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="profile-name"]input').type(profile.profilename)
             cy.get('[data-cy="profile-description"]input').type(profile.description)
             cy.get('div[aria-label="block_in_list"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="profile-name"]input').type(profile.profilename2)
             cy.get('[data-cy="profile-description"]input').type(profile.description)
             cy.get('[data-cy="profile-set-default-flag"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             searchInDataTable(profile.profilename)
             cy.get('[data-cy="aui-data-table-inline-edit--toggle"]:eq(0)[aria-checked="false"]').should('be.visible')

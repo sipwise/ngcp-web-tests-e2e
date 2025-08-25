@@ -12,11 +12,11 @@ import {
     apiRemoveSystemContactBy,
     getRandomNum,
     searchInDataTable,
-    waitPageProgress,
+    waitPageProgressAUI,
     clickDataTableSelectedMoreMenuItem,
     testPreferencesTextField,
     testPreferencesListField
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 export const contract = {
     contact_id: 0,
@@ -103,7 +103,7 @@ context('Reseller preferences tests', () => {
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('resellerPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             testPreferencesTextField('concurrent_max', 123, true)
             testPreferencesTextField('concurrent_max_in', 123, true)
             testPreferencesTextField('concurrent_max_in_total', 123, true)
@@ -121,7 +121,7 @@ context('Reseller preferences tests', () => {
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('resellerPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('div[data-cy="q-item--cdr-export-field-separator"]').scrollIntoView()
             testPreferencesTextField('cdr_export_field_separator')
             testPreferencesListField('cdr_export_sclidui_rwrs', rewriteRuleSet.name)
