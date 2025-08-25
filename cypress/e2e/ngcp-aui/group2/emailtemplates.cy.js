@@ -7,12 +7,11 @@ import {
     apiRemoveContractBy,
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
-    waitPageProgress,
     apiCreateEmailTemplate,
     apiRemoveEmailTemplateBy,
     searchInDataTable,
     deleteItemOnListPageBy
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 

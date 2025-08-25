@@ -9,7 +9,7 @@ import {
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
     getRandomNum,
-} from '../../../support/ngcp-csc/e2e'
+} from '../../../support/e2e'
 
 export const domain = {
     domain: 'domainDashboard',
@@ -87,7 +87,7 @@ context('Dashboard page tests', () => {
         })
 
         it('Check if links in Dashboard work properly', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="dashboard-view-voicebox"] a').click()
@@ -103,7 +103,7 @@ context('Dashboard page tests', () => {
         })
 
         it('Make a test call', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('a[href="#/user/home"]').click()
@@ -117,7 +117,7 @@ context('Dashboard page tests', () => {
 
         it('Try to access every page in conversations tab', () => {
             cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             let isSpPro = false
             cy.wait('@platforminfo').then(({ response }) => {
                 if (response.body.type === 'sppro') {

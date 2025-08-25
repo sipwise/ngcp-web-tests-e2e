@@ -23,6 +23,6 @@ module.exports = defineConfig({
         experimentalRunAllSpecs: true,
         baseUrl: 'https://ce-trunk.mgm.sipwise.com',
         specPattern: 'cypress/e2e/ngcp-csc/**/*.cy.{js,jsx,ts,tsx}',
-        supportFile: 'cypress/support/ngcp-csc'
+        supportFile: 'cypress/support/e2e.js'
     }
 })

@@ -9,7 +9,7 @@ import {
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
     getRandomNum,
-} from '../../../support/ngcp-csc/e2e'
+} from '../../../support/e2e'
 
 export const domain = {
     domain: 'domainLogin',
@@ -165,7 +165,7 @@ context('Login page tests', () => {
 
         it('Test cy.loginUI function', () => {
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.wait('@loginRequest').then(({ response }) => {
                 checkLoginAPIResponse(response)
                 cy.get('a[href="#/user/dashboard"]').should('be.visible')
@@ -173,7 +173,7 @@ context('Login page tests', () => {
         })
 
         it('Trying to logout', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('button[data-cy="user-menu"]').click()
             cy.get('div[data-cy="user-logout"]').click()
             cy.url().should('match', /\/#\/login$/)

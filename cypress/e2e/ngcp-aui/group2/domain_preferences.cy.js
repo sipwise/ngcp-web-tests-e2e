@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
 import {
-    waitPageProgress,
+    waitPageProgressAUI,
     clickDataTableSelectedMoreMenuItem,
     searchInDataTable,
     testPreferencesToggleField,
@@ -25,7 +25,7 @@ import {
     apiRemoveRewriteRuleSetBy,
     apiRemoveSoundSetBy,
     apiRemoveSystemContactBy
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
@@ -144,7 +144,7 @@ context('Domain preferences tests', () => {
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.qSelect({ dataCy: 'category-selection', filter: 'Access Restrictions', itemContains: 'Access Restrictions' })
             testPreferencesToggleField('allow_out_foreign_domain')
             testPreferencesListField('allowed_clis_reject_policy', 'Force CLIR')
@@ -182,7 +182,7 @@ context('Domain preferences tests', () => {
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.qSelect({ dataCy: 'category-selection', filter: 'Applications', itemContains: 'Applications' })
             testPreferencesListField('callrecording_type', 'External')
             testPreferencesToggleField('malicious_call_identification')
@@ -202,7 +202,7 @@ context('Domain preferences tests', () => {
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.qSelect({ dataCy: 'category-selection', filter: 'Call Blockings', itemContains: 'Call Blockings' })
             testPreferencesListField('adm_cf_ncos', ncosLevel.level)
             testPreferencesListField('adm_ncos', ncosLevel.level)
@@ -218,7 +218,7 @@ context('Domain preferences tests', () => {
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.qSelect({ dataCy: 'category-selection', filter: 'IMS Application Server', itemContains: 'IMS Application Server' })
             testPreferencesToggleField('ims_as_context')
         })
@@ -232,7 +232,7 @@ context('Domain preferences tests', () => {
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.qSelect({ dataCy: 'category-selection', filter: 'Internal', itemContains: 'Internal' })
             testPreferencesListField('accept_auto_answer', 'No')
             testPreferencesListField('advice_of_charge', 'Currency')
@@ -324,7 +324,7 @@ context('Domain preferences tests', () => {
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.qSelect({ dataCy: 'category-selection', filter: 'Media Codec Transcoding Options', itemContains: 'Media Codec Transcoding Options' })
             cy.get('label[data-cy="aui-input-search"] input').clear()
             cy.get('label[data-cy="aui-input-search"] input').type('AMR')
@@ -409,7 +409,7 @@ context('Domain preferences tests', () => {
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.qSelect({ dataCy: 'category-selection', filter: 'NAT and Media Flow Control', itemContains: 'NAT and Media Flow Control' })
             testPreferencesListField('DTLS_fingerprint', 'SHA-1')
             testPreferencesToggleField('ICE_lite')
@@ -444,7 +444,7 @@ context('Domain preferences tests', () => {
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.qSelect({ dataCy: 'category-selection', filter: 'Number Manipulations', itemContains: 'Number Manipulations' })
             testPreferencesToggleField('colp_cf')
             testPreferencesListField('emergency_mapping_container', emergencyMappingContainer.name)
@@ -487,7 +487,7 @@ context('Domain preferences tests', () => {
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.qSelect({ dataCy: 'category-selection', filter: 'Remote Authentication', itemContains: 'Remote Authentication' })
             testPreferencesToggleField('peer_auth_register')
         })
@@ -501,7 +501,7 @@ context('Domain preferences tests', () => {
             cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
             clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.qSelect({ dataCy: 'category-selection', filter: 'Session Timers', itemContains: 'Session Timers' })
             testPreferencesListField('sst_enable', 'yes')
             testPreferencesTextField('sst_expires', 123, true)

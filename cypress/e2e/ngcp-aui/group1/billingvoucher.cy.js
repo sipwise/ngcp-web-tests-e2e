@@ -18,11 +18,11 @@ import {
     apiRemoveCustomerBy,
     apiRemoveCustomerContactBy,
     apiRemoveBillingProfileBy,
-    waitPageProgress,
+    waitPageProgressAUI,
     searchInDataTable,
     apiGetProfilePackageId,
     apiRemoveBillingVoucherByPackageId
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 export const contract = {
     contact_id: null,
@@ -223,13 +223,13 @@ context('Billing vouchers tests', () => {
             })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / voucher')
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.locationShouldBe('#/voucher')
             cy.get('a[data-cy="q-btn--1"]').click()
             cy.get('input[type="file"][data-cy="upload-field"]').selectFile(path.join(fixturesFolder, 'billing_vouchers_entries.csv'), { force: 'true' })
             cy.get('div[data-cy="purge"]').click()
             cy.get('button[data-cy="aui-save-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveBillingVoucherByResellerId({reseller_id: 1, authHeader, code: billingVoucher.code})
             })

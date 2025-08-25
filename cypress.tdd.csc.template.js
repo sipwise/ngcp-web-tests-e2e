@@ -24,6 +24,6 @@ module.exports = defineConfig({
         // For CSC tests, baseUrl does NOT need to have :1443 at the end
         baseUrl: 'https://pro-trunk.mgm.sipwise.com',
         specPattern: 'cypress/e2e/ngcp-csc/**/*.cy.{js,jsx,ts,tsx}',
-        supportFile: 'cypress/support/ngcp-csc'
+        supportFile: 'cypress/support/e2e.js'
     }
 })

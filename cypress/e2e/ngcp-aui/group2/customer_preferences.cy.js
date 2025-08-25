@@ -19,14 +19,14 @@ import {
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     getRandomNum,
-    waitPageProgress,
+    waitPageProgressAUI,
     searchInDataTable,
     clickDataTableSelectedMoreMenuItem,
     testPreferencesChipField,
     testPreferencesListField,
     testPreferencesTextField,
     testPreferencesToggleField
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 export const contract = {
     contact_id: 0,
@@ -154,7 +154,7 @@ context('Customer preferences tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('customerPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.wait(1000)
             cy.qSelect({ dataCy: 'category-selection', itemContains: 'Access Restrictions' })
             testPreferencesChipField('allowed_clis"]')
@@ -179,7 +179,7 @@ context('Customer preferences tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('customerPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.wait(1000)
             cy.qSelect({ dataCy: 'category-selection', itemContains: 'Applications' })
             testPreferencesToggleField('malicious_call_identification')
@@ -198,7 +198,7 @@ context('Customer preferences tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('customerPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.wait(1000)
             cy.qSelect({ dataCy: 'category-selection', itemContains: 'Call Blockings' })
             testPreferencesToggleField('adm_block_in_clir')
@@ -226,7 +226,7 @@ context('Customer preferences tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('customerPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.wait(1000)
             cy.qSelect({ dataCy: 'category-selection', itemContains: 'Internals' })
             testPreferencesListField('advice_of_charge', 'Currency')
@@ -245,7 +245,7 @@ context('Customer preferences tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('customerPreferences')
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.wait(1000)
             cy.qSelect({ dataCy: 'category-selection', itemContains: 'Number Manipulations' })
             testPreferencesTextField('emergency_cli')

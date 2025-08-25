@@ -10,9 +10,8 @@ import {
     apiRemoveResellerBy,
     apiRemoveResellerPhonebookBy,
     apiRemoveSystemContactBy,
-    deleteDownloadsFolder,
-    waitPageProgress
-} from '../../../support/ngcp-aui/e2e'
+    deleteDownloadsFolder
+} from '../../../support/e2e'
 
 const downloadsFolder = Cypress.config('downloadsFolder')
 const fixturesFolder = Cypress.config('fixturesFolder')

@@ -2,7 +2,7 @@
 
 import {
     getRandomNum,
-    waitPageProgress,
+    waitPageProgressAUI,
     deleteItemOnListPageBy,
     clickDataTableSelectedMoreMenuItem,
     searchInDataTable,
@@ -15,7 +15,7 @@ import {
     apiRemoveCustomerContactBy,
     apiRemoveResellerBy,
     apiRemoveSystemContactBy
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
@@ -179,10 +179,10 @@ context('Contact tests', () => {
                     cy.get('input[data-cy="firstname-field"]').type(contactNames.firstname)
                     cy.get('input[data-cy="lastname-field"]').type(contactNames.lastname)
                     cy.get('[data-cy="aui-save-button"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
                     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                     cy.get('[data-cy="aui-close-button"]').click()
-                    waitPageProgress()
+                    waitPageProgressAUI()
                     cy.get('td[data-cy="q-td--firstname"]').contains(contactNames.firstname).should('be.visible')
                     cy.get('td[data-cy="q-td--lastname"]').contains(contactNames.lastname).should('be.visible')
                 })

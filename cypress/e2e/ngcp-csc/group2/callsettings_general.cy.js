@@ -9,7 +9,7 @@ import {
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
     getRandomNum,
-} from '../../../support/ngcp-csc/e2e'
+} from '../../../support/e2e'
 
 export const domain = {
     domain: 'domainCallSettings',
@@ -86,7 +86,7 @@ context('Call Settings "General" page tests', () => {
         })
 
         it('Enable/Disable "Music on Hold"', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
@@ -100,7 +100,7 @@ context('Call Settings "General" page tests', () => {
         })
 
         it('Enable/Disable "Hide your number to the callee"', () => {
-            cy.loginUI(loginInfo.username, loginInfo.password)
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()

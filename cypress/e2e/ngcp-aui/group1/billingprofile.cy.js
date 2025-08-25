@@ -12,13 +12,13 @@ import {
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     getRandomNum,
-    waitPageProgress,
+    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiCreateBillingProfileZone,
     apiCreateBillingProfileFee,
     apiRemoveBillingProfileFeeBy,
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 const billingProfile = {
     name: 'billingProfileCypress',
@@ -146,7 +146,7 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileZones"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.locationShouldBe('#/billing/'+ billingProfileZone.billing_profile_id + '/zones/create')
@@ -163,7 +163,7 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileFees"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.locationShouldBe('#/billing/'+ billingProfileFee.billing_profile_id + '/fees/create')
@@ -202,13 +202,13 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileEdit"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             cy.get('div[data-cy="billingprofiles-prepaid"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('div[data-cy="aui-data-table-inline-edit--toggle"][aria-checked="true"]').should('be.visible')
         })
 
@@ -226,7 +226,7 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileZones"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.locationShouldBe('#/billing/'+ billingProfileZone.billing_profile_id + '/zones/create')
@@ -245,7 +245,7 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileZones"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             searchInDataTable(billingProfileZone.zone)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -255,7 +255,7 @@ context('Billing profile tests', () => {
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('span[data-cy="aui-data-table-highlighted-text"]').contains("testdetail").should('be.visible')
         })
 
@@ -272,7 +272,7 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileFees"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.locationShouldBe('#/billing/'+ billingProfileFee.billing_profile_id + '/fees/create')
@@ -291,7 +291,7 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileFees"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
@@ -301,7 +301,7 @@ context('Billing profile tests', () => {
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('span[data-cy="aui-data-table-highlighted-text"]').contains("inbound").should('be.visible')
         })
 
@@ -314,7 +314,7 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileFees"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             deleteItemOnListPageBy()
         })
@@ -328,7 +328,7 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileZones"]').click()
-            waitPageProgress()
+            waitPageProgressAUI()
 
             deleteItemOnListPageBy(billingProfileZone.zone)
         })

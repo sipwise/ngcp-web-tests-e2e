@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
 import {
-    waitPageProgress,
+    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiCreateContract,
@@ -13,7 +13,7 @@ import {
     apiCreateSystemContact,
     apiCreateRewriteRuleSet,
     apiRemoveRewriteRuleSetBy
-} from '../../../support/ngcp-aui/e2e'
+} from '../../../support/e2e'
 
 var cloneCreated = false
 const path = require('path')
@@ -206,7 +206,7 @@ context('Rewrite Rule Set tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--rewriteRuleSetRules"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('td[data-cy="q-td--match-pattern"] span').contains(rewriteRuleSet.rewriterules[0].match_pattern).should('be.visible')
             cy.get('td[data-cy="q-td--replace-pattern"] span').contains(rewriteRuleSet.rewriterules[0].replace_pattern).should('be.visible')
             cy.get('td[data-cy="q-td--description"] span').contains(rewriteRuleSet.rewriterules[0].description).should('be.visible')
@@ -245,7 +245,7 @@ context('Rewrite Rule Set tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--rewriteRuleSetRules"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.contains('Inbound for Caller').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
@@ -267,7 +267,7 @@ context('Rewrite Rule Set tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--rewriteRuleSetRules"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--rewriteRulesEdit"]').click()
@@ -296,7 +296,7 @@ context('Rewrite Rule Set tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--rewriteRuleSetRules"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.contains('Outbound for Caller').click()
             cy.get('td[data-cy="q-td--match-pattern"]:first').contains('firstcallmatch').should('be.visible')
             cy.get('div[class="aui-data-table"] .q-checkbox:first').click()
@@ -307,7 +307,7 @@ context('Rewrite Rule Set tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('div[data-cy="aui-data-table-row-menu--rewriteRuleSetRuleUp"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('td[data-cy="q-td--match-pattern"]:first').contains('firstcallmatch').should('be.visible')
         })
 
@@ -321,7 +321,7 @@ context('Rewrite Rule Set tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--rewriteRuleSetRules"]').click()
 
-            waitPageProgress()
+            waitPageProgressAUI()
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--delete"]').click()
             cy.get('button[data-cy="btn-confirm"]').click()
