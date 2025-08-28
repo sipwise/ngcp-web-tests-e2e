@@ -376,7 +376,7 @@ context('Customer Details tests', () => {
             waitPageProgress()
             cy.get('div').contains('Contract Balance').click()
             cy.get('a[data-cy="customer-contractbalance-topupvoucher"]').click()
-            cy.auiSelectLazySelect({ dataCy: 'aui-select-voucher', filter: billingVoucher.id, itemContains: billingVoucher.code })
+            cy.auiSelectLazySelect({ dataCy: 'aui-select-voucher', filter: billingVoucher.code, itemContains: billingVoucher.code })
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('div').contains('Top-up Log').click()
