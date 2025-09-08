@@ -1,3 +1,26 @@
+ngcp-web-tests-e2e (14.0.0.0+0~mr14.0.0.0) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [fbae6b9] MT#63138 Update docker images to use trixie
+  * [5955b1e] MT#63046 Update tests after libs upgrade
+  * [6c836f9] MT#63356 Disable fax convesation is CE
+  * [2b06c68] MT#63046 Amend tests after @quasar/app-webpack upgrade
+
+  [ Nico Schedel ]
+  * [b207162] MT#62909 add reseller details tests
+  * [b0b4130] MT#62909 disable reseller phonebook api calls when on CE
+  * [a4b1bf6] MT#62909 disable waitPageProgess when navigating to reseller page
+  * [8424507] MT#61483 disable waitPageProgess when navigating to device management page
+  * [18fabf2] MT#62909 set "admin read only" test in reseller details to PRO only
+  * [6d27343] MT#63172 add tests for pbx devices
+  * [0987b62] MT#63423 remove "close old admin ui popup" workaround
+  * [75ff276] MT#62515 search top up voucher by code instead of by id
+
+  [ nidrissi-zouggari ]
+  * [0e48e19] MT#61928 Add test for Billing Voucher pages
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 08 Sep 2025 11:45:43 +0200
+
 ngcp-web-tests-e2e (13.5.0.0+0~mr13.5.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
