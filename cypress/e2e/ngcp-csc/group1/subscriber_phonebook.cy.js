@@ -32,7 +32,7 @@ export const subscriber = {
     primary_number: {
         sn: 11,
         ac: 22,
-        cc: 8888
+        cc: 10
     },
 }
 
@@ -49,7 +49,7 @@ export const subscriberSharedPhonebook = {
     primary_number: {
         sn: 11,
         ac: 22,
-        cc: 9999
+        cc: 20
     },
 }
 
