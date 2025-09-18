@@ -82,6 +82,7 @@ export const secondSubscriberPhonebookEntry = {
 }
 
 const ngcpConfig = Cypress.config('ngcpConfig')
+let issppro = false
 
 context('Subscriber phonebook tests', () => {
     context('UI Subscriber phonebook tests', () => {
@@ -90,8 +91,6 @@ context('Subscriber phonebook tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
                 cy.log('Preparing environment...')
-                apiRemoveSubscriberPhonebookBy({name: secondSubscriberPhonebookEntry.name, authHeader})
-                apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
                 apiRemoveSubscriberBy({ name: subscriberSharedPhonebook.username, authHeader })
                 apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
@@ -102,6 +101,22 @@ context('Subscriber phonebook tests', () => {
                 apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                      subscriber.customer_id = id
                      subscriberSharedPhonebook.customer_id = id
+                })
+                apiCreateSubscriber({ data: subscriber, authHeader })
+                cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
+                cy.visit('/')
+                cy.loginUiCSC(loginInfo.username, loginInfo.password)
+                cy.wait('@platforminfo').then(({ response }) => {
+                    if (response.body.type === 'sppro') {
+                        issppro = true
+                        apiRemoveSubscriberPhonebookBy({name: secondSubscriberPhonebookEntry.name, authHeader})
+                        apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
+                    } else {
+                        cy.log('Skipping test because this is not an SPPRO instance');
+                        // Skip the current test
+                        Cypress.mocha.getRunner().abort();
+                        return
+                    }
                 })
             })
         })
@@ -125,8 +140,10 @@ context('Subscriber phonebook tests', () => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberPhonebookBy({name: secondSubscriberPhonebookEntry.name, authHeader})
-                apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
+                if (issppro) {
+                    apiRemoveSubscriberPhonebookBy({name: secondSubscriberPhonebookEntry.name, authHeader})
+                    apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
+                }
                 apiRemoveSubscriberBy({ name: subscriberSharedPhonebook.username, authHeader })
                 apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
