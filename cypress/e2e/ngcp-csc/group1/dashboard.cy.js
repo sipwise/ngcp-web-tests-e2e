@@ -49,6 +49,7 @@ export const loginInfo = {
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 const dayjs = require('dayjs')
+var issppro = null
 
 context('Dashboard page tests', () => {
     context('UI Dashboard tests', () => {
@@ -66,6 +67,14 @@ context('Dashboard page tests', () => {
                 apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                      subscriber.customer_id = id
                 })
+                apiCreateSubscriber({ data:  subscriber, authHeader })
+                cy.intercept('GET', 'platforminfo').as('platforminfo')
+                cy.visit('/')
+                cy.loginUiCSC(loginInfo.username, loginInfo.password)
+                cy.wait('@platforminfo').then(({ response }) => {
+                    issppro = response.body.type === 'sppro'
+                })
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
             })
         })
 
@@ -118,12 +127,6 @@ context('Dashboard page tests', () => {
         it('Try to access every page in conversations tab', () => {
             cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
             cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            let isSpPro = false
-            cy.wait('@platforminfo').then(({ response }) => {
-                if (response.body.type === 'sppro') {
-                    isSpPro = true
-                }
-            })
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('a[href="#/user/conversations"]:first').click()
@@ -134,8 +137,8 @@ context('Dashboard page tests', () => {
 
             cy.get('div[data-cy="q-tab-voicemail"]').click()
             cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Voicemails found')
- 
-            if (isSpPro) {
+
+            if (issppro) {
                cy.get('div[data-cy="q-tab-fax"]').click()
                cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Faxes found')
             }

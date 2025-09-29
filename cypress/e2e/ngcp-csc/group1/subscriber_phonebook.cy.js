@@ -82,7 +82,7 @@ export const secondSubscriberPhonebookEntry = {
 }
 
 const ngcpConfig = Cypress.config('ngcpConfig')
-let issppro = false
+let issppro = null
 
 context('Subscriber phonebook tests', () => {
     context('UI Subscriber phonebook tests', () => {
@@ -112,9 +112,8 @@ context('Subscriber phonebook tests', () => {
                         apiRemoveSubscriberPhonebookBy({name: secondSubscriberPhonebookEntry.name, authHeader})
                         apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
                     } else {
-                        cy.log('Skipping test because this is not an SPPRO instance');
-                        // Skip the current test
-                        Cypress.mocha.getRunner().abort();
+                        cy.log('Skipping all tests, because this is not an SPPRO instance');
+                        issppro = false
                         return
                     }
                 })
@@ -123,14 +122,16 @@ context('Subscriber phonebook tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberPhonebookBy({name: secondSubscriberPhonebookEntry.name, authHeader})
-                apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
                 apiRemoveSubscriberBy({ name: subscriberSharedPhonebook.username, authHeader })
                 apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-                apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
-                    apiCreateSubscriberPhonebook({data: { ...subscriberPhonebookEntry, subscriber_id: id }, authHeader})
-                    secondSubscriberPhonebookEntry.subscriber_id = id
-                })
+                if (issppro) {
+                    apiRemoveSubscriberPhonebookBy({name: secondSubscriberPhonebookEntry.name, authHeader})
+                    apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
+                    apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
+                        apiCreateSubscriberPhonebook({data: { ...subscriberPhonebookEntry, subscriber_id: id }, authHeader})
+                        secondSubscriberPhonebookEntry.subscriber_id = id
+                    })
+                }
                 apiCreateSubscriber({ data: subscriberSharedPhonebook, authHeader })
             })
             cy.visit('/')
@@ -151,7 +152,10 @@ context('Subscriber phonebook tests', () => {
             })
         })
 
-        it('Create subscriber phonebook entry', () => {
+        it('Create subscriber phonebook entry', function () {
+            if (!issppro) {
+                this.skip()
+            }
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
             })
@@ -169,7 +173,10 @@ context('Subscriber phonebook tests', () => {
             cy.get('td[class="text-left"]').contains(subscriberPhonebookEntry.number).should('be.visible')
         })
 
-        it('Edit subscriber phonebook entry', () => {
+        it('Edit subscriber phonebook entry', function () {
+            if (!issppro) {
+                this.skip()
+            }
             cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -184,7 +191,10 @@ context('Subscriber phonebook tests', () => {
             cy.get('td[class="text-left"]').contains('randomnumber').should('be.visible')
         })
 
-        it('Try to call back contact', () => {
+        it('Try to call back contact', function () {
+            if (!issppro) {
+                this.skip()
+            }
             cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -194,14 +204,17 @@ context('Subscriber phonebook tests', () => {
             cy.get('input[data-cy="csc-call-number-input"][value="' + subscriberPhonebookEntry.number + '"]').should('be.visible')
         })
 
-        it('Share contact to other subscriber', () => {
+        it('Share contact to other subscriber', function () {
+            if (!issppro) {
+                this.skip()
+            }
             cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
             cy.get('div[role="switch"][data-cy="q-toggle"]').click()
             cy.get('div[role="switch"][data-cy="q-toggle"][aria-checked="true"]').should('be.visible')
-            
+
             cy.get('button[data-cy="user-menu"]').click()
             cy.get('div[data-cy="user-logout"]').click()
             cy.locationShouldBe('#/login')
@@ -215,7 +228,10 @@ context('Subscriber phonebook tests', () => {
             cy.get('div[role="switch"][data-cy="q-toggle"][aria-disabled="true"]').should('be.visible')
         })
 
-        it('Search for all phonebook entries', () => {
+        it('Search for all phonebook entries', function () {
+            if (!issppro) {
+                this.skip()
+            }
             apiLoginAsSuperuser().then(authHeader => {
                 apiCreateSubscriberPhonebook({data: secondSubscriberPhonebookEntry, authHeader})
             })
@@ -250,7 +266,10 @@ context('Subscriber phonebook tests', () => {
             cy.get('td[class="text-left"]:first').contains(secondSubscriberPhonebookEntry.name).should('be.visible')
         })
 
-        it('Delete subscriber phonebook entry', () => {
+        it('Delete subscriber phonebook entry', function () {
+            if (!issppro) {
+                this.skip()
+            }
             cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 

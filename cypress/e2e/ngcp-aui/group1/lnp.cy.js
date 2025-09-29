@@ -189,7 +189,6 @@ context('LNP tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
             cy.get('td[data-cy="q-td--type"]').should('contain.text', 'testtype')
-            cy.log('Not a SPPRO instance, exiting test...')
         })
 
         it('Delete LNP number and check if they are deleted', () => {

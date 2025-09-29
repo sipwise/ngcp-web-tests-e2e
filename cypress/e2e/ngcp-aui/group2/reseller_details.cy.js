@@ -113,7 +113,6 @@ const billingNetwork = {
   name: "billingNetworkName"
 }
 
-let iscloudpbx = false
 let issppro = null
 const ngcpConfig = Cypress.config('ngcpConfig')
 
@@ -124,7 +123,6 @@ context('Reseller details tests', () => {
             cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.wait('@platforminfo').then(({ response }) => {
-                iscloudpbx = response.body.cloudpbx === true
                 issppro = response.body.type === 'sppro'
             })
             apiLoginAsSuperuser().then(authHeader => {
@@ -658,100 +656,100 @@ context('Reseller details tests', () => {
         })
 
         context('Phonebook', () => {
-            it('Try to create phonebook entry with invalid values', () => {
-                if (issppro) {
-                    cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                    cy.navigateMainMenu('settings / reseller', false)
-
-                    cy.locationShouldBe('#/reseller')
-                    searchInDataTable(reseller.name)
-                    cy.get('div[class="aui-data-table"] .q-checkbox').click()
-                    cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-                    cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-                    waitPageProgressAUI()
-                    cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
-                    waitPageProgressAUI()
-                    cy.get('a[data-cy="aui-list-action--add"]').click()
-                    cy.get('button[data-cy="aui-save-button"]').click()
-                    cy.get('label[data-cy="phonebook-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
-                    cy.get('label[data-cy="phonebook-number"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
-                } else {
+            it('Try to create phonebook entry with invalid values', function () {
+                if (!issppro) {
                     cy.log("Instance is CE, not PRO. Skipping phonebook tests...")
+                    this.skip()
                 }
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / reseller', false)
+
+                cy.locationShouldBe('#/reseller')
+                searchInDataTable(reseller.name)
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
+                waitPageProgressAUI()
+                cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
+                waitPageProgressAUI()
+                cy.get('a[data-cy="aui-list-action--add"]').click()
+                cy.get('button[data-cy="aui-save-button"]').click()
+                cy.get('label[data-cy="phonebook-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+                cy.get('label[data-cy="phonebook-number"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             })
 
-            it('Create a phonebook', () => {
-                if (issppro) {
-                    apiLoginAsSuperuser().then(authHeader => {
-                        apiRemoveResellerPhonebookBy({name: resellerPhonebook.name, authHeader})
-                    })
-                    cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                    cy.navigateMainMenu('settings / reseller', false)
-
-                    cy.locationShouldBe('#/reseller')
-                    searchInDataTable(reseller.name)
-                    cy.get('div[class="aui-data-table"] .q-checkbox').click()
-                    cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-                    cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-                    waitPageProgressAUI()
-                    cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
-                    waitPageProgressAUI()
-                    cy.get('a[data-cy="aui-list-action--add"]').click()
-                    cy.get('input[data-cy="phonebook-name"]').type(resellerPhonebook.name)
-                    cy.get('input[data-cy="phonebook-number"]').type(resellerPhonebook.number)
-                    cy.get('button[data-cy="aui-save-button"]').click()
-                    cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-                    cy.get('td[data-cy="q-td--name"]').contains(resellerPhonebook.name).should('be.visible')
-                    cy.get('td[data-cy="q-td--number"]').contains(resellerPhonebook.number).should('be.visible')
-                } else {
+            it('Create a phonebook', function () {
+                if (!issppro) {
                     cy.log("Instance is CE, not PRO. Skipping phonebook tests...")
+                    this.skip()
                 }
+                apiLoginAsSuperuser().then(authHeader => {
+                    apiRemoveResellerPhonebookBy({name: resellerPhonebook.name, authHeader})
+                })
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / reseller', false)
+
+                cy.locationShouldBe('#/reseller')
+                searchInDataTable(reseller.name)
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
+                waitPageProgressAUI()
+                cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
+                waitPageProgressAUI()
+                cy.get('a[data-cy="aui-list-action--add"]').click()
+                cy.get('input[data-cy="phonebook-name"]').type(resellerPhonebook.name)
+                cy.get('input[data-cy="phonebook-number"]').type(resellerPhonebook.number)
+                cy.get('button[data-cy="aui-save-button"]').click()
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('td[data-cy="q-td--name"]').contains(resellerPhonebook.name).should('be.visible')
+                cy.get('td[data-cy="q-td--number"]').contains(resellerPhonebook.number).should('be.visible')
             })
 
-            it('Edit a phonebook', () => {
-                if (issppro) {
-                    cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                    cy.navigateMainMenu('settings / reseller', false)
-
-                    cy.locationShouldBe('#/reseller')
-                    searchInDataTable(reseller.name)
-                    cy.get('div[class="aui-data-table"] .q-checkbox').click()
-                    cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-                    cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-                    waitPageProgressAUI()
-                    cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
-                    waitPageProgressAUI()
-                    searchInDataTable(resellerPhonebook.name, 'Name')
-                    cy.get('div[class="aui-data-table"] .q-checkbox').click()
-                    cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-                    cy.get('a[data-cy="aui-data-table-row-menu--resellerDetailsPhonebookEntryEdit"]').click()
-                    cy.get('input[data-cy="phonebook-number"]').clear().type('anothertestnumber')
-                    cy.get('button[data-cy="aui-save-button"]').click()
-                    cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-                    cy.get('[data-cy="aui-close-button"]').click()
-                    cy.get('td[data-cy="q-td--number"]').contains('anothertestnumber').should('be.visible')
-                } else {
+            it('Edit a phonebook', function () {
+                if (!issppro) {
                     cy.log("Instance is CE, not PRO. Skipping phonebook tests...")
+                    this.skip()
                 }
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / reseller', false)
+
+                cy.locationShouldBe('#/reseller')
+                searchInDataTable(reseller.name)
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
+                waitPageProgressAUI()
+                cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
+                waitPageProgressAUI()
+                searchInDataTable(resellerPhonebook.name, 'Name')
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--resellerDetailsPhonebookEntryEdit"]').click()
+                cy.get('input[data-cy="phonebook-number"]').clear().type('anothertestnumber')
+                cy.get('button[data-cy="aui-save-button"]').click()
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+                cy.get('[data-cy="aui-close-button"]').click()
+                cy.get('td[data-cy="q-td--number"]').contains('anothertestnumber').should('be.visible')
             })
 
-            it('Delete a phonebook', () => {
-                if (issppro) {
-                    cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-                    cy.navigateMainMenu('settings / reseller', false)
-
-                    cy.locationShouldBe('#/reseller')
-                    searchInDataTable(reseller.name)
-                    cy.get('div[class="aui-data-table"] .q-checkbox').click()
-                    cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-                    cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-                    waitPageProgressAUI()
-                    cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
-                    waitPageProgressAUI()
-                    deleteItemOnListPageBy(resellerPhonebook.name, 'Name')
-                } else {
+            it('Delete a phonebook', function () {
+                if (!issppro) {
                     cy.log("Instance is CE, not PRO. Skipping phonebook tests...")
+                    this.skip()
                 }
+                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.navigateMainMenu('settings / reseller', false)
+
+                cy.locationShouldBe('#/reseller')
+                searchInDataTable(reseller.name)
+                cy.get('div[class="aui-data-table"] .q-checkbox').click()
+                cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+                cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
+                waitPageProgressAUI()
+                cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
+                waitPageProgressAUI()
+                deleteItemOnListPageBy(resellerPhonebook.name, 'Name')
             })
         })
 
