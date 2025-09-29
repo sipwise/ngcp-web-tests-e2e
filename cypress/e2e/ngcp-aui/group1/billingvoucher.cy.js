@@ -86,6 +86,7 @@ const billingProfile = {
 const ngcpConfig = Cypress.config('ngcpConfig')
 const fixturesFolder = Cypress.config('fixturesFolder')
 const path = require('path')
+let issppro = null
 
 context('Billing vouchers tests', () => {
     context('UI billing vouchers tests', () => {
@@ -94,76 +95,87 @@ context('Billing vouchers tests', () => {
             cy.intercept('GET', '**/api/platforminfo').as('platforminfo');
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password);
             cy.wait('@platforminfo').then(({ response }) => {
-                if (response.body.type !== 'sppro') {
-                    cy.log('Skipping test because this is not an SPPRO instance');
-                    // Skip the current test
-                    Cypress.mocha.getRunner().abort();
-                    return
-                }
-            })
-            apiLoginAsSuperuser().then(authHeader => {
-                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-                cy.log('Preparing environment...')
-                apiGetProfilePackageId({ name: profilePackage.name, authHeader }).then(({ id }) => {
-                    apiRemoveBillingVoucherByPackageId({ package_id: id, authHeader, code: billingVoucher.code })
-                })
-                apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
-                apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
-                apiRemoveCustomerContactBy({ email: customerPbx.email, authHeader })
-                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-                apiRemoveProfilePackageBy({name: profilePackage.name, authHeader})
-                cy.log('Data clean up pre-tests completed')
+                if (response.body.type === 'sppro') {
+                    issppro = true
+                    apiLoginAsSuperuser().then(authHeader => {
+                        Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                        cy.log('Preparing environment...')
+                        apiGetProfilePackageId({ name: profilePackage.name, authHeader }).then(({ id }) => {
+                            apiRemoveBillingVoucherByPackageId({ package_id: id, authHeader, code: billingVoucher.code })
+                        })
+                        apiRemoveResellerBy({ name: reseller.name, authHeader })
+                        apiRemoveContractBy({ name: contract.external_id, authHeader })
+                        apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
+                        apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
+                        apiRemoveCustomerContactBy({ email: customerPbx.email, authHeader })
+                        apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+                        apiRemoveProfilePackageBy({name: profilePackage.name, authHeader})
+                        cy.log('Data clean up pre-tests completed')
 
-                apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
-                    apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
-                        apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
-                            billingVoucher.reseller_id = id
-                            apiCreateBillingProfile({ data: { ...billingProfile, reseller_id: id }, authHeader }).then(({ id }) => {
-                                customerPbx.billing_profile_id = id
-                            })
-                            apiCreateCustomerContact({ data: { ...customerContact, reseller_id: id }, authHeader }).then(({ id }) => {
-                                customerPbx.contact_id = id
-                                apiCreateCustomer({ data: { ...customerPbx, contact_id: id }, authHeader }).then(({ id }) => {
-                                    customerPbx.customer_id = id
+                        apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
+                            apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
+                                apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                                    billingVoucher.reseller_id = id
+                                    apiCreateBillingProfile({ data: { ...billingProfile, reseller_id: id }, authHeader }).then(({ id }) => {
+                                        customerPbx.billing_profile_id = id
+                                    })
+                                    apiCreateCustomerContact({ data: { ...customerContact, reseller_id: id }, authHeader }).then(({ id }) => {
+                                        customerPbx.contact_id = id
+                                        apiCreateCustomer({ data: { ...customerPbx, contact_id: id }, authHeader }).then(({ id }) => {
+                                            customerPbx.customer_id = id
+                                        })
+                                    })
                                 })
                             })
                         })
+                        apiCreateProfilePackage({data: profilePackage, authHeader}).then(({ id }) => {
+                            billingVoucher.package_id = id
+                        })
                     })
-                })
-                apiCreateProfilePackage({data: profilePackage, authHeader}).then(({ id }) => {
-                    billingVoucher.package_id = id
-                })
+                } else {
+                    cy.log('Skipping all tests, because this is not an SPPRO instance');
+                    issppro = false
+                    return
+                }
             })
         })
 
         beforeEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
-                cy.log('Cleaning up db...')
-                apiRemoveBillingVoucherByResellerId({reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code})
+            if (issppro) {
+                apiLoginAsSuperuser().then(authHeader => {
+                    cy.log('Cleaning up db...')
+                    apiRemoveBillingVoucherByResellerId({reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code})
 
-                cy.log('Seeding db...')
-                apiCreateBillingVoucher({data: billingVoucher, authHeader})
-            })
+                    cy.log('Seeding db...')
+                    apiCreateBillingVoucher({data: billingVoucher, authHeader})
+                })
+            }
+
         })
 
         after(() => {
-            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-            cy.log('Data clean up...')
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
-                apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
-                apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
-                apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
-                apiRemoveCustomerContactBy({ email: customerPbx.email, authHeader })
-                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-                apiRemoveProfilePackageBy({name: profilePackage.name, authHeader})
-            })
+            if (issppro) {
+                Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
+                cy.log('Data clean up...')
+                apiLoginAsSuperuser().then(authHeader => {
+                    apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
+                    apiRemoveResellerBy({ name: reseller.name, authHeader })
+                    apiRemoveContractBy({ name: contract.external_id, authHeader })
+                    apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
+                    apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
+                    apiRemoveCustomerContactBy({ email: customerPbx.email, authHeader })
+                    apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+                    apiRemoveProfilePackageBy({name: profilePackage.name, authHeader})
+                })                
+            } else {
+                cy.log('Skipping cleanup, because this is not an SPPRO instance');
+            }
         })
 
-        it('Check if billing vouchers with invalid values gets rejected', () => {
+        it('Check if billing vouchers with invalid values gets rejected', function () {
+            if (!issppro) {
+                this.skip()
+            }
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / voucher')
             cy.locationShouldBe('#/voucher')
@@ -175,7 +187,10 @@ context('Billing vouchers tests', () => {
             cy.get('label[data-cy="vouchers-valid_until"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
         })
 
-        it('Create a Billing Vouchers', () => {
+        it('Create a Billing Vouchers', function () {
+            if (!issppro) {
+                this.skip()
+            }
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
             })
@@ -199,7 +214,10 @@ context('Billing vouchers tests', () => {
             cy.locationShouldBe('#/voucher')
         })
 
-        it('Edit a Billing Vouchers', () => {
+        it('Edit a Billing Vouchers', function () {
+            if (!issppro) {
+                this.skip()
+            }
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / voucher')
 
@@ -217,7 +235,10 @@ context('Billing vouchers tests', () => {
             cy.get('[data-cy="aui-close-button"]').click()
         })
 
-        it.skip('Upload a vouchers CSV', () => {
+        it.skip('Upload a vouchers CSV', function () {
+            if (!issppro) {
+                this.skip()
+            }
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
             })
@@ -239,7 +260,10 @@ context('Billing vouchers tests', () => {
 
         })
 
-        it('Delete a Billing Vouchers', () => {
+        it('Delete a Billing Vouchers', function () {
+            if (!issppro) {
+                this.skip()
+            }
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / voucher')
 
