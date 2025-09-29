@@ -67,7 +67,7 @@ const pbxDeviceProfile = {
 }
 
 const deviceModelFormData = new FormData()
-var iscloudpbx = null
+let iscloudpbx = null
 
 context('Device management tests', () => {
     context('Device management tests', () => {
