@@ -127,7 +127,11 @@ context('Dashboard page tests', () => {
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('a[href="#/user/conversations"]:first').click()
-            cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
+            if (issppro){
+                cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
+            } else {
+                cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls or Voicemails found')
+            }
 
             cy.get('div[data-cy="q-tab-call"]').click()
             cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls found')
@@ -141,14 +145,22 @@ context('Dashboard page tests', () => {
             }
 
             cy.get('div[data-cy="q-tab-call-fax-voicemail"]').click()
-            cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
+            if (issppro){
+                cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
+            } else {
+                cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls or Voicemails found')
+            }
             cy.get('input[data-cy="filter-from"]').click()
             cy.get('div[class="q-date__calendar-item q-date__calendar-item--in"] span').contains('1').click({ force: true })
             cy.wait(1000)
             cy.get('input[data-cy="filter-to"]').click()
             cy.get('div[class="q-date__calendar-item q-date__calendar-item--in"] span').contains(dayjs().format('D')).click({ force: true })
             cy.wait(1000)
-            cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
+            if (issppro){
+                cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
+            } else {
+                cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls or Voicemails found')
+            }
         })
     })
 })
