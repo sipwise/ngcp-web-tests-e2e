@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (13.5.1.2+0~mr13.5.1.2) unstable; urgency=medium
+
+  [ Giancarlo Errigo Mattos ]
+  * [d02bb37] MT#63511 Add missing message for CE users on an empty conversation view
+  * [df25f88] MT#63511 Add missing message for CE users on an empty conversation view
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 05 Nov 2025 16:44:43 +0100
+
 ngcp-web-tests-e2e (13.5.1.1+0~mr13.5.1.1) unstable; urgency=medium
 
   [ Nico Schedel ]
