@@ -5,30 +5,30 @@ FROM docker.mgm.sipwise.com/sipwise-trixie:latest
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT=2025-07-04
+ENV REFRESHED_AT=2025-11-05
 
 RUN apt-get update && \
     apt-get install --assume-yes --no-install-recommends \
         bzip2 \
+        iproute2 \
         libdbus-glib-1-2 libgtk2.0-0 libgtk-3-0 libnotify-dev libgbm-dev libnss3 libxss1 libasound2 libxtst6 \
         nodejs \
         wget \
-        yarnpkg \
         xauth \
         xvfb \
-        xz-utils && \
+        xz-utils \
+        yarnpkg && \
     apt-get clean
 
 # installing Chrome (136.0.7103.59)
-RUN wget https://deb.sipwise.com/files/google-chrome-stable_136_amd64.deb && \
-    apt install -y ./google-chrome-stable_136_amd64.deb  && \
-    rm -f google-chrome-stable_current_amd64.deb
+RUN wget https://deb.sipwise.com/files/google-chrome-stable_current_142_amd64.deb && \
+    apt install -y ./google-chrome-stable_current_142_amd64.deb && \
+    rm -f google-chrome-stable_current_142_amd64.deb
 
 # installing firefox (lang=en_US) (138.0.1)
-RUN wget https://deb.sipwise.com/files/firefox-138.0.1.tar.xz && \
-    tar xvf firefox-138.0.1.tar.xz && \
-    ln -s /home/selenium/firefox/firefox /usr/bin/firefox && \
-    rm -f firefox-138.0.1.tar.xz
+RUN wget https://deb.sipwise.com/files/firefox-144.0.2.deb && \
+    apt install -y ./firefox-144.0.2.deb  && \
+    rm -f firefox-144.0.2.deb
 
 WORKDIR /code
 ADD package.json /code/
