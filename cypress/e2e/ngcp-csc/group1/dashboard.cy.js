@@ -127,7 +127,7 @@ context('Dashboard page tests', () => {
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('a[href="#/user/conversations"]:first').click()
-            if (issppro){
+            if (isSpPro){
                 cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
             } else {
                 cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls or Voicemails found')
@@ -138,14 +138,14 @@ context('Dashboard page tests', () => {
 
             cy.get('div[data-cy="q-tab-voicemail"]').click()
             cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Voicemails found')
- 
+
             if (isSpPro) {
                cy.get('div[data-cy="q-tab-fax"]').click()
                cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Faxes found')
             }
 
             cy.get('div[data-cy="q-tab-call-fax-voicemail"]').click()
-            if (issppro){
+            if (isSpPro){
                 cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
             } else {
                 cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls or Voicemails found')
@@ -156,7 +156,7 @@ context('Dashboard page tests', () => {
             cy.get('input[data-cy="filter-to"]').click()
             cy.get('div[class="q-date__calendar-item q-date__calendar-item--in"] span').contains(dayjs().format('D')).click({ force: true })
             cy.wait(1000)
-            if (issppro){
+            if (isSpPro){
                 cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
             } else {
                 cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls or Voicemails found')
