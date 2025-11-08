@@ -80,8 +80,9 @@ context('Dashboard page tests', () => {
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-                apiCreateSubscriber({ data:  subscriber, authHeader })
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(() => {
+                    apiCreateSubscriber({ data: subscriber, authHeader })
+                })
             })
             cy.visit('/')
         })
