@@ -49,13 +49,14 @@ export const loginInfo = {
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 const dayjs = require('dayjs')
+var issppro = null
 
 context('Dashboard page tests', () => {
     context('UI Dashboard tests', () => {
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
-                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...' })
                 cy.log('Preparing environment...')
                 apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
@@ -64,15 +65,24 @@ context('Dashboard page tests', () => {
 
                 apiCreateDomain({ data: domain, authHeader })
                 apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
-                     subscriber.customer_id = id
+                    subscriber.customer_id = id
                 })
+                apiCreateSubscriber({ data: subscriber, authHeader })
+                cy.intercept('GET', 'platforminfo').as('platforminfo')
+                cy.visit('/')
+                cy.loginUiCSC(loginInfo.username, loginInfo.password)
+                cy.wait('@platforminfo').then(({ response }) => {
+                    issppro = response.body.type === 'sppro'
+                })
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
             })
         })
 
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-                apiCreateSubscriber({ data:  subscriber, authHeader })
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(() => {
+                    apiCreateSubscriber({ data: subscriber, authHeader })
+                })
             })
             cy.visit('/')
         })
@@ -118,16 +128,10 @@ context('Dashboard page tests', () => {
         it('Try to access every page in conversations tab', () => {
             cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
             cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            let isSpPro = false
-            cy.wait('@platforminfo').then(({ response }) => {
-                if (response.body.type === 'sppro') {
-                    isSpPro = true
-                }
-            })
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
             cy.get('a[href="#/user/conversations"]:first').click()
-            if (isSpPro){
+            if (issppro) {
                 cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
             } else {
                 cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls or Voicemails found')
@@ -139,13 +143,13 @@ context('Dashboard page tests', () => {
             cy.get('div[data-cy="q-tab-voicemail"]').click()
             cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Voicemails found')
 
-            if (isSpPro) {
-               cy.get('div[data-cy="q-tab-fax"]').click()
-               cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Faxes found')
+            if (issppro) {
+                cy.get('div[data-cy="q-tab-fax"]').click()
+                cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Faxes found')
             }
 
             cy.get('div[data-cy="q-tab-call-fax-voicemail"]').click()
-            if (isSpPro){
+            if (issppro) {
                 cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
             } else {
                 cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls or Voicemails found')
@@ -156,7 +160,7 @@ context('Dashboard page tests', () => {
             cy.get('input[data-cy="filter-to"]').click()
             cy.get('div[class="q-date__calendar-item q-date__calendar-item--in"] span').contains(dayjs().format('D')).click({ force: true })
             cy.wait(1000)
-            if (isSpPro){
+            if (issppro) {
                 cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
             } else {
                 cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls or Voicemails found')
