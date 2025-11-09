@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.24+0~mr12.5.1.24) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [3eb3880] MT#63888 Realign dashboard tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Sun, 09 Nov 2025 14:06:34 +0100
+
 ngcp-web-tests-e2e (12.5.1.23+0~mr12.5.1.23) unstable; urgency=medium
 
   [ Nico Schedel ]
