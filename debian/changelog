@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (13.5.1.4+0~mr13.5.1.4) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [8a83ed5] MT#63865 [E2E] Update e2e tests to match new Number Porting Page
+  * [4c5f3c5] MT#63865 fix lnp upload test, add search to numbers table
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 10 Nov 2025 13:44:30 +0100
+
 ngcp-web-tests-e2e (13.5.1.3+0~mr13.5.1.3) unstable; urgency=medium
 
   [ Debora Crescenzo ]
