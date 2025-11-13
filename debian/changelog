@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (13.5.1.5+0~mr13.5.1.5) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [8d6002a] MT#60617 fix wait timeouts in subscriber_callforward tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 13 Nov 2025 16:24:38 +0100
+
 ngcp-web-tests-e2e (13.5.1.4+0~mr13.5.1.4) unstable; urgency=medium
 
   [ Nico Schedel ]
