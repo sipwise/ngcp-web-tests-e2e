@@ -558,7 +558,7 @@ context('Administrator tests', () => {
             cy.get('div[data-cy="master-flag"]').click()
             cy.get('div[data-cy="can-reset-password-flag"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
 
             cy.logoutUiAUI()
