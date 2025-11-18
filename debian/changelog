@@ -1,3 +1,12 @@
+ngcp-web-tests-e2e (13.5.1.7+0~mr13.5.1.7) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [2b47310] MT#63950 fix password reset for reseller admin test
+  * [9235793] MT#63950 remove one waitPageProgress from contact tests
+  * [760e3d8] MT#63950 improve q-spinner detection in auiSelectLazySelect
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 18 Nov 2025 15:40:23 +0100
+
 ngcp-web-tests-e2e (13.5.1.6+0~mr13.5.1.6) unstable; urgency=medium
 
   [ Nico Schedel ]
