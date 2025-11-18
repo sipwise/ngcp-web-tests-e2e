@@ -179,7 +179,6 @@ context('Contact tests', () => {
                     cy.get('input[data-cy="firstname-field"]').type(contactNames.firstname)
                     cy.get('input[data-cy="lastname-field"]').type(contactNames.lastname)
                     cy.get('[data-cy="aui-save-button"]').click()
-                    waitPageProgressAUI()
                     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                     cy.get('[data-cy="aui-close-button"]').click()
                     waitPageProgressAUI()
