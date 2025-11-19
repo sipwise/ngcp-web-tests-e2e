@@ -121,7 +121,6 @@ context('Speed dial "General" page tests', () => {
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/speeddial"]').click()
 
-            waitPageProgressCSC()
             cy.get('button[data-cy="csc-speeddial-add"]').click()
             cy.get('div[data-cy="csc-speeddial-slot"]').click()
             cy.get('div[aria-selected="false"]').contains('*1').click()
