@@ -217,7 +217,6 @@ context('LNP tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--lnpCarrierNumbersList"]').click()
-            waitPageProgressAUI()
 
             searchInDataTable(LNPNumber.number)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -242,7 +241,6 @@ context('LNP tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--lnpCarrierNumbersList"]').click()
-            waitPageProgressAUI()
             deleteItemOnListPageBy(LNPNumber.number)
         })
     })
