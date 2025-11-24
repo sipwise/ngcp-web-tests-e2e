@@ -1,3 +1,31 @@
+ngcp-web-tests-e2e (14.1.0.0+0~mr14.1.0.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [712818c] MT#63477 merge all support files into one single file
+  * [c3a003c] MT#63526 [CSC] add tests for subscriber phonebook
+  * [6b7933f] MT#63526 use unique number for subscribers in subscriber phonebook test
+  * [1928680] MT#63526 make subscriber phonebook tests pro-only
+  * [606f881] MT#63730 [E2E] Fix Observer Loop in reseller_details test
+  * [8553d4f] MT#63659 improve issppro checks across all cypress tests
+  * [4d1594a] MT#63865 [E2E] Update e2e tests to match new Number Porting Page
+  * [c939b2e] MT#63869 Upgrade cypress and browsers to latest versions
+  * [e773b2e] MT#63865 fix lnp upload test, add search to numbers table
+  * [05690a3] MT#60617 fix wait timeouts in subscriber_callforward tests
+  * [7a26561] MT#60617 wait for forward-ring-primary box in call forwarding tests
+  * [fe5ee33] MT#63950 fix password reset for reseller admin test
+  * [5a86a73] MT#63950 remove one waitPageProgress from contact tests
+  * [c7a1d9c] MT#63950 improve q-spinner detection in auiSelectLazySelect
+  * [260babf] MT#63950 remove more waitPageProgess calls in LNP tests
+  * [78b66de] MT#63950 remove some waitPageProgess from speed dial
+
+  [ Giancarlo Errigo Mattos ]
+  * [15d922b] MT#63511 Add missing message for CE users on an empty conversation view
+
+  [ Debora Crescenzo ]
+  * [b3c5db4] MT#63888 Realign dashboard tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 24 Nov 2025 16:57:14 +0100
+
 ngcp-web-tests-e2e (14.0.0.0+0~mr14.0.0.0) unstable; urgency=medium
 
   [ Debora Crescenzo ]
