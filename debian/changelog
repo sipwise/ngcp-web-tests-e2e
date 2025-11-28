@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (13.5.1.9+0~mr13.5.1.9) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [360b62d] MT#64012 [AUI] Phonebook deletion tests does not work when page isn't empty
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 28 Nov 2025 12:58:31 +0100
+
 ngcp-web-tests-e2e (13.5.1.8+0~mr13.5.1.8) unstable; urgency=medium
 
   [ Nico Schedel ]
