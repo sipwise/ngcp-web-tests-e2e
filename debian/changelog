@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (13.5.1.10+0~mr13.5.1.10) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [ab90e6f] MT#63659 improve issppro checks across all cypress tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 28 Nov 2025 16:37:36 +0100
+
 ngcp-web-tests-e2e (13.5.1.9+0~mr13.5.1.9) unstable; urgency=medium
 
   [ Nico Schedel ]
