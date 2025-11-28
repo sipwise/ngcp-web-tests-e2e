@@ -10,7 +10,8 @@ import {
     apiRemoveResellerBy,
     apiRemoveResellerPhonebookBy,
     apiRemoveSystemContactBy,
-    deleteDownloadsFolder
+    deleteDownloadsFolder,
+    waitPageProgressAUI
 } from '../../../support/e2e'
 
 const downloadsFolder = Cypress.config('downloadsFolder')
@@ -189,11 +190,17 @@ context('Phonebook tests', () => {
                 cy.get('span[data-cy="aui-data-table-highlighted-text"]').contains(ResellerPhonebook.name).parents('tr').find('td[data-cy="q-td--more-menu-left"]').click()
                 cy.get('div[data-cy="aui-data-table-row-menu--delete"]').click()
                 cy.get('button[data-cy="btn-confirm"]').click()
-                cy.contains('.q-table__bottom--nodata', 'No data available').should('be.visible')
+                cy.get('div[class="q-linear-progress"][role="progressbar"]', {timeout: 20000}).should('not.exist')
+                cy.get('body').then($body => {
+                    if ($body.find('td[data-cy="q-td--name"]').length > 0) {
+                        cy.get('td[data-cy="q-td--name"]').contains(ResellerPhonebook.name).should('not.exist')
+                    } else {
+                        cy.contains('.q-table__bottom--nodata', 'No data available').should('be.visible')
+                    }
+                })
             } else {
                 cy.log('Not a SPPRO instance, skipping test...')
             }
-
         })
     })
 })
