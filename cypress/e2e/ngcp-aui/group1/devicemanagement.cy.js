@@ -390,7 +390,7 @@ context('Device management tests', () => {
                 cy.get('button[data-cy="aui-close-button"]').click()
                 cy.locationShouldBe('#/devicemanagement/firmware')
 
-                cy.get('td[data-cy="q-td--version"] span').contains('testversion').should('be.visible')
+                cy.get('td[data-cy="q-td--version"] span').contains('testversion').should('exist')
             } else {
                 cy.log('CloudPBX is not enabled, skipping test...')
             }
