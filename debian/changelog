@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (13.5.1.11+0~mr13.5.1.11) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [a7179f5] MT#64019 fix little oversight in edit device firmware test
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 03 Dec 2025 13:48:38 +0100
+
 ngcp-web-tests-e2e (13.5.1.10+0~mr13.5.1.10) unstable; urgency=medium
 
   [ Nico Schedel ]
