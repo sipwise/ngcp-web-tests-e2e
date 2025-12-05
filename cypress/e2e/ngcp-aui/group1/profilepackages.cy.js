@@ -166,12 +166,12 @@ context('Profile package tests', () => {
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfilePackageEdit"]').click()
             cy.get('input[data-cy="profilepackages-description"]').clear().type('testDescription')
             cy.get('input[data-cy="profilepackages-balanceinterval"]').clear().type('10')
-            cy.auiSelectLazySelect({ dataCy: 'aui-select-initial-billing-profile', filter: billingProfile.name, itemContains: billingProfile.name })
+            cy.auiSelectLazySelect({ dataCy: 'aui-select-initial-billing-profile', filter: editBillingProfile.name, itemContains: editBillingProfile.name })
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
             waitPageProgressAUI()
-            cy.get('td[data-cy="q-td--initial-profiles-grp"]').contains(billingProfile.name).should('be.visible')
+            cy.get('td[data-cy="q-td--initial-profiles-grp"]').contains(editBillingProfile.name).should('be.visible')
         })
 
         it('Delete profile package and check if they are deleted', () => {
