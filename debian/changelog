@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (13.5.1.13+0~mr13.5.1.13) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [63d92e6] MT#63730 [E2E] Fix Observer Loop in reseller_details test
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Sat, 06 Dec 2025 10:39:44 +0100
+
 ngcp-web-tests-e2e (13.5.1.12+0~mr13.5.1.12) unstable; urgency=medium
 
   [ Nico Schedel ]
