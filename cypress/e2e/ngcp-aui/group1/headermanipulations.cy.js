@@ -218,7 +218,7 @@ context('Header manipulation tests', () => {
                 waitPageProgressAUI()
                 cy.get('input[data-cy="header-rule-set-description"]').clear().type('testdescription')
                 cy.get('[data-cy="aui-save-button"]').click()
-                waitPageProgressAUI()
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 cy.get('[data-cy="aui-close-button"]').click()
                 cy.get('td[data-cy="q-td--description"]').should('contain.text', 'testdescription')
             } else {
@@ -514,7 +514,7 @@ context('Header manipulation tests', () => {
                 waitPageProgressAUI()
                 cy.qSelect({ dataCy: 'headerruleconditions-expression', itemContains: 'contains' })
                 cy.get('[data-cy="aui-save-button"]').click()
-                waitPageProgressAUI()
+                cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 cy.get('[data-cy="aui-close-button"]').click()
                 cy.get('td[data-cy="q-td--expression"]').should('contain.text', 'contains')
             } else {
