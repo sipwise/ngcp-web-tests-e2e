@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.30+0~mr12.5.1.30) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [5cdbc7d] MT#63950 remove waitPageProgress calls from call blocking tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 10 Dec 2025 10:32:25 +0100
+
 ngcp-web-tests-e2e (12.5.1.29+0~mr12.5.1.29) unstable; urgency=medium
 
   [ Nico Schedel ]
