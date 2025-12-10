@@ -105,7 +105,6 @@ context('Call blocking page tests', () => {
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/call-blocking/incoming"]').click()
 
-            waitPageProgressCSC()
             cy.get('div[data-cy="csc-enable-incoming"]').click()
             cy.get('div[data-cy="csc-enable-incoming"][aria-checked="true"]').should('be.visible')
 
@@ -126,7 +125,6 @@ context('Call blocking page tests', () => {
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/call-blocking/incoming"]').click()
 
-            waitPageProgressCSC()
             cy.get('button[data-cy="csc-add-number"]').click()
             cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
             cy.get('button[data-cy="csc-block-number-save"]').click()
@@ -149,7 +147,6 @@ context('Call blocking page tests', () => {
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/call-blocking/incoming"]').click()
 
-            waitPageProgressCSC()
             cy.get('button[data-cy="csc-add-number"]').click()
             cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
             cy.get('button[data-cy="csc-block-number-save"]').click()
@@ -194,7 +191,6 @@ context('Call blocking page tests', () => {
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/call-blocking/outgoing"]').click()
 
-            waitPageProgressCSC()
             cy.get('button[data-cy="csc-add-number"]').click()
             cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
             cy.get('button[data-cy="csc-block-number-save"]').click()
@@ -216,7 +212,6 @@ context('Call blocking page tests', () => {
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/call-blocking/outgoing"]').click()
 
-            waitPageProgressCSC()
             cy.get('button[data-cy="csc-add-number"]').click()
             cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
             cy.get('button[data-cy="csc-block-number-save"]').click()
