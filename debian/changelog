@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.29+0~mr12.5.1.29) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [22cdd42] MT#60617 wait for forward-ring-primary box in call forwarding tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 10 Dec 2025 10:07:13 +0100
+
 ngcp-web-tests-e2e (12.5.1.28+0~mr12.5.1.28) unstable; urgency=medium
 
   [ Nico Schedel ]
