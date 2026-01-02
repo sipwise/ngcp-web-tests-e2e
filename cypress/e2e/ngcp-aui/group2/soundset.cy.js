@@ -59,7 +59,7 @@ export const reseller = {
 
 const soundSet = {
     reseller_id: 0,
-    name: 'soundsetCypress',
+    name: 'soundsetTestCypress',
     description: 'This is a description of soundset from Cyress tests'
 }
 
