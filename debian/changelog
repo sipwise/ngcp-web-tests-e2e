@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (13.5.1.16+0~mr13.5.1.16) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [21290ae] MT#64191 soundset tests bugfix
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 02 Jan 2026 09:09:56 +0100
+
 ngcp-web-tests-e2e (13.5.1.15+0~mr13.5.1.15) unstable; urgency=medium
 
   * New release.
