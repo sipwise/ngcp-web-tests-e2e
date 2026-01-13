@@ -121,14 +121,12 @@ context('Speed dial "General" page tests', () => {
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/speeddial"]').click()
 
-            waitPageProgressCSC()
             cy.get('button[data-cy="csc-speeddial-add"]').click()
             cy.get('div[data-cy="csc-speeddial-slot"]').click()
             cy.get('div[aria-selected="false"]').contains('*1').click()
             cy.get('input[data-cy="csc-speeddial-destination"]').type('testspeeddial')
             cy.get('button[data-cy="csc-speeddial-save"]').click()
 
-            waitPageProgressCSC()
             cy.get('div[data-cy="csc-speeddial-whendial"]').contains('When I dial *1').should('be.visible')
             cy.get('div[data-cy="csc-speeddial-ring"]').contains('ring testspeeddial').should('be.visible')
 
@@ -138,7 +136,6 @@ context('Speed dial "General" page tests', () => {
             cy.get('input[data-cy="csc-speeddial-destination"]').type('testanotherspeeddial')
             cy.get('button[data-cy="csc-speeddial-save"]').click()
 
-            waitPageProgressCSC()
             cy.get('div[data-cy="csc-speeddial-whendial"]').contains('When I dial *2').should('be.visible')
             cy.get('div[data-cy="csc-speeddial-ring"]').contains('ring testanotherspeeddial').should('be.visible')
 
@@ -146,7 +143,6 @@ context('Speed dial "General" page tests', () => {
             cy.get('div[data-cy="csc-speeddial-remove"]').click()
             cy.get('button[data-autofocus="true"]').contains('OK').click()
 
-            waitPageProgressCSC()
             cy.get('div[data-cy="csc-speeddial-whendial"]').contains('When I dial *1').should('not.exist')
             cy.get('div[data-cy="csc-speeddial-ring"]').contains('ring testspeeddial').should('not.exist')
 
@@ -154,7 +150,6 @@ context('Speed dial "General" page tests', () => {
             cy.get('div[data-cy="csc-speeddial-remove"]').click()
             cy.get('button[data-autofocus="true"]').contains('OK').click()
 
-            waitPageProgressCSC()
             cy.get('div[data-cy="csc-speeddial-whendial"]').should('not.exist')
             cy.get('div[data-cy="csc-speeddial-ring"]').should('not.exist')
         })
