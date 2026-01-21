@@ -699,7 +699,7 @@ context('Customer Details tests', () => {
             cy.get('div').contains('PBX Devices').click()
             waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
-            cy.auiSelectLazySelect({ dataCy: 'pbx-profile-id', filter: pbxDeviceModel.model, itemContains: pbxDeviceModel.model })
+            cy.auiSelectLazySelect({ dataCy: 'pbx-profile-id', filter: pbxDeviceProfile.name, itemContains: pbxDeviceModel.model })
             cy.get('input[data-cy="pbx-identifier"]').type(pbxDevice.identifier)
             cy.get('input[data-cy="pbx-station-name"]').type(pbxDevice.station_name)
             cy.get('div[data-cy="aui-pbx-device-config"][class="display"] img').should('be.visible')
@@ -733,7 +733,7 @@ context('Customer Details tests', () => {
             cy.get('button[data-cy="pbx-device-close"]').click()
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-            cy.get('div[class="button"]').contains('1').click()
+            cy.get('div[class="button button-active"]').contains('1').click()
             cy.get('label[data-cy="pbx-device-subscriber"] span').contains(pilotSubscriber.username).should('be.visible')
         })
 
