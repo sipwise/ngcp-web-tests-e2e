@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.33+0~mr12.5.1.33) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [a7e1b84] MT#64299 via_route bugfix
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 22 Jan 2026 10:39:33 +0100
+
 ngcp-web-tests-e2e (12.5.1.32+0~mr12.5.1.32) unstable; urgency=medium
 
   [ Nico Schedel ]
