@@ -65,7 +65,7 @@ const peeringServer = {
     enabled: true,
     port: 99,
     host: "hostnameCypress",
-    via_route: "",
+    via_route: null,
     group_id: 0,
     name: "peeringServerCypress",
     ip: "10.0.0.1"
