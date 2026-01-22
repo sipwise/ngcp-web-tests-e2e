@@ -2678,7 +2678,7 @@ export const defaultPeeringServerCreationData = {
     enabled: true,
     port: 0,
     host: "string",
-    via_route: "",
+    via_route: null,
     group_id: 0,
     name: "string",
     ip: "string"
