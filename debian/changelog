@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.34+0~mr12.5.1.34) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [da49478] MT#63950 improve q-spinner detection in auiSelectLazySelect
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 29 Jan 2026 11:05:24 +0100
+
 ngcp-web-tests-e2e (12.5.1.33+0~mr12.5.1.33) unstable; urgency=medium
 
   [ Debora Crescenzo ]
