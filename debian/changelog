@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (14.0.1.6+0~mr14.0.1.6) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [e6eddbd] MT#63950 remove waitPageProgress calls from speed dial add/delete tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 03 Feb 2026 10:40:06 +0100
+
 ngcp-web-tests-e2e (14.0.1.5+0~mr14.0.1.5) unstable; urgency=medium
 
   [ Nico Schedel ]
