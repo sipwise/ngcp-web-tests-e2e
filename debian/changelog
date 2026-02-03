@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (13.5.1.21+0~mr13.5.1.21) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [2ff32b2] MT#63950 remove waitPageProgress() from lnp numbers menu tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 03 Feb 2026 14:52:46 +0100
+
 ngcp-web-tests-e2e (13.5.1.20+0~mr13.5.1.20) unstable; urgency=medium
 
   [ Nico Schedel ]
