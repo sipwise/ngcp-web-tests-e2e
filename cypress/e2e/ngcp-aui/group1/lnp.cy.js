@@ -254,7 +254,6 @@ context('LNP tests', () => {
             cy.get('a[href="#/lnp/numbers"]').click()
             cy.locationShouldBe('#/lnp/numbers')
 
-            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="aui-select-lnp-carrier"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -273,7 +272,6 @@ context('LNP tests', () => {
             cy.get('a[href="#/lnp/numbers"]').click()
             cy.locationShouldBe('#/lnp/numbers')
 
-            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.auiSelectLazySelect({ dataCy: 'aui-select-lnp-carrier', filter: LNPCarrier.name, itemContains: LNPCarrier.name })
             cy.get('input[data-cy="lnpnumber-number"]').type(SecondLNPNumber.number)
@@ -298,7 +296,6 @@ context('LNP tests', () => {
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[href="#/lnp/numbers"]').click()
             cy.locationShouldBe('#/lnp/numbers')
-            waitPageProgressAUI()
 
             searchInDataTable(SecondLNPNumber.number)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -321,7 +318,6 @@ context('LNP tests', () => {
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[href="#/lnp/numbers"]').click()
             cy.locationShouldBe('#/lnp/numbers')
-            waitPageProgressAUI()
             deleteItemOnListPageBy(SecondLNPNumber.number)
         })
     })
