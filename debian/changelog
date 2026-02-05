@@ -1,3 +1,30 @@
+ngcp-web-tests-e2e (14.2.0.0+0~mr14.2.0.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [bc2ebf6] MT#64012 [AUI] Phonebook deletion tests does not work when page isn't empty
+  * [d323003] MT#64019 fix little oversight in edit device firmware test
+  * [2b86f17] MT#64015 fix edit profilepackage test, remove backspace command
+  * [b10c23a] MT#64015 another fix for edit profilepackage test
+  * [c03afb6] MT#63950 remove waitPageProgress calls from call blocking tests
+  * [849d5c0] MT#63704 [E2E] AUI Add tests for user roles
+  * [61e896c] MT#63950 remove waitPageProgress calls from speed dial tests
+  * [6bac500] MT#63433 update cypress pbx device test for changed element identifier
+  * [f3834f7] MT#63950 remove waitPageProgress calls from speed dial add/delete tests
+  * [3b6f158] MT#63950 remove waitPageProgress() from lnp numbers menu tests
+  * [165bbc6] MT#64380 fix changed identifiers in faxsettings tests
+
+  [ Guillem Jover ]
+  * [d68be26] MT#62899 Update packaging for Debian trixie
+
+  [ Debora Crescenzo ]
+  * [09e27d5] MT#64191 soundset tests bugfix
+  * [0427bca] MT#64299 via_route bugfix
+
+  [ Michael Prokop ]
+  * [3bcd28a] MT#62249 Refresh docker image
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 05 Feb 2026 10:24:03 +0100
+
 ngcp-web-tests-e2e (14.1.0.0+0~mr14.1.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
