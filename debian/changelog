@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (13.5.1.22+0~mr13.5.1.22) unstable; urgency=medium
+
+  [ Michael Prokop ]
+  * [4c461e6] MT#62249 Refresh docker image
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 06 Feb 2026 09:11:01 +0100
+
 ngcp-web-tests-e2e (13.5.1.21+0~mr13.5.1.21) unstable; urgency=medium
 
   [ Nico Schedel ]
