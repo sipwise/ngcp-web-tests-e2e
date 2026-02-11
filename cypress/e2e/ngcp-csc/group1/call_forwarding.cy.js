@@ -147,7 +147,7 @@ context('Call forwarding page tests', () => {
 
             cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
             cy.get('span[data-cy="csc-cf-destination"]').click()
-            cy.get('input').type('0123456789')
+            cy.get('input:visible').type('0123456789')
             cy.get('button').contains('Set').click()
 
             cy.get('div[data-cy="q-item-label"]').contains('Forwarded to').should('be.visible')
@@ -156,19 +156,19 @@ context('Call forwarding page tests', () => {
             cy.get('div[data-cy="csc-forwarding-to-number"]').click()
 
             cy.get('i').contains('access_time').click()
-            cy.get('input').clear()
-            cy.get('input').type('30')
+            cy.get('input:visible').clear()
+            cy.get('input:visible').type('30')
             cy.get('button').contains('Set').click()
 
             cy.get('div[class="q-item__label"]').contains('30 seconds').should('be.visible')
             cy.get('span[data-cy="csc-cf-destination"]').last().click()
-            cy.get('input').type('9876543210')
+            cy.get('input:visible').type('9876543210')
             cy.get('button').contains('Set').click()
 
             cy.get('span[value="9876543210"]').should('be.visible')
         })
 
-        it('Add "Foward to voicebox" and delete it', () => {
+        it('Add "Forward to voicebox" and delete it', () => {
             cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -184,8 +184,8 @@ context('Call forwarding page tests', () => {
             cy.get('div[data-cy="csc-forwarding-to-voicebox"]').click()
 
             cy.get('i').contains('access_time').click()
-            cy.get('input').clear()
-            cy.get('input').type('30')
+            cy.get('input:visible').clear()
+            cy.get('input:visible').type('30')
             cy.get('button').contains('Set').click()
 
             cy.get('div[class="q-item__label"]').contains('30 seconds').should('be.visible')
@@ -196,7 +196,7 @@ context('Call forwarding page tests', () => {
             cy.get('div[class="q-item__label"]').contains('30 seconds').should('not.exist')
         })
 
-        it('Disable and enable a call forward condition', () => {
+        it('Enable and Disable a call forward condition', () => {
             cy.loginUiCSC(loginInfo.username, loginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -208,14 +208,12 @@ context('Call forwarding page tests', () => {
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
 
             cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
-            cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
-            cy.get('div[data-cy="csc-forwarding-disable"]').click()
+            cy.get('div[data-cy="csc-forwarding-toggle"]').click()
+            cy.get('div[data-cy="csc-forwarding-toggle"][aria-checked="true"]').should('be.visible')
 
-            cy.get('div[data-cy="q-item-section"][class*="disabled"]').should('be.visible')
-            cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
-            cy.get('div[data-cy="csc-forwarding-disable"]').click()
+            cy.get('div[data-cy="csc-forwarding-toggle"]').click()
+            cy.get('div[data-cy="csc-forwarding-toggle"][aria-checked="false"]').should('be.visible')
 
-            cy.get('div[data-cy="q-item-section"][class*="disabled"]').should('not.exist')
         })
 
         it('Make global "After ring timeout" box appear and change value', () => {
