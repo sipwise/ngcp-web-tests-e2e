@@ -143,7 +143,6 @@ context('Reminder tests', () => {
             cy.get('input[data-cy="csc-reminder-time"]').should('have.value', '06:45')
             cy.get('div[data-cy="csc-reminder-timeselector"] button:first').click()
             const time = dayjs().format('HH:mm')
-            waitPageProgressCSC()
             cy.get('input[data-cy="csc-reminder-time"]').should('have.value', time)
             cy.get('div[data-cy="csc-reminder-toggle"]').click()
 
