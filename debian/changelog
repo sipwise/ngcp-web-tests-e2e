@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (14.1.1.2+0~mr14.1.1.2) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [4b580b7] MT#63950 remove one waitPageProgress() from reminder tests
+  * [39ea94c] MT#64610 [E2E] Add group 3 tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 09 Mar 2026 15:42:22 +0100
+
 ngcp-web-tests-e2e (14.1.1.1+0~mr14.1.1.1) unstable; urgency=medium
 
   [ Nico Schedel ]
