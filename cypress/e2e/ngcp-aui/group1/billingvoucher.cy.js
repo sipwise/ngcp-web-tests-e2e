@@ -24,7 +24,7 @@ import {
     apiRemoveBillingVoucherByPackageId
 } from '../../../support/e2e'
 
-export const contract = {
+const contract = {
     contact_id: null,
     status: 'active',
     external_id: 'contractBillingVoucher',
@@ -33,7 +33,7 @@ export const contract = {
     billing_profile_id: 1
 }
 
-export const reseller = {
+const reseller = {
     contract_id: null,
     status: 'active',
     rtc_networks: {},

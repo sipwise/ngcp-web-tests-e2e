@@ -35,7 +35,7 @@ const resellerContract = {
     billing_profile_id: null
 }
 
-export const dependencyContract = {
+const dependencyContract = {
     contact_id: null,
     status: 'active',
     external_id: 'dependencyContractContracts',

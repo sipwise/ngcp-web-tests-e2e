@@ -39,7 +39,7 @@ const internalBillingProfile = {
     reseller_id: null
 }
 
-export const contract = {
+const contract = {
     contact_id: 0,
     status: 'active',
     external_id: 'contractResellerTest',
@@ -91,7 +91,7 @@ const systemContact = {
     lastname: 'Testlastname'
 }
 
-export const resellerPhonebook = {
+const resellerPhonebook = {
     number: "testnumber",
     reseller_id: 0,
     name: "ResellerDetailsPhonebook"

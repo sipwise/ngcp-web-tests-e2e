@@ -33,7 +33,7 @@ const locationmapping = {
     enabled: true
 }
 
-export const domain = {
+const domain = {
     reseller_id: 1,
     domain: 'domainSubscriberDetailsCypress'
 }
@@ -61,7 +61,7 @@ const subscriber = {
     }
 }
 
-export const subscriberPhonebook = {
+const subscriberPhonebook = {
     number: "testnumber",
     subscriber_id: 0,
     name: "SubscriberDetailsPhonebook"

@@ -25,7 +25,7 @@ import {
 const ngcpConfig = Cypress.config('ngcpConfig')
 let issppro = null
 
-export const contract = {
+const contract = {
     contact_id: 0,
     status: 'active',
     external_id: 'contractHeaderMan',
@@ -72,7 +72,7 @@ const headerRuleAction = {
     rule_id: 0
 }
 
-export const reseller = {
+const reseller = {
     contract_id: 1,
     status: 'active',
     rtc_networks: {},
