@@ -30,7 +30,7 @@ const billingProfile = {
     reseller_id: null
 }
 
-export const contract = {
+const contract = {
     contact_id: 0,
     status: 'active',
     external_id: 'soundSetContract',
@@ -39,7 +39,7 @@ export const contract = {
     billing_profile_id: 1
 }
 
-export const customerPbx = {
+const customerPbx = {
     billing_profile_definition: 'id',
     billing_profile_id: null,
     external_id: 'soundSetCustomerPbx',
@@ -49,7 +49,7 @@ export const customerPbx = {
     customer_id: null
 }
 
-export const reseller = {
+const reseller = {
     contract_id: 1,
     status: 'active',
     rtc_networks: {},

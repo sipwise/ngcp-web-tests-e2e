@@ -21,7 +21,7 @@ import {
 const ngcpConfig = Cypress.config('ngcpConfig')
 let issppro = null
 
-export const customer = {
+const customer = {
     billing_profile_definition: 'id',
     billing_profile_id: 1,
     external_id: `customerSubTests`,
@@ -39,7 +39,7 @@ const customerPbx = {
     type: 'pbxaccount'
 }
 
-export const domain = {
+const domain = {
     reseller_id: 1,
     domain: 'domainSubscribersTests'
 }
@@ -79,7 +79,7 @@ const profileSet = {
     name: 'subscribersProfileSet'
 }
 
-export const subscriber = {
+const subscriber = {
     username: 'subscriberTestsCypressAui',
     email: 'subscriberTestsCypressAui@test.com',
     external_id: 'subid' + getRandomNum(),
