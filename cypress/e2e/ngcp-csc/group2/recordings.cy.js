@@ -11,12 +11,12 @@ import {
     apiRemoveSubscriberBy,
 } from '../../../support/e2e'
 
-export const domain = {
+const domain = {
     domain: 'domainRecordings',
     reseller_id: 1
 }
 
-export const subscriber = {
+const subscriber = {
     username: 'subscriberRec',
     webusername: 'subscriberRec',
     email: 'subscriberRec@test.com',
@@ -33,7 +33,7 @@ export const subscriber = {
     },
 }
 
-export const customer = {
+const customer = {
     billing_profile_definition: 'id',
     billing_profile_id: 1,
     external_id: 'customerRec',
@@ -42,7 +42,7 @@ export const customer = {
     type: 'sipaccount'
 }
 
-export const loginInfo = {
+const loginInfo = {
     username: `${subscriber.webusername}@${subscriber.domain}`,
     password: `${subscriber.webpassword}`
 }
