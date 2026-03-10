@@ -23,7 +23,7 @@ const contactNames = {
     firstname: 'first' + getRandomNum(),
     lastname: 'last' + getRandomNum()
 }
-export const contract = {
+const contract = {
     contact_id: 0,
     status: 'active',
     external_id: 'testContacts',
@@ -37,7 +37,7 @@ const customerContact = {
     email: 'testContacts@example.com'
 }
 
-export const reseller = {
+const reseller = {
     contract_id: 1,
     status: 'active',
     rtc_networks: {},

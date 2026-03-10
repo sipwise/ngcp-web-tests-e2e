@@ -20,7 +20,7 @@ const ngcpConfig = Cypress.config('ngcpConfig')
 const path = require('path')
 var issppro = null
 
-export const contract = {
+const contract = {
     contact_id: 0,
     status: 'active',
     external_id: 'contractPhonebook',
@@ -35,7 +35,7 @@ const ResellerPhonebook = {
     number: 88
 }
 
-export const reseller = {
+const reseller = {
     contract_id: 1,
     status: 'active',
     rtc_networks: {},
