@@ -36,7 +36,7 @@ const subscriber = {
     },
 }
 
-export const customer = {
+const customer = {
     billing_profile_definition: 'id',
     billing_profile_id: 1,
     external_id: 'customerCallForw',
@@ -45,7 +45,7 @@ export const customer = {
     type: 'sipaccount'
 }
 
-export const loginInfo = {
+const loginInfo = {
     username: `${subscriber.webusername}@${subscriber.domain}`,
     password: `${subscriber.webpassword}`
 }

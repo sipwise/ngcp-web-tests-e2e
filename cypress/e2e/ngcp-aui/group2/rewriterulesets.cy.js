@@ -19,7 +19,7 @@ var cloneCreated = false
 const path = require('path')
 const ngcpConfig = Cypress.config('ngcpConfig')
 
-export const contract = {
+const contract = {
     contact_id: 0,
     status: 'active',
     external_id: 'contractRewriteRules',
@@ -28,7 +28,7 @@ export const contract = {
     billing_profile_id: 1
 }
 
-export const reseller = {
+const reseller = {
     contract_id: 1,
     status: 'active',
     rtc_networks: {},

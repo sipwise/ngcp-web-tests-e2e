@@ -29,7 +29,7 @@ import {
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
-export const dependencyContract = {
+const dependencyContract = {
     contact_id: null,
     status: 'active',
     external_id: 'dependencyContractDomainPref',
@@ -45,7 +45,7 @@ const dependencyReseller = {
     enable_rtc: false
 }
 
-export const domain = {
+const domain = {
     reseller_id: 1,
     domain: 'domainCypressTests'
 }
