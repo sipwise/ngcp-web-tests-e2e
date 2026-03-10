@@ -11,12 +11,12 @@ import {
     getRandomNum,
 } from '../../../support/e2e'
 
-export const domain = {
+const domain = {
     domain: 'domainDashboard',
     reseller_id: 1
 }
 
-export const subscriber = {
+const subscriber = {
     username: 'subscriberDash',
     webusername: 'subscriberDash',
     email: 'subscriberDash@test.com',
@@ -33,7 +33,7 @@ export const subscriber = {
     },
 }
 
-export const customer = {
+const customer = {
     billing_profile_definition: 'id',
     billing_profile_id: 1,
     external_id: 'customerDash',
@@ -42,7 +42,7 @@ export const customer = {
     type: 'sipaccount'
 }
 
-export const loginInfo = {
+const loginInfo = {
     username: `${subscriber.webusername}@${subscriber.domain}`,
     password: `${subscriber.webpassword}`
 }
