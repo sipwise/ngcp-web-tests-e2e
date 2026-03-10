@@ -13,12 +13,12 @@ import {
     apiCreateSubscriberPhonebook
 } from '../../../support/e2e'
 
-export const domain = {
+const domain = {
     domain: 'domainSubscriberPhonebook',
     reseller_id: 1
 }
 
-export const subscriber = {
+const subscriber = {
     username: 'subscriberPhonebook',
     webusername: 'subscriberPhonebook',
     email: 'subscriberPhonebook@test.com',
@@ -35,7 +35,7 @@ export const subscriber = {
     },
 }
 
-export const subscriberSharedPhonebook = {
+const subscriberSharedPhonebook = {
     username: 'subscriberPhonebookShared',
     webusername: 'subscriberPhonebookShared',
     email: 'subscriberPhonebookShared@test.com',
@@ -52,7 +52,7 @@ export const subscriberSharedPhonebook = {
     },
 }
 
-export const customer = {
+const customer = {
     billing_profile_definition: 'id',
     billing_profile_id: 1,
     external_id: 'customerSubscriberPhonebook',
@@ -61,19 +61,19 @@ export const customer = {
     type: 'sipaccount'
 }
 
-export const loginInfo = {
+const loginInfo = {
     username: `${subscriber.webusername}@${subscriber.domain}`,
     password: `${subscriber.webpassword}`
 }
 
-export const subscriberPhonebookEntry = {
+const subscriberPhonebookEntry = {
     number: "testnumber",
     subscriber_id: 0,
     name: "cscSubscriberPhonebook",
     shared: false
 }
 
-export const secondSubscriberPhonebookEntry = {
+const secondSubscriberPhonebookEntry = {
     number: "secondtestnumber",
     subscriber_id: 0,
     name: "SecondSubscriberPhonebook",

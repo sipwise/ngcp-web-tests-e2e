@@ -42,7 +42,7 @@ const admin = {
     reseller_id: 0
 }
 
-export const contract = {
+const contract = {
     contact_id: 0,
     status: 'active',
     external_id: 'contractLogin',
@@ -51,7 +51,7 @@ export const contract = {
     billing_profile_id: 1
 }
 
-export const reseller = {
+const reseller = {
     contract_id: 1,
     status: 'active',
     rtc_networks: {},

@@ -37,13 +37,13 @@ import {
     testPreferencesToggleField
 } from '../../../support/e2e'
 
-export const billingProfile = {
+const billingProfile = {
     name: 'billingProfileCustomerDetails',
     handle: 'profilehandle' + getRandomNum(),
     reseller_id: 1
 }
 
-export const billingVoucher = {
+const billingVoucher = {
     valid_until: "2026-06-05 23:59:59",
     amount: 10000,
     code: "voucherCustomerDetails",
@@ -51,7 +51,7 @@ export const billingVoucher = {
     reseller_id: 1
 }
 
-export const customer = {
+const customer = {
     billing_profile_definition: 'id',
     billing_profile_id: null,
     external_id: 'customerDetailsTest',
@@ -61,23 +61,23 @@ export const customer = {
     customer_id: null
 }
 
-export const customerContact = {
+const customerContact = {
     reseller_id: 1,
     email: 'customerDetailsContact@example.com'
 }
 
-export const customerPhonebook = {
+const customerPhonebook = {
     number: "testnumber",
     customer_id: 0,
     name: "CustomerDetailsPhonebook"
 }
 
-export const domain = {
+const domain = {
     reseller_id: 1,
     domain: 'domainCustomerDetails'
 }
 
-export const location = {
+const location = {
     contract_id: 1,
     description: "description",
     blocks: [
@@ -89,7 +89,7 @@ export const location = {
     name: "customerDetailsLocation"
 }
 
-export const pbxGroup = {
+const pbxGroup = {
     customer_id: 0,
     display_name: 'customerDetailsPbxGroup',
     domain_id: 0,
@@ -102,7 +102,7 @@ export const pbxGroup = {
     username: 'customerDetailsPbxGroup'
 }
 
-export const pilotSubscriber = {
+const pilotSubscriber = {
     username: 'customerDetailsSubscriberCypress',
     email: 'customerDetailsSubscriberCypress@test.com',
     password: 'sub!SUB' + getRandomNum() + '#pass$',
@@ -117,7 +117,7 @@ export const pilotSubscriber = {
     customer_id: 0
 }
 
-export const soundset = {
+const soundset = {
     reseller_id: 1,
     customer_id: 0,
     name: "customerDetailsSoundsetCypress",

@@ -23,7 +23,7 @@ import {
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 
-export const contract = {
+const contract = {
     contact_id: 0,
     status: 'active',
     external_id: 'contractPeeringCypress',

@@ -48,7 +48,7 @@ const admin2 = {
     reseller_id: null
 }
 
-export const contract = {
+const contract = {
     contact_id: 0,
     status: 'active',
     external_id: 'contractAdminAUI',
@@ -82,7 +82,7 @@ const secondaryResellerAdmin = {
     reseller_id: null
 }
 
-export const reseller = {
+const reseller = {
     contract_id: 1,
     status: 'active',
     rtc_networks: {},

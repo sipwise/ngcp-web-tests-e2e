@@ -28,7 +28,7 @@ const fixturesFolder = Cypress.config('fixturesFolder')
 const ngcpConfig = Cypress.config('ngcpConfig')
 const path = require('path')
 
-export const contract = {
+const contract = {
     contact_id: 0,
     status: 'active',
     external_id: 'contractDeviceManagementCypress',
@@ -37,7 +37,7 @@ export const contract = {
     billing_profile_id: 1
 }
 
-export const reseller = {
+const reseller = {
     contract_id: 0,
     status: 'active',
     name: 'resellerDeviceManagementCypress',

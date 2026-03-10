@@ -9,7 +9,7 @@ import {
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
-export const domain = {
+const domain = {
     reseller_id: 1,
     domain: 'domainDomains'
 }
