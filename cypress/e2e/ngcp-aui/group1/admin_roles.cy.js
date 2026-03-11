@@ -272,7 +272,6 @@ context('Administrator roles tests', () => {
             apiRemoveContractBy({ name: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             cy.log('Data clean up pre-tests completed')
-
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                 apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                     apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {

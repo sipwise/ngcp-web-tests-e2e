@@ -43,56 +43,55 @@ const downloadsFolder = Cypress.config('downloadsFolder')
 const path = require('path')
 
 context('LNP tests', () => {
+    before(() => {
+        Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
 
-        before(() => {
-            Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-
-            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveLNPNumberBy({ number: '100', authHeader})
-                apiRemoveLNPNumberBy({ number: '50', authHeader})
-                apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader})
-                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
-                apiRemoveLNPCarrierBy({ name: 'csvLNPCarrierTest', authHeader })
-                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
-                cy.log('Data clean up pre-tests completed')
-            })
-
+        Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+        cy.log('Preparing environment...')
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveLNPNumberBy({ number: '100', authHeader})
+            apiRemoveLNPNumberBy({ number: '50', authHeader})
+            apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader})
+            apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
+            apiRemoveLNPCarrierBy({ name: 'csvLNPCarrierTest', authHeader })
+            apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+            cy.log('Data clean up pre-tests completed')
         })
 
-        beforeEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
-                cy.log('Cleaning up db...')
-                apiRemoveLNPNumberBy({ number: '100', authHeader})
-                apiRemoveLNPNumberBy({ number: '50', authHeader})
-                apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader})
-                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
-                apiRemoveLNPCarrierBy({ name: 'csvLNPCarrierTest', authHeader })
-                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+    })
 
-                cy.log('Seeding db...')
-                apiCreateLNPCarrier({ data: LNPCarrier, authHeader }).then(({ id }) => {
-                    apiCreateLNPNumber({ data: { ...LNPNumber, carrier_id: id }, authHeader })
-                    apiCreateLNPNumber({ data: { ...SecondLNPNumber, carrier_id: id }, authHeader })
-                })
+    beforeEach(() => {
+        apiLoginAsSuperuser().then(authHeader => {
+            cy.log('Cleaning up db...')
+            apiRemoveLNPNumberBy({ number: '100', authHeader})
+            apiRemoveLNPNumberBy({ number: '50', authHeader})
+            apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader})
+            apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
+            apiRemoveLNPCarrierBy({ name: 'csvLNPCarrierTest', authHeader })
+            apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+
+            cy.log('Seeding db...')
+            apiCreateLNPCarrier({ data: LNPCarrier, authHeader }).then(({ id }) => {
+                apiCreateLNPNumber({ data: { ...LNPNumber, carrier_id: id }, authHeader })
+                apiCreateLNPNumber({ data: { ...SecondLNPNumber, carrier_id: id }, authHeader })
             })
         })
+    })
 
-        after(() => {
-            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-            cy.log('Data clean up...')
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveLNPNumberBy({ number: '100', authHeader})
-                apiRemoveLNPNumberBy({ number: '50', authHeader})
-                apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader})
-                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
-                apiRemoveLNPCarrierBy({ name: 'csvLNPCarrierTest', authHeader })
-                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
-                cy.log('Data clean up pre-tests completed')
-            })
+    after(() => {
+        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
+        cy.log('Data clean up...')
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveLNPNumberBy({ number: '100', authHeader})
+            apiRemoveLNPNumberBy({ number: '50', authHeader})
+            apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader})
+            apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
+            apiRemoveLNPCarrierBy({ name: 'csvLNPCarrierTest', authHeader })
+            apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+            cy.log('Data clean up pre-tests completed')
         })
+    })
 
     context('LNP tests Carriers menu', () => {
         it('Check if LNP carrier with invalid values gets rejected', () => {
