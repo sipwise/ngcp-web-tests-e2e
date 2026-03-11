@@ -7,7 +7,6 @@ import {
     apiRemoveDomainBy,
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
-    waitPageProgressCSC,
     apiCreateSubscriber,
     getRandomNum,
 } from '../../../support/e2e'
@@ -52,201 +51,199 @@ const loginInfo = {
 
 
 context('Call blocking page tests', () => {
-    context('UI call blocking tests', () => {
-        before(() => {
-            Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-            apiLoginAsSuperuser().then(authHeader => {
-                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-                cy.log('Preparing environment...')
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
-                cy.log('Data clean up pre-tests completed')
-
-                apiCreateDomain({ data: domain, authHeader })
-                apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
-                    subscriber.customer_id = id
-                })
+    before(() => {
+        Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+        apiLoginAsSuperuser().then(authHeader => {
+            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+            cy.log('Preparing environment...')
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            cy.log('Data clean up pre-tests completed')
+            apiCreateDomain({ data: domain, authHeader })
+            apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                subscriber.customer_id = id
             })
         })
+    })
 
-        beforeEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(()=> {
-                    apiCreateSubscriber({
-                        data: {
-                            ...subscriber,
-                            primaryNumber: {
-                                sn: 12,
-                                ac: 12,
-                                cc: 1112
-                            }
-                        },
-                        authHeader
-                     })
-            })
-            cy.visit('/')
-            })
+    beforeEach(() => {
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(()=> {
+                apiCreateSubscriber({
+                    data: {
+                        ...subscriber,
+                        primaryNumber: {
+                            sn: 12,
+                            ac: 12,
+                            cc: 1112
+                        }
+                    },
+                    authHeader
+                    })
         })
-
-        after(() => {
-            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-            cy.log('Data clean up...')
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
-            })
+        cy.visit('/')
         })
+    })
 
-        it('Enable incoming call block', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
-            cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-            cy.get('a[href="#/user/call-blocking/incoming"]').click()
-
-            cy.get('div[data-cy="csc-enable-incoming"]').click()
-            cy.get('div[data-cy="csc-enable-incoming"][aria-checked="true"]').should('be.visible')
-
-            cy.get('div[data-cy="csc-block-listed"]').click()
-            cy.get('div[data-cy="csc-block-listed"][aria-checked="true"]').should('be.visible')
-
-            cy.get('div[data-cy="csc-block-all"]').click()
-            cy.get('div[data-cy="csc-block-all"][aria-checked="true"]').should('be.visible')
-
-            cy.get('div[data-cy="csc-enable-incoming"]').click()
-            cy.get('div[data-cy="csc-enable-incoming"][aria-checked="false"]').should('be.visible')
+    after(() => {
+        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
+        cy.log('Data clean up...')
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveDomainBy({ name: domain.domain, authHeader })
         })
+    })
 
-        it('Add blocked number and enable blocklist for incoming calls', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
+    it('Enable incoming call block', () => {
+        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-            cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-            cy.get('a[href="#/user/call-blocking/incoming"]').click()
+        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
+        cy.get('a[href="#/user/call-blocking/incoming"]').click()
 
-            cy.get('button[data-cy="csc-add-number"]').click()
-            cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
-            cy.get('button[data-cy="csc-block-number-save"]').click()
+        cy.get('div[data-cy="csc-enable-incoming"]').click()
+        cy.get('div[data-cy="csc-enable-incoming"][aria-checked="true"]').should('be.visible')
 
-            cy.contains('testnumber').should('be.visible')
-            cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('block').should('be.visible')
-            cy.get('div[data-cy="csc-block-listed"]').click()
-            cy.get('div[data-cy="csc-block-listed"][aria-checked="true"]').should('be.visible')
-            cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('check').should('be.visible')
+        cy.get('div[data-cy="csc-block-listed"]').click()
+        cy.get('div[data-cy="csc-block-listed"][aria-checked="true"]').should('be.visible')
 
-            cy.get('div[data-cy="csc-block-all"]').click()
-            cy.get('div[data-cy="csc-block-all"][aria-checked="true"]').should('be.visible')
-            cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('block').should('be.visible')
-        })
+        cy.get('div[data-cy="csc-block-all"]').click()
+        cy.get('div[data-cy="csc-block-all"][aria-checked="true"]').should('be.visible')
 
-        it('Add/Edit/Delete blocked numbers for incoming calls', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
+        cy.get('div[data-cy="csc-enable-incoming"]').click()
+        cy.get('div[data-cy="csc-enable-incoming"][aria-checked="false"]').should('be.visible')
+    })
 
-            cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-            cy.get('a[href="#/user/call-blocking/incoming"]').click()
+    it('Add blocked number and enable blocklist for incoming calls', () => {
+        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-            cy.get('button[data-cy="csc-add-number"]').click()
-            cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
-            cy.get('button[data-cy="csc-block-number-save"]').click()
+        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
+        cy.get('a[href="#/user/call-blocking/incoming"]').click()
 
-            cy.contains('testnumber').should('be.visible')
-            cy.get('button[data-cy="csc-blocked-number-menu"]').click()
-            cy.get('div[data-cy="csc-blocked-number-edit"]').click()
-            cy.get('input[type="text"]').clear()
-            cy.get('input[type="text"]').type('anothertest')
-            cy.get('button').contains('Undo').click()
+        cy.get('button[data-cy="csc-add-number"]').click()
+        cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
+        cy.get('button[data-cy="csc-block-number-save"]').click()
 
-            cy.get('input[type="text"]')
-                .invoke('val')
-                .then(inputval => expect(inputval).to.eq('testnumber'))
-            cy.get('button[data-cy="csc-blocked-number-menu"]').click()
-            cy.get('div[data-cy="csc-blocked-number-edit"]').click()
-            cy.get('input[type="text"]').clear()
-            cy.get('input[type="text"]').type('anothertest')
-            cy.get('button').contains('Save').click()
+        cy.contains('testnumber').should('be.visible')
+        cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('block').should('be.visible')
+        cy.get('div[data-cy="csc-block-listed"]').click()
+        cy.get('div[data-cy="csc-block-listed"][aria-checked="true"]').should('be.visible')
+        cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('check').should('be.visible')
 
-            cy.contains('anothertest').should('be.visible')
-            cy.get('button[data-cy="csc-add-number"]').click()
-            cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
-            cy.get('button[data-cy="csc-block-number-save"]').click()
+        cy.get('div[data-cy="csc-block-all"]').click()
+        cy.get('div[data-cy="csc-block-all"][aria-checked="true"]').should('be.visible')
+        cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('block').should('be.visible')
+    })
 
-            cy.contains('testnumber').should('be.visible')
-            cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
-            cy.get('div[data-cy="csc-blocked-number-delete"]').click()
-            cy.get('div[data-cy="q-card"]').contains('OK').click()
-            cy.contains('testnumber').should('not.exist')
+    it('Add/Edit/Delete blocked numbers for incoming calls', () => {
+        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-            cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
-            cy.get('div[data-cy="csc-blocked-number-delete"]').click()
-            cy.get('div[data-cy="q-card"]').contains('OK').click()
-            cy.contains('anothertest').should('not.exist')
-        })
+        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
+        cy.get('a[href="#/user/call-blocking/incoming"]').click()
 
-        it('Add blocked number and enable blocklist for outgoing calls', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
+        cy.get('button[data-cy="csc-add-number"]').click()
+        cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
+        cy.get('button[data-cy="csc-block-number-save"]').click()
 
-            cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-            cy.get('a[href="#/user/call-blocking/outgoing"]').click()
+        cy.contains('testnumber').should('be.visible')
+        cy.get('button[data-cy="csc-blocked-number-menu"]').click()
+        cy.get('div[data-cy="csc-blocked-number-edit"]').click()
+        cy.get('input[type="text"]').clear()
+        cy.get('input[type="text"]').type('anothertest')
+        cy.get('button').contains('Undo').click()
 
-            cy.get('button[data-cy="csc-add-number"]').click()
-            cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
-            cy.get('button[data-cy="csc-block-number-save"]').click()
+        cy.get('input[type="text"]')
+            .invoke('val')
+            .then(inputval => expect(inputval).to.eq('testnumber'))
+        cy.get('button[data-cy="csc-blocked-number-menu"]').click()
+        cy.get('div[data-cy="csc-blocked-number-edit"]').click()
+        cy.get('input[type="text"]').clear()
+        cy.get('input[type="text"]').type('anothertest')
+        cy.get('button').contains('Save').click()
 
-            cy.contains('testnumber').should('be.visible')
-            cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('block').should('be.visible')
-            cy.get('div[data-cy="csc-block-listed"]').click()
-            cy.get('div[data-cy="csc-block-listed"][aria-checked="true"]').should('be.visible')
-            cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('check').should('be.visible')
+        cy.contains('anothertest').should('be.visible')
+        cy.get('button[data-cy="csc-add-number"]').click()
+        cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
+        cy.get('button[data-cy="csc-block-number-save"]').click()
 
-            cy.get('div[data-cy="csc-block-all"]').click()
-            cy.get('div[data-cy="csc-block-all"][aria-checked="true"]').should('be.visible')
-            cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('block').should('be.visible')        })
+        cy.contains('testnumber').should('be.visible')
+        cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
+        cy.get('div[data-cy="csc-blocked-number-delete"]').click()
+        cy.get('div[data-cy="q-card"]').contains('OK').click()
+        cy.contains('testnumber').should('not.exist')
 
-        it('Add/Edit/Delete blocked numbers for outgoing calls', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
+        cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
+        cy.get('div[data-cy="csc-blocked-number-delete"]').click()
+        cy.get('div[data-cy="q-card"]').contains('OK').click()
+        cy.contains('anothertest').should('not.exist')
+    })
 
-            cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-            cy.get('a[href="#/user/call-blocking/outgoing"]').click()
+    it('Add blocked number and enable blocklist for outgoing calls', () => {
+        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-            cy.get('button[data-cy="csc-add-number"]').click()
-            cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
-            cy.get('button[data-cy="csc-block-number-save"]').click()
+        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
+        cy.get('a[href="#/user/call-blocking/outgoing"]').click()
 
-            cy.contains('testnumber').should('be.visible')
-            cy.get('button[data-cy="csc-blocked-number-menu"]').click()
-            cy.get('div[data-cy="csc-blocked-number-edit"]').click()
-            cy.get('input[type="text"]').clear()
-            cy.get('input[type="text"]').type('anothertest')
-            cy.get('button').contains('Undo').click()
+        cy.get('button[data-cy="csc-add-number"]').click()
+        cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
+        cy.get('button[data-cy="csc-block-number-save"]').click()
 
-            cy.get('input[type="text"]')
-                .invoke('val')
-                .then(inputval => expect(inputval).to.eq('testnumber'))
-            cy.get('button[data-cy="csc-blocked-number-menu"]').click()
-            cy.get('div[data-cy="csc-blocked-number-edit"]').click()
-            cy.get('input[type="text"]').clear()
-            cy.get('input[type="text"]').type('anothertest')
-            cy.get('button').contains('Save').click()
+        cy.contains('testnumber').should('be.visible')
+        cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('block').should('be.visible')
+        cy.get('div[data-cy="csc-block-listed"]').click()
+        cy.get('div[data-cy="csc-block-listed"][aria-checked="true"]').should('be.visible')
+        cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('check').should('be.visible')
 
-            cy.contains('anothertest').should('be.visible')
-            cy.get('button[data-cy="csc-add-number"]').click()
-            cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
-            cy.get('button[data-cy="csc-block-number-save"]').click()
+        cy.get('div[data-cy="csc-block-all"]').click()
+        cy.get('div[data-cy="csc-block-all"][aria-checked="true"]').should('be.visible')
+        cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('block').should('be.visible')        
+    })
 
-            cy.contains('testnumber').should('be.visible')
-            cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
-            cy.get('div[data-cy="csc-blocked-number-delete"]').click()
-            cy.get('div[data-cy="q-card"]').contains('OK').click()
-            cy.contains('testnumber').should('not.exist')
+    it('Add/Edit/Delete blocked numbers for outgoing calls', () => {
+        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-            cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
-            cy.get('div[data-cy="csc-blocked-number-delete"]').click()
-            cy.get('div[data-cy="q-card"]').contains('OK').click()
-            cy.contains('anothertest').should('not.exist')
-        })
+        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
+        cy.get('a[href="#/user/call-blocking/outgoing"]').click()
+
+        cy.get('button[data-cy="csc-add-number"]').click()
+        cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
+        cy.get('button[data-cy="csc-block-number-save"]').click()
+
+        cy.contains('testnumber').should('be.visible')
+        cy.get('button[data-cy="csc-blocked-number-menu"]').click()
+        cy.get('div[data-cy="csc-blocked-number-edit"]').click()
+        cy.get('input[type="text"]').clear()
+        cy.get('input[type="text"]').type('anothertest')
+        cy.get('button').contains('Undo').click()
+
+        cy.get('input[type="text"]')
+            .invoke('val')
+            .then(inputval => expect(inputval).to.eq('testnumber'))
+        cy.get('button[data-cy="csc-blocked-number-menu"]').click()
+        cy.get('div[data-cy="csc-blocked-number-edit"]').click()
+        cy.get('input[type="text"]').clear()
+        cy.get('input[type="text"]').type('anothertest')
+        cy.get('button').contains('Save').click()
+
+        cy.contains('anothertest').should('be.visible')
+        cy.get('button[data-cy="csc-add-number"]').click()
+        cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
+        cy.get('button[data-cy="csc-block-number-save"]').click()
+
+        cy.contains('testnumber').should('be.visible')
+        cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
+        cy.get('div[data-cy="csc-blocked-number-delete"]').click()
+        cy.get('div[data-cy="q-card"]').contains('OK').click()
+        cy.contains('testnumber').should('not.exist')
+
+        cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
+        cy.get('div[data-cy="csc-blocked-number-delete"]').click()
+        cy.get('div[data-cy="q-card"]').contains('OK').click()
+        cy.contains('anothertest').should('not.exist')
     })
 })
