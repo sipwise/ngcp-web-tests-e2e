@@ -52,119 +52,116 @@ const dayjs = require('dayjs')
 var issppro = null
 
 context('Dashboard page tests', () => {
-    context('UI Dashboard tests', () => {
-        before(() => {
-            Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-            apiLoginAsSuperuser().then(authHeader => {
-                Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-                cy.log('Preparing environment...')
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
-                cy.log('Data clean up pre-tests completed')
-
-                apiCreateDomain({ data: domain, authHeader })
-                apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
-                     subscriber.customer_id = id
-                })
-                apiCreateSubscriber({ data:  subscriber, authHeader })
-                cy.intercept('GET', 'platforminfo').as('platforminfo')
-                cy.visit('/')
-                cy.loginUiCSC(loginInfo.username, loginInfo.password)
-                cy.wait('@platforminfo').then(({ response }) => {
-                    issppro = response.body.type === 'sppro'
-                })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+    before(() => {
+        Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
+        apiLoginAsSuperuser().then(authHeader => {
+            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+            cy.log('Preparing environment...')
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            cy.log('Data clean up pre-tests completed')
+            apiCreateDomain({ data: domain, authHeader })
+            apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                    subscriber.customer_id = id
             })
-        })
-
-        beforeEach(() => {
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(() => {
-                    apiCreateSubscriber({ data: subscriber, authHeader })
-                })
-            })
+            apiCreateSubscriber({ data:  subscriber, authHeader })
+            cy.intercept('GET', 'platforminfo').as('platforminfo')
             cy.visit('/')
+            cy.loginUiCSC(loginInfo.username, loginInfo.password)
+            cy.wait('@platforminfo').then(({ response }) => {
+                issppro = response.body.type === 'sppro'
+            })
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
         })
+    })
 
-        after(() => {
-            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-            cy.log('Data clean up...')
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
+    beforeEach(() => {
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(() => {
+                apiCreateSubscriber({ data: subscriber, authHeader })
             })
         })
+        cy.visit('/')
+    })
 
-        it('Check if links in Dashboard work properly', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
-            cy.get('div[data-cy="dashboard-view-voicebox"] a').click()
-            cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Voicemails found')
-            cy.get('a[href="#/user/dashboard"]').click()
-
-            cy.get('div[data-cy="dashboard-view-calllist"] a').click()
-            cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls found')
-            cy.get('a[href="#/user/dashboard"]').click()
-
-            cy.get('div[data-cy="dashboard-view-registered-devices"] a').click()
-            cy.get('main[id="csc-page-pbx-settings"]').should('be.visible')
+    after(() => {
+        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
+        cy.log('Data clean up...')
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveDomainBy({ name: domain.domain, authHeader })
         })
+    })
 
-        it('Make a test call', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
+    it('Check if links in Dashboard work properly', () => {
+        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-            cy.get('a[href="#/user/home"]').click()
-            cy.get('input[data-cy="csc-call-number-input"]').type('testcontact')
-            cy.get('button[data-cy="start-call"]').click()
+        cy.get('div[data-cy="dashboard-view-voicebox"] a').click()
+        cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Voicemails found')
+        cy.get('a[href="#/user/dashboard"]').click()
 
-            cy.get('div[class="csc-phone-number"] span').should('contain.text', 'Calling testcontact...')
-            cy.get('button[data-cy="end-call"]').click()
-            cy.get('input[data-cy="csc-call-number-input"]').should('be.visible')
-        })
+        cy.get('div[data-cy="dashboard-view-calllist"] a').click()
+        cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls found')
+        cy.get('a[href="#/user/dashboard"]').click()
 
-        it('Try to access every page in conversations tab', () => {
-            cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
+        cy.get('div[data-cy="dashboard-view-registered-devices"] a').click()
+        cy.get('main[id="csc-page-pbx-settings"]').should('be.visible')
+    })
 
-            cy.get('a[href="#/user/conversations"]:first').click()
-            if (issppro){
-                cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
-            } else {
-                cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls or Voicemails found')
-            }
+    it('Make a test call', () => {
+        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-            cy.get('div[data-cy="q-tab-call"]').click()
-            cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls found')
+        cy.get('a[href="#/user/home"]').click()
+        cy.get('input[data-cy="csc-call-number-input"]').type('testcontact')
+        cy.get('button[data-cy="start-call"]').click()
 
-            cy.get('div[data-cy="q-tab-voicemail"]').click()
-            cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Voicemails found')
+        cy.get('div[class="csc-phone-number"] span').should('contain.text', 'Calling testcontact...')
+        cy.get('button[data-cy="end-call"]').click()
+        cy.get('input[data-cy="csc-call-number-input"]').should('be.visible')
+    })
 
-            if (issppro) {
-               cy.get('div[data-cy="q-tab-fax"]').click()
-               cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Faxes found')
-            }
+    it('Try to access every page in conversations tab', () => {
+        cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
+        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-            cy.get('div[data-cy="q-tab-call-fax-voicemail"]').click()
-            if (issppro){
-                cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
-            } else {
-                cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls or Voicemails found')
-            }
-            cy.get('input[data-cy="filter-from"]').click()
-            cy.get('div[class="q-date__calendar-item q-date__calendar-item--in"] span').contains('1').click({ force: true })
-            cy.wait(1000)
-            cy.get('input[data-cy="filter-to"]').click()
-            cy.get('div[class="q-date__calendar-item q-date__calendar-item--in"] span').contains(dayjs().format('D')).click({ force: true })
-            cy.wait(1000)
-            if (issppro){
-                cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
-            } else {
-                cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls or Voicemails found')
-            }
-        })
+        cy.get('a[href="#/user/conversations"]:first').click()
+        if (issppro){
+            cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
+        } else {
+            cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls or Voicemails found')
+        }
+
+        cy.get('div[data-cy="q-tab-call"]').click()
+        cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls found')
+
+        cy.get('div[data-cy="q-tab-voicemail"]').click()
+        cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Voicemails found')
+
+        if (issppro) {
+            cy.get('div[data-cy="q-tab-fax"]').click()
+            cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Faxes found')
+        }
+
+        cy.get('div[data-cy="q-tab-call-fax-voicemail"]').click()
+        if (issppro){
+            cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
+        } else {
+            cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls or Voicemails found')
+        }
+        cy.get('input[data-cy="filter-from"]').click()
+        cy.get('div[class="q-date__calendar-item q-date__calendar-item--in"] span').contains('1').click({ force: true })
+        cy.wait(1000)
+        cy.get('input[data-cy="filter-to"]').click()
+        cy.get('div[class="q-date__calendar-item q-date__calendar-item--in"] span').contains(dayjs().format('D')).click({ force: true })
+        cy.wait(1000)
+        if (issppro){
+            cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
+        } else {
+            cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls or Voicemails found')
+        }
     })
 })
