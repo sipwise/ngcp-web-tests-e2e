@@ -46,7 +46,7 @@ const billingProfileFee = {
 const contract = {
     contact_id: 0,
     status: 'active',
-    external_id: 'contractBillingProfile',
+    external_id: 'contractBillingProfileCypress',
     type: 'reseller',
     billing_profile_definition: 'id',
     billing_profile_id: 1
@@ -56,7 +56,7 @@ const reseller = {
     contract_id: 0,
     status: 'active',
     rtc_networks: {},
-    name: 'testBillingProfile',
+    name: 'testBillingProfileCypress',
     enable_rtc: false
 }
 
