@@ -28,13 +28,13 @@ import {
 } from '../../../support/e2e'
 
 const billingProfile = {
-    name: 'billingProfileCypress',
+    name: 'billingProfileResellerDetails',
     handle: 'profilehandle1',
     reseller_id: null
 }
 
 const internalBillingProfile = {
-    name: 'internalBillingProfileCypress',
+    name: 'internBlgProfilResellerDetails',
     handle: 'internalProfilehandle1',
     reseller_id: null
 }
@@ -449,7 +449,8 @@ context('Reseller details tests', () => {
                 waitPageProgressAUI()
                 cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Profiles').click()
                 searchInDataTable(billingProfile.name)
-                cy.get('td[data-cy="q-td--prepaid"]').click()
+                cy.get('td[data-cy="q-td--prepaid"]').find('div[role="switch"][aria-disabled="true"]').should('not.exist')
+                cy.get('td[data-cy="q-td--prepaid"]').find('div[role="switch"]').click()
                 cy.get('td[data-cy="q-td--prepaid"]').find('div[role="switch"][aria-checked="true"]').should('be.visible')
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
