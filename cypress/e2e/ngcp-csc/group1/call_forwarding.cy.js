@@ -255,7 +255,7 @@ context('Call forwarding page tests', () => {
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/call-forwarding"]').click()
 
-            createCallForwarding('cft', 'Call Through')
+            createCallForwarding('cft', 'Custom Announcement')
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('On no answer').should('be.visible')
             cy.get('div[data-cy="q-item-label"]').contains('After Ring Timeout').should('be.visible')
