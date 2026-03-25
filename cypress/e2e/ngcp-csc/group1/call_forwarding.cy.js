@@ -147,7 +147,7 @@ context('Call forwarding page tests', () => {
             cy.get('a[href="#/user/call-forwarding"]').click()
 
             // Create CF Always
-            createCallForwarding('cfu', 'Calling Card')
+            createCallForwarding('cfu', 'Voicebox')
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
             cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
 
@@ -157,7 +157,7 @@ context('Call forwarding page tests', () => {
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('If not available').should('be.visible')
 
             // Create CF busy
-            createCallForwarding('cfb', 'Call Through')
+            createCallForwarding('cfb', 'Voicebox')
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('If busy').should('be.visible')
 
@@ -297,7 +297,7 @@ context('Call forwarding page tests', () => {
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/call-forwarding"]').click()
 
-            createCallForwarding('cft', 'Fax2Mail')
+            createCallForwarding('cft', 'Voicebox')
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('On no answer').should('be.visible')
             cy.get('span[style="white-space: nowrap;"]').contains("60 seconds").trigger('mouseenter')
