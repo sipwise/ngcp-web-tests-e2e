@@ -128,6 +128,7 @@ context('LNP tests', () => {
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.locationShouldBe('#/lnp/carriers')
+            searchInDataTable(LNPCarrier.name)
             cy.get('td[data-cy="q-td--name"]').should('contain.text', LNPCarrier.name)
             cy.get('td[data-cy="q-td--prefix"]').should('contain.text', LNPCarrier.prefix)
         })
@@ -281,6 +282,7 @@ context('LNP tests', () => {
             waitPageProgressAUI()
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            searchInDataTable(SecondLNPNumber.number)
             cy.get('td[data-cy="q-td--number"]').should('contain.text', SecondLNPNumber.number)
             cy.get('td[data-cy="q-td--routing-number"]').should('contain.text', SecondLNPNumber.routing_number)
             cy.get('td[data-cy="q-td--type"]').should('contain.text', SecondLNPNumber.type)
