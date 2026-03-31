@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (13.5.1.26+0~mr13.5.1.26) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [d50a368] MT#64848 [E2E] Search for created LNP objects after creation has been finished
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 31 Mar 2026 15:02:04 +0200
+
 ngcp-web-tests-e2e (13.5.1.25+0~mr13.5.1.25) unstable; urgency=medium
 
   [ Nico Schedel ]
