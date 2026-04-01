@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (13.5.1.27+0~mr13.5.1.27) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [3876468] MT#63950 remove one waitPageProgress() from subscriber callforward tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 01 Apr 2026 15:13:02 +0200
+
 ngcp-web-tests-e2e (13.5.1.26+0~mr13.5.1.26) unstable; urgency=medium
 
   [ Nico Schedel ]
