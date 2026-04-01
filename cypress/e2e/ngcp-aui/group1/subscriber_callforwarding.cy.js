@@ -873,7 +873,6 @@ context('Subscriber details tests', () => {
                 cy.get('td[data-cy="q-td--more-menu-left"]').eq(1).click()
                 cy.get('div[data-cy="aui-data-table-row-menu--delete"]').click()
                 cy.get('button[data-cy="btn-confirm"]').click()
-                waitPageProgressAUI()
                 cy.get('td[data-cy="q-td--mappings"] span').eq(6).contains('[]').should('exist')
                 cy.get('td[data-cy="q-td--mappings"] span').eq(7).contains('[]').should('exist')
                 cy.get('td[data-cy="q-td--mappings"] span').eq(8).contains('[]').should('exist')
