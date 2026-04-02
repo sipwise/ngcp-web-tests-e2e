@@ -3479,6 +3479,7 @@ export const testPreferencesChipField = (name, testValues = { value1: 'testvalue
     cy.get('@' + cyAliasName).find('input').type(testValues.value1)
     cy.get('@' + cyAliasName).find('button[data-cy="chip-add"]').click()
     cy.get('@' + cyAliasName).find('input[disabled="disabled"]').should('not.exist')
+    cy.get(dataCySelector).should('be.visible').as(cyAliasName)
     cy.get('@' + cyAliasName).find('div[class="ellipsis"]').contains(testValues.value1)
     cy.get('@' + cyAliasName).find('input').type(testValues.value2)
     cy.get('@' + cyAliasName).find('button[data-cy="chip-add"]').click()
@@ -3500,8 +3501,10 @@ export const testPreferencesChipField = (name, testValues = { value1: 'testvalue
 export const testPreferencesTextField = (name, value = 'test', onlyNumbers = false) => {
     const { dataCySelector, cyAliasName } = getPreferencesFieldInfo(name)
     cy.get(dataCySelector).should('be.visible').as(cyAliasName)
+    cy.get('@' + cyAliasName).find('label[aria-disabled="true"]').should('not.exist')
     cy.get('@' + cyAliasName).find('input').type(value)
     cy.get('button[data-cy="preference-save"]').click()
+    cy.get(dataCySelector).should('be.visible').as(cyAliasName)
     cy.get('@' + cyAliasName).find('label[aria-disabled="true"]').should('not.exist')
     cy.get('@' + cyAliasName).find('input').should('have.value', value)
     cy.get('@' + cyAliasName).contains('i[data-cy="q-icon"]', 'cancel').click()
@@ -3525,6 +3528,7 @@ export const testPreferencesListField = (name, entry = null) => {
     cy.get('div[role="listbox"]').should('be.visible')
     cy.wait(1000)
     cy.get('div[role="listbox"]').contains(entry).click()
+    cy.get(dataCySelector).should('be.visible').as(cyAliasName)
     cy.get('@' + cyAliasName).find('label[aria-disabled="true"]').should('not.exist')
 }
 
@@ -3532,6 +3536,7 @@ export const testPreferencesToggleField = (name) => {
     const { dataCySelector, cyAliasName } = getPreferencesFieldInfo(name)
     cy.get(dataCySelector).should('be.visible').as(cyAliasName)
     cy.get('@' + cyAliasName).find('div[role=switch]').click()
+    cy.get(dataCySelector).should('be.visible').as(cyAliasName)
     cy.get('@' + cyAliasName).find('div[role=switch][aria-disabled="true"]').should('not.exist')
     cy.get('@' + cyAliasName).find('div[role=switch]').invoke('attr', 'aria-checked').should('eq', 'true')
     cy.get('@' + cyAliasName).find('div[role=switch]').click()
