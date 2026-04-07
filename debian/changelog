@@ -1,3 +1,28 @@
+ngcp-web-tests-e2e (14.2.1.0+0~mr14.2.1.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [05d7e73] Revert "MT#64380 fix changed identifiers in faxsettings tests"
+  * [aa04a07] MT#63705 add csc roles tests
+  * [b63d2ea] MT#63950 remove one waitPageProgress() from reminder tests
+  * [cedf336] MT#64610 [E2E] Add group 3 tests
+  * [acdebba] MT#64161 cleanup part 1, remove "export" from all variables
+  * [292758e] MT#64708 [AUI] fixes after splitting tests to 3 groups
+  * [a9d4338] MT#64848 [E2E] Search for created LNP objects after creation has been finished
+  * [e5a71fb] MT#63950 remove one waitPageProgress() from subscriber callforward tests
+  * [966e7a7] MT#63026 update domain_preferences tests for new and changed prefs
+
+  [ nidrissi-zouggari ]
+  * [9712736] MT#64363 Update E2E tests for call forwarding page
+  * [fad424a] MT#64372 Update E2E tests for call forwarding page
+
+  [ Debora Crescenzo ]
+  * [828524d] MT#64610 test add admin group3
+  * [e0cba49] MT#64377 Update csc CF tests after creation flow update
+  * [7a18f6f] MT#64377 Select CF available in CE
+  * [f5e35ce] MT#64377 Select CF available in CE (2nd commit)
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 07 Apr 2026 12:58:07 +0200
+
 ngcp-web-tests-e2e (14.2.0.0+0~mr14.2.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
