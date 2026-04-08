@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.39+0~mr12.5.1.39) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [63cf90e] MT#64161 cleanup part 2, remove double context blocks, unused variables
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 08 Apr 2026 18:23:48 +0200
+
 ngcp-web-tests-e2e (12.5.1.38+0~mr12.5.1.38) unstable; urgency=medium
 
   [ Nico Schedel ]
