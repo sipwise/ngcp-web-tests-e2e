@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (13.5.1.29+0~mr13.5.1.29) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [e8bf8bb] MT#64161 backport admin roles tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 09 Apr 2026 13:21:46 +0200
+
 ngcp-web-tests-e2e (13.5.1.28+0~mr13.5.1.28) unstable; urgency=medium
 
   [ Nico Schedel ]
