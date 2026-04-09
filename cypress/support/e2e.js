@@ -49,7 +49,7 @@ Cypress.Commands.add('navigateMainMenu', (path = '', waitForPageLoading = true) 
 
     } else if (pathParts.length === 1) {
         const subItemKey = pathParts[0];
-        cy.get('a').should('have.attr', 'href', '#/' + subItemKey).click();
+        cy.get('a[href="#/' + subItemKey + '"]:first').click();
     }
 
     if (waitForPageLoading) {
@@ -357,6 +357,20 @@ Cypress.Commands.add('logoutUiAUI', () => {
     })
 
     log.end()
+})
+
+Cypress.Commands.add('createAdminUI', (admin) => {
+    cy.navigateMainMenu('settings / administrator')
+    cy.locationShouldBe('#/administrator')
+    cy.get('a[href="#/administrator/create"]').click()
+    cy.locationShouldBe('#/administrator/create')
+    cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: 'default', itemContains: 'default' })
+    cy.get('input[data-cy="login-field"] ').type(admin.login)
+    cy.get('input[data-cy="password-field"] ').type(admin.password)
+    cy.get('input[data-cy="password-retype-field"] ').type(admin.password)
+    cy.qSelect({ dataCy: 'roles-list', filter: admin.role, itemContains: admin.role })
+    cy.get('[data-cy="aui-save-button"]').click()
+    cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 })
 
 export const apiLoginAsSuperuser = () => {
