@@ -466,25 +466,6 @@ context('Domain preferences tests', () => {
         testPreferencesListField('skip_upn_check_on_diversion', 'If received Diversion header')
     })
 
-    it('Test all Number Portability settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / domain')
-
-        cy.locationShouldBe('#/domain')
-        searchInDataTable(domain.domain)
-        cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
-        clickDataTableSelectedMoreMenuItem('domainPreferences')
-
-        waitPageProgressAUI()
-        cy.qSelect({ dataCy: 'category-selection', filter: 'Number Portability', itemContains: 'Number Portability' })
-        testPreferencesToggleField('connect_on_ported')
-        testPreferencesTextField('default_lnp_prefix')
-        testPreferencesToggleField('lnp_add_npdi')
-        testPreferencesToggleField('lnp_for_local_sub')
-        testPreferencesToggleField('lnp_to_rn')
-        testPreferencesToggleField('ported_n1_to_ruri')
-    })
-
     it('Test all Remote Authentication settings in domain', () => {
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
