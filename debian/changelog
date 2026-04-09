@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (14.1.1.8+0~mr14.1.1.8) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [b37b101] MT#64161 remove number portability settings from 14.1
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 09 Apr 2026 12:33:30 +0200
+
 ngcp-web-tests-e2e (14.1.1.7+0~mr14.1.1.7) unstable; urgency=medium
 
   [ Nico Schedel ]
