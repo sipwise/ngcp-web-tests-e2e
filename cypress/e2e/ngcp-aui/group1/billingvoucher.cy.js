@@ -24,6 +24,11 @@ import {
     apiRemoveBillingVoucherByPackageId
 } from '../../../support/e2e'
 
+const fixturesFolder = Cypress.config('fixturesFolder')
+const ngcpConfig = Cypress.config('ngcpConfig')
+const path = require('path')
+let issppro = null
+
 const contract = {
     contact_id: null,
     status: 'active',
@@ -82,11 +87,6 @@ const billingProfile = {
     handle: 'profilehandleBillingVoucher',
     reseller_id: null
 }
-
-const ngcpConfig = Cypress.config('ngcpConfig')
-const fixturesFolder = Cypress.config('fixturesFolder')
-const path = require('path')
-let issppro = null
 
 context('Billing vouchers tests', () => {
     before(() => {

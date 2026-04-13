@@ -108,7 +108,7 @@ context('Contact tests', () => {
         const formUrl = testsGroup.checkUrl
 
         context(`Contact type: ${contactType}`, () => {
-            it(`Check if ${contactType} contact with invalid values gets rejected`, () => {
+            it(`Check if ${contactType} Contact with invalid values gets rejected`, () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / contact')
 
@@ -134,7 +134,7 @@ context('Contact tests', () => {
                 cy.get('input[data-cy="email-field"]').parents('label').find('div[role="alert"]').contains('Input must be a valid email address').should('be.visible')
             })
 
-            it(`Create a ${contactType} contact`, () => {
+            it(`Create a ${contactType} Contact`, () => {
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                     apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
@@ -159,7 +159,7 @@ context('Contact tests', () => {
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             })
 
-            it(`Add First and last name to ${contactType} contact`, () => {
+            it(`Add First and last name to ${contactType} Contact`, () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / contact')
 
@@ -184,7 +184,7 @@ context('Contact tests', () => {
                 cy.get('td[data-cy="q-td--lastname"]').contains(contactNames.lastname).should('be.visible')
             })
 
-            it(`Delete ${contactType} contact`, () => {
+            it(`Delete ${contactType} Contact`, () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / contact')
 

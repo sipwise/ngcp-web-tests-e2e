@@ -17,6 +17,8 @@ import {
     waitPageProgressAUI
 } from '../../../support/e2e'
 
+const ngcpConfig = Cypress.config('ngcpConfig')
+
 const contract = {
     contact_id: 0,
     status: 'active',
@@ -63,9 +65,7 @@ const systemContact = {
     email: 'systemContactProfilePackage@example.com'
 }
 
-const ngcpConfig = Cypress.config('ngcpConfig')
-
-context('Profile package tests', () => {
+context('Profile Package tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
@@ -118,7 +118,7 @@ context('Profile package tests', () => {
         })
     })
 
-    it('Check if profile package with invalid values gets rejected', () => {
+    it('Check if Profile Package with invalid values gets rejected', () => {
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / package')
 
@@ -133,7 +133,7 @@ context('Profile package tests', () => {
         cy.get('label[data-cy="profilepackages-balanceinterval"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
     })
 
-    it('Create a profile package', () => {
+    it('Create a Profile Package', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveProfilePackageBy({ name: profilePackage.name, authHeader })
         })
@@ -153,7 +153,7 @@ context('Profile package tests', () => {
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
     })
 
-    it('Edit a profile package', () => {
+    it('Edit a Profile Package', () => {
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / package')
 
@@ -172,7 +172,7 @@ context('Profile package tests', () => {
         cy.get('td[data-cy="q-td--initial-profiles-grp"]').contains(editBillingProfile.name).should('be.visible')
     })
 
-    it('Delete profile package and check if they are deleted', () => {
+    it('Delete Profile Package and check if they are deleted', () => {
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / package')
 

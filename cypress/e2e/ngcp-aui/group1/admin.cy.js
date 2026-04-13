@@ -18,8 +18,9 @@ import {
     apiRemoveResellerBy
 } from '../../../support/e2e'
 
-const path = require('path')
+const downloadsFolder = Cypress.config('downloadsFolder')
 const ngcpConfig = Cypress.config('ngcpConfig')
+const path = require('path')
 
 const systemContact = {
     email: 'systemContactAdmin@example.com'
@@ -89,8 +90,6 @@ const reseller = {
     name: 'resellerAdminCypress',
     enable_rtc: false
 }
-
-const downloadsFolder = Cypress.config('downloadsFolder')
 
 context('Administrator tests', () => {
     context('Test admin actions as normal admin', () => {

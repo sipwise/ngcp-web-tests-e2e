@@ -17,6 +17,8 @@ import {
     apiRemoveSystemContactBy
 } from '../../../support/e2e'
 
+const ngcpConfig = Cypress.config('ngcpConfig')
+
 const peeringContract = {
     contact_id: null,
     status: 'active',
@@ -60,8 +62,6 @@ const dependencyBillingProfile = {
 const systemContactDependency = {
     email: 'systemCDContracts@example.com'
 }
-
-const ngcpConfig = Cypress.config('ngcpConfig')
 
 context('Contract tests', () => {
     before(() => {
@@ -124,7 +124,7 @@ context('Contract tests', () => {
         const formUrl = testsGroup.checkUrl
 
         context(`Contract type: ${contractType}`, () => {
-            it(`Check if ${contractType} contract with invalid values gets rejected`, () => {
+            it(`Check if ${contractType} Contract with invalid values gets rejected`, () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / contract')
 
@@ -139,7 +139,7 @@ context('Contract tests', () => {
                 cy.get('div[data-cy="contract-status"] input').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
             })
 
-            it(`Create a ${contractType} contract`, () => {
+            it(`Create a ${contractType} Contract`, () => {
                 apiLoginAsSuperuser().then(authHeader => {
                     apiRemoveContractBy({ name: peeringContract.external_id, authHeader })
                     apiRemoveContractBy({ name: resellerContract.external_id, authHeader })
@@ -171,7 +171,7 @@ context('Contract tests', () => {
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             })
 
-            it(`Edit ${contractType} contract status`, () => {
+            it(`Edit ${contractType} Contract status`, () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / contract')
 
@@ -193,7 +193,7 @@ context('Contract tests', () => {
                 cy.get('span[data-cy="aui-data-table-inline-edit--select"] span').contains('Pending').should('be.visible')
             })
 
-            it(`Delete ${contractType} contract`, () => {
+            it(`Delete ${contractType} Contract`, () => {
                 cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / contract')
 

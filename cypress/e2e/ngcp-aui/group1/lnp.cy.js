@@ -11,7 +11,10 @@ import {
     apiRemoveLNPCarrierBy
 } from '../../../support/e2e'
 
+const downloadsFolder = Cypress.config('downloadsFolder')
+const fixturesFolder = Cypress.config('fixturesFolder')
 const ngcpConfig = Cypress.config('ngcpConfig')
+const path = require('path')
 
 const LNPCarrier = {
     name: "carrierLNPTest",
@@ -38,10 +41,6 @@ const SecondLNPNumber = {
     routing_number: "SecondRoutingLNPTestCypress"
 }
 
-const fixturesFolder = Cypress.config('fixturesFolder')
-const downloadsFolder = Cypress.config('downloadsFolder')
-const path = require('path')
-
 context('LNP tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
@@ -61,24 +60,6 @@ context('LNP tests', () => {
 
     })
 
-    beforeEach(() => {
-        apiLoginAsSuperuser().then(authHeader => {
-            cy.log('Cleaning up db...')
-            apiRemoveLNPNumberBy({ number: '100', authHeader})
-            apiRemoveLNPNumberBy({ number: '50', authHeader})
-            apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader})
-            apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
-            apiRemoveLNPCarrierBy({ name: 'csvLNPCarrierTest', authHeader })
-            apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
-
-            cy.log('Seeding db...')
-            apiCreateLNPCarrier({ data: LNPCarrier, authHeader }).then(({ id }) => {
-                apiCreateLNPNumber({ data: { ...LNPNumber, carrier_id: id }, authHeader })
-                apiCreateLNPNumber({ data: { ...SecondLNPNumber, carrier_id: id }, authHeader })
-            })
-        })
-    })
-
     after(() => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
@@ -93,8 +74,8 @@ context('LNP tests', () => {
         })
     })
 
-    context('LNP tests Carriers menu', () => {
-        it('Check if LNP carrier with invalid values gets rejected', () => {
+    context('LNP Carrier tests', () => {
+        it('Check if LNP Carrier with invalid values gets rejected', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
@@ -107,12 +88,12 @@ context('LNP tests', () => {
             cy.get('label[data-cy="lnpcarrier-prefix"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
         })
 
-        it('Create a LNP carrier', () => {
+        it('Create a LNP Carrier', () => {
+            // Setup: Delete LNP Carrier if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader })
-                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
                 apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
             })
+
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
@@ -130,9 +111,20 @@ context('LNP tests', () => {
             searchInDataTable(LNPCarrier.name)
             cy.get('td[data-cy="q-td--name"]').should('contain.text', LNPCarrier.name)
             cy.get('td[data-cy="q-td--prefix"]').should('contain.text', LNPCarrier.prefix)
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+            })
         })
 
-        it('Edit LNP carrier', () => {
+        it('Edit LNP Carrier', () => {
+            // Setup: Create LNP Carrier
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+                apiCreateLNPCarrier({ data: LNPCarrier, authHeader })
+            })
+
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
@@ -148,21 +140,41 @@ context('LNP tests', () => {
             cy.get('[data-cy="aui-close-button"]').click()
             cy.get('td[data-cy="q-td--name"]').should('contain.text', LNPCarrier.name)
             cy.get('td[data-cy="q-td--prefix"]').should('contain.text', 'testdescription')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+            })
         })
 
-        it('Delete LNP carrier and check if they are deleted', () => {
+        it('Delete LNP Carrier and check if they are deleted', () => {
+            // Setup: Create LNP Carrier
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader })
-                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+                apiCreateLNPCarrier({ data: LNPCarrier, authHeader })
             })
+
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp/carriers')
             deleteItemOnListPageBy(LNPCarrier.name)
-        })
 
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+            })
+        })
+    })
+
+    context('LNP Number tests', () => {
         it('Check if LNP Number with invalid values gets rejected', () => {
+            // Setup: Create LNP Carrier
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+                apiCreateLNPCarrier({ data: LNPCarrier, authHeader })
+            })
+
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
@@ -175,13 +187,21 @@ context('LNP tests', () => {
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="lnpnumber-number"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+            })
         })
 
-        it('Create a LNP number', () => {
+        it('Create a LNP Number', () => {
+            // Setup: Create LNP Carrier, delete LNP Number if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
-                apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+                apiCreateLNPCarrier({ data: LNPCarrier, authHeader })
             })
+
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
@@ -203,12 +223,24 @@ context('LNP tests', () => {
             cy.get('td[data-cy="q-td--number"]:first').should('contain.text', LNPNumber.number)
             cy.get('td[data-cy="q-td--routing-number"]:first').should('contain.text', LNPNumber.routing_number)
             cy.get('td[data-cy="q-td--type"]:first').should('contain.text', LNPNumber.type)
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+            })
         })
 
-        it('Edit LNP number', () => {
+        it('Edit LNP Number', () => {
+            // Setup: Create LNP Carrier and LNP Number
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader })
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+                apiCreateLNPCarrier({ data: LNPCarrier, authHeader }).then(({ id }) => {
+                    apiCreateLNPNumber({ data: { ...LNPNumber, carrier_id: id }, authHeader })
+                })
             })
+
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
@@ -230,9 +262,24 @@ context('LNP tests', () => {
             cy.get('td[data-cy="q-td--number"]:first').should('contain.text', LNPNumber.number)
             cy.get('td[data-cy="q-td--routing-number"]:first').should('contain.text', LNPNumber.routing_number)
             cy.get('td[data-cy="q-td--type"]:first').should('contain.text', 'testtype')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+            })
         })
 
-        it('Delete LNP number and check if they are deleted', () => {
+        it('Delete LNP Number and check if they are deleted', () => {
+            // Setup: Create LNP Carrier and LNP Number
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+                apiCreateLNPCarrier({ data: LNPCarrier, authHeader }).then(({ id }) => {
+                    apiCreateLNPNumber({ data: { ...LNPNumber, carrier_id: id }, authHeader })
+                })
+            })
+
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
@@ -242,14 +289,26 @@ context('LNP tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--lnpCarrierNumbersList"]').click()
             deleteItemOnListPageBy(LNPNumber.number)
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+            })
         })
     })
 
-    context('LNP tests Numbers menu', () => {
+    context('LNP Numbers Menu tests', () => {
         it('Check if LNP Number from the numbers table with invalid values gets rejected', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            // Setup: Create LNP Carrier
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+                apiCreateLNPCarrier({ data: LNPCarrier, authHeader })
+            })
 
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
+
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[href="#/lnp/numbers"]').click()
             cy.locationShouldBe('#/lnp/numbers')
@@ -258,16 +317,24 @@ context('LNP tests', () => {
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="aui-select-lnp-carrier"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('label[data-cy="lnpnumber-number"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+            })
         })
 
-        it('Create a LNP number from the numbers table', () => {
+        it('Create a LNP Number from the numbers table', () => {
+            // Setup: Create LNP Carrier, delete LNP Number if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
                 apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+                apiCreateLNPCarrier({ data: LNPCarrier, authHeader })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
 
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
+
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[href="#/lnp/numbers"]').click()
             cy.locationShouldBe('#/lnp/numbers')
@@ -285,12 +352,24 @@ context('LNP tests', () => {
             cy.get('td[data-cy="q-td--number"]').should('contain.text', SecondLNPNumber.number)
             cy.get('td[data-cy="q-td--routing-number"]').should('contain.text', SecondLNPNumber.routing_number)
             cy.get('td[data-cy="q-td--type"]').should('contain.text', SecondLNPNumber.type)
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+            })
         })
 
-        it('Edit LNP number from the numbers table', () => {
+        it('Edit LNP Number from the numbers table', () => {
+            // Setup: Create LNP Carrier and LNP Number
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+                apiCreateLNPCarrier({ data: LNPCarrier, authHeader }).then(({ id }) => {
+                    apiCreateLNPNumber({ data: { ...SecondLNPNumber, carrier_id: id }, authHeader })
+                })
             })
+
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
@@ -310,9 +389,24 @@ context('LNP tests', () => {
             cy.get('td[data-cy="q-td--number"]').should('contain.text', SecondLNPNumber.number)
             cy.get('td[data-cy="q-td--routing-number"]').should('contain.text', SecondLNPNumber.routing_number)
             cy.get('td[data-cy="q-td--type"]').should('contain.text', 'testtype')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+            })
         })
 
-        it('Delete LNP number from the numbers table and check if they are deleted', () => {
+        it('Delete LNP Number from the numbers table and check if they are deleted', () => {
+            // Setup: Create LNP Carrier and LNP Number
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+                apiCreateLNPCarrier({ data: LNPCarrier, authHeader }).then(({ id }) => {
+                    apiCreateLNPNumber({ data: { ...SecondLNPNumber, carrier_id: id }, authHeader })
+                })
+            })
+
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
@@ -320,11 +414,27 @@ context('LNP tests', () => {
             cy.get('a[href="#/lnp/numbers"]').click()
             cy.locationShouldBe('#/lnp/numbers')
             deleteItemOnListPageBy(SecondLNPNumber.number)
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+            })
         })
     })
 
     context('Upload/Download tests', () => {
         it('Download LNP Porting Numbers', () => {
+            // Setup: Create LNP Carrier and LNP Numbers
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+                apiCreateLNPCarrier({ data: LNPCarrier, authHeader }).then(({ id }) => {
+                    apiCreateLNPNumber({ data: { ...LNPNumber, carrier_id: id }, authHeader })
+                    apiCreateLNPNumber({ data: { ...SecondLNPNumber, carrier_id: id }, authHeader })
+                })
+            })
+
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
@@ -336,9 +446,26 @@ context('LNP tests', () => {
             const filename = path.join(downloadsFolder, 'lnp_list.csv')
             cy.readFile(filename, 'binary', { timeout: 2000 })
                 .should(buffer => expect(buffer.length).to.be.gt(75))
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
+                apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+            })
         })
 
         it('Upload LNP Porting Numbers, check if numbers are in correct LNP Carrier', () => {
+            // Setup: Create LNP Carrier and LNP Numbers
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+                apiCreateLNPCarrier({ data: LNPCarrier, authHeader }).then(({ id }) => {
+                    apiCreateLNPNumber({ data: { ...LNPNumber, carrier_id: id }, authHeader })
+                    apiCreateLNPNumber({ data: { ...SecondLNPNumber, carrier_id: id }, authHeader })
+                })
+            })
+
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
@@ -391,9 +518,29 @@ context('LNP tests', () => {
             cy.get('td[data-cy="q-td--number"]').should('contain.text', '100')
             cy.get('td[data-cy="q-td--routing-number"]').should('contain.text', 'csvCarrierNumberRouting')
             cy.get('td[data-cy="q-td--type"]').should('contain.text', 'csvCarrierNumberType')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPNumberBy({ number: '100', authHeader})
+                apiRemoveLNPNumberBy({ number: '50', authHeader})
+                apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader})
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
+                apiRemoveLNPCarrierBy({ name: 'csvLNPCarrierTest', authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+            })
         })
 
         it('Upload and purge LNP Porting Numbers', () => {
+            // Setup: Create LNP Carrier and LNP Numbers
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+                apiCreateLNPCarrier({ data: LNPCarrier, authHeader }).then(({ id }) => {
+                    apiCreateLNPNumber({ data: { ...LNPNumber, carrier_id: id }, authHeader })
+                    apiCreateLNPNumber({ data: { ...SecondLNPNumber, carrier_id: id }, authHeader })
+                })
+            })
+
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp')
 
@@ -416,6 +563,16 @@ context('LNP tests', () => {
             cy.get('td[data-cy="q-td--number"]').should('contain.text', '50')
             cy.get('td[data-cy="q-td--routing-number"]').should('contain.text', 'lnpCSVTestUpload')
             cy.get('td[data-cy="q-td--type"]').should('contain.text', 'lnpCSVTestUploadType')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLNPNumberBy({ number: '100', authHeader})
+                apiRemoveLNPNumberBy({ number: '50', authHeader})
+                apiRemoveLNPNumberBy({ number: SecondLNPNumber.number, authHeader})
+                apiRemoveLNPNumberBy({ number: LNPNumber.number, authHeader})
+                apiRemoveLNPCarrierBy({ name: 'csvLNPCarrierTest', authHeader })
+                apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
+            })
         })
     })
 })

@@ -244,7 +244,7 @@ const subscriber_reseller = {
     },
 }
 
-context('Administrator roles tests', () => {
+context('Administrator Roles tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {

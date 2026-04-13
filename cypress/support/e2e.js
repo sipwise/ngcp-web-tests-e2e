@@ -1770,6 +1770,23 @@ export const apiRemoveNCOSPatternBy = ({ name, authHeader }) => {
     })
 }
 
+export const apiCreateNCOSSet = ({ data, authHeader }) => {
+    cy.log('apiCreateNCOSSet', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/v2/ncos/sets/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+        // followRedirect: false
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
 export const apiRemoveNCOSSetBy = ({ name, authHeader }) => {
     cy.log('apiRemoveNCOSSetBy', name)
     return cy.request({

@@ -101,10 +101,11 @@ context('Phonebook tests', () => {
         })
     })
 
-    it('Check if phonebook with invalid values gets rejected', function () {
+    it('Check if Phonebook with invalid values gets rejected', function () {
         if (!issppro) {
             this.skip()
         }
+
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / phonebook')
 
@@ -116,13 +117,15 @@ context('Phonebook tests', () => {
         cy.get('label[data-cy="phonebook-number"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
     })
 
-    it('Create a phonebook', function () {
+    it('Create a Phonebook', function () {
         if (!issppro) {
             this.skip()
         }
+
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveResellerPhonebookBy({name: ResellerPhonebook.name, authHeader})
         })
+
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / phonebook')
 
@@ -135,10 +138,11 @@ context('Phonebook tests', () => {
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
     })
 
-    it('Download a phonebook CSV', function () {
+    it('Download a Phonebook CSV', function () {
         if (!issppro) {
             this.skip()
         }
+
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / phonebook')
 
@@ -149,10 +153,11 @@ context('Phonebook tests', () => {
             .should(buffer => expect(buffer.length).to.be.gt(20))
     })
 
-    it('Upload a phonebook CSV', function () {
+    it('Upload a Phonebook CSV', function () {
         if (!issppro) {
             this.skip()
         }
+
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / phonebook')
 
@@ -170,10 +175,11 @@ context('Phonebook tests', () => {
         cy.get('td[data-cy="q-td--number"] span').contains('12345').should('be.visible')
     })
 
-    it('Delete phonebook', function () {
+    it('Delete Phonebook', function () {
         if (!issppro) {
             this.skip()
         }
+
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / phonebook')
 
@@ -191,3 +197,4 @@ context('Phonebook tests', () => {
         })
     })
 })
+
