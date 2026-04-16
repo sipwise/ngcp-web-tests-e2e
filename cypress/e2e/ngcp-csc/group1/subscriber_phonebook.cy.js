@@ -178,7 +178,7 @@ context('Subscriber phonebook tests', () => {
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
         cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
-        cy.get('div[class="q-gutter-x-sm"] button:first').click()
+        cy.get('i').contains('more_vert').click()
         cy.get('div[data-cy="csc-phonebook-entry-edit"]').click()
 
         cy.get('input[data-cy="csc-phonebook-details-number"]').clear().type('randomnumber')
@@ -271,7 +271,7 @@ context('Subscriber phonebook tests', () => {
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
         cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
-        cy.get('div[class="q-gutter-x-sm"] button:first').click()
+        cy.get('i').contains('more_vert').click()
         cy.get('div[data-cy="csc-phonebook-entry-delete"]').click()
         cy.get('span[class="block"]').contains('OK').click()
 
