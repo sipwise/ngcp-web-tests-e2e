@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (14.1.1.10+0~mr14.1.1.10) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [7601e83] MT#64917 [AUI] add transport parameter to api created peering server
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 16 Apr 2026 09:22:04 +0200
+
 ngcp-web-tests-e2e (14.1.1.9+0~mr14.1.1.9) unstable; urgency=medium
 
   [ Nico Schedel ]
