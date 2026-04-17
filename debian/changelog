@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (14.1.1.11+0~mr14.1.1.11) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [01e37af] MT#64921 [CSC] subscriber phonebook "more menu" identifier needs to be updated
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 17 Apr 2026 11:27:47 +0200
+
 ngcp-web-tests-e2e (14.1.1.10+0~mr14.1.1.10) unstable; urgency=medium
 
   [ Nico Schedel ]
