@@ -88,7 +88,7 @@ context('Call forwarding page tests', () => {
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiCreateSubscriber({ 
+            apiCreateSubscriber({
                 data: {
                     ...subscriber,
                     primaryNumber: {
@@ -272,8 +272,8 @@ context('Call forwarding page tests', () => {
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-forwarding"]').click()
 
-        createCallForwarding('cfu', 'Custom Announcement')
-        createCallForwarding('cft', 'Voicebox')
+        createCallForwarding('cfu', 'Number')
+        createCallForwarding('cft', 'Number')
         cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
         cy.get('div[id="csc-wrapper-call-forwarding"]').contains('On no answer').should('be.visible')
         cy.get('div[data-cy="q-item-label"]').contains('After Ring Timeout').should('be.visible')
