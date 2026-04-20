@@ -1,3 +1,15 @@
+ngcp-web-tests-e2e (26.0.0.1+0~mr26.0.0.1) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [78eaad4] MT#64161 cleanup part 2, remove double context blocks, unused variables
+  * [d0054a4] MT#64917 [AUI] add transport parameter to api created peering server
+  * [ad73445] MT#64921 [CSC] subscriber phonebook "more menu" identifier needs to be updated
+
+  [ Giancarlo Errigo Mattos ]
+  * [891a08f] MT#64902 Call forwarding group item test fix
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 20 Apr 2026 10:31:50 +0200
+
 ngcp-web-tests-e2e (26.0.0.0+0~mr26.0.0.0) unstable; urgency=medium
 
   * New release.
