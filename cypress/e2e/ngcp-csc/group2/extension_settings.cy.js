@@ -139,13 +139,15 @@ context('Extension Settings tests', () => {
         })
     })
 
-    beforeEach(() => {
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
-            apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
-        })
-        cy.visit('/')
+beforeEach(() => {
+        if (iscloudpbx) {
+            return cy.wrap(apiLoginAsSuperuser()).then(authHeader => {
+                apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+                apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
+                cy.visit('/')
+            })
+        }
     })
 
     after(() => {
