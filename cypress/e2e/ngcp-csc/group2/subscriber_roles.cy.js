@@ -144,23 +144,22 @@ context('Subscriber roles tests', () => {
                 subscriber.customer_id = id
                 admin_subscriber.customer_id = id
             })
-            apiCreateSubscriber({ data: subscriber, authHeader })
-            cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-            cy.visit('/')
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.wait('@platforminfo').then(({ response }) => {
-                if (response.body.cloudpbx) {
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.cloudpbx) {
                     iscloudpbx = true
+                    apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
+                        pbx_subscriber_pilot.customer_id = id
+                        pbx_subscriber.customer_id = id
+                        pbx_admin_subscriber.customer_id = id
+                    })
                 } else {
                     cy.log('Skipping pbx subscriber tests, because cloudpbx is not enabled on this instance');
                     iscloudpbx = false
                 }
-            })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
-                pbx_subscriber_pilot.customer_id = id
-                pbx_subscriber.customer_id = id
-                pbx_admin_subscriber.customer_id = id
             })
         })
     })

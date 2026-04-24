@@ -12,6 +12,8 @@ import {
 } from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
+let issppro = null
+let iscloudpbx = false
 
 const domain = {
     domain: 'domainCallForwarding',
@@ -29,10 +31,58 @@ const subscriber = {
     customer_id: 0,
     subscriber_id: 0,
     primary_number: {
-        sn: 11,
-        ac: 22,
-        cc: 2222
+        sn: 13,
+        ac: 13,
+        cc: 1113
     },
+}
+
+const pbx_subscriber_pilot = {
+    username: 'pbxsubscriberpilotRoles',
+    webusername: 'pbxsubscriberpilotRoles',
+    email: 'pbxsubscriberpilotRoles@test.com',
+    external_id: 'pbxsubscriberpilotRoles',
+    password: 'sub' + getRandomNum() + 'pass',
+    webpassword: 'sub' + getRandomNum() + 'pass',
+    domain: domain.domain,
+    customer_id: 0,
+    subscriber_id: 0,
+    is_pbx_pilot: true,
+    primary_number: {
+        sn: 17,
+        ac: 23,
+        cc: 8888
+    },
+}
+
+const pbx_seat = {
+    username: 'pbxSeatCallForw',
+    webusername: 'pbxSeatCallForw',
+    email: 'pbxSeatCallForw@test.com',
+    external_id: 'pbxSeatCallForw',
+    display_name: 'PBX Seat',
+    password: 'sub' + getRandomNum() + 'pass',
+    webpassword: 'sub' + getRandomNum() + 'pass',
+    domain: domain.domain,
+    customer_id: 0,
+    subscriber_id: 0,
+    is_pbx_pilot: false,
+    pbx_extension: '11'
+}
+
+const pbx_second_seat = {
+    username: 'pbxSecondSeatCallForw',
+    webusername: 'pbxSecondSeatCallForw',
+    email: 'pbxSecondSeatCallForw@test.com',
+    external_id: 'pbxSecondSeatCallForw',
+    display_name: 'PBX Second Seat',
+    password: 'sub' + getRandomNum() + 'pass',
+    webpassword: 'sub' + getRandomNum() + 'pass',
+    domain: domain.domain,
+    customer_id: 0,
+    subscriber_id: 0,
+    is_pbx_pilot: false,
+    pbx_extension: '12'
 }
 
 const customer = {
@@ -44,12 +94,29 @@ const customer = {
     type: 'sipaccount'
 }
 
+const pbxcustomer = {
+    billing_profile_definition: 'id',
+    billing_profile_id: 1,
+    external_id: 'pbxCustomerCallForw',
+    contact_id: 1,
+    status: 'active',
+    type: 'pbxaccount'
+}
+
 const loginInfo = {
     username: `${subscriber.webusername}@${subscriber.domain}`,
     password: `${subscriber.webpassword}`
 }
 
-// Helper function to create a call forwarding
+const pbxPilotLoginInfo = {
+    username: `${pbx_subscriber_pilot.webusername}@${pbx_subscriber_pilot.domain}`,
+    password: `${pbx_subscriber_pilot.webpassword}`
+}
+
+function isPbxSeatInstance() {
+    return issppro && iscloudpbx
+}
+
 function createCallForwarding(type, destinationType) {
     cy.get('button[data-cy="csc-add-forwarding"]').click()
     cy.get(`[data-cy="q-tab-${type}"]`).click()
@@ -57,15 +124,25 @@ function createCallForwarding(type, destinationType) {
     cy.get('.q-menu').should('be.visible').within(() => {
         cy.contains('.q-item', destinationType).click()
     })
-    if (destinationType === "Number") {
+    if (destinationType === 'Number') {
         cy.get('[data-cy="csc-cf-destination-number"]').should('be.visible').type('0123456789')
     }
-
-    if (destinationType === "Custom Announcement") {
+    if (destinationType === 'Custom Announcement') {
         cy.get('[data-cy="csc-cf-custom-announcement"]').click()
         cy.get('.q-menu').filter(':visible').contains('.q-item', 'custom_announcement_0').click()
     }
     cy.get('[data-cy="csc-cf-save"]').click()
+}
+
+function removePbxSubscribers(authHeader) {
+    apiRemoveSubscriberBy({ name: pbx_second_seat.username, authHeader })
+    apiRemoveSubscriberBy({ name: pbx_seat.username, authHeader })
+    return apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+}
+
+function createPbxSubscribers(authHeader) {
+    apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
+    return apiCreateSubscriber({ data: pbx_seat, authHeader })
 }
 
 context('Call forwarding page tests', () => {
@@ -75,38 +152,53 @@ context('Call forwarding page tests', () => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
             apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            removePbxSubscribers(authHeader)
             apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
             apiRemoveDomainBy({ name: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
-                    subscriber.customer_id = id
+                subscriber.customer_id = id
+            })
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                issppro = body.type === 'sppro'
+                iscloudpbx = body.cloudpbx
+
+                if (!isPbxSeatInstance()) {
+                    cy.log('Skipping PBX seat tests, because this is not a Pro PBX instance')
+                    return
+                }
+
+                apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
+                    pbx_subscriber_pilot.customer_id = id
+                    pbx_seat.customer_id = id
+                    pbx_second_seat.customer_id = id
+                })
             })
         })
     })
 
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiCreateSubscriber({
-                data: {
-                    ...subscriber,
-                    primaryNumber: {
-                        sn: 13,
-                        ac: 13,
-                        cc: 1113
-                    }
-                },
-                authHeader
-                })
-        cy.visit('/')
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(() => {
+                apiCreateSubscriber({ data: subscriber, authHeader })
+            })
         })
+        cy.visit('/')
     })
 
     after(() => {
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            removePbxSubscribers(authHeader)
             apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
             apiRemoveDomainBy({ name: domain.domain, authHeader })
         })
     })
@@ -299,5 +391,66 @@ context('Call forwarding page tests', () => {
         cy.get('div[id="csc-wrapper-call-forwarding"]').contains('On no answer').should('be.visible')
         cy.get('span[style="white-space: nowrap;"]').contains("60 seconds").trigger('mouseenter')
         cy.get('div[role="tooltip"]').contains('This setting is synced with "After Ring Timeout", which can be edited above').should('exist')
+    })
+    context('PBX seat call forwarding tests', () => {
+        beforeEach(() => {
+            if (!isPbxSeatInstance()) {
+                this.skip()
+            }
+
+            apiLoginAsSuperuser().then(authHeader => {
+                removePbxSubscribers(authHeader)
+                createPbxSubscribers(authHeader)
+            })
+        })
+
+        it('Create a seat call forwarding destination', () => {
+            cy.loginUiCSC(pbxPilotLoginInfo.username, pbxPilotLoginInfo.password)
+            cy.get('a[href="#/user/dashboard"]').should('be.visible')
+            cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
+            cy.get('a[href="#/user/call-forwarding"]').click()
+            cy.get('button[data-cy="csc-add-forwarding"]').click()
+            cy.get('[data-cy="q-tab-cfu"]').click()
+            cy.get('[data-cy="csc-cf-destination-type"]').click()
+            cy.get('.q-menu').should('be.visible').within(() => {
+                cy.contains('.q-item', 'Seat').click()
+            })
+            cy.get('[data-cy="csc-cf-seat-select"]').click()
+            cy.get('input:visible').last().clear().type(pbx_seat.display_name)
+            cy.contains('.q-item', pbx_seat.display_name).click()
+            cy.get('[data-cy="csc-cf-save"]').click()
+
+            cy.get('#csc-wrapper-call-forwarding').contains('Always').should('be.visible')
+            cy.get('#csc-wrapper-call-forwarding').contains(pbx_seat.display_name).should('be.visible')
+        })
+
+        it('Modify the current seat selection', () => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiCreateSubscriber({ data: pbx_second_seat, authHeader })
+            })
+            cy.loginUiCSC(pbxPilotLoginInfo.username, pbxPilotLoginInfo.password)
+            cy.get('a[href="#/user/dashboard"]').should('be.visible')
+            cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
+            cy.get('a[href="#/user/call-forwarding"]').click()
+            cy.get('button[data-cy="csc-add-forwarding"]').click()
+            cy.get('[data-cy="q-tab-cfu"]').click()
+            cy.get('[data-cy="csc-cf-destination-type"]').click()
+            cy.get('.q-menu').should('be.visible').within(() => {
+                cy.contains('.q-item', 'Seat').click()
+            })
+            cy.get('[data-cy="csc-cf-seat-select"]').click()
+            cy.get('input:visible').last().clear().type(pbx_seat.display_name)
+            cy.contains('.q-item', pbx_seat.display_name).click()
+            cy.get('[data-cy="csc-cf-save"]').click()
+
+            cy.contains('#csc-wrapper-call-forwarding span', pbx_seat.display_name).click()
+            cy.get('input:visible').last().clear().type(pbx_second_seat.display_name)
+            cy.contains('.q-item', pbx_second_seat.display_name).click()
+            cy.contains('button', 'Set').click()
+
+            cy.get('#csc-wrapper-call-forwarding').contains('Always').should('be.visible')
+            cy.get('#csc-wrapper-call-forwarding').contains(pbx_second_seat.display_name).should('be.visible')
+            cy.get('#csc-wrapper-call-forwarding').contains(pbx_seat.display_name).should('not.exist')
+        })
     })
 })
