@@ -198,7 +198,7 @@ context('Call forwarding page tests', () => {
 
         cy.get('div[class="q-item__label"]').contains('30 seconds').should('be.visible')
         cy.get('span[data-cy="csc-cf-destination"]').last().click()
-        cy.get('input:visible').type('9876543210')
+        cy.get('input:visible').should('be.enabled').focus().type('9876543210')
         cy.get('button').contains('Set').click()
 
         cy.get('span[value="9876543210"]').should('be.visible')
