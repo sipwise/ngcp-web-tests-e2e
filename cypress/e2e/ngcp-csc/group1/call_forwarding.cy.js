@@ -393,19 +393,22 @@ context('Call forwarding page tests', () => {
         cy.get('span[style="white-space: nowrap;"]').contains("60 seconds").trigger('mouseenter')
         cy.get('div[role="tooltip"]').contains('This setting is synced with "After Ring Timeout", which can be edited above').should('exist')
     })
-    context('PBX seat call forwarding tests', () => {
+
+    context('PBX Seat call forwarding tests', () => {
         beforeEach(() => {
+            if (isPbxSeatInstance()) {
+                apiLoginAsSuperuser().then(authHeader => {
+                    removePbxSubscribers(authHeader)
+                    createPbxSubscribers(authHeader)
+                })
+            }
+        })
+
+        it('Create a Seat call forwarding destination', function () {
             if (!isPbxSeatInstance()) {
                 this.skip()
             }
 
-            apiLoginAsSuperuser().then(authHeader => {
-                removePbxSubscribers(authHeader)
-                createPbxSubscribers(authHeader)
-            })
-        })
-
-        it('Create a seat call forwarding destination', () => {
             cy.loginUiCSC(pbxPilotLoginInfo.username, pbxPilotLoginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
@@ -425,10 +428,15 @@ context('Call forwarding page tests', () => {
             cy.get('#csc-wrapper-call-forwarding').contains(pbx_seat.display_name).should('be.visible')
         })
 
-        it('Modify the current seat selection', () => {
+        it('Modify the current ssat selection', function () {
+            if (!isPbxSeatInstance()) {
+                this.skip()
+            }
+
             apiLoginAsSuperuser().then(authHeader => {
                 apiCreateSubscriber({ data: pbx_second_seat, authHeader })
             })
+
             cy.loginUiCSC(pbxPilotLoginInfo.username, pbxPilotLoginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
