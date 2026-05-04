@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (13.5.1.32+0~mr13.5.1.32) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [cee7336] MT#65029 [CSC] race condition when checking current time in time input box
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 04 May 2026 16:27:15 +0200
+
 ngcp-web-tests-e2e (13.5.1.31+0~mr13.5.1.31) unstable; urgency=medium
 
   [ Nico Schedel ]
