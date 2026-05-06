@@ -22,6 +22,9 @@ import {
     apiRemoveCustomerById,
 } from '../../../support/e2e'
 
+const randomNumber = getRandomNum()
+const ngcpConfig = Cypress.config('ngcpConfig')
+
 const contract = {
     contact_id: 0,
     status: 'active',
@@ -60,9 +63,6 @@ const reseller = {
 const systemContact = {
     email: 'systemContactTestCustomers@example.com'
 }
-
-const randomNumber = getRandomNum()
-const ngcpConfig = Cypress.config('ngcpConfig')
 
 context('Customer tests', () => {
     const customer = {
@@ -121,10 +121,8 @@ context('Customer tests', () => {
                         customer.customer_id = id
                     })
                 })
-
             })
         }
-
         cy.log('Skipped beforeEach()')
     })
 
@@ -186,6 +184,7 @@ context('Customer tests', () => {
                     apiRemoveCustomerById({ id: customer.customer_id, authHeader })
                     customer.external_id = 'newCustomer' + getRandomNum()
                 })
+
                 cy.quickLogin(login, password)
                 cy.navigateMainMenu('settings / customer')
 
@@ -200,7 +199,7 @@ context('Customer tests', () => {
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             })
 
-            it('Edx customer status to "locked"', () => {
+            it('Edit customer status to "locked"', () => {
                 cy.quickLogin(login, password)
                 cy.navigateMainMenu('settings / customer')
 

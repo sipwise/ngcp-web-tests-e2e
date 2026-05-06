@@ -47,7 +47,7 @@ const systemContact = {
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
-context('Reseller preferences tests', () => {
+context('Reseller Preferences tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
@@ -64,23 +64,6 @@ context('Reseller preferences tests', () => {
         })
     })
 
-    beforeEach(() => {
-        apiLoginAsSuperuser().then(authHeader => {
-            cy.log('Cleaning up db...')
-            apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
-            apiRemoveResellerBy({ name: reseller.name, authHeader })
-
-            cy.log('Seeding up db...')
-            apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
-                reseller.name = 'reseller' + getRandomNum()
-                apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
-                    apiCreateRewriteRuleSet({ data: { ...rewriteRuleSet, reseller_id: id }, authHeader })
-                })
-            })
-        })
-    })
-
     after(() => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
@@ -93,6 +76,15 @@ context('Reseller preferences tests', () => {
     })
 
     it('Test all access restrictions preferences in reseller', () => {
+        // Setup: Create Reseller
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveResellerBy({ name: reseller.name, authHeader })
+            apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
+            })
+        })
+
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / reseller')
 
@@ -108,9 +100,27 @@ context('Reseller preferences tests', () => {
         testPreferencesTextField('concurrent_max_out', 123, true)
         testPreferencesTextField('concurrent_max_out_total', 123, true)
         testPreferencesTextField('concurrent_max_total', 123, true)
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveResellerBy({ name: reseller.name, authHeader })
+        })
     })
 
-    it('Test all CDR/EDR settings in reseller', () => {
+    it('Test all CDR/EDR export settings in reseller', () => {
+        // Setup: Create Reseller and Rewrite Rule Set
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
+            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveResellerBy({ name: reseller.name, authHeader })
+            apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                    apiCreateRewriteRuleSet({ data: { ...rewriteRuleSet, reseller_id: id }, authHeader })
+                })
+            })
+        })
+
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / reseller')
 
@@ -123,5 +133,12 @@ context('Reseller preferences tests', () => {
         cy.get('div[data-cy="q-item--cdr-export-field-separator"]').scrollIntoView()
         testPreferencesTextField('cdr_export_field_separator')
         testPreferencesListField('cdr_export_sclidui_rwrs', rewriteRuleSet.name)
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
+            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveResellerBy({ name: reseller.name, authHeader })
+        })
     })
 })

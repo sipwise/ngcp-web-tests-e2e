@@ -18,8 +18,8 @@ import {
     searchInDataTable
 } from '../../../support/e2e'
 
-const ngcpConfig = Cypress.config('ngcpConfig')
 let issppro = null
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 const customer = {
     billing_profile_definition: 'id',
@@ -133,22 +133,6 @@ context('Subscriber tests', () => {
         })
     })
 
-    beforeEach(() => {
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: seatSubscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-            apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
-            apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
-            apiCreateSubscriberProfileSet({ data: profileSet, authHeader }).then(({ id }) => {
-                apiCreateSubscriberProfile({ data: { ...subscriberProfile, profile_set_id: id }, authHeader })
-            })
-            apiCreateSubscriber({ data: subscriber, authHeader })
-            apiCreateSubscriber({ data: pilotSubscriber, authHeader })
-            apiCreateSubscriber({ data: seatSubscriber, authHeader })
-        })
-    })
-
     after(() => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
@@ -164,7 +148,7 @@ context('Subscriber tests', () => {
         })
     })
 
-    it('Check if subscriber with invalid values gets rejected', () => {
+    it('Check if Subscriber with invalid values gets rejected', () => {
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
@@ -188,10 +172,12 @@ context('Subscriber tests', () => {
         cy.get('label[data-cy="subscriber-email"]').find('div[role="alert"]').contains('Input must be a valid email address').should('be.visible')
     })
 
-    it('Create subscriber', () => {
+    it('Create Subscriber', () => {
+        // Setup: Delete Subscriber if exists
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
         })
+
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
@@ -212,9 +198,25 @@ context('Subscriber tests', () => {
         cy.get('input[data-cy="subscriber-external-id"]').type(subscriber.external_id)
         cy.get('[data-cy="aui-save-button"]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+        })
     })
 
     it('Edit Subscriber Master Data', () => {
+        // Setup: Create Subscriber and Profile Set
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
+            apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiCreateSubscriber({ data: subscriber, authHeader })
+            apiCreateSubscriberProfileSet({ data: profileSet, authHeader }).then(({ id }) => {
+                apiCreateSubscriberProfile({ data: { ...subscriberProfile, profile_set_id: id }, authHeader })
+            })
+        })
+
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
@@ -243,16 +245,16 @@ context('Subscriber tests', () => {
         cy.get('div[role="listbox"]').should('be.visible')
         cy.wait(1000)
         cy.get('div[role="listbox"]').click()
-        cy.get('label[data-cy="aui-select-profile-set"] input').type(profileSet.name)
-        cy.get('div[role="listbox"]').should('be.visible')
-        cy.wait(1000)
-        cy.get('div[role="listbox"]').click()
-        cy.get('label[data-cy="aui-select-profile"] input').click()
-        cy.get('div[role="listbox"]').should('be.visible')
-        cy.wait(1000)
-        cy.get('div[role="listbox"]').click()
+        cy.auiSelectLazySelect({ dataCy: 'aui-select-profile-set', filter: profileSet.name, itemContains: profileSet.name })
         cy.get('[data-cy="aui-save-button"]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
+            apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+        })
     })
 
     it('Edit Pilot Subscriber Master Data', function () {
@@ -260,6 +262,18 @@ context('Subscriber tests', () => {
             cy.log('Not a SPPRO instance, skipping pilot subscriber tests...')
             this.skip()
         }
+
+        // Setup: Create Subscriber and Profile Set
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
+            apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
+            apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+            apiCreateSubscriber({ data: pilotSubscriber, authHeader })
+            apiCreateSubscriberProfileSet({ data: profileSet, authHeader }).then(({ id }) => {
+                apiCreateSubscriberProfile({ data: { ...subscriberProfile, profile_set_id: id }, authHeader })
+            })
+        })
+
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
@@ -299,6 +313,13 @@ context('Subscriber tests', () => {
         cy.get('div[role="listbox"]').click()
         cy.get('[data-cy="aui-save-button"]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
+            apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
+            apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+        })
     })
 
     it('Edit Seat Subscriber Master Data', function () {
@@ -306,6 +327,20 @@ context('Subscriber tests', () => {
             cy.log('Not a SPPRO instance, skipping seat subscriber tests...')
             this.skip()
         }
+
+        // Setup: Create Subscriber and Profile Set
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
+            apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
+            apiRemoveSubscriberBy({ name: seatSubscriber.username, authHeader })
+            apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+            apiCreateSubscriber({ data: pilotSubscriber, authHeader })
+            apiCreateSubscriber({ data: seatSubscriber, authHeader })
+            apiCreateSubscriberProfileSet({ data: profileSet, authHeader }).then(({ id }) => {
+                apiCreateSubscriberProfile({ data: { ...subscriberProfile, profile_set_id: id }, authHeader })
+            })
+        })
+
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
@@ -345,13 +380,32 @@ context('Subscriber tests', () => {
         cy.get('div[role="listbox"]').click()
         cy.get('[data-cy="aui-save-button"]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
+            apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
+            apiRemoveSubscriberBy({ name: seatSubscriber.username, authHeader })
+            apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+        })
     })
 
-    it('Delete subscriber and check if they are deleted', () => {
+    it('Delete Subscriber and check if they are deleted', () => {
+        // Setup: Create Subscriber
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiCreateSubscriber({ data: subscriber, authHeader })
+        })
+
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / subscriber')
 
         cy.locationShouldBe('#/subscriber')
         deleteItemOnListPageBy(subscriber.username)
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+        })
     })
 })

@@ -28,6 +28,8 @@ import {
     testPreferencesToggleField
 } from '../../../support/e2e'
 
+const ngcpConfig = Cypress.config('ngcpConfig')
+
 const contract = {
     contact_id: 0,
     status: 'active',
@@ -82,9 +84,7 @@ const systemContact = {
     email: 'systemTestCustomerPref@example.com'
 }
 
-const ngcpConfig = Cypress.config('ngcpConfig')
-
-context('Customer preferences tests', () => {
+context('Customer Preferences tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
 

@@ -64,12 +64,6 @@ context('Email template tests', () => {
         })
     })
 
-    beforeEach(() => {
-        apiLoginAsSuperuser().then(authHeader => {
-
-        })
-    })
-
     after(() => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')

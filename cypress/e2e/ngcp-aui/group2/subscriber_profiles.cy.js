@@ -25,7 +25,7 @@ const profileSet = {
     name: 'ProfileSP'
 }
 
-context('Subscriber profile tests', () => {
+context('Subscriber Profile tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
@@ -51,7 +51,7 @@ context('Subscriber profile tests', () => {
         })
     })
 
-    it('Check if subscriber profile set with invalid values gets rejected', () => {
+    it('Check if Subscriber Profile Set with invalid values gets rejected', () => {
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / subscriberprofile')
 
@@ -63,10 +63,11 @@ context('Subscriber profile tests', () => {
         cy.get('label[data-cy="profile-set-description"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
     })
 
-    it('Create subscriber profile set', () => {
+    it('Create Subscriber Profile Set', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
         })
+
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / subscriberprofile')
 
@@ -80,7 +81,7 @@ context('Subscriber profile tests', () => {
         cy.locationShouldBe('#/subscriberprofile')
     })
 
-    it('Edit subscriber profile set', () => {
+    it('Edit Subscriber Profile Set', () => {
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / subscriberprofile')
 
@@ -98,7 +99,7 @@ context('Subscriber profile tests', () => {
         cy.contains('[data-cy="q-td--description"]', profileSet.descriptionNew).should('be.visible')
     })
 
-    it('Check if subscriber profile with invalid values gets rejected', () => {
+    it('Check if Subscriber Profile with invalid values gets rejected', () => {
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / subscriberprofile')
         cy.locationShouldBe('#/subscriberprofile')
@@ -113,7 +114,7 @@ context('Subscriber profile tests', () => {
         cy.get('label[data-cy="profile-description"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
     })
 
-    it('Create two subscriber profiles and mark one as default', () => {
+    it('Create two Subscriber Profile and mark one as default', () => {
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / subscriberprofile')
 
@@ -143,7 +144,7 @@ context('Subscriber profile tests', () => {
         cy.get('[data-cy="aui-data-table-inline-edit--toggle"]:eq(0)[aria-checked="true"]').should('be.visible')
     })
 
-    it('Delete subscriber profile set and check if they are deleted', () => {
+    it('Delete Subscriber Profile set and check if they are deleted', () => {
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / subscriberprofile')
 

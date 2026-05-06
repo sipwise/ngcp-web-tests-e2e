@@ -137,6 +137,7 @@ context('Rewrite Rule Set tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
         })
+
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / rewrite', false)
 
