@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.0.1.5+0~mr26.0.1.5) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [b4b9c23] MT#65062 Update tests upon changing CF translations
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 08 May 2026 14:58:27 +0200
+
 ngcp-web-tests-e2e (26.0.1.4+0~mr26.0.1.4) unstable; urgency=medium
 
   [ Nico Schedel ]
