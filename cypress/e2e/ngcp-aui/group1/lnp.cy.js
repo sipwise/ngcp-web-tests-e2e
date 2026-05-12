@@ -477,7 +477,6 @@ context('LNP tests', () => {
             cy.get('input[type="file"][data-cy="phonebook-upload-field"]').selectFile(path.join(fixturesFolder, 'lnp_list_carrier.csv'), { force: 'true' })
             cy.get('button[data-cy="aui-save-button"]:last').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-            waitPageProgressAUI()
             searchInDataTable(LNPNumber.number)
             cy.get('td[data-cy="q-td--number"]').should('contain.text', LNPNumber.number)
             cy.get('td[data-cy="q-td--routing-number"]').should('contain.text', LNPNumber.routing_number)
