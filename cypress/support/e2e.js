@@ -133,7 +133,7 @@ Cypress.Commands.add('auiSelectLazySelect',
                 cy.get(dropdownListId).should('be.visible')
                     .find('.q-linear-progress').should('not.exist')
                 cy.wait(500)
-                cy.contains(`${dropdownListId} .q-item`, itemContains).click()
+                cy.contains(`${dropdownListId} .q-item`, itemContains).last().click()
             })
         })
     }
