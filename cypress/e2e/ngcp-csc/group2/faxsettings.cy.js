@@ -13,6 +13,7 @@ import {
 } from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
+let iscloudpbx = null
 let issppro = null
 
 const domain = {
@@ -37,6 +38,25 @@ const subscriber = {
     },
 }
 
+const pbx_subscriber_pilot = {
+    username: 'pbxsubpilotFaxsettings',
+    webusername: 'pbxsubpilotFaxsettings',
+    email: 'pbxsubpilotFaxsettings@test.com',
+    external_id: 'pbxsubpilotFaxsettings',
+    password: 'sub' + getRandomNum() + 'pass',
+    webpassword: 'sub' + getRandomNum() + 'pass',
+    administrative: true,
+    domain: domain.domain,
+    customer_id: 0,
+    subscriber_id: 0,
+    is_pbx_pilot: true,
+    primary_number: {
+        sn: 77,
+        ac: 53,
+        cc: 4234
+    },
+}
+
 const customer = {
     billing_profile_definition: 'id',
     billing_profile_id: 1,
@@ -46,9 +66,23 @@ const customer = {
     type: 'sipaccount'
 }
 
+const pbxcustomer = {
+    billing_profile_definition: 'id',
+    billing_profile_id: 1,
+    external_id: 'pbxCustomerFaxsettings',
+    contact_id: 1,
+    status: 'active',
+    type: 'pbxaccount'
+}
+
 const loginInfo = {
     username: `${subscriber.webusername}@${subscriber.domain}`,
     password: `${subscriber.webpassword}`
+}
+
+const pbxloginInfo = {
+    username: `${pbx_subscriber_pilot.webusername}@${pbx_subscriber_pilot.domain}`,
+    password: `${pbx_subscriber_pilot.webpassword}`
 }
 
 context('Fax settings page tests', () => {
@@ -65,6 +99,9 @@ context('Fax settings page tests', () => {
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                     subscriber.customer_id = id
             })
+            apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
+                    pbx_subscriber_pilot.customer_id = id
+            })
             apiCreateSubscriber({ data:  subscriber, authHeader })
             cy.intercept('GET', 'platforminfo').as('platforminfo')
             cy.visit('/')
@@ -77,17 +114,16 @@ context('Fax settings page tests', () => {
                     issppro = false
                     return
                 }
+                if (response.body.cloudpbx === true) {
+                    iscloudpbx = true
+                } else {
+                    cy.log('Skipping Mail2Fax tests, because CloudPBX is not enabled on this instance');
+                    iscloudpbx = false
+                    return
+                }
             })
             apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
         })
-    })
-
-    beforeEach(() => {
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiCreateSubscriber({ data:  subscriber, authHeader })
-        })
-        cy.visit('/')
     })
 
     after(() => {
@@ -104,6 +140,14 @@ context('Fax settings page tests', () => {
         if (!issppro) {
             this.skip()
         }
+
+        // Setup: Create Subscriber, delete Subscriber if exists
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiCreateSubscriber({ data:  subscriber, authHeader })
+        })
+
+        cy.visit('/')
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
@@ -111,12 +155,25 @@ context('Fax settings page tests', () => {
         cy.get('div[data-cy="faxtomail-enable"] input').click({ force: true })
 
         cy.get('button[data-cy="appsicon-more"]').should('be.visible')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+        })
     })
 
     it('Try to disable and enable T38 and ECM', function () {
         if (!issppro) {
             this.skip()
         }
+
+        // Setup: Create Subscriber, delete Subscriber if exists
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiCreateSubscriber({ data:  subscriber, authHeader })
+        })
+
+        cy.visit('/')
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
@@ -137,12 +194,25 @@ context('Fax settings page tests', () => {
         cy.get('div[data-cy="faxtomail-ecm"] input').click({ force: true })
         cy.get('div[data-cy="faxtomail-ecm"][aria-disabled="true"]').should('not.exist')
         cy.get('div[data-cy="faxtomail-ecm"][aria-checked="true"]').should('be.visible')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+        })
     })
 
     it('Try to create a destination with invalid values', function () {
         if (!issppro) {
             this.skip()
         }
+
+        // Setup: Create Subscriber, delete Subscriber if exists
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiCreateSubscriber({ data:  subscriber, authHeader })
+        })
+
+        cy.visit('/')
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
@@ -157,12 +227,25 @@ context('Fax settings page tests', () => {
         cy.get('input[data-cy="destination-email"]').should('not.exist')
         cy.get('button[data-cy="destinaton-creation-confirm"]').should('not.exist')
         cy.get('button[data-cy="destinaton-cancel-creation"]').should('not.exist')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+        })
     })
 
     it('Try to create a destination', function () {
         if (!issppro) {
             this.skip()
         }
+
+        // Setup: Create Subscriber, delete Subscriber if exists
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiCreateSubscriber({ data:  subscriber, authHeader })
+        })
+
+        cy.visit('/')
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
@@ -176,12 +259,25 @@ context('Fax settings page tests', () => {
         cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
 
         cy.get('div[data-cy="csc-list-item-title"]').contains('<test@mail.com> as PS').should('be.visible')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+        })
     })
 
     it('Try to edit a destination', function () {
         if (!issppro) {
             this.skip()
         }
+
+        // Setup: Create Subscriber, delete Subscriber if exists
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiCreateSubscriber({ data:  subscriber, authHeader })
+        })
+
+        cy.visit('/')
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
@@ -219,12 +315,25 @@ context('Fax settings page tests', () => {
         cy.get('div[data-cy="csc-list-item-title"]').click()
         cy.get('i[data-cy="destination-icon-deliver-incoming"]').contains('call_received').should('be.visible')
         cy.get('i[data-cy="destination-icon-deliver-outgoing"]').contains('call_made').should('be.visible')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+        })
     })
 
     it('Try to delete a destination', function () {
         if (!issppro) {
             this.skip()
         }
+
+        // Setup: Create Subscriber, delete Subscriber if exists
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiCreateSubscriber({ data:  subscriber, authHeader })
+        })
+
+        cy.visit('/')
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
@@ -244,5 +353,147 @@ context('Fax settings page tests', () => {
         cy.get('button[data-cy="csc-dialog-delete"]').click()
         waitPageProgressCSC()
         cy.get('div[data-cy="csc-list-item-title"]').should('not.exist')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+        })
+    })
+
+    it('Enable/Disable Mail2Fax', function () {
+        if (!iscloudpbx) {
+            this.skip()
+        }
+
+        // Setup: Create PBX Subscriber, delete Subscriber if exists
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader })
+        })
+
+        cy.visit('/')
+        cy.loginUiCSC(pbxloginInfo.username, pbxloginInfo.password)
+        cy.get('a[href="#/user/fax-settings"]').should('be.visible')
+        cy.get('a[href="#/user/fax-settings"]').click()
+        cy.get('div[class="q-tab__label"]').contains('Mail to Fax').click()
+
+        cy.get('div[data-cy="csc-mailtofax-active"][aria-disabled="true"]').should('not.exist')
+        cy.get('div[data-cy="csc-mailtofax-active"]').click()
+        cy.get('div[data-cy="csc-mailtofax-active"][aria-disabled="true"]').should('not.exist')
+        cy.get('div[data-cy="csc-mailtofax-active"][aria-checked="false"]').should('not.exist')
+        cy.get('div[data-cy="csc-mailtofax-active"][aria-checked="true"]').should('be.visible')
+        cy.get('div[data-cy="csc-mailtofax-active"]').click()
+        cy.get('div[data-cy="csc-mailtofax-active"][aria-disabled="true"]').should('not.exist')
+        cy.get('div[data-cy="csc-mailtofax-active"][aria-checked="true"]').should('not.exist')
+        cy.get('div[data-cy="csc-mailtofax-active"][aria-checked="false"]').should('be.visible')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+        })
+    })
+
+    it('Add Secret Key and change renew interval', function () {
+        if (!iscloudpbx) {
+            this.skip()
+        }
+
+        // Setup: Create PBX Subscriber, delete Subscriber if exists
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader })
+        })
+
+        cy.visit('/')
+        cy.loginUiCSC(pbxloginInfo.username, pbxloginInfo.password)
+        cy.get('a[href="#/user/fax-settings"]').should('be.visible')
+        cy.get('a[href="#/user/fax-settings"]').click()
+        cy.get('div[class="q-tab__label"]').contains('Mail to Fax').click()
+
+        cy.get('input[data-cy="csc-mailtofax-secretkey"]').type('secretkey')
+        cy.get('button[data-cy="q-btn-1"]').click()
+        cy.get('input[data-cy="csc-mailtofax-secretkey"][value="secretkey"]').should('be.visible')
+        cy.get('input[data-cy="csc-mailtofax-secretkey"]').type('add')
+        cy.get('button[data-cy="q-btn"]').contains('Undo').click()
+        cy.get('input[data-cy="csc-mailtofax-secretkey"][value="secretkey"]').should('be.visible')
+        cy.qSelect({ dataCy: 'csc-mailtofax-secretkey-renew', itemContains: 'Monthly' })
+        cy.get('input[aria-label="Secret Key Renew"][value="Monthly"]').should('exist')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+        })
+    })
+
+    it('Add/Remove Secret Key Notify E-mail', function () {
+        if (!iscloudpbx) {
+            this.skip()
+        }
+
+        // Setup: Create PBX Subscriber, delete Subscriber if exists
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader })
+        })
+
+        cy.visit('/')
+        cy.loginUiCSC(pbxloginInfo.username, pbxloginInfo.password)
+        cy.get('a[href="#/user/fax-settings"]').should('be.visible')
+        cy.get('a[href="#/user/fax-settings"]').click()
+        cy.get('div[class="q-tab__label"]').contains('Mail to Fax').click()
+
+        cy.get('button[data-cy="csc-mailtofax-secretnotify-add"]').click()
+        cy.get('input[data-cy="csc-mailtofax-secretkey-renew-email"]').type('test.mail@test.com')
+        cy.get('button[data-cy="csc-mailtofax-secretkey-renew-createbutton"]').click()
+        cy.get('div[class="q-item__label"]').contains('test.mail@test.com').should('be.visible')
+        cy.get('div[class="q-item__label"]').contains('test.mail@test.com').click()
+        cy.get('input[data-cy="csc-mailtofax-secretkey-renew-email"]').clear().type('anothertest.mail@test.com')
+        cy.get('button[data-cy="q-btn-1"]').click()
+        cy.get('div[class="q-item__label"]').contains('anothertest.mail@test.com').should('be.visible')
+        cy.get('button[data-cy="csc-mailtofax-secretkey-renew-remove"]').click()
+        cy.get('button[data-autofocus="true"]').click()
+        cy.get('div[class="q-item__label"]').contains('anothertest.mail@test.com').should('not.exist')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+        })
+    })
+
+    it('Add/Remove ACL', function () {
+        if (!iscloudpbx) {
+            this.skip()
+        }
+
+        // Setup: Create PBX Subscriber, delete Subscriber if exists
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader })
+        })
+
+        cy.visit('/')
+        cy.loginUiCSC(pbxloginInfo.username, pbxloginInfo.password)
+        cy.get('a[href="#/user/fax-settings"]').should('be.visible')
+        cy.get('a[href="#/user/fax-settings"]').click()
+        cy.get('div[class="q-tab__label"]').contains('Mail to Fax').click()
+
+        cy.get('button[data-cy="csc-mailtofax-acl-add"]').click()
+        cy.get('input[data-cy="csc-mailtofax-acl-email"]').type('test.mail@test.com')
+        cy.get('input[data-cy="csc-mailtofax-acl-ip"]').type('2.2.2.2')
+        cy.get('input[data-cy="csc-mailtofax-acl-destination"]').type('dest')
+        cy.get('button[data-cy="csc-mailtofax-acl-createbutton"]').click()
+        cy.get('div[class="q-item__label text-caption"]').contains('test.mail@test.com').should('be.visible')
+        cy.get('div[class="q-item__label text-caption"]').contains('test.mail@test.com').click()
+        cy.get('input[data-cy="csc-mailtofax-acl-destination"]').clear().type('testest')
+        cy.get('button[data-cy="q-btn-1"]').click()
+        cy.get('div[class="q-item__label text-caption"]').contains('testest').should('be.visible')
+        cy.get('button[title="Remove"]').click()
+        cy.get('button[data-autofocus="true"]').click()
+        cy.get('div[class="q-item__label"]').contains('test.mail@test.com').should('not.exist')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+        })
     })
 })
