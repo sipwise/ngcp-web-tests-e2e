@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.0.1.6+0~mr26.0.1.6) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [ba9b05c] MT#65184 getRandomNum has the possibility to exceed its digit limit by 1
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 22 May 2026 14:11:14 +0200
+
 ngcp-web-tests-e2e (26.0.1.5+0~mr26.0.1.5) unstable; urgency=medium
 
   [ Debora Crescenzo ]
