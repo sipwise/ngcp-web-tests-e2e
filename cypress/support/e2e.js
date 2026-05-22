@@ -3424,7 +3424,7 @@ export const apiGetMail = ({ mailboxName, id }) => {
     })
 }
 
-export const getRandomNum = (maxLength = 5) => Math.floor((Math.random() * Math.pow(10, maxLength)) + 1)
+export const getRandomNum = (maxLength = 5) => Math.floor((Math.random() * Math.pow(10, maxLength)))
 
 export const waitPageProgressAUI = () => {
     cy.get('div[class="q-linear-progress"][role="progressbar"]').should('be.visible')
