@@ -182,7 +182,7 @@ context('Customer Details tests', () => {
     model: "testmodelH2PCustomerDetailsCypress",
     type: "phone",
     vendor: "ALE"
-}
+    }
 
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
@@ -229,51 +229,9 @@ context('Customer Details tests', () => {
         })
     })
 
-    beforeEach(() => {
-        apiLoginAsSuperuser().then(authHeader => {
-            apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
-                apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
-                    apiCreateBillingVoucher({ data: { ...billingVoucher, customer_id: id }, authHeader }).then(({ id }) => billingVoucher.id = id)
-                    apiCreateCustomerLocation({ data: { ...location, contract_id: id }, authHeader })
-                    if (issppro) {
-                        apiCreateCustomerPhonebook({ data: { ...customerPhonebook, customer_id: id }, authHeader })
-                    } else {
-                        cy.log("Instance is CE, not PRO. Skipping Customer Phonebook creation...")
-                    }
-                    apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
-                    apiCreateSubscriber({ data: { ...pbxGroup, customer_id: id }, authHeader })
-                    apiCreateSoundSet({ data: { ...soundset, customer_id: id }, authHeader })
-                    customer.customer_id = id
-                    pbxDevice.customer_id = id
-                })
-            })
-            if (iscloudpbx) {
-                apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader}).then(({ id }) => {
-                    cy.fixture("deviceconfigtestfile.xml").then((text) => {
-                        apiCreatePbxDeviceConfig({ parameters: { ...pbxDeviceConfig, device_id: id }, data: text, authHeader }).then(({ id }) => {
-                            pbxDeviceConfig.id = id
-                            apiCreatePbxDeviceProfile({ data: { ...pbxDeviceProfile, config_id: id }, authHeader }).then(({ id }) => {
-                                apiCreatePbxDevice({ data: { ...pbxDevice, profile_id: id }, authHeader })
-                            })
-                        })
-                    })
-                })
-            } else {
-                cy.log("CloudPBX is not enabled, skipping device creation...")
-            }
-        })
-    })
-
     after(() => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-        })
-    })
-
-    afterEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
             if (iscloudpbx) {
                 apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
@@ -284,23 +242,28 @@ context('Customer Details tests', () => {
                 cy.log("CloudPBX is not enabled, skipping device deletion...")
             }
             apiRemoveSoundSetBy({ name: soundset.name, authHeader })
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-
-            if (issppro) {
-                apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
-            } else {
-                cy.log("Instance is CE, not PRO. Skipping Customer Phonebook deletion...")
-            }
+            apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
             apiRemoveCustomerLocationBy({ name: location.name, authHeader })
             apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
+            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
             apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            apiRemoveDomainBy({ name: domain.domain, authHeader })
         })
     })
 
     context('Contact Details', () => {
         it('Edit contact settings to see if changes display in customer details', () => {
+            // Setup: Create Customer and Contact
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / contact')
 
@@ -330,12 +293,26 @@ context('Customer Details tests', () => {
             cy.get('div[data-cy="customer-contactdetails-table"]').contains('Firstname Lastname').should('be.visible')
             cy.get('div[data-cy="customer-contactdetails-table"]').contains('testcompany').should('be.visible')
             cy.get('div[data-cy="customer-contactdetails-table"]').contains('123456789').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
     })
 
     context('Contract Balance, Top-up Log and Balance Intervals', () => {
         it('Set contract cash balance and check log & balance', () => {
+            // Setup: Create Customer and Contact
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -359,9 +336,25 @@ context('Customer Details tests', () => {
             cy.get('div').contains('Balance Intervals').click()
             cy.get('td[data-cy="q-td--cash-balance"]').contains('100.00').should('be.visible')
             cy.get('td[data-cy="q-td--free-time-balance"]').contains('50').should('exist')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Use Top up Voucher and check log & balance', () => {
+            // Setup: Create Customer, Contact and Billing Voucher
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateBillingVoucher({ data: { ...billingVoucher, customer_id: id }, authHeader }).then(({ id }) => billingVoucher.id = id)
+                    })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -381,9 +374,24 @@ context('Customer Details tests', () => {
             cy.get('td[data-cy="q-td--amount"]').contains('100').should('be.visible')
             cy.get('div').contains('Balance Intervals').click()
             cy.get('td[data-cy="q-td--cash-balance"]').contains('100.00').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Use Top up Cash and check log & balance', () => {
+            // Setup: Create Customer and Contact
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -408,11 +416,25 @@ context('Customer Details tests', () => {
             cy.get('td[data-cy="q-td--amount"]').contains('100').should('be.visible')
             cy.get('div').contains('Balance Intervals').click()
             cy.get('td[data-cy="q-td--cash-balance"]').contains('101.00').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
     })
 
     context('Fraud Limits', () => {
         it('Try to edit Fraud limits with invalid values', () => {
+            // Setup: Create Customer and Contact
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -430,9 +452,23 @@ context('Customer Details tests', () => {
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('input[data-cy="aui-customerfraudlimits-notify-email"][value="testmail@mail.com"]').should('not.exist')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Add/Delete/Reset fraud limits and emails to customer details', () => {
+            // Setup: Create Customer and Contact
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -468,11 +504,25 @@ context('Customer Details tests', () => {
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('input[data-cy="aui-customerfraudlimits-notify-email"][value="testmail@template.com"]').should('not.exist')
             cy.get('input[data-cy="aui-customerfraudlimits-notify-email"][value="testmail2@template.com"]').should('not.exist')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
     })
 
     context('Locations', () => {
         it('Try to create location with invalid values', () => {
+            // Setup: Create Customer and Contact
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -493,11 +543,23 @@ context('Customer Details tests', () => {
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="location-ip"]').find('div[role="alert"]').contains('Input must be a valid IPv4 or IPv6').should('be.visible')
             cy.get('label[data-cy="locationblock-mask"]').find('div[role="alert"]').contains('Input must be a valid number').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Create a location', () => {
+            // Setup: Create Customer and Contact, remove Customer Location if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerLocationBy({ name: location.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
+                })
             })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
@@ -519,9 +581,27 @@ context('Customer Details tests', () => {
             cy.get('td[data-cy="q-td--name"]').contains(location.name).should('be.visible')
             cy.get('td[data-cy="q-td--description"]').contains(location.description).should('be.visible')
             cy.get('td[data-cy="q-td--blocks-grp"]').contains(location.blocks[0].ip + "/" + location.blocks[0].mask).should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerLocationBy({ name: location.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Edit a location', () => {
+            // Setup: Create Customer, Contact and Location
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerLocationBy({ name: location.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateCustomerLocation({ data: { ...location, contract_id: id }, authHeader })
+                    })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -546,9 +626,27 @@ context('Customer Details tests', () => {
             cy.get('td[data-cy="q-td--description"]').contains('testdescription').should('be.visible')
             cy.get('td[data-cy="q-td--blocks-grp"]').contains("192.168.1.1/24").should('be.visible')
             cy.get('td[data-cy="q-td--blocks-grp"]').contains(location.blocks[0].ip + "/" + location.blocks[0].mask).should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerLocationBy({ name: location.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Delete a location', () => {
+            // Setup: Create Customer, Contact and Location
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerLocationBy({ name: location.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateCustomerLocation({ data: { ...location, contract_id: id }, authHeader })
+                    })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -560,6 +658,13 @@ context('Customer Details tests', () => {
             cy.get('div').contains('Locations').click()
             waitPageProgressAUI()
             deleteItemOnListPageBy(location.name, 'All')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerLocationBy({ name: location.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
     })
 
@@ -569,6 +674,17 @@ context('Customer Details tests', () => {
                 cy.log('CloudPBX is not enabled, skipping PBX group tests...')
                 this.skip()
             }
+            // Setup: Create Customer and Contact
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
+                    })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -583,6 +699,13 @@ context('Customer Details tests', () => {
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="pbxgroup-display_name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('label[data-cy="pbxgroup-pbx_extension"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Create a pbx group', function () {
@@ -590,6 +713,18 @@ context('Customer Details tests', () => {
                 cy.log('CloudPBX is not enabled, skipping PBX group tests...')
                 this.skip()
             }
+            // Setup: Create Customer and Contact, remove PBX Group if exists
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
+                    })
+                })
+            })
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader})
             })
@@ -610,6 +745,14 @@ context('Customer Details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('td[data-cy="q-td--display-name"]').contains(pbxGroup.display_name).should('be.visible')
             cy.get('td[data-cy="q-td--pbx-extension"]').contains(pbxGroup.pbx_extension).should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Edit a pbx group', function () {
@@ -617,6 +760,19 @@ context('Customer Details tests', () => {
                 cy.log('CloudPBX is not enabled, skipping PBX group tests...')
                 this.skip()
             }
+            // Setup: Create Customer, Contact and PBX Group
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
+                        apiCreateSubscriber({ data: { ...pbxGroup, customer_id: id }, authHeader })
+                    })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -636,6 +792,14 @@ context('Customer Details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
             cy.get('td[data-cy="q-td--pbx-hunt-timeout"]').contains(5).should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
        it('Delete a pbx group', function () {
@@ -643,6 +807,19 @@ context('Customer Details tests', () => {
                 cy.log('CloudPBX is not enabled, skipping PBX group tests...')
                 this.skip()
             }
+            // Setup: Create Customer, Contact and PBX Group
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
+                        apiCreateSubscriber({ data: { ...pbxGroup, customer_id: id }, authHeader })
+                    })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -654,6 +831,14 @@ context('Customer Details tests', () => {
             cy.get('div').contains('PBX Groups').click()
             waitPageProgressAUI()
             deleteItemOnListPageBy(pbxGroup.username, 'Name')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
     })
 
@@ -663,6 +848,14 @@ context('Customer Details tests', () => {
                 cy.log('CloudPBX is not enabled, skipping PBX device tests...')
                 this.skip()
             }
+            // Setup: Create Customer and Contact
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -678,6 +871,12 @@ context('Customer Details tests', () => {
             cy.get('label[data-cy="pbx-profile-id"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('label[data-cy="pbx-identifier"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('label[data-cy="pbx-station-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Create a PBX device', function () {
@@ -685,8 +884,27 @@ context('Customer Details tests', () => {
                 cy.log('CloudPBX is not enabled, skipping PBX device tests...')
                 this.skip()
             }
+            // Setup: Create Customer, Contact and PBX Device dependencies
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
+                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        pbxDevice.customer_id = id
+                        apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader}).then(({ id }) => {
+                            cy.fixture("deviceconfigtestfile.xml").then((text) => {
+                                apiCreatePbxDeviceConfig({ parameters: { ...pbxDeviceConfig, device_id: id }, data: text, authHeader }).then(({ id }) => {
+                                    pbxDeviceConfig.id = id
+                                    apiCreatePbxDeviceProfile({ data: { ...pbxDeviceProfile, config_id: id }, authHeader })
+                                })
+                            })
+                        })
+                    })
+                })
             })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
@@ -708,6 +926,16 @@ context('Customer Details tests', () => {
             cy.get('td[data-cy="q-td--station-name"]').contains(pbxDevice.station_name).should('be.visible')
             cy.get('td[data-cy="q-td--identifier"]').contains(pbxDevice.identifier).should('be.visible')
             cy.get('td[data-cy="q-td--profile"]').contains(pbxDeviceProfile.name).should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
+                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Add subscriber to PBX device', function () {
@@ -715,6 +943,32 @@ context('Customer Details tests', () => {
                 cy.log('CloudPBX is not enabled, skipping PBX device tests...')
                 this.skip()
             }
+            // Setup: Create Customer, Contact and PBX Device + dependencies
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
+                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
+                        pbxDevice.customer_id = id
+                        apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader}).then(({ id }) => {
+                            cy.fixture("deviceconfigtestfile.xml").then((text) => {
+                                apiCreatePbxDeviceConfig({ parameters: { ...pbxDeviceConfig, device_id: id }, data: text, authHeader }).then(({ id }) => {
+                                    pbxDeviceConfig.id = id
+                                    apiCreatePbxDeviceProfile({ data: { ...pbxDeviceProfile, config_id: id }, authHeader }).then(({ id }) => {
+                                        apiCreatePbxDevice({ data: { ...pbxDevice, profile_id: id }, authHeader })
+                                    })
+                                })
+                            })
+                        })
+                    })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -735,6 +989,17 @@ context('Customer Details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('div[class="button button-active"]').contains('1').click()
             cy.get('label[data-cy="pbx-device-subscriber"] span').contains(pilotSubscriber.username).should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
+                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Test all PBX device preferences', function () {
@@ -742,6 +1007,32 @@ context('Customer Details tests', () => {
                 cy.log('CloudPBX is not enabled, skipping PBX device tests...')
                 this.skip()
             }
+            // Setup: Create Customer, Contact and PBX Device + dependencies
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
+                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
+                        pbxDevice.customer_id = id
+                        apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader}).then(({ id }) => {
+                            cy.fixture("deviceconfigtestfile.xml").then((text) => {
+                                apiCreatePbxDeviceConfig({ parameters: { ...pbxDeviceConfig, device_id: id }, data: text, authHeader }).then(({ id }) => {
+                                    pbxDeviceConfig.id = id
+                                    apiCreatePbxDeviceProfile({ data: { ...pbxDeviceProfile, config_id: id }, authHeader }).then(({ id }) => {
+                                        apiCreatePbxDevice({ data: { ...pbxDevice, profile_id: id }, authHeader })
+                                    })
+                                })
+                            })
+                        })
+                    })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -768,6 +1059,18 @@ context('Customer Details tests', () => {
             testPreferencesToggleField('FW_upg_dis')
             testPreferencesToggleField('vnd_Panasonic_FW_autoupg_dis')
             testPreferencesTextField('vnd_Panasonic_FW_ver', '1.232.4', false)
+
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
+                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
        it('Delete a PBX device', function () {
@@ -775,6 +1078,32 @@ context('Customer Details tests', () => {
                 cy.log('CloudPBX is not enabled, skipping PBX device tests...')
                 this.skip()
             }
+            // Setup: Create Customer, Contact and PBX Device + dependencies
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
+                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
+                        pbxDevice.customer_id = id
+                        apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader}).then(({ id }) => {
+                            cy.fixture("deviceconfigtestfile.xml").then((text) => {
+                                apiCreatePbxDeviceConfig({ parameters: { ...pbxDeviceConfig, device_id: id }, data: text, authHeader }).then(({ id }) => {
+                                    pbxDeviceConfig.id = id
+                                    apiCreatePbxDeviceProfile({ data: { ...pbxDeviceProfile, config_id: id }, authHeader }).then(({ id }) => {
+                                        apiCreatePbxDevice({ data: { ...pbxDevice, profile_id: id }, authHeader })
+                                    })
+                                })
+                            })
+                        })
+                    })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -786,6 +1115,17 @@ context('Customer Details tests', () => {
             cy.get('div').contains('PBX Devices').click()
             waitPageProgressAUI()
             deleteItemOnListPageBy(pbxDevice.station_name, 'Station Name')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
+                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
     })
 
@@ -795,6 +1135,14 @@ context('Customer Details tests', () => {
                 cy.log("Instance is CE, not PRO. Skipping phonebook tests...")
                 this.skip()
             }
+            // Setup: Create Customer and Contact
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -809,6 +1157,12 @@ context('Customer Details tests', () => {
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="phonebook-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('label[data-cy="phonebook-number"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Create a phonebook', function () {
@@ -816,8 +1170,14 @@ context('Customer Details tests', () => {
                 cy.log("Instance is CE, not PRO. Skipping phonebook tests...")
                 this.skip()
             }
+            // Setup: Create Customer and Contact, delete Phonebook if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
+                })
             })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
@@ -836,6 +1196,13 @@ context('Customer Details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('td[data-cy="q-td--name"]').contains(customerPhonebook.name).should('be.visible')
             cy.get('td[data-cy="q-td--number"]').contains(customerPhonebook.number).should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Edit a phonebook', function () {
@@ -843,6 +1210,17 @@ context('Customer Details tests', () => {
                 cy.log("Instance is CE, not PRO. Skipping phonebook tests...")
                 this.skip()
             }
+            // Setup: Create Customer, Contact and Phonebook
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                            apiCreateCustomerPhonebook({ data: { ...customerPhonebook, customer_id: id }, authHeader })
+                    })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -862,6 +1240,13 @@ context('Customer Details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
             cy.get('td[data-cy="q-td--number"]').contains('anothertestnumber').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Delete a phonebook', function () {
@@ -869,6 +1254,17 @@ context('Customer Details tests', () => {
                 cy.log("Instance is CE, not PRO. Skipping phonebook tests...")
                 this.skip()
             }
+            // Setup: Create Customer, Contact and Phonebook
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                            apiCreateCustomerPhonebook({ data: { ...customerPhonebook, customer_id: id }, authHeader })
+                    })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -880,11 +1276,26 @@ context('Customer Details tests', () => {
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
             waitPageProgressAUI()
             deleteItemOnListPageBy(customerPhonebook.name, 'Name')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
     })
 
     context('Resellers', () => {
         it('Check if reseller values are correct', () => {
+            // Setup: Create Customer and Contact
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -894,9 +1305,15 @@ context('Customer Details tests', () => {
             cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
             waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Reseller').click()
-            cy.get('td[class="text-left"]').contains(billingVoucher.reseller_id).should('be.visible')
+            cy.get('td[class="text-left"]').contains('1').should('be.visible')
             cy.get('td[class="text-left"]').contains('default').should('be.visible')
             cy.get('td[class="text-left"]').contains('active').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
     })
 
@@ -906,6 +1323,14 @@ context('Customer Details tests', () => {
                 cy.log('CloudPBX is not enabled, skipping soundset tests...')
                 this.skip()
             }
+            // Setup: Create Customer and Contact
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -919,6 +1344,12 @@ context('Customer Details tests', () => {
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy=aui-save-button]').click()
             cy.get('label[data-cy="soundsets-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Create a soundset, check if its applied to subscriber', function () {
@@ -928,6 +1359,18 @@ context('Customer Details tests', () => {
             }
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSoundSetBy({ name: soundset.name, authHeader })
+            })
+            // Setup: Create Customer and contact, remove Soundset if exists
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveSoundSetBy({ name: soundset.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
+                    })
+                })
             })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
@@ -958,6 +1401,14 @@ context('Customer Details tests', () => {
             waitPageProgressAUI()
             cy.get('input[aria-label="Search"]').type('contract_sound_set')
             cy.get('input[aria-label="Customer Sound Set"]').parents('label').find('span').contains(soundset.name).should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveSoundSetBy({ name: soundset.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Edit a soundset', function () {
@@ -965,6 +1416,17 @@ context('Customer Details tests', () => {
                 cy.log('CloudPBX is not enabled, skipping soundset tests...')
                 this.skip()
             }
+            // Setup: Create Customer, Contact and Soundset
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSoundSetBy({ name: soundset.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSoundSet({ data: { ...soundset, customer_id: id }, authHeader })
+                    })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -986,6 +1448,13 @@ context('Customer Details tests', () => {
             cy.get('td[data-cy="q-td--name"]').contains(soundset.name).should('exist')
             cy.get('td[data-cy="q-td--description"]').contains('testDescription').should('exist')
             cy.get('td[data-cy="q-td--expose-to-customer"]').find('div[aria-checked="true"]').should('exist')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSoundSetBy({ name: soundset.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Delete Soundset', function () {
@@ -993,6 +1462,17 @@ context('Customer Details tests', () => {
                 cy.log('CloudPBX is not enabled, skipping soundset tests...')
                 this.skip()
             }
+            // Setup: Create Customer, Contact and Soundset
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSoundSetBy({ name: soundset.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSoundSet({ data: { ...soundset, customer_id: id }, authHeader })
+                    })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -1004,11 +1484,29 @@ context('Customer Details tests', () => {
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Sound Sets').click()
             waitPageProgressAUI()
             deleteItemOnListPageBy(soundset.name)
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSoundSetBy({ name: soundset.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
     })
 
     context('Subscribers', () => {
         it('Check if add page redirect to correct page', () => {
+            // Setup: Create Customer, Contact and PBX Group
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerLocationBy({ name: location.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
+                    })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -1026,9 +1524,27 @@ context('Customer Details tests', () => {
             cy.get('label[data-cy="subscriber-sip-password"]').should('exist')
             cy.get('label[data-cy="subscriber-web-username"]').should('exist')
             cy.get('label[data-cy="subscriber-web-password"]').should('exist')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Check if edit page contents are correct', () => {
+            // Setup: Create Customer, Contact and PBX Group
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerLocationBy({ name: location.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
+                    })
+                })
+            })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
@@ -1048,11 +1564,26 @@ context('Customer Details tests', () => {
             cy.get('input[data-cy="subscriber-sip-username"][value="' + pilotSubscriber.username + '"]').should('be.visible')
             cy.get('input[data-cy="subscriber-sip-password"][value="' + pilotSubscriber.password + '"]').should('be.visible')
             cy.get('input[data-cy="subscriber-web-username"][value="' + pilotSubscriber.username + '"]').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
 
         it('Delete subscriber', () => {
+            // Setup: Create Customer, Contact and PBX Group
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
+                apiRemoveCustomerLocationBy({ name: location.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
+                    })
+                })
             })
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
@@ -1065,6 +1596,13 @@ context('Customer Details tests', () => {
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Subscribers').click()
             waitPageProgressAUI()
             deleteItemOnListPageBy(pilotSubscriber.username, 'Username')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
         })
     })
 })
