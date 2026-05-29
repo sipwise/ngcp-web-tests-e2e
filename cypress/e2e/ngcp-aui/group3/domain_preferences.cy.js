@@ -79,7 +79,7 @@ const systemContactDependency = {
     email: 'systemContactDependencyDomainPref@example.com'
 }
 
-context('Domain preferences tests', () => {
+context('Domain Preferences tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
@@ -94,6 +94,7 @@ context('Domain preferences tests', () => {
             apiRemoveContractBy({ name: dependencyContract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             cy.log('Data clean up pre-tests completed')
+
             apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
                 apiCreateContract({ data: { ...dependencyContract, contact_id: id }, authHeader }).then(({ id }) => {
                     apiCreateReseller({ data: { ...dependencyReseller, contract_id: id }, authHeader }).then(({ id }) => {
