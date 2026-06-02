@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.0.1.7+0~mr26.0.1.7) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [9e1a369] MT#65131 [CSC] add Mail2Fax tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 02 Jun 2026 12:55:12 +0200
+
 ngcp-web-tests-e2e (26.0.1.6+0~mr26.0.1.6) unstable; urgency=medium
 
   [ Nico Schedel ]
