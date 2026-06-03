@@ -344,6 +344,7 @@ context('PBX Groups Tests', () => {
         if (!iscloudpbx) {
             this.skip()
         }
+
         // Setup: Create Subscribers and group
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
@@ -351,6 +352,7 @@ context('PBX Groups Tests', () => {
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
+
         cy.visit('/')
 
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
@@ -404,6 +406,7 @@ context('PBX Groups Tests', () => {
         if (!iscloudpbx) {
             this.skip()
         }
+
         // Setup: Create Subscribers and group
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
@@ -411,6 +414,7 @@ context('PBX Groups Tests', () => {
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
+
         cy.visit('/')
 
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
@@ -454,6 +458,7 @@ context('PBX Groups Tests', () => {
         if (!iscloudpbx) {
             this.skip()
         }
+
         // Setup: Create Subscribers and group
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
@@ -461,6 +466,7 @@ context('PBX Groups Tests', () => {
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
+
         cy.visit('/')
 
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
@@ -496,10 +502,11 @@ context('PBX Groups Tests', () => {
         })
     })
 
-    it('Delete a PBX Group', function () {
+    it('Mail2Fax: Add Secret Key and change renew interval', function () {
         if (!iscloudpbx) {
             this.skip()
         }
+
         // Setup: Create Subscribers and group
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
@@ -507,6 +514,48 @@ context('PBX Groups Tests', () => {
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
+
+        cy.visit('/')
+
+        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.get('a[href="#/user/dashboard"]').should('be.visible')
+
+        cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
+        cy.get('a[href="#/user/pbx-configuration/groups"]').click()
+        cy.get('div[class="csc-list-item-title"]').click()
+        cy.get('div[data-cy="q-tab-mail-2-fax"]').click()
+
+        cy.get('input[data-cy="csc-mailtofax-secretkey"]').type('secretkey')
+        cy.get('button[data-cy="q-btn-1"]').click()
+        cy.get('input[data-cy="csc-mailtofax-secretkey"][value="secretkey"]').should('be.visible')
+        cy.get('input[data-cy="csc-mailtofax-secretkey"]').type('add')
+        cy.get('button[data-cy="q-btn"]').contains('Undo').click()
+        cy.get('input[data-cy="csc-mailtofax-secretkey"][value="secretkey"]').should('be.visible')
+        cy.qSelect({ dataCy: 'csc-mailtofax-secretkey-renew', itemContains: 'Monthly' })
+        cy.get('input[aria-label="Secret Key Renew"][value="Monthly"]').should('exist')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+        })
+    })
+
+
+    it('Delete a PBX Group', function () {
+        if (!iscloudpbx) {
+            this.skip()
+        }
+
+        // Setup: Create Subscribers and group
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
+            apiCreateSubscriber({ data: pbxGroup, authHeader })
+        })
+
         cy.visit('/')
 
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
