@@ -53,7 +53,7 @@ const path = require('path')
 
 const fixturesFolder = Cypress.config('fixturesFolder')
 
-context('Voicebox page tests', () => {
+context('Voicebox tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
@@ -234,7 +234,7 @@ context('Voicebox page tests', () => {
             .then(inputval => expect(inputval).to.eq('test.test@test.coma'))
     })
 
-    it('Enable/Disable attach/delete voicemail', () => {
+    it('Enable/Disable attach/delete Voicemail', () => {
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 

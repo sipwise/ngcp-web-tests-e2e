@@ -50,7 +50,7 @@ const loginInfo = {
 }
 
 
-context('Call blocking page tests', () => {
+context('Call Blocking tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {

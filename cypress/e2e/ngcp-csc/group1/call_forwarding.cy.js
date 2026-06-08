@@ -145,7 +145,7 @@ function createPbxSubscribers(authHeader) {
     return apiCreateSubscriber({ data: pbx_seat, authHeader })
 }
 
-context('Call forwarding page tests', () => {
+context('Call Forwarding tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
@@ -168,12 +168,10 @@ context('Call forwarding page tests', () => {
             }).then(({ body }) => {
                 issppro = body.type === 'sppro'
                 iscloudpbx = body.cloudpbx
-
                 if (!isPbxSeatInstance()) {
                     cy.log('Skipping PBX seat tests, because this is not a Pro PBX instance')
                     return
                 }
-
                 apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
                     pbx_subscriber_pilot.customer_id = id
                     pbx_seat.customer_id = id
@@ -203,7 +201,7 @@ context('Call forwarding page tests', () => {
         })
     })
 
-    it('Creating a malformed call forward (Number/Custom Announcement) should not be possible', () => {
+    it('Creating a malformed Call Forward (Number/Custom Announcement) should not be possible', () => {
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -228,7 +226,7 @@ context('Call forwarding page tests', () => {
         cy.get('[data-cy="csc-cf-save"]').should('be.disabled')
     })
 
-    it('Add and delete available, not available and busy call forwarding', () => {
+    it('Add and delete available, not available and busy Call Forwarding', () => {
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -322,7 +320,7 @@ context('Call forwarding page tests', () => {
         cy.get('div[class="q-item__label"]').contains('30 seconds').should('not.exist')
     })
 
-    it('Enable and Disable a call forward condition', () => {
+    it('Enable and Disable a Call Forward condition', () => {
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -394,7 +392,7 @@ context('Call forwarding page tests', () => {
         cy.get('div[role="tooltip"]').contains('This setting is synced with "After Ring Timeout", which can be edited above').should('exist')
     })
 
-    context('PBX Seat call forwarding tests', () => {
+    context('PBX Seat Call Forwarding tests', () => {
         beforeEach(() => {
             if (isPbxSeatInstance()) {
                 apiLoginAsSuperuser().then(authHeader => {
@@ -404,7 +402,7 @@ context('Call forwarding page tests', () => {
             }
         })
 
-        it('Create a Seat call forwarding destination', function () {
+        it('Create a Seat Call Forwarding destination', function () {
             if (!isPbxSeatInstance()) {
                 this.skip()
             }
@@ -428,7 +426,7 @@ context('Call forwarding page tests', () => {
             cy.get('#csc-wrapper-call-forwarding').contains(pbx_seat.display_name).should('be.visible')
         })
 
-        it('Modify the current ssat selection', function () {
+        it('Modify the current Seat selection', function () {
             if (!isPbxSeatInstance()) {
                 this.skip()
             }

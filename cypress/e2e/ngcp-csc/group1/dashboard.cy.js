@@ -51,7 +51,7 @@ const ngcpConfig = Cypress.config('ngcpConfig')
 const dayjs = require('dayjs')
 var issppro = null
 
-context('Dashboard page tests', () => {
+context('Dashboard tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
