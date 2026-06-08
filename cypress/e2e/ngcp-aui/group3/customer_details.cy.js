@@ -185,6 +185,16 @@ context('Customer Details tests', () => {
 }
 
     before(() => {
+        // Generate CSV file with dynamic date (current date + 1 year)
+        // Format as YYYY-MM-DD HH:MM:SS
+        const oneYearFromNow = new Date()
+        oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1)
+        const formattedDateOneYearFromNow = oneYearFromNow.toISOString()
+            .replace('T', ' ')
+            .substring(0, 19)
+
+        billingVoucher.valid_until = formattedDateOneYearFromNow
+
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
