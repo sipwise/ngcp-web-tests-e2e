@@ -90,6 +90,28 @@ const billingProfile = {
 
 context('Billing vouchers tests', () => {
     before(() => {
+        // Generate CSV file with dynamic date (current date + 1 year)
+        // Format as YYYY-MM-DD HH:MM:SS
+        const oneYearFromNow = new Date()
+        const twoYearsFromNow = new Date()
+        oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1)
+        twoYearsFromNow.setFullYear(twoYearsFromNow.getFullYear() + 2)
+
+        const formattedDateOneYearFromNow = oneYearFromNow.toISOString()
+            .replace('T', ' ')
+            .substring(0, 19)
+
+        const csvContent = `232,45,1,${formattedDateOneYearFromNow}`
+        cy.writeFile(
+            path.join(fixturesFolder, 'billing_vouchers_entries.csv'),
+            csvContent
+        )
+
+        const formattedDateTwoYearsFromNow = twoYearsFromNow.toISOString()
+            .replace('T', ' ')
+            .substring(0, 19)
+        billingVoucher.valid_until = formattedDateTwoYearsFromNow
+
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         cy.intercept('GET', '**/api/platforminfo').as('platforminfo');
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password);
@@ -98,7 +120,7 @@ context('Billing vouchers tests', () => {
                 issppro = true
                 apiLoginAsSuperuser().then(authHeader => {
                     Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-                    cy.log('Preparing environment...')
+                    cy.log('Preparing environment...', billingVoucher.valid_until)
                     apiGetProfilePackageId({ name: profilePackage.name, authHeader }).then(({ id }) => {
                         apiRemoveBillingVoucherByPackageId({ package_id: id, authHeader, code: billingVoucher.code })
                     })
