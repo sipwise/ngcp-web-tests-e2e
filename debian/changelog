@@ -1,3 +1,13 @@
+ngcp-web-tests-e2e (26.0.1.8+0~mr26.0.1.8) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [9069b3b] MT#64161 Optimize API creation flow (AUI Group 3 Tests)
+
+  [ Debora Crescenzo ]
+  * [8cb6646] MT#65261 create dates dynamically
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 09 Jun 2026 10:10:04 +0200
+
 ngcp-web-tests-e2e (26.0.1.7+0~mr26.0.1.7) unstable; urgency=medium
 
   [ Nico Schedel ]
