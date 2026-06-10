@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.0.1.9+0~mr26.0.1.9) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [497ed00] MT#65273 skip customer phonebook deletion in CE
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 10 Jun 2026 14:50:24 +0200
+
 ngcp-web-tests-e2e (26.0.1.8+0~mr26.0.1.8) unstable; urgency=medium
 
   [ Nico Schedel ]
