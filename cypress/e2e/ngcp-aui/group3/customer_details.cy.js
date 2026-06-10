@@ -252,7 +252,11 @@ context('Customer Details tests', () => {
                 cy.log("CloudPBX is not enabled, skipping device deletion...")
             }
             apiRemoveSoundSetBy({ name: soundset.name, authHeader })
-            apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
+            if (issppro) {
+                apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
+            } else {
+                cy.log("Instance is CE, not PRO. Skipping Customer Phonebook deletion...")
+            }
             apiRemoveCustomerLocationBy({ name: location.name, authHeader })
             apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
             apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
