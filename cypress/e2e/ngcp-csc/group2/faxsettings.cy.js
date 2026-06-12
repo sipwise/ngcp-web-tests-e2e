@@ -12,9 +12,9 @@ import {
     getRandomNum
 } from '../../../support/e2e'
 
-const ngcpConfig = Cypress.config('ngcpConfig')
 let iscloudpbx = null
 let issppro = null
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 const domain = {
     domain: 'domainFaxSettings',

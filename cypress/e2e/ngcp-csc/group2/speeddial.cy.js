@@ -49,7 +49,7 @@ const loginInfo = {
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
-context('Speed dial "General" page tests', () => {
+context('Speed Dial "General" tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {

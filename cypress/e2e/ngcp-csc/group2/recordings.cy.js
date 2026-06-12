@@ -11,6 +11,9 @@ import {
     apiRemoveSubscriberBy,
 } from '../../../support/e2e'
 
+const dayjs = require('dayjs')
+const ngcpConfig = Cypress.config('ngcpConfig')
+
 const domain = {
     domain: 'domainRecordings',
     reseller_id: 1
@@ -47,10 +50,7 @@ const loginInfo = {
     password: `${subscriber.webpassword}`
 }
 
-const ngcpConfig = Cypress.config('ngcpConfig')
-const dayjs = require('dayjs')
-
-context('Call recordings tests', () => {
+context('Call Recordings tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {

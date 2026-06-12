@@ -11,6 +11,8 @@ import {
     getRandomNum,
 } from '../../../support/e2e'
 
+const ngcpConfig = Cypress.config('ngcpConfig')
+
 const domain = {
     domain: 'domainLogin',
     reseller_id: 1
@@ -47,14 +49,12 @@ const loginInfo = {
     password: `${subscriber.webpassword}`
 }
 
-const ngcpConfig = Cypress.config('ngcpConfig')
-
 function checkLoginAPIResponse (response) {
     expect(response.status || response.statusCode).to.equal(200)
     expect(response.body).to.have.property('jwt')
 }
 
-context('Login page tests', () => {
+context('Login Page tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {

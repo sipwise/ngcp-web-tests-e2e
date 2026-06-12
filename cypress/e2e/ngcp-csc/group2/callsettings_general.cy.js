@@ -11,6 +11,8 @@ import {
     getRandomNum,
 } from '../../../support/e2e'
 
+const ngcpConfig = Cypress.config('ngcpConfig')
+
 const domain = {
     domain: 'domainCallSettings',
     reseller_id: 1
@@ -47,9 +49,7 @@ const loginInfo = {
     password: `${subscriber.webpassword}`
 }
 
-const ngcpConfig = Cypress.config('ngcpConfig')
-
-context('Call Settings "General" page tests', () => {
+context('Call Settings "General" tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {

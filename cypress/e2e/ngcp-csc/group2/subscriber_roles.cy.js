@@ -12,6 +12,9 @@ import {
     waitPageProgressCSC,
 } from '../../../support/e2e'
 
+const ngcpConfig = Cypress.config('ngcpConfig')
+let iscloudpbx = false
+
 const domain = {
     domain: 'domainSubscriberRoles',
     reseller_id: 1
@@ -117,15 +120,12 @@ const pbxcustomer = {
     type: 'pbxaccount'
 }
 
-const ngcpConfig = Cypress.config('ngcpConfig')
-let iscloudpbx = false
-
 const loginInfo = {
     username: `${subscriber.webusername}@${subscriber.domain}`,
     password: `${subscriber.webpassword}`
 }
 
-context('Subscriber roles tests', () => {
+context('Subscriber Roles tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {

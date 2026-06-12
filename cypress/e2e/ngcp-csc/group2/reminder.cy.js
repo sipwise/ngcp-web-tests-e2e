@@ -12,6 +12,9 @@ import {
     getRandomNum
 } from '../../../support/e2e'
 
+const dayjs = require('dayjs')
+const ngcpConfig = Cypress.config('ngcpConfig')
+
 const domain = {
     domain: 'domainReminder',
     reseller_id: 1
@@ -47,9 +50,6 @@ const loginInfo = {
     username: `${subscriber.webusername}@${subscriber.domain}`,
     password: `${subscriber.webpassword}`
 }
-
-const ngcpConfig = Cypress.config('ngcpConfig')
-const dayjs = require('dayjs')
 
 context('Reminder tests', () => {
     before(() => {
