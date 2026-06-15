@@ -1,3 +1,39 @@
+ngcp-web-tests-e2e (26.1.1.0+0~mr26.1.1.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [53550c4] MT#64161 cleanup part 2, remove double context blocks, unused variables
+  * [d06ae8e] MT#64917 [AUI] add transport parameter to api created peering server
+  * [7c437cb] MT#64921 [CSC] subscriber phonebook "more menu" identifier needs to be updated
+  * [9c47563] MT#64596 add tests for extension settings
+  * [6a83579] MT#64989 wait for first input box to dissapear before entering second
+  * [4856bfa] MT#64379 fix PBX Seat tests in case machine is not pbx and pro
+  * [a94a351] MT#65029 [CSC] race condition when checking current time in time input box
+  * [d7a118f] MT#64161 Optimize API creation flow (AUI Group 1 Tests)
+  * [03921a5] MT#63950 remove one waitPageProgress from lnp tests
+  * [651f8fa] MT#64161 Optimize API creation flow (AUI Group 2 Tests)
+  * [e864253] MT#65130 make auiSelectLazySelect click the last element on a list
+  * [22614d8] MT#64394 [CSC] add tests for pbx groups
+  * [9793fe2] MT#65184 getRandomNum has the possibility to exceed its digit limit by 1
+  * [2177a33] MT#65131 [CSC] add Mail2Fax tests
+  * [d3019a1] MT#64394 add mail2fax test for pbx groups
+  * [787836d] MT#64161 Optimize API creation flow (AUI Group 3 Tests)
+  * [9371b18] MT#65273 skip customer phonebook deletion in CE
+  * [8789194] MT#64161 Optimize API creation flow (CSC Group 1 Tests)
+  * [3e7e7ef] MT#64161 Optimize API creation flow (CSC Group 2 Tests)
+
+  [ Giancarlo Errigo Mattos ]
+  * [9489c32] MT#64902 Call forwarding group item test fix
+  * [1a1dd68] MT#64379 Tests for seat CF destination option
+
+  [ Debora Crescenzo ]
+  * [6463e51] MT#64596 Add missing iscloudpbx check for extension settings
+  * [5df4a18] MT#64596 Remove cy.wrap from extension settings
+  * [e751bea] MT#64989 CSC Cf tests intermittent fail
+  * [8298a5d] MT#65062 Update tests upon changing CF translations
+  * [096e401] MT#65261 create dates dynamically
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 15 Jun 2026 15:33:01 +0200
+
 ngcp-web-tests-e2e (26.1.0.0+0~mr26.1.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
