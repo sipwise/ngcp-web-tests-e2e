@@ -133,16 +133,16 @@ context('PBX Groups Tests', () => {
                 pbxGroup.customer_id = id
             })
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
-            cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-            cy.visit('/')
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.wait('@platforminfo').then(({ response }) => {
-                if (response.body.cloudpbx === true) {
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.cloudpbx) {
                     iscloudpbx = true
                 } else {
-                    cy.log('Skipping all tests, because CloudPBX is not enabled on this instance');
                     iscloudpbx = false
-                    return
+                    cy.log('Not a CloudPBX enabled instance, skipping all tests...');
                 }
             })
         })

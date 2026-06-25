@@ -63,14 +63,20 @@ context('Dashboard tests', () => {
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
-                    subscriber.customer_id = id
+                subscriber.customer_id = id
             })
             apiCreateSubscriber({ data:  subscriber, authHeader })
-            cy.intercept('GET', 'platforminfo').as('platforminfo')
-            cy.visit('/')
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.wait('@platforminfo').then(({ response }) => {
-                issppro = response.body.type === 'sppro'
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.type === 'sppro') {
+                    issppro = true
+                } else {
+                    cy.log('Not a SPPRO instance, adapting "Access every page in conversations tab" test...');
+                    issppro = false
+                }
             })
             apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
         })

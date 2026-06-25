@@ -157,7 +157,7 @@ context('Subscriber Roles tests', () => {
                         pbx_admin_subscriber.customer_id = id
                     })
                 } else {
-                    cy.log('Skipping pbx subscriber tests, because cloudpbx is not enabled on this instance');
+                    cy.log('Not a CloudPBX enabled instance, skipping "PBX Subscriber" tests...');
                     iscloudpbx = false
                 }
             })
