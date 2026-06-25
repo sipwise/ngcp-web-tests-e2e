@@ -18,7 +18,7 @@ import {
     searchInDataTable
 } from '../../../support/e2e'
 
-let issppro = null
+let iscloudpbx = null
 const ngcpConfig = Cypress.config('ngcpConfig')
 
 const customer = {
@@ -104,15 +104,20 @@ const subscriberProfile = {
 context('Subscriber tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-        cy.intercept('GET', '**/api/platforminfo/').as('platforminfo')
-        cy.reload()
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.wait('@platforminfo').then(({ response }) => {
-            issppro = response.body.type === 'sppro'
-        })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.cloudpbx) {
+                    iscloudpbx = true
+                } else {
+                    iscloudpbx = false
+                    cy.log('Not a CloudPBX enabled instance, skipping "Pilot" and "Seat" subscriber tests...');
+                }
+            })
             apiRemoveCustomerBy({ name: customer.external_id, authHeader })
             apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
             apiRemoveSubscriberBy({ name: seatSubscriber.username, authHeader })
@@ -126,10 +131,12 @@ context('Subscriber tests', () => {
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                 subscriber.customer_id = id
             })
-            apiCreateCustomer({ data: customerPbx, authHeader }).then(({ id }) => {
-                pilotSubscriber.customer_id = id
-                seatSubscriber.customer_id = id
-            })
+            if(iscloudpbx) {
+                apiCreateCustomer({ data: customerPbx, authHeader }).then(({ id }) => {
+                    pilotSubscriber.customer_id = id
+                    seatSubscriber.customer_id = id
+                })
+            }
         })
     })
 
@@ -258,7 +265,7 @@ context('Subscriber tests', () => {
     })
 
     it('Edit Pilot Subscriber Master Data', function () {
-        if (!issppro) {
+        if (!iscloudpbx) {
             cy.log('Not a SPPRO instance, skipping pilot subscriber tests...')
             this.skip()
         }
@@ -323,7 +330,7 @@ context('Subscriber tests', () => {
     })
 
     it('Edit Seat Subscriber Master Data', function () {
-        if (!issppro) {
+        if (!iscloudpbx) {
             cy.log('Not a SPPRO instance, skipping seat subscriber tests...')
             this.skip()
         }

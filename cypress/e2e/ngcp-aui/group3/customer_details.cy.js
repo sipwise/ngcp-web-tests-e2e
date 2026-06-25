@@ -145,8 +145,8 @@ const pbxDevice = {
     lines: []
 }
 
-let iscloudpbx = null
-let issppro = null
+let iscloudpbx = false
+let issppro = false
 const ngcpConfig = Cypress.config('ngcpConfig')
 const deviceModelFormData = new FormData()
 
@@ -196,15 +196,27 @@ context('Customer Details tests', () => {
         billingVoucher.valid_until = formattedDateOneYearFromNow
 
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-        cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.wait('@platforminfo').then(({ response }) => {
-            issppro = response.body.type === 'sppro'
-            iscloudpbx = response.body.cloudpbx === true
-        })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.type === 'sppro') {
+                    issppro = true
+                } else {
+                    cy.log('Not a SPPRO instance, skipping "Phonebook" tests...');
+                    issppro = false
+                }
+
+                if (body.cloudpbx) {
+                    iscloudpbx = true
+                } else {
+                    iscloudpbx = false
+                    cy.log('Not a CloudPBX enabled instance, skipping "PBX Groups", "PBX Devices" and "Soundset" tests...');
+                }
+            })
             if (iscloudpbx) {
                 apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})

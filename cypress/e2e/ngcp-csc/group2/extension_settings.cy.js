@@ -118,11 +118,12 @@ context('Extension Settings tests', () => {
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                 apiCreateSubscriber({ data: {...subscriber, customer_id: id}, authHeader })
             })
-            cy.intercept('GET', 'platforminfo').as('platforminfo')
-            cy.visit('/')
-            cy.loginUiCSC(apiLoginInfo.username, apiLoginInfo.password)
-            cy.wait('@platforminfo').then(({ response }) => {
-                if (response.body.cloudpbx) {
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.cloudpbx) {
                     iscloudpbx = true
                     apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
                         apiCreateSubscriber({ data: { ...pbx_subscriber_pilot, customer_id: id }, authHeader })
@@ -130,7 +131,7 @@ context('Extension Settings tests', () => {
                         pbx_subscriber_pilot.customer_id = id
                     })
                 } else {
-                    cy.log('Skipping all tests, because this is not an SPPRO instance');
+                    cy.log('Not a CloudPBX enabled instance, skipping all tests...');
                     iscloudpbx = false
                 }
             })

@@ -74,14 +74,20 @@ const subscriberPhonebook = {
 context('Subscriber Details tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-        cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.wait('@platforminfo').then(({ response }) => {
-            iscloudpbx = response.body.cloudpbx === true
-            issppro = response.body.type === 'sppro'
-        })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.type === 'sppro') {
+                    issppro = true
+                } else {
+                    cy.log('Not a SPPRO instance, skipping "Fax Settings" and "Phonebook" tests...');
+                    issppro = false
+                }
+            })
             cy.log('Preparing environment...')
             apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
             apiRemoveCustomerBy({ name: customer.external_id, authHeader })
