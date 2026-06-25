@@ -119,14 +119,20 @@ const ngcpConfig = Cypress.config('ngcpConfig')
 context('Reseller details tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-        cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.wait('@platforminfo').then(({ response }) => {
-            issppro = response.body.type === 'sppro'
-        })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.type === 'sppro') {
+                    issppro = true
+                } else {
+                    cy.log('Not a SPPRO instance, skipping Phonebook tests...');
+                    issppro = false
+                }
+            })
             if (issppro) {
                 apiRemoveResellerPhonebookBy({ name: resellerPhonebook.name, authHeader })
             }
