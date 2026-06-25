@@ -105,14 +105,15 @@ context('Device management tests', () => {
 
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-        cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.wait('@platforminfo').then(({ response }) => {
-            if (response.body.cloudpbx === true) {
-                iscloudpbx = true
-                apiLoginAsSuperuser().then(authHeader => {
-                    Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-                    cy.log('Preparing environment...')
+        apiLoginAsSuperuser().then(authHeader => {
+            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.cloudpbx) {
+                    iscloudpbx = true
                     apiRemoveResellerBy({ name: reseller.name, authHeader })
                     apiRemoveContractBy({ name: contract.external_id, authHeader })
                     apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
@@ -134,13 +135,13 @@ context('Device management tests', () => {
                         deviceModelFormData.append("mac_image", new Blob([file], { type: "text/plain" }), 'empty.txt')
                         deviceModelFormData.append("front_thumbnail", new Blob([file], { type: "text/plain" }), 'empty.txt')
                     })
-                })
-            } else {
-                iscloudpbx = false
-                cy.log('CloudPBX is not enabled, exiting test...')
-            }
+                } else {
+                    iscloudpbx = false
+                    cy.log('Not a CloudPBX enabled instance, skipping all tests...');
+                    return
+                }
+            })
         })
-
     })
 
     beforeEach(() => {

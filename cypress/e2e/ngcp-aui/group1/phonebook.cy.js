@@ -49,32 +49,37 @@ const systemContactDependency = {
 context('Phonebook tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-        cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.wait('@platforminfo').then(({ response }) => {
-            if (response.body.type === 'sppro') {
-                issppro = true
-                apiLoginAsSuperuser().then(authHeader => {
-                    Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-                    cy.log('Preparing environment...')
-                    apiRemoveResellerPhonebookBy({name: ResellerPhonebook.name, authHeader})
-                    apiRemoveResellerBy({ name: reseller.name, authHeader })
-                    apiRemoveContractBy({ name: contract.external_id, authHeader })
-                    apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
-                    cy.log('Data clean up pre-tests completed')
-                    apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
-                        apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
-                            apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
-                                ResellerPhonebook.reseller_id = id
+        apiLoginAsSuperuser().then(authHeader => {
+            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.type === 'sppro') {
+                    issppro = true
+                    apiLoginAsSuperuser().then(authHeader => {
+                        Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                        cy.log('Preparing environment...')
+                        apiRemoveResellerPhonebookBy({name: ResellerPhonebook.name, authHeader})
+                        apiRemoveResellerBy({ name: reseller.name, authHeader })
+                        apiRemoveContractBy({ name: contract.external_id, authHeader })
+                        apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
+                        cy.log('Data clean up pre-tests completed')
+                        apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
+                            apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
+                                apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                                    ResellerPhonebook.reseller_id = id
+                                })
                             })
                         })
                     })
-                })
-            } else {
-                cy.log('Skipping test because this is not an SPPRO instance');
-                issppro = false
-                return
-            }
+                } else {
+                    cy.log('Not a SPPRO instance, skipping all tests...');
+                    issppro = false
+                    return
+                }
+            })
         })
     })
 

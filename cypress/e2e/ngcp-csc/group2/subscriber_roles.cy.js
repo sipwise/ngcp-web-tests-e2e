@@ -152,7 +152,7 @@ context('Subscriber roles tests', () => {
                 if (response.body.cloudpbx) {
                     iscloudpbx = true
                 } else {
-                    cy.log('Skipping pbx subscriber tests, because cloudpbx is not enabled on this instance');
+                    cy.log('Not a CloudPBX enabled instance, skipping "PBX Subscriber" tests...');
                     iscloudpbx = false
                 }
             })
