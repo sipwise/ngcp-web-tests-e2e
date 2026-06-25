@@ -78,14 +78,20 @@ var issppro = null
 context('Soundset tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-        cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.wait('@platforminfo').then(({ response }) => {
-            issppro = response.body.type === 'sppro'
-        })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.type === 'sppro') {
+                    issppro = true
+                } else {
+                    cy.log('Not a SPPRO instance, changing "Upload default soundset files" test...');
+                    issppro = false
+                }
+            })
             apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
             apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
             apiRemoveCustomerContactBy({ email: customerPbx.email, authHeader })

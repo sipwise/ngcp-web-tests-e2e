@@ -103,21 +103,22 @@ context('Fax settings page tests', () => {
                     pbx_subscriber_pilot.customer_id = id
             })
             apiCreateSubscriber({ data:  subscriber, authHeader })
-            cy.intercept('GET', 'platforminfo').as('platforminfo')
-            cy.visit('/')
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.wait('@platforminfo').then(({ response }) => {
-                if (response.body.type === 'sppro') {
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.type === 'sppro') {
                     issppro = true
                 } else {
-                    cy.log('Skipping all tests, because this is not an SPPRO instance');
+                    cy.log('Not a SPPRO instance, skipping all tests...');
                     issppro = false
                     return
                 }
-                if (response.body.cloudpbx === true) {
+                if (body.cloudpbx) {
                     iscloudpbx = true
                 } else {
-                    cy.log('Skipping Mail2Fax tests, because CloudPBX is not enabled on this instance');
+                    cy.log('Not a CloudPBX enabled instance, skipping "Mail2Fax" tests...');
                     iscloudpbx = false
                     return
                 }
