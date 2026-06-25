@@ -113,13 +113,15 @@ context('Billing vouchers tests', () => {
         billingVoucher.valid_until = formattedDateTwoYearsFromNow
 
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-        cy.intercept('GET', '**/api/platforminfo').as('platforminfo');
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password);
-        cy.wait('@platforminfo').then(({ response }) => {
-            if (response.body.type === 'sppro') {
-                issppro = true
-                apiLoginAsSuperuser().then(authHeader => {
-                    Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+        apiLoginAsSuperuser().then(authHeader => {
+            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.type === 'sppro') {
+                    issppro = true
                     cy.log('Preparing environment...', billingVoucher.valid_until)
                     apiGetProfilePackageId({ name: profilePackage.name, authHeader }).then(({ id }) => {
                         apiRemoveBillingVoucherByPackageId({ package_id: id, authHeader, code: billingVoucher.code })
@@ -151,12 +153,12 @@ context('Billing vouchers tests', () => {
                     apiCreateProfilePackage({data: profilePackage, authHeader}).then(({ id }) => {
                         billingVoucher.package_id = id
                     })
-                })
-            } else {
-                cy.log('Skipping all tests, because this is not an SPPRO instance');
-                issppro = false
-                return
-            }
+                } else {
+                    cy.log('Not a SPPRO instance, skipping all tests...');
+                    issppro = false
+                    return
+                }
+            })
         })
     })
 

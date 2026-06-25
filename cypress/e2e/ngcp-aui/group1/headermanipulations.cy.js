@@ -87,14 +87,15 @@ const systemContact = {
 context('Header manipulation tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-        cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.wait('@platforminfo').then(({ response }) => {
-            if (response.body.type === 'sppro') {
-                issppro = true
-                apiLoginAsSuperuser().then(authHeader => {
-                    Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-                    cy.log('Preparing environment...')
+        apiLoginAsSuperuser().then(authHeader => {
+            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.type === 'sppro') {
+                    issppro = true
                     apiRemoveHeaderRuleConditionBy({ name: headerRuleCondition.match_name, authHeader })
                     apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
                     apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
@@ -110,12 +111,12 @@ context('Header manipulation tests', () => {
                             })
                         })
                     })
-                })
-            } else {
-                cy.log('Skipping all tests, because this is not an SPPRO instance');
-                issppro = false
-                return
-            }
+                } else {
+                    cy.log('Not a SPPRO instance, skipping all tests...');
+                    issppro = false
+                    return
+                }
+            })
         })
     })
 
