@@ -101,16 +101,17 @@ context('Subscriber phonebook tests', () => {
                     subscriberSharedPhonebook.customer_id = id
             })
             apiCreateSubscriber({ data: subscriber, authHeader })
-            cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-            cy.visit('/')
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.wait('@platforminfo').then(({ response }) => {
-                if (response.body.type === 'sppro') {
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.type === 'sppro') {
                     issppro = true
                     apiRemoveSubscriberPhonebookBy({name: secondSubscriberPhonebookEntry.name, authHeader})
                     apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
                 } else {
-                    cy.log('Skipping all tests, because this is not an SPPRO instance');
+                    cy.log('Not a SPPRO instance, skipping all tests...');
                     issppro = false
                     return
                 }
