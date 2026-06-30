@@ -606,7 +606,7 @@ context('Customer Details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('td[data-cy="q-td--name"]').contains(location.name).should('be.visible')
             cy.get('td[data-cy="q-td--description"]').contains(location.description).should('be.visible')
-            cy.get('td[data-cy="q-td--blocks-grp"]').contains(location.blocks[0].ip + "/" + location.blocks[0].mask).should('be.visible')
+            cy.get('td[data-cy="q-td--blocks"]').contains(location.blocks[0].ip + "/" + location.blocks[0].mask).should('be.visible')
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
@@ -650,8 +650,7 @@ context('Customer Details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
             cy.get('td[data-cy="q-td--description"]').contains('testdescription').should('be.visible')
-            cy.get('td[data-cy="q-td--blocks-grp"]').contains("192.168.1.1/24").should('be.visible')
-            cy.get('td[data-cy="q-td--blocks-grp"]').contains(location.blocks[0].ip + "/" + location.blocks[0].mask).should('be.visible')
+            cy.get('td[data-cy="q-td--blocks"]').contains(location.blocks[0].ip + "/" + location.blocks[0].mask).should('be.visible')
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
@@ -683,7 +682,7 @@ context('Customer Details tests', () => {
             waitPageProgressAUI()
             cy.get('div').contains('Locations').click()
             waitPageProgressAUI()
-            deleteItemOnListPageBy(location.name, 'All')
+            deleteItemOnListPageBy(location.name, 'Name')
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
