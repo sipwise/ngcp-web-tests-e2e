@@ -196,6 +196,9 @@ context('Subscriber tests', () => {
         cy.get('[data-cy="subscriber-password-generate"]:last').click()
         cy.get('input[data-cy="subscriber-email"]').type(subscriber.email)
         cy.get('input[data-cy="subscriber-external-id"]').type(subscriber.external_id)
+        cy.get('input[data-cy="aui-primary-number-cc"]').type(subscriber.primary_number.cc)
+        cy.get('input[data-cy="aui-primary-number-ac"]').type(subscriber.primary_number.ac)
+        cy.get('input[data-cy="aui-primary-number-sn"]').type(subscriber.primary_number.sn)
         cy.get('[data-cy="aui-save-button"]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 
