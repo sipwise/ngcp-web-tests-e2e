@@ -72,8 +72,14 @@ Cypress.Commands.add('locationShouldBe', (urlHash) => {
 Cypress.Commands.add(
     'qSelect',
     { prevSubject: ['optional', 'element'] },
-    (subject, { dataCy, filter, itemContains }) => {
-        const inputElementSelector = `[data-cy="${dataCy}"].q-field__native`
+    (subject, { dataCy, filter, itemContains, first = false, last = false }) => {
+        let inputElementSelector = `[data-cy="${dataCy}"].q-field__native`
+        if(first) {
+            inputElementSelector += ':first'
+        }
+        if(last) {
+            inputElementSelector += ':last'
+        }
         ;(subject ? cy.wrap(subject) : cy.get('body')).then($parent => {
             const inputElementExists = $parent.find(inputElementSelector).length
 
