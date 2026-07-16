@@ -35,4 +35,4 @@ else
 fi
 
 task_name="ci:${application_to_test}"
-yarnpkg run "${task_name}" "${spec_details[@]}" --browser chrome
+yarn run "${task_name}" "${spec_details[@]}" --browser chrome

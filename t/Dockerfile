@@ -5,7 +5,7 @@ FROM docker.mgm.sipwise.com/sipwise-trixie:latest
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT=2026-01-30
+ENV REFRESHED_AT=2026-07-16
 
 RUN apt-get update && \
     apt-get install --assume-yes --no-install-recommends \
@@ -16,9 +16,13 @@ RUN apt-get update && \
         wget \
         xauth \
         xvfb \
-        xz-utils \
-        yarnpkg && \
+        xz-utils && \
     apt-get clean
+
+# Sanity check
+RUN node --version && corepack --version
+
+RUN corepack enable
 
 # installing Chrome (136.0.7103.59)
 RUN wget https://deb.sipwise.com/files/google-chrome-stable_current_142_amd64.deb && \
@@ -31,12 +35,17 @@ RUN wget https://deb.sipwise.com/files/firefox-144.0.2.deb && \
     rm -f firefox-144.0.2.deb
 
 WORKDIR /code
+
 ADD package.json /code/
 ADD yarn.lock /code/
-RUN yarnpkg install
-RUN yarnpkg cypress install -f && \
-    yarnpkg cypress verify
+ADD .yarnrc.yml /code/
 
+RUN yarn install
+RUN yarn cypress install -f && \
+    yarn cypress verify
+
+# Sanity check
+RUN yarn --version
 
 RUN echo "./run_web_e2e" >/root/.bash_history
 
