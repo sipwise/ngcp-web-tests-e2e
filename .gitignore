@@ -32,3 +32,4 @@ cypress.ci.csc.config.js
 /docker_results
 
 core
+.yarn/install-state.gz

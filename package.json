@@ -22,17 +22,17 @@
         "setup": "cp ./cypress.csc.template.js ./cypress.csc.config.js && cp ./cypress.aui.template.js ./cypress.aui.config.js"
     },
     "dependencies": {
-        "adm-zip": "0.5.16",
-        "cypress": "15.6.0",
+        "adm-zip": "0.6.0",
+        "cypress": "15.18.1",
         "cypress-wait-until": "3.0.2",
         "jwt-decode": "3.1.2"
     },
     "devDependencies": {
-        "eslint": "^9.39.1",
-        "eslint-plugin-cypress": "^5.2.0",
-        "eslint-plugin-import": "^2.32.0",
-        "eslint-plugin-promise": "7.2.1",
-        "semver": "7.7.3",
+        "eslint": "^9.0.0",
+        "eslint-plugin-cypress": "6.4.3",
+        "eslint-plugin-import": "2.32.0",
+        "eslint-plugin-promise": "7.3.0",
+        "semver": "7.8.5",
         "word-wrap": "1.2.5"
     },
     "engines": {
