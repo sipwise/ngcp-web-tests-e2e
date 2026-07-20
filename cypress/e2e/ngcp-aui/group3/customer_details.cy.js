@@ -34,7 +34,8 @@ import {
     apiRemovePbxDeviceBy,
     apiCreatePbxDevice,
     testPreferencesTextField,
-    testPreferencesToggleField
+    testPreferencesToggleField,
+    apiEditCustomerSpeeddial
 } from '../../../support/e2e'
 
 const billingProfile = {
@@ -125,6 +126,19 @@ const soundset = {
     expose_to_customer: true,
     contract_default: true
 }
+
+const speeddial = [
+        {
+            slot:"*001",
+            destination:"CustomerDetailsSpeeddial",
+            customer_id:0
+        },
+        {
+            slot:"*002",
+            destination:"CustomerDetailsSpeeddial2",
+            customer_id:0
+        }
+    ]
 
 const pbxDeviceConfig = {
     id: 0,
@@ -1513,6 +1527,183 @@ context('Customer Details tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSoundSetBy({ name: soundset.name, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
+        })
+    })
+
+    context('Speeddial', () => {
+        it('Create multiple Speeddials', () => {
+            // Setup: Create Customer and Subscriber
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
+                    })
+                })
+            })
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / customer', false)
+            cy.locationShouldBe('#/customer')
+            searchInDataTable(customer.external_id, 'External #')
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+            waitPageProgressAUI()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Speed Dial').click()
+            waitPageProgressAUI()
+            cy.get('div[data-cy="aui-list-action--0"]').click()
+            cy.get('button[data-cy="aui-speeddial-add-another"]').click()
+            cy.qSelect({ dataCy: 'aui-speeddial-slot', itemContains: speeddial[0].slot })
+            cy.get('input[data-cy="aui-speeddial-destination"]').type(speeddial[0].destination)
+            cy.get('button[data-cy="aui-speeddial-add-another"]').click()
+            cy.qSelect({ dataCy: 'aui-speeddial-slot', itemContains: speeddial[1].slot, last: true })
+            cy.get('input[data-cy="aui-speeddial-destination"]:last').type(speeddial[1].destination)
+            cy.get('button[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('button[data-cy="aui-close-button"]').click()
+            cy.get('td[data-cy="q-td--slot"]:first').contains(speeddial[0].slot).should('be.visible')
+            cy.get('td[data-cy="q-td--slot"]:last').contains(speeddial[1].slot).should('be.visible')
+            cy.get('td[data-cy="q-td--destination"]:first').contains(speeddial[0].destination).should('be.visible')
+            cy.get('td[data-cy="q-td--destination"]:last').contains(speeddial[1].destination).should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
+        })
+
+        it('Edit and save Speeddials', () => {
+            // Setup: Create Customer, Subsriber and Speeddial
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
+                        speeddial[0].customer_id = Number(id)
+                        speeddial[1].customer_id = Number(id)
+                        apiEditCustomerSpeeddial({ data: speeddial, authHeader})
+                    })
+                })
+            })
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / customer', false)
+            cy.locationShouldBe('#/customer')
+            searchInDataTable(customer.external_id, 'External #')
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+            waitPageProgressAUI()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Speed Dial').click()
+            waitPageProgressAUI()
+            cy.get('div[data-cy="aui-list-action--0"]').click()
+            cy.get('input[data-cy="aui-speeddial-destination"]:first').clear().type('testdestination')
+            cy.get('input[data-cy="aui-speeddial-destination"]:last').clear().type('seconddestination')
+            cy.get('button[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('button[data-cy="aui-close-button"]').click()
+            cy.get('td[data-cy="q-td--slot"]:first').contains(speeddial[0].slot).should('be.visible')
+            cy.get('td[data-cy="q-td--slot"]:last').contains(speeddial[1].slot).should('be.visible')
+            cy.get('td[data-cy="q-td--destination"]:first').contains('testdestination').should('be.visible')
+            cy.get('td[data-cy="q-td--destination"]:last').contains('seconddestination').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
+        })
+
+        it('Edit and reset Speeddials', () => {
+            // Setup: Create Customer, Subsriber and Speeddial
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
+                        speeddial[0].customer_id = Number(id)
+                        speeddial[1].customer_id = Number(id)
+                        apiEditCustomerSpeeddial({ data: speeddial, authHeader})
+                    })
+                })
+            })
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / customer', false)
+            cy.locationShouldBe('#/customer')
+            searchInDataTable(customer.external_id, 'External #')
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+            waitPageProgressAUI()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Speed Dial').click()
+            waitPageProgressAUI()
+            cy.get('div[data-cy="aui-list-action--0"]').click()
+            cy.get('input[data-cy="aui-speeddial-destination"]:first').clear().type('testdestination')
+            cy.get('input[data-cy="aui-speeddial-destination"]:last').clear().type('seconddestination')
+            cy.get('button[data-cy="aui-reset-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('button[data-cy="aui-close-button"]').click()
+            cy.get('td[data-cy="q-td--slot"]:first').contains(speeddial[0].slot).should('be.visible')
+            cy.get('td[data-cy="q-td--slot"]:last').contains(speeddial[1].slot).should('be.visible')
+            cy.get('td[data-cy="q-td--destination"]:first').contains(speeddial[0].destination).should('be.visible')
+            cy.get('td[data-cy="q-td--destination"]:last').contains(speeddial[1].destination).should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            })
+        })
+
+        it('Delete Speeddial', () => {
+            if (!iscloudpbx) {
+                cy.log('CloudPBX is not enabled, skipping soundset tests...')
+                this.skip()
+            }
+            // Setup: Create Customer, Subsriber and Speeddial
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
+                    apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateSubscriber({ data: { ...pilotSubscriber, customer_id: id }, authHeader })
+                        speeddial[0].customer_id = Number(id)
+                        speeddial[1].customer_id = Number(id)
+                        apiEditCustomerSpeeddial({ data: speeddial, authHeader})
+                    })
+                })
+            })
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / customer', false)
+            cy.locationShouldBe('#/customer')
+            searchInDataTable(customer.external_id, 'External #')
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
+            waitPageProgressAUI()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Speed Dial').click()
+            waitPageProgressAUI()
+            cy.get('div[data-cy="aui-list-action--0"]').click()
+            cy.get('button[data-cy="aui-speeddial-delete"]:first').click()
+            cy.get('[data-cy="btn-confirm"]').click()
+            cy.get('button[data-cy="aui-speeddial-delete"]').click()
+            cy.get('[data-cy="btn-confirm"]').click()
+            cy.get('button[data-cy="aui-close-button"]').click()
+            waitPageProgressAUI()
+            cy.contains('.q-table__bottom--nodata', 'No data available').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })

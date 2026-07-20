@@ -3404,6 +3404,22 @@ export const apiRemoveCustomerPhonebookBy = ({ name, authHeader }) => {
     })
 }
 
+export const apiEditCustomerSpeeddial = ({ data, authHeader }) => {
+    cy.log('apiCreateCustomerPhonebook', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/v2/customerspeeddials/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
 export const apiGetMailboxLastItem = ({ mailboxName, filterSubject }) => {
     cy.log('apiGetMailboxLastItem', mailboxName)
     return cy.request({
