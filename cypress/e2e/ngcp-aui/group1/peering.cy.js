@@ -224,7 +224,6 @@ context('Peering tests', () => {
 
             waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Inbound Rules').click()
-            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
             cy.get('[data-cy="aui-save-button"]').click()
@@ -262,7 +261,6 @@ context('Peering tests', () => {
 
             waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Inbound Rules').click()
-            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
             cy.get('input[data-cy="inbound-pattern"]').type(peeringInboundRule.pattern)
@@ -301,7 +299,6 @@ context('Peering tests', () => {
 
             waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Inbound Rules').click()
-            waitPageProgressAUI()
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetailsInboundRuleEdit"]').click()
@@ -343,7 +340,6 @@ context('Peering tests', () => {
 
             waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Inbound Rules').click()
-            waitPageProgressAUI()
             deleteItemOnListPageBy()
 
             // Cleanup
@@ -373,7 +369,6 @@ context('Peering tests', () => {
 
             waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Outbound Rules').click()
-            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
             cy.get('[data-cy="aui-save-button"]').click()
@@ -404,7 +399,6 @@ context('Peering tests', () => {
 
             waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Outbound Rules').click()
-            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
             cy.get('input[data-cy="outbound-callee_prefix"]').type(PeeringOutboundRule.callee_prefix)
@@ -443,7 +437,6 @@ context('Peering tests', () => {
 
             waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Outbound Rules').click()
-            waitPageProgressAUI()
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetailsOutboundRuleEdit"]').click()
@@ -485,7 +478,6 @@ context('Peering tests', () => {
 
             waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Outbound Rules').click()
-            waitPageProgressAUI()
             deleteItemOnListPageBy()
 
             // Cleanup
@@ -514,10 +506,7 @@ context('Peering tests', () => {
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
             waitPageProgressAUI()
-            cy.get('div[data-cy="q-item-label"]').contains('Inbound Rules').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Peering Servers').click()
-            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
             cy.get('[data-cy="aui-save-button"]').click()
@@ -551,10 +540,7 @@ context('Peering tests', () => {
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
             waitPageProgressAUI()
-            cy.get('div[data-cy="q-item-label"]').contains('Inbound Rules').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Peering Servers').click()
-            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
             cy.get('input[data-cy="server-name"]').type(peeringServer.name)
@@ -591,10 +577,7 @@ context('Peering tests', () => {
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
             waitPageProgressAUI()
-            cy.get('div[data-cy="q-item-label"]').contains('Inbound Rules').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Peering Servers').click()
-            waitPageProgressAUI()
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupServerEdit"]').click()
@@ -635,10 +618,7 @@ context('Peering tests', () => {
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
             waitPageProgressAUI()
-            cy.get('div[data-cy="q-item-label"]').contains('Inbound Rules').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Peering Servers').click()
-            waitPageProgressAUI()
             deleteItemOnListPageBy()
 
             // Cleanup
