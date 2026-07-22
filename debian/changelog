@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.0.1.10+0~mr26.0.1.10) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [e1c53cc] MT#65384 Improve platforminfo request reliability across all tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 22 Jul 2026 12:49:03 +0200
+
 ngcp-web-tests-e2e (26.0.1.9+0~mr26.0.1.9) unstable; urgency=medium
 
   [ Nico Schedel ]
