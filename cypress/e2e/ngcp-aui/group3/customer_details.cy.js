@@ -1665,10 +1665,6 @@ context('Customer Details tests', () => {
         })
 
         it('Delete Speeddial', () => {
-            if (!iscloudpbx) {
-                cy.log('CloudPBX is not enabled, skipping soundset tests...')
-                this.skip()
-            }
             // Setup: Create Customer, Subsriber and Speeddial
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerBy({ name: customer.external_id, authHeader })
