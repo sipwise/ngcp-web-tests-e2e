@@ -20,7 +20,6 @@ import {
 
 let iscloudpbx = null
 const ngcpConfig = Cypress.config('ngcpConfig')
-let issppro = null
 
 const customer = {
     billing_profile_definition: 'id',
@@ -152,8 +151,10 @@ context('Subscriber tests', () => {
                 apiCreateSubscriberProfile({ data: { ...subscriberProfile, profile_set_id: id }, authHeader })
             })
             apiCreateSubscriber({ data: subscriber, authHeader })
-            apiCreateSubscriber({ data: pilotSubscriber, authHeader })
-            apiCreateSubscriber({ data: seatSubscriber, authHeader })
+            if(iscloudpbx) {
+                apiCreateSubscriber({ data: pilotSubscriber, authHeader })
+                apiCreateSubscriber({ data: seatSubscriber, authHeader })
+            }
         })
     })
 
