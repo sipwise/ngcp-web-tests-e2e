@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (13.5.1.36+0~mr13.5.1.36) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [df05a8a] MT#65384 prevent pbx subscribers from creating in ce environments
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 23 Jul 2026 14:29:37 +0200
+
 ngcp-web-tests-e2e (13.5.1.35+0~mr13.5.1.35) unstable; urgency=medium
 
   [ Nico Schedel ]
