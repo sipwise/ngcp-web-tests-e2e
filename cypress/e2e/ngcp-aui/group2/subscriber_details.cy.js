@@ -16,7 +16,8 @@ import {
     searchInDataTable,
     waitPageProgressAUI,
     apiCreateSubscriberPhonebook,
-    apiRemoveSubscriberPhonebookBy
+    apiRemoveSubscriberPhonebookBy,
+    apiEditSubscriberSpeeddial
 } from '../../../support/e2e'
 
 let iscloudpbx = false
@@ -52,6 +53,7 @@ const customer = {
 }
 
 const subscriber = {
+    subscriber_id: 0,
     username: 'subscriberDetailsCypressAui',
     email: 'subscriberDetailsCypressAui@test.com',
     external_id: 'subid' + getRandomNum(),
@@ -63,6 +65,19 @@ const subscriber = {
         ac: 22,
         cc: 9071
     },
+}
+
+const speeddial = {
+    speeddials: [
+        {
+            slot:"*0",
+            destination:"SubscriberDetailsSpeeddial"
+        },
+        {
+            slot:"*1",
+            destination:"SecondSubscriberDetailsSpeeddial"
+        }
+    ]
 }
 
 const subscriberPhonebook = {
@@ -664,6 +679,149 @@ context('Subscriber Details tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebook.name, authHeader })
                 apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            })
+        })
+    })
+
+    context('Speeddial', () => {
+        it('Create multiple Speeddials', () => {
+            // Setup: Create Customer and Subscriber
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                    apiCreateSubscriber({ data: { ...subscriber, customer_id: id }, authHeader })
+                })
+            })
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / subscriber')
+
+            cy.locationShouldBe('#/subscriber')
+            searchInDataTable(subscriber.username)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Speed Dial').click()
+            waitPageProgressAUI()
+            cy.get('button[data-cy="aui-speeddial-add-another"]').click()
+            cy.get('input[data-cy="aui-speeddial-destination"]').type(speeddial.speeddials[0].destination)
+            cy.get('button[data-cy="aui-speeddial-add-another"]').click()
+            cy.get('input[data-cy="aui-speeddial-destination"]:last').type(speeddial.speeddials[1].destination)
+            cy.get('button[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('input[aria-label="Slot"][value=\"' + speeddial.speeddials[0].slot + '\"]').should('exist')
+            cy.get('input[aria-label="Slot"][value=\"' + speeddial.speeddials[1].slot + '\"]').should('exist')
+            cy.get('input[data-cy="aui-speeddial-destination"]:first').invoke('attr', 'value').should('contain', speeddial.speeddials[0].destination)
+            cy.get('input[data-cy="aui-speeddial-destination"]:last').invoke('attr', 'value').should('contain', speeddial.speeddials[1].destination)
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            })
+        })
+
+        it('Edit and save Speeddials', () => {
+            // Setup: Create Customer, Subsriber and Speeddial
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                    apiCreateSubscriber({ data: { ...subscriber, customer_id: id }, authHeader }).then(({ id }) => {
+                        apiEditSubscriberSpeeddial({ subid: id, data: speeddial, authHeader})
+                    })
+                })
+            })
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / subscriber')
+
+            cy.locationShouldBe('#/subscriber')
+            searchInDataTable(subscriber.username)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Speed Dial').click()
+            waitPageProgressAUI()
+            cy.get('input[data-cy="aui-speeddial-destination"]:first').clear().type('testdestination')
+            cy.get('input[data-cy="aui-speeddial-destination"]:last').clear().type('seconddestination')
+            cy.get('button[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('input[aria-label="Slot"][value=\"' + speeddial.speeddials[0].slot + '\"]').should('exist')
+            cy.get('input[aria-label="Slot"][value=\"' + speeddial.speeddials[1].slot + '\"]').should('exist')
+            cy.get('input[data-cy="aui-speeddial-destination"]:first').invoke('attr', 'value').should('contain', 'testdestination')
+            cy.get('input[data-cy="aui-speeddial-destination"]:last').invoke('attr', 'value').should('contain', 'seconddestination')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            })
+        })
+
+        it('Edit and reset Speeddials', () => {
+            // Setup: Create Customer, Subsriber and Speeddial
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                    apiCreateSubscriber({ data: { ...subscriber, customer_id: id }, authHeader }).then(({ id }) => {
+                        apiEditSubscriberSpeeddial({ subid: id, data: speeddial, authHeader})
+                    })
+                })
+            })
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / subscriber')
+
+            cy.locationShouldBe('#/subscriber')
+            searchInDataTable(subscriber.username)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Speed Dial').click()
+            waitPageProgressAUI()
+            cy.get('input[data-cy="aui-speeddial-destination"]:first').clear().type('testdestination')
+            cy.get('input[data-cy="aui-speeddial-destination"]:last').clear().type('seconddestination')
+            cy.get('button[data-cy="aui-reset-button"]').click()
+            cy.get('input[aria-label="Slot"][value=\"' + speeddial.speeddials[0].slot + '\"]').should('exist')
+            cy.get('input[aria-label="Slot"][value=\"' + speeddial.speeddials[1].slot + '\"]').should('exist')
+            cy.get('input[data-cy="aui-speeddial-destination"]:first').invoke('attr', 'value').should('contain', speeddial.speeddials[0].destination)
+            cy.get('input[data-cy="aui-speeddial-destination"]:last').invoke('attr', 'value').should('contain', speeddial.speeddials[1].destination)
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            })
+        })
+
+        it('Delete Speeddial', () => {
+            // Setup: Create Customer, Subsriber and Speeddial
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                    apiCreateSubscriber({ data: { ...subscriber, customer_id: id }, authHeader }).then(({ id }) => {
+                        apiEditSubscriberSpeeddial({ subid: id, data: speeddial, authHeader})
+                    })
+                })
+            })
+            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / subscriber')
+
+            cy.locationShouldBe('#/subscriber')
+            searchInDataTable(subscriber.username)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Speed Dial').click()
+            waitPageProgressAUI()
+            cy.get('button[data-cy="aui-speeddial-delete"]:first').click()
+            cy.get('button[data-cy="aui-speeddial-delete"]:first').click()
+            cy.get('button[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('input[aria-label="Slot"][value=\"' + speeddial.speeddials[0].slot + '\"]').should('not.exist')
+            cy.get('input[aria-label="Slot"][value=\"' + speeddial.speeddials[1].slot + '\"]').should('not.exist')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
             })
         })
     })

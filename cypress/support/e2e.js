@@ -3405,7 +3405,7 @@ export const apiRemoveCustomerPhonebookBy = ({ name, authHeader }) => {
 }
 
 export const apiEditCustomerSpeeddial = ({ data, authHeader }) => {
-    cy.log('apiCreateCustomerPhonebook', data)
+    cy.log('apiEditCustomerSpeeddial', data)
     return cy.request({
         method: 'POST',
         url: `${ngcpConfig.apiHost}/api/v2/customerspeeddials/`,
@@ -3417,6 +3417,19 @@ export const apiEditCustomerSpeeddial = ({ data, authHeader }) => {
     }).then(({ headers }) => {
         const id = headers?.location.split('/')[3]
         return { id }
+    })
+}
+
+export const apiEditSubscriberSpeeddial = ({ subid, data, authHeader }) => {
+    cy.log('apiEditSubscriberSpeeddial', data)
+    return cy.request({
+        method: 'PUT',
+        url: `${ngcpConfig.apiHost}/api/speeddials/${subid}`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
     })
 }
 
