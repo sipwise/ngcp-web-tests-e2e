@@ -8,7 +8,8 @@ import {
     apiRemoveDomainBy,
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
-    getRandomNum
+    getRandomNum,
+    waitPageProgressCSC
 } from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -445,13 +446,14 @@ context('Call Forwarding tests', () => {
             cy.get('.q-menu').should('be.visible').within(() => {
                 cy.contains('.q-item', 'Seat').click()
             })
+            cy.get('.q-menu').should('not.exist')
             cy.get('[data-cy="csc-cf-seat-select"]').click()
-            cy.get('input:visible').last().clear().type(pbx_seat.display_name)
+            cy.get('.q-menu').should('be.visible')
             cy.contains('.q-item', pbx_seat.display_name).click()
             cy.get('[data-cy="csc-cf-save"]').click()
 
             cy.contains('#csc-wrapper-call-forwarding span', pbx_seat.display_name).click()
-            cy.get('input:visible').last().clear().type(pbx_second_seat.display_name)
+            cy.get('input:visible').last().click()
             cy.contains('.q-item', pbx_second_seat.display_name).click()
             cy.contains('button', 'Set').click()
 
