@@ -174,7 +174,6 @@ context('Peering tests', () => {
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
-            waitPageProgressAUI()
 
             cy.locationShouldBe('#/peering')
             cy.get('span[data-cy="aui-data-table-inline-edit--input"]').contains('testdescription').should('be.visible')
@@ -308,7 +307,6 @@ context('Peering tests', () => {
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
-            waitPageProgressAUI()
 
             cy.get('td[data-cy="q-td--reject-reason"]').contains('newrejectreason').should('be.visible')
 
@@ -446,7 +444,6 @@ context('Peering tests', () => {
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
-            waitPageProgressAUI()
 
             cy.get('td[data-cy="q-td--callee-prefix"]').contains('newcalleeprefix').should('be.visible')
 
@@ -587,7 +584,6 @@ context('Peering tests', () => {
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
-            waitPageProgressAUI()
 
             cy.get('td[data-cy="q-td--host"]').contains('PeeringServerHost').should('be.visible')
 
