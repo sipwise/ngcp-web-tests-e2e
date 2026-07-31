@@ -112,7 +112,7 @@ context('Phonebook tests', () => {
         }
 
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / phonebook')
+        cy.navigateMainMenu('settings / phonebook', false)
 
         cy.locationShouldBe('#/phonebook')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -132,7 +132,7 @@ context('Phonebook tests', () => {
         })
 
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / phonebook')
+        cy.navigateMainMenu('settings / phonebook', false)
 
         cy.locationShouldBe('#/phonebook')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -149,7 +149,7 @@ context('Phonebook tests', () => {
         }
 
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / phonebook')
+        cy.navigateMainMenu('settings / phonebook', false)
 
         cy.locationShouldBe('#/phonebook')
         cy.get('button[data-cy="phonebook-download-csv"]').click()
@@ -164,7 +164,7 @@ context('Phonebook tests', () => {
         }
 
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / phonebook')
+        cy.navigateMainMenu('settings / phonebook', false)
 
         cy.locationShouldBe('#/phonebook')
         cy.get('a[data-cy="phonebook-upload-csv"]').click()
@@ -186,7 +186,7 @@ context('Phonebook tests', () => {
         }
 
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / phonebook')
+        cy.navigateMainMenu('settings / phonebook', false)
 
         cy.locationShouldBe('#/phonebook')
         cy.get('span[data-cy="aui-data-table-highlighted-text"]').contains(ResellerPhonebook.name).parents('tr').find('td[data-cy="q-td--more-menu-left"]').click()

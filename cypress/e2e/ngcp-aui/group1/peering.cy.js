@@ -112,7 +112,7 @@ context('Peering tests', () => {
     context('Peering Group tests', () => {
         it('Check if Peering Group with invalid values gets rejected', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering')
+            cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -132,7 +132,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering')
+            cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -160,7 +160,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering')
+            cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
@@ -192,7 +192,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering')
+            cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
             deleteItemOnListPageBy(peeringGroup.name, 'Name')
@@ -213,7 +213,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering')
+            cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
@@ -250,7 +250,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering')
+            cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
@@ -288,7 +288,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering')
+            cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
@@ -328,7 +328,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering')
+            cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
@@ -357,7 +357,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering')
+            cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
@@ -387,7 +387,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering')
+            cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
@@ -425,7 +425,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering')
+            cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
@@ -465,7 +465,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering')
+            cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
@@ -494,7 +494,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering')
+            cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
@@ -528,7 +528,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering')
+            cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
@@ -565,7 +565,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering')
+            cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
@@ -605,7 +605,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering')
+            cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
