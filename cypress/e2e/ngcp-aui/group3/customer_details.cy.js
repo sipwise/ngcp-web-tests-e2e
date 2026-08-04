@@ -318,7 +318,6 @@ context('Customer Details tests', () => {
             cy.get('input[data-cy="company-field"]').type('testcompany')
             cy.get('input[data-cy="phone-num-field"]').type('123456789')
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
             waitPageProgressAUI()
