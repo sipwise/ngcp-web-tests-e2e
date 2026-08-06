@@ -3433,6 +3433,19 @@ export const apiEditSubscriberSpeeddial = ({ subid, data, authHeader }) => {
     })
 }
 
+export const apiEditAutoAttendant = ({ subid, data, authHeader }) => {
+    cy.log('apiEditAutoAttendant', data)
+    return cy.request({
+        method: 'PUT',
+        url: `${ngcpConfig.apiHost}/api/autoattendants/${subid}`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+    })
+}
+
 export const apiGetMailboxLastItem = ({ mailboxName, filterSubject }) => {
     cy.log('apiGetMailboxLastItem', mailboxName)
     return cy.request({
