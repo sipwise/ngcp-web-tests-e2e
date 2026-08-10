@@ -275,9 +275,12 @@ context('Administrator tests', () => {
             cy.navigateMainMenu('settings / administrator', false)
             cy.locationShouldBe('#/administrator')
             cy.get('div[data-cy^=aui-list-action]').should('not.exist')
-            // Close the Settings menu or the cy.navigateMainMenu in the next line
-            // will close it instead of opening it
-            cy.get('div').contains('Settings').click();
+            cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
+                if(value) {
+                    cy.log("Closing Sidebar...")
+                    cy.get('div').contains('Settings').click()
+                }
+            })
 
             // we don't need for resources to load, hence the false flag
             cy.navigateMainMenu('settings / customer', false)
@@ -285,18 +288,24 @@ context('Administrator tests', () => {
             cy.get('div[data-cy=aui-list-action--customer-creation]').should('not.exist');
             cy.get('div[data-cy=aui-list-action--customer-edit]').should('not.exist');
             cy.get('div[data-cy=aui-list-action--delete]').should('not.exist');
-            // Close the Settings menu or the cy.navigateMainMenu in the next line
-            // will close it instead of opening it
-            cy.get('div').contains('Settings').click();
-            
+            cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
+                if(value) {
+                    cy.log("Closing Sidebar...")
+                    cy.get('div').contains('Settings').click()
+                }
+            })
+
             // we don't need for resources to load, hence the false flag
             cy.navigateMainMenu('settings / contact', false)
             cy.locationShouldBe('#/contact');
             cy.get('div[data-cy^=aui-list-action]').should('not.exist');
-            // Close the Settings menu or the cy.navigateMainMenu in the next line
-            // will close it instead of opening it
-            cy.get('div').contains('Settings').click();
-            
+            cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
+                if(value) {
+                    cy.log("Closing Sidebar...")
+                    cy.get('div').contains('Settings').click()
+                }
+            })
+
             // we don't need for resources to load, hence the false flag
             cy.navigateMainMenu('settings / domain', false)
             cy.locationShouldBe('#/domain');
@@ -445,10 +454,13 @@ context('Administrator tests', () => {
             cy.wait(500)
 
             cy.quickLogin(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
-            // Close the Settings menu or the cy.navigateMainMenu in the next line
-            // will close it instead of opening it
-            cy.get('div').contains('Settings').click();
 
+            cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
+                if(value) {
+                    cy.log("Closing Sidebar...")
+                    cy.get('div').contains('Settings').click()
+                }
+            })
             // we don't need for resources to load, hence the false flag
             cy.navigateMainMenu('settings / administrator',false)
 
