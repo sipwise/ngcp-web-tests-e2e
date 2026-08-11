@@ -406,7 +406,7 @@ context('Reseller Details tests', () => {
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('td[data-cy="q-td--name"]').contains(billingNetwork.name).should('be.visible')
-            cy.get('td[data-cy="q-td--blocks-grp"]').contains(billingNetwork.blocks[0].ip + '/' + billingNetwork.blocks[0].mask + ', ' + billingNetwork.blocks[1].ip + '/' + billingNetwork.blocks[1].mask).should('be.visible')
+            cy.get('td[data-cy="q-td--blocks"]').contains(billingNetwork.blocks[0].ip + '/' + billingNetwork.blocks[0].mask + ', ' + billingNetwork.blocks[1].ip + '/' + billingNetwork.blocks[1].mask).should('be.visible')
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
@@ -449,7 +449,7 @@ context('Reseller Details tests', () => {
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('[data-cy="aui-close-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-            cy.get('td[data-cy="q-td--blocks-grp"]').contains('3.3.3.3/16').should('be.visible')
+            cy.get('td[data-cy="q-td--blocks"]').contains('3.3.3.3/16').should('be.visible')
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
