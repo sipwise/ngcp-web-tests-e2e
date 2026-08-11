@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (26.0.1.12+0~mr26.0.1.12) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [e6612cc] MT#65698 [E2E] Fix issues with Settings Menu expanded/collapsed
+  * [30589a4] MT#65698 followup: fix clicking on wrong setting in admin tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 11 Aug 2026 12:54:36 +0200
+
 ngcp-web-tests-e2e (26.0.1.11+0~mr26.0.1.11) unstable; urgency=medium
 
   [ Nico Schedel ]
