@@ -86,7 +86,7 @@ context('Reseller Preferences tests', () => {
         })
 
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / reseller')
+        cy.navigateMainMenu('settings / reseller', false)
 
         cy.locationShouldBe('#/reseller')
         searchInDataTable(reseller.name)
@@ -122,7 +122,7 @@ context('Reseller Preferences tests', () => {
         })
 
         cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / reseller')
+        cy.navigateMainMenu('settings / reseller', false)
 
         cy.locationShouldBe('#/reseller')
         searchInDataTable(reseller.name)
