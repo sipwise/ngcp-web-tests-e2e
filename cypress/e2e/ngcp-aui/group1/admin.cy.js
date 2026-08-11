@@ -95,7 +95,6 @@ const downloadsFolder = Cypress.config('downloadsFolder')
 context('Administrator tests', () => {
     context('Test admin actions as normal admin', () => {
         // IMPORTANT: all tests in this suite are dependent to each other, so we cannot execute them individually
-
         before(() => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
             apiLoginAsSuperuser().then(authHeader => {
@@ -246,10 +245,16 @@ context('Administrator tests', () => {
             cy.wait(500)
 
             cy.quickLogin(admin1.login, admin1.password)
+            cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
+                if(value) {
+                    cy.log("Closing Sidebar...")
+                    cy.get('div').contains('Settings').click()
+                }
+            })
             cy.navigateMainMenu('settings / customer');
             cy.locationShouldBe('#/customer')
             cy.get('a[href="#/customer"]').should('be.visible')
-            cy.navigateMainMenu('settings / subscriber');
+            cy.navigateMainMenu('subscriber');
             cy.locationShouldBe('#/subscriber')
             cy.get('a[href="#/subscriber"]').should('be.visible')
         })
@@ -271,44 +276,32 @@ context('Administrator tests', () => {
             cy.logoutUiAUI()
             cy.wait(500)
             cy.quickLogin(admin1.login, admin1.password)
+            cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
+                if(value) {
+                    cy.log("Closing Sidebar...")
+                    cy.get('div').contains('Settings').click()
+                }
+            })
 
             // we don't need for resources to load, hence the false flag
             cy.navigateMainMenu('settings / administrator', false)
             cy.locationShouldBe('#/administrator')
             cy.get('div[data-cy^=aui-list-action]').should('not.exist')
-            cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
-                if(value) {
-                    cy.log("Closing Sidebar...")
-                    cy.get('div').contains('Settings').click()
-                }
-            })
 
             // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('settings / customer', false)
+            cy.navigateMainMenu('customer', false)
             cy.locationShouldBe('#/customer')
             cy.get('div[data-cy=aui-list-action--customer-creation]').should('not.exist');
             cy.get('div[data-cy=aui-list-action--customer-edit]').should('not.exist');
             cy.get('div[data-cy=aui-list-action--delete]').should('not.exist');
-            cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
-                if(value) {
-                    cy.log("Closing Sidebar...")
-                    cy.get('div').contains('Settings').click()
-                }
-            })
 
             // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('settings / contact', false)
+            cy.navigateMainMenu('contact', false)
             cy.locationShouldBe('#/contact');
             cy.get('div[data-cy^=aui-list-action]').should('not.exist');
-            cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
-                if(value) {
-                    cy.log("Closing Sidebar...")
-                    cy.get('div').contains('Settings').click()
-                }
-            })
 
             // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('settings / domain', false)
+            cy.navigateMainMenu('domain', false)
             cy.locationShouldBe('#/domain');
             cy.get('div[data-cy=aui-list-action--domain-creation]').should('not.exist');
             cy.get('div[data-cy=aui-list-action--delete]').should('not.exist')
@@ -362,6 +355,12 @@ context('Administrator tests', () => {
 
         it('Delete administrator and check if they are deleted', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
+                if(value) {
+                    cy.log("Closing Sidebar...")
+                    cy.get('div').contains('Settings').click()
+                }
+            })
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -424,6 +423,12 @@ context('Administrator tests', () => {
             cy.wait(500)
 
             cy.quickLogin(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
+            cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
+                if(value) {
+                    cy.log("Closing Sidebar...")
+                    cy.get('div').contains('Settings').click()
+                }
+            })
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -455,7 +460,6 @@ context('Administrator tests', () => {
             cy.wait(500)
 
             cy.quickLogin(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
-
             cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
                 if(value) {
                     cy.log("Closing Sidebar...")
@@ -501,7 +505,12 @@ context('Administrator tests', () => {
             cy.logoutUiAUI()
             cy.wait(500)
             cy.loginUiAUI(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
-
+            cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
+                if(value) {
+                    cy.log("Closing Sidebar...")
+                    cy.get('div').contains('Settings').click()
+                }
+            })
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -559,6 +568,12 @@ context('Administrator tests', () => {
             cy.logoutUiAUI()
 
             cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password)
+            cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
+                if(value) {
+                    cy.log("Closing Sidebar...")
+                    cy.get('div').contains('Settings').click()
+                }
+            })
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -574,6 +589,12 @@ context('Administrator tests', () => {
 
             cy.logoutUiAUI()
             cy.quickLogin(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
+            cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
+                if(value) {
+                    cy.log("Closing Sidebar...")
+                    cy.get('div').contains('Settings').click()
+                }
+            })
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator');
