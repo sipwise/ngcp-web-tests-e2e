@@ -209,7 +209,6 @@ context('Administrator tests', () => {
             searchInDataTable(admin1.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
-            waitPageProgressAUI()
             cy.get('[data-cy="master-flag"]').click()
             cy.get('[data-cy="active-flag"]').click()
 
@@ -266,7 +265,6 @@ context('Administrator tests', () => {
             searchInDataTable(admin1.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
-            waitPageProgressAUI()
             cy.get('[data-cy="readonly-flag"]').click()
             cy.get('div[data-cy="readonly-flag"][aria-checked="true"]').should('be.visible')
             cy.get('[data-cy="aui-save-button"]').click()
@@ -495,7 +493,6 @@ context('Administrator tests', () => {
             searchInDataTable(secondaryResellerAdmin.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
-            waitPageProgressAUI()
             cy.get('[data-cy="master-flag"]').click()
 
             cy.get('[data-cy="aui-save-button"]').click()
@@ -527,7 +524,6 @@ context('Administrator tests', () => {
             searchInDataTable(secondaryResellerAdmin.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
-            waitPageProgressAUI()
             cy.get('[data-cy="master-flag"]').click()
             cy.get('[data-cy="active-flag"]').click()
 
@@ -579,7 +575,6 @@ context('Administrator tests', () => {
             searchInDataTable(secondaryResellerAdmin.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
-            waitPageProgressAUI()
             cy.get('div[data-cy="master-flag"]').click()
             cy.get('div[data-cy="can-reset-password-flag"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
