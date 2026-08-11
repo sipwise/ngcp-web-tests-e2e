@@ -1,3 +1,31 @@
+ngcp-web-tests-e2e (26.2.1.0+0~mr26.2.1.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [1bb2f03] MT#65406 fix subscriber creation (require primary number input)
+  * [3089898] MT#65384 Improve platforminfo request reliability across all tests
+  * [fb28b3a] MT#65519 upgrade cypress to 15.18.1 + upgrade docker and browsers
+  * [a4ec4ff] MT#65277 add first and last selector to qSelect
+  * [5baf30f] MT#65523 [AUI] remove waitPageProgress from peering tests
+  * [500d60e] MT#59507 adjust tests for migrated customer location preferences page
+  * [3875d60] MT#65277 add speeddial tests
+  * [54e60ce] MT#65277 remove unnecessary this.skip use from speeddial tests
+  * [774603c] MT#65523 [AUI] remove more waitPageProgress from peering tests
+  * [0c10c89] MT#65592 fix "modify the current seat selection" test
+  * [87d0b7c] MT#63950 remove more faulty waitPageProgress()
+  * [e0feca8] MT#63950 remove one waitPageProgress in customer_details contact test
+  * [1641971] MT#63950 remove one waitPageProgress in subscriber_callforwarding test
+  * [2e83485] MT#65277 add subscriber speeddial tests
+  * [e5c049e] MT#65698 [E2E] Fix issues with Settings Menu expanded/collapsed
+  * [6c8dd8d] MT#65698 followup: fix clicking on wrong setting in admin tests
+  * [588f510] MT#63950 remove waitPageProgress from admin tests edit button click
+  * [73222db] MT#63950 remove waitPageProgress when clicking on reseller page in reseller preferences
+
+  [ Debora Crescenzo ]
+  * [ed5639d] MT#65507 migration to yarn v4 (4.17.1)
+  * [409021c] MT#65277 fix speeddial tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 11 Aug 2026 14:21:01 +0200
+
 ngcp-web-tests-e2e (26.2.0.0+0~mr26.2.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
