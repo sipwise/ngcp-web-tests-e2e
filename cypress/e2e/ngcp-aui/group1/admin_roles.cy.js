@@ -705,7 +705,7 @@ context('Administrator Roles tests', () => {
 
             cy.navigateMainMenu('settings / domain')
             cy.locationShouldBe('#/domain')
-            searchInDataTable(domain.domain)
+            searchInDataTable(domain.domain, null, false)
             cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
 
             // Clean up
