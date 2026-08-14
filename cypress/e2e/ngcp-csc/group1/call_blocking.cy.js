@@ -148,7 +148,7 @@ context('Call Blocking tests', () => {
         cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
         cy.get('button[data-cy="csc-block-number-save"]').click()
 
-        cy.contains('testnumber').should('be.visible')
+        cy.get('div[data-cy="q-item-label"]').contains('testnumber').should('be.visible')
         cy.get('button[data-cy="csc-blocked-number-menu"]').click()
         cy.get('div[data-cy="csc-blocked-number-edit"]').click()
         cy.get('input[type="text"]').clear()
@@ -158,27 +158,25 @@ context('Call Blocking tests', () => {
         cy.get('input[type="text"]')
             .invoke('val')
             .then(inputval => expect(inputval).to.eq('testnumber'))
-        cy.get('button[data-cy="csc-blocked-number-menu"]').click()
-        cy.get('div[data-cy="csc-blocked-number-edit"]').click()
         cy.get('input[type="text"]').clear()
         cy.get('input[type="text"]').type('anothertest')
         cy.get('button').contains('Save').click()
 
-        cy.contains('anothertest').should('be.visible')
+        cy.get('div[data-cy="q-item-label"]').contains('anothertest').should('be.visible')
         cy.get('button[data-cy="csc-add-number"]').click()
         cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
         cy.get('button[data-cy="csc-block-number-save"]').click()
 
-        cy.contains('testnumber').should('be.visible')
+        cy.get('div[data-cy="q-item-label"]').contains('testnumber').should('be.visible')
         cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
         cy.get('div[data-cy="csc-blocked-number-delete"]').click()
         cy.get('div[data-cy="q-card"]').contains('OK').click()
-        cy.contains('testnumber').should('not.exist')
+        cy.get('div[data-cy="q-item-label"]').contains('testnumber').should('not.exist')
 
         cy.get('button[data-cy="csc-blocked-number-menu"]:first').click()
         cy.get('div[data-cy="csc-blocked-number-delete"]').click()
         cy.get('div[data-cy="q-card"]').contains('OK').click()
-        cy.contains('anothertest').should('not.exist')
+        cy.get('div[data-cy="q-item-label"]').contains('anothertest').should('not.exist')
     })
 
     it('Add blocked number and enable blocklist for outgoing calls', () => {
