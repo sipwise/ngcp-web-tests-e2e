@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.2.1.1+0~mr26.2.1.1) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [be49cae] MT#63950 remove waitPageProgess in admin roles (searchInDataTable)
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 21 Aug 2026 08:51:56 +0200
+
 ngcp-web-tests-e2e (26.2.1.0+0~mr26.2.1.0) unstable; urgency=medium
 
   [ Nico Schedel ]
