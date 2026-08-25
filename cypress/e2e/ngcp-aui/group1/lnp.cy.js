@@ -77,7 +77,7 @@ context('LNP tests', () => {
     context('LNP Carrier tests', () => {
         it('Check if LNP Carrier with invalid values gets rejected', () => {
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp')
+            cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -95,7 +95,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp')
+            cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -126,7 +126,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp')
+            cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
             searchInDataTable(LNPCarrier.name)
@@ -155,7 +155,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp')
+            cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
             deleteItemOnListPageBy(LNPCarrier.name)
@@ -176,7 +176,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp')
+            cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
             searchInDataTable(LNPCarrier.name)
@@ -203,7 +203,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp')
+            cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
             searchInDataTable(LNPCarrier.name)
@@ -242,7 +242,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp')
+            cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
             searchInDataTable(LNPCarrier.name)
@@ -281,7 +281,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp')
+            cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
             searchInDataTable(LNPCarrier.name)
@@ -307,7 +307,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp')
+            cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[href="#/lnp/numbers"]').click()
@@ -333,7 +333,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp')
+            cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[href="#/lnp/numbers"]').click()
@@ -371,7 +371,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp')
+            cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[href="#/lnp/numbers"]').click()
@@ -408,7 +408,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp')
+            cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[href="#/lnp/numbers"]').click()
@@ -436,7 +436,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp')
+            cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[href="#/lnp/numbers"]').click()
@@ -467,7 +467,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp')
+            cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[href="#/lnp/numbers"]').click()
@@ -502,7 +502,7 @@ context('LNP tests', () => {
             cy.get('td[data-cy="q-td--number"]:last').should('not.contain.text', '100')
             cy.get('td[data-cy="q-td--routing-number"]:last').should('not.contain.text', 'csvCarrierNumberRouting')
             cy.get('td[data-cy="q-td--type"]:last').should('not.contain.text', 'csvCarrierNumberType')
-            cy.navigateMainMenu('settings / lnp')
+            cy.navigateMainMenu('settings / lnp', false)
             searchInDataTable('csvLNPCarrierTest')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
@@ -541,7 +541,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp')
+            cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[data-cy="lnp-carriers-list-upload-csv"]').click()
