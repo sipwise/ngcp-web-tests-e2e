@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (26.2.1.2+0~mr26.2.1.2) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [fd5be5c] MT#63950 remove waitPageProgess in admin roles (empty site navigation)
+  * [3682435] MT#63950 remove waitPageProgress from lnp navigateMainMenu()
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 25 Aug 2026 11:19:38 +0200
+
 ngcp-web-tests-e2e (26.2.1.1+0~mr26.2.1.1) unstable; urgency=medium
 
   [ Nico Schedel ]
