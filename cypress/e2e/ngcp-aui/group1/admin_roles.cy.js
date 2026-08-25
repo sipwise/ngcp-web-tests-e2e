@@ -693,17 +693,17 @@ context('Administrator Roles tests', () => {
             searchInDataTable(admin_reseller.login)
             cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
 
-            cy.navigateMainMenu('settings / customer')
+            cy.navigateMainMenu('settings / customer', false)
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id)
             cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
 
-            cy.navigateMainMenu('settings / contact')
+            cy.navigateMainMenu('settings / contact', false)
             cy.locationShouldBe('#/contact')
             searchInDataTable("default-customer@default.invalid")
             cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
 
-            cy.navigateMainMenu('settings / domain')
+            cy.navigateMainMenu('settings / domain', false)
             cy.locationShouldBe('#/domain')
             searchInDataTable(domain.domain, null, false)
             cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
