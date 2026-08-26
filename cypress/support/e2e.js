@@ -123,16 +123,9 @@ Cypress.Commands.add('auiSelectLazySelect',
                 cy.wrap($parent).find(inputElementSelector).click()
             }
 
-            cy.get('body').then($body => {
-                if ($body.find('.q-spinner').length > 0) {
-                    cy.get('.q-spinner').should('be.visible')
-                    cy.get('.q-spinner').should('not.exist')
-                    cy.wait(500)
-                } else {
-                    // Spinner already gone
-                    cy.wait(500)
-                }
-            })
+            cy.get('div[role="listbox"]').should('not.be.visible')
+            cy.get('div[role="listbox"]').should('be.visible')
+
             cy.wrap($parent).find(inputElementSelector).parents('label').then($el => {
                 const id = $el.attr('for')
                 const dropdownListId = `#${id}_lb`
