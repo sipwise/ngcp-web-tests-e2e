@@ -130,7 +130,7 @@ Cypress.Commands.add('auiSelectLazySelect',
                 const id = $el.attr('for')
                 const dropdownListId = `#${id}_lb`
                 cy.get(dropdownListId).should('be.visible')
-                    .find('.q-linear-progress').should('not.exist')
+                cy.get(dropdownListId + ' .q-linear-progress').should('not.exist')
                 cy.wait(500)
                 cy.contains(`${dropdownListId} .q-item`, itemContains).last().click()
             })
