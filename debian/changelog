@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.42+0~mr12.5.1.42) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [eabb29d] MT#65812 fix for updated auiSelectLazySelect logic
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 27 Aug 2026 09:52:40 +0200
+
 ngcp-web-tests-e2e (12.5.1.41+0~mr12.5.1.41) unstable; urgency=medium
 
   [ Nico Schedel ]
