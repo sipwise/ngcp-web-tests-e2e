@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.43+0~mr12.5.1.43) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [f5d7dd4] MT#65812 rework qspinner detection in listbox
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 27 Aug 2026 12:01:15 +0200
+
 ngcp-web-tests-e2e (12.5.1.42+0~mr12.5.1.42) unstable; urgency=medium
 
   [ Nico Schedel ]
