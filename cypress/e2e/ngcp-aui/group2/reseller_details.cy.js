@@ -1017,7 +1017,6 @@ context('Reseller Details tests', () => {
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
             waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
-            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="phonebook-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -1056,7 +1055,6 @@ context('Reseller Details tests', () => {
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
             waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
-            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="phonebook-name"]').type(resellerPhonebook.name)
             cy.get('input[data-cy="phonebook-number"]').type(resellerPhonebook.number)
@@ -1101,7 +1099,6 @@ context('Reseller Details tests', () => {
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
             waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
-            waitPageProgressAUI()
             searchInDataTable(resellerPhonebook.name, 'Name')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
@@ -1148,7 +1145,6 @@ context('Reseller Details tests', () => {
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
             waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
-            waitPageProgressAUI()
             deleteItemOnListPageBy(resellerPhonebook.name, 'Name')
 
             // Cleanup
