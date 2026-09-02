@@ -329,7 +329,6 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileFees"]').click()
-            waitPageProgressAUI()
 
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
@@ -361,7 +360,6 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileFees"]').click()
-            waitPageProgressAUI()
 
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.auiSelectLazySelect({ dataCy: 'aui-select-zone', filter: billingProfileZone.zone, itemContains: billingProfileZone.zone })
@@ -401,7 +399,6 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileFees"]').click()
-            waitPageProgressAUI()
 
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
@@ -411,7 +408,6 @@ context('Billing profile tests', () => {
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
-            waitPageProgressAUI()
             cy.get('span[data-cy="aui-data-table-highlighted-text"]').contains("inbound").should('be.visible')
 
             // Cleanup
@@ -446,7 +442,6 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileFees"]').click()
-            waitPageProgressAUI()
 
             deleteItemOnListPageBy()
 
