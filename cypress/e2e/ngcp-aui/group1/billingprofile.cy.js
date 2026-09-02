@@ -234,7 +234,6 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileZones"]').click()
-            waitPageProgressAUI()
 
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="billing-zone"]').type(billingProfileZone.zone)
@@ -267,7 +266,6 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileZones"]').click()
-            waitPageProgressAUI()
 
             searchInDataTable(billingProfileZone.zone)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -277,7 +275,6 @@ context('Billing profile tests', () => {
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
-            waitPageProgressAUI()
             cy.get('span[data-cy="aui-data-table-highlighted-text"]').contains("testdetail").should('be.visible')
 
             // Cleanup
@@ -305,7 +302,6 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileZones"]').click()
-            waitPageProgressAUI()
 
             deleteItemOnListPageBy(billingProfileZone.zone)
 
