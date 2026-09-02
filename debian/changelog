@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (26.1.1.9+0~mr26.1.1.9) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [a768e1a] MT#65741 fix: [CSC] Call blocking number entry gets cut off
+  * [ffa2a58] MT#65741 fix: [CSC] Call blocking number entry gets cut off (outgoing)
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 02 Sep 2026 09:51:46 +0200
+
 ngcp-web-tests-e2e (26.1.1.8+0~mr26.1.1.8) unstable; urgency=medium
 
   [ Nico Schedel ]
