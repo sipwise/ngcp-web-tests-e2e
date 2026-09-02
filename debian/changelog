@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (26.2.1.7+0~mr26.2.1.7) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [d75ae89] MT#63950 remove waitPageProgress from billing zone tests
+  * [dc09192] MT#63950 remove waitPageProgress from billing fee tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 02 Sep 2026 14:35:21 +0200
+
 ngcp-web-tests-e2e (26.2.1.6+0~mr26.2.1.6) unstable; urgency=medium
 
   [ Nico Schedel ]
