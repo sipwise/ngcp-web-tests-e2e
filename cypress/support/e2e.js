@@ -3440,6 +3440,46 @@ export const apiEditAutoAttendant = ({ subid, data, authHeader }) => {
     })
 }
 
+export const apiCreateCallListSuppression = ({ data, authHeader }) => {
+    cy.log('apiCreateCallListSuppression', data)
+    return cy.request({
+        method: 'POST',
+        url: `${ngcpConfig.apiHost}/api/calllistsuppressions/`,
+        body: data,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+    }).then(({ headers }) => {
+        const id = headers?.location.split('/')[3]
+        return { id }
+    })
+}
+
+export const apiRemoveCallListSuppressionBy = ({ name, authHeader }) => {
+    cy.log('apiRemoveCustomerPhonebookBy', name)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/calllistsuppressions`,
+        qs: {
+            name
+        },
+        ...authHeader
+    }).then(({ body }) => {
+        const callListSuppressionId = body?._embedded?.['ngcp:calllistsuppressions']?.[0]?.id
+        if (callListSuppressionId) {
+            cy.log('Deleting Call List Suppression...', name)
+            return cy.request({
+                method: 'DELETE',
+                url: `${ngcpConfig.apiHost}/api/calllistsuppressions/${callListSuppressionId}`,
+                ...authHeader
+            })
+        } else {
+            return cy.log('No Call List Suppression found', name)
+        }
+    })
+}
+
 export const apiGetMailboxLastItem = ({ mailboxName, filterSubject }) => {
     cy.log('apiGetMailboxLastItem', mailboxName)
     return cy.request({
