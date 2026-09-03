@@ -5,7 +5,7 @@ FROM docker.mgm.sipwise.com/sipwise-trixie:latest
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT=2026-07-17
+ENV REFRESHED_AT=2026-10-15
 
 RUN apt-get update && \
     apt-get install --assume-yes --no-install-recommends \
@@ -19,20 +19,19 @@ RUN apt-get update && \
         xz-utils && \
     apt-get clean
 
-# Sanity check
+# Install node corepack for yarn, check if its installed properly
+RUN corepack enable
 RUN node --version && corepack --version
 
-RUN corepack enable
+# Installing Chrome (154.0.8037.98)
+RUN wget https://deb.sipwise.com/files/google-chrome-stable_154_amd64.deb && \
+    apt install -y ./google-chrome-stable_154_amd64.deb && \
+    rm -f google-chrome-stable_154_amd64.deb
 
-# installing Chrome (150.0.7871.125)
-RUN wget https://deb.sipwise.com/files/google-chrome-stable_150_amd64.deb && \
-    apt install -y ./google-chrome-stable_150_amd64.deb && \
-    rm -f google-chrome-stable_current_150_amd64.deb
-
-# installing firefox (lang=en_US) (152.0.6)
-RUN wget https://deb.sipwise.com/files/firefox-152.0.6.deb && \
-    apt install -y ./firefox-152.0.6.deb  && \
-    rm -f firefox-152.0.6.deb
+# Installing firefox (lang=en_US) (157.0.1)
+RUN wget https://deb.sipwise.com/files/firefox-157.0.1.deb && \
+    apt install -y ./firefox-157.0.1.deb  && \
+    rm -f firefox-157.0.1.deb
 
 WORKDIR /code
 

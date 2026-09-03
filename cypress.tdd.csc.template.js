@@ -7,11 +7,11 @@ module.exports = defineConfig({
         username: 'administrator',
         password: 'administrator'
     },
-    experimentalMemoryManagement: true,
     // Enable this if you run out of memory while running tests. You can specify the amount of tests that should be kept in RAM.
     // Keep in mind that you have to stop tests when an error occurs to look at test details.
     // Otherwise test details will be discarded after some time.
     // numTestsKeptInMemory: 2,
+    experimentalRunAllSpecs: true,
     retries: 1,
     viewportHeight: 800,
     viewportWidth: 1280,
@@ -20,7 +20,6 @@ module.exports = defineConfig({
         setupNodeEvents (on, config) {
             return require('./cypress/plugins/index.js')(on, config)
         },
-        experimentalRunAllSpecs: true,
         // For CSC tests, baseUrl does NOT need to have :1443 at the end
         baseUrl: 'https://pro-trunk.mgm.sipwise.com',
         specPattern: 'cypress/e2e/ngcp-csc/**/*.cy.{js,jsx,ts,tsx}',
