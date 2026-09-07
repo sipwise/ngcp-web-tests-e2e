@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.0.1.14+0~mr26.0.1.14) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [5165549] MT#65720 fix flaky language switcher clicks in i18n login tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 07 Sep 2026 15:46:25 +0200
+
 ngcp-web-tests-e2e (26.0.1.13+0~mr26.0.1.13) unstable; urgency=medium
 
   [ Nico Schedel ]
