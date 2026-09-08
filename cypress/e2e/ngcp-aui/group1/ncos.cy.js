@@ -283,6 +283,8 @@ context('NCOS tests', () => {
             cy.get('button[data-cy="row-more-menu-btn"]:first').click()
             cy.get('div[data-cy="aui-data-table-row-menu--addLevel"]').click()
 
+            cy.get('label[data-cy="aui-input-search--datatable"][aria-disabled="true"]').should('exist')
+            cy.get('label[data-cy="aui-input-search--datatable"][aria-disabled="true"]').should('not.exist')
             cy.get('div[data-cy="ncos-set-levels-list"] input:last').type('thisshouldneverexist123')
             waitPageProgressAUI()
 
