@@ -209,8 +209,8 @@ context('Billing Network', () => {
         cy.navigateMainMenu('settings / network', false)
 
         searchInDataTable(secondBillingNetwork.blocks[0].ip, "IP")
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]:last').click()
+        cy.get('div[class="aui-data-table"] .q-checkbox:last').click()
+        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--billingNetworkEdit"]').click()
         waitPageProgressAUI()
         cy.get('input[data-cy="billingnetworks-ip"]:first').clear().type('1.1.1.1')
