@@ -133,6 +133,7 @@ Cypress.Commands.add('auiSelectLazySelect',
                 cy.get(dropdownListId + ' .q-linear-progress').should('not.exist')
                 cy.wait(500)
                 cy.contains(`${dropdownListId} .q-item`, itemContains).last().click()
+                cy.get('div[role="listbox"]').should('not.exist')
             })
         })
     }
