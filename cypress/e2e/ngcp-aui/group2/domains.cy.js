@@ -44,7 +44,7 @@ context('Domain tests', () => {
     })
 
     it('Check if domain with invalid values gets rejected', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
         cy.locationShouldBe('#/domain')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -57,7 +57,7 @@ context('Domain tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveDomainBy({ name: domain.domain, authHeader })
         })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
         cy.locationShouldBe('#/domain')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -68,7 +68,7 @@ context('Domain tests', () => {
     })
 
     it('Delete domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
         cy.locationShouldBe('#/domain')
         deleteItemOnListPageBy(domain.domain)

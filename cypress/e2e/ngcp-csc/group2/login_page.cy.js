@@ -76,11 +76,6 @@ context('Login Page tests', () => {
             apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
             apiCreateSubscriber({ data:  subscriber, authHeader })
         })
-        if (Cypress.currentTest.title === 'Check if unknown URL will route to login page') {
-            cy.log('Skip beforeEach visit for this test to prevent freezing')
-        } else {
-            cy.visit('/')
-        }
     })
 
     after(() => {
@@ -104,6 +99,7 @@ context('Login Page tests', () => {
     })
 
     it('Trying to login through UI with no credentials', () => {
+        cy.visit('/')
         cy.intercept('POST', '**/login_jwt').as('loginRequest')
         cy.get('.q-btn:last').click()
 
@@ -114,6 +110,7 @@ context('Login Page tests', () => {
     })
 
     it('Trying to login through UI with incorrect user and password', () => {
+        cy.visit('/')
         cy.intercept('POST', '**/login_jwt').as('loginRequest')
         cy.get('input:first').type('not-exists-user')
         cy.get('input:last').type('not-exists-password')
@@ -126,6 +123,7 @@ context('Login Page tests', () => {
     })
 
     it('Trying to login through UI with incorrect password', () => {
+        cy.visit('/')
         cy.intercept('POST', '**/login_jwt').as('loginRequest')
         cy.get('input:first').type(loginInfo.username)
         cy.get('input:last').type('not-exists-password')
@@ -138,6 +136,7 @@ context('Login Page tests', () => {
     })
 
     it('Trying to login through UI with no password', () => {
+        cy.visit('/')
         cy.intercept('POST', '**/login_jwt').as('loginRequest')
         cy.get('input:first').type('not-exists-user')
         cy.get('input:last').clear()
@@ -150,6 +149,7 @@ context('Login Page tests', () => {
     })
 
     it('Trying to login through UI with correct credentials', () => {
+        cy.visit('/')
         cy.intercept('POST', '**/login_jwt').as('loginRequest')
         cy.get('input:first').type(loginInfo.username)
         cy.get('input:last').type(loginInfo.password)
@@ -162,22 +162,24 @@ context('Login Page tests', () => {
     })
 
     it('Test cy.loginUI function', () => {
+        cy.visit('/')
         cy.intercept('POST', '**/login_jwt').as('loginRequest')
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.wait('@loginRequest').then(({ response }) => {
             checkLoginAPIResponse(response)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
         })
+        cy.get('a[href="#/user/dashboard"]').should('be.visible')
     })
 
     it('Trying to logout', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('button[data-cy="user-menu"]').click()
         cy.get('div[data-cy="user-logout"]').click()
         cy.url().should('match', /\/#\/login$/)
     })
 
     it('Try to change to all available languages', () => {
+        cy.visit('/')
         cy.contains('language').click()
         cy.contains('Deutsch').click()
         cy.contains('Teilnehmer-Anmeldung').should('be.visible')

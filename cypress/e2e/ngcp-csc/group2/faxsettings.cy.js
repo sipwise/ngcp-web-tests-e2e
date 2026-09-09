@@ -148,8 +148,7 @@ context('Fax settings page tests', () => {
             apiCreateSubscriber({ data:  subscriber, authHeader })
         })
 
-        cy.visit('/')
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
         cy.get('div[data-cy="faxtomail-enable"][aria-disabled="true"]').should('not.exist')
@@ -174,8 +173,7 @@ context('Fax settings page tests', () => {
             apiCreateSubscriber({ data:  subscriber, authHeader })
         })
 
-        cy.visit('/')
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
 
@@ -213,8 +211,7 @@ context('Fax settings page tests', () => {
             apiCreateSubscriber({ data:  subscriber, authHeader })
         })
 
-        cy.visit('/')
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
         cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
@@ -246,8 +243,7 @@ context('Fax settings page tests', () => {
             apiCreateSubscriber({ data:  subscriber, authHeader })
         })
 
-        cy.visit('/')
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
         cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
@@ -278,8 +274,7 @@ context('Fax settings page tests', () => {
             apiCreateSubscriber({ data:  subscriber, authHeader })
         })
 
-        cy.visit('/')
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
         cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
@@ -334,8 +329,7 @@ context('Fax settings page tests', () => {
             apiCreateSubscriber({ data:  subscriber, authHeader })
         })
 
-        cy.visit('/')
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
         cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
@@ -372,8 +366,7 @@ context('Fax settings page tests', () => {
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader })
         })
 
-        cy.visit('/')
-        cy.loginUiCSC(pbxloginInfo.username, pbxloginInfo.password)
+        cy.quickLoginCSC(pbxloginInfo.username, pbxloginInfo.password)
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
         cy.get('div[class="q-tab__label"]').contains('Mail to Fax').click()
@@ -405,8 +398,7 @@ context('Fax settings page tests', () => {
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader })
         })
 
-        cy.visit('/')
-        cy.loginUiCSC(pbxloginInfo.username, pbxloginInfo.password)
+        cy.quickLoginCSC(pbxloginInfo.username, pbxloginInfo.password)
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
         cy.get('div[class="q-tab__label"]').contains('Mail to Fax').click()
@@ -437,8 +429,7 @@ context('Fax settings page tests', () => {
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader })
         })
 
-        cy.visit('/')
-        cy.loginUiCSC(pbxloginInfo.username, pbxloginInfo.password)
+        cy.quickLoginCSC(pbxloginInfo.username, pbxloginInfo.password)
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
         cy.get('div[class="q-tab__label"]').contains('Mail to Fax').click()
@@ -472,8 +463,7 @@ context('Fax settings page tests', () => {
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader })
         })
 
-        cy.visit('/')
-        cy.loginUiCSC(pbxloginInfo.username, pbxloginInfo.password)
+        cy.quickLoginCSC(pbxloginInfo.username, pbxloginInfo.password)
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
         cy.get('div[class="q-tab__label"]').contains('Mail to Fax').click()

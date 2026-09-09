@@ -72,7 +72,6 @@ context('Call Recordings tests', () => {
             apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
             apiCreateSubscriber({ data:  subscriber, authHeader })
         })
-        cy.visit('/')
     })
 
     after(() => {
@@ -85,7 +84,7 @@ context('Call Recordings tests', () => {
     })
 
     it('Add timerange to recording filters', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
@@ -105,7 +104,7 @@ context('Call Recordings tests', () => {
     })
 
     it('Add caller to recording filters', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
@@ -122,7 +121,7 @@ context('Call Recordings tests', () => {
     })
 
     it('Add callee to recording filters', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
@@ -139,7 +138,7 @@ context('Call Recordings tests', () => {
     })
 
     it('Add callID to recording filters', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()

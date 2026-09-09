@@ -156,7 +156,7 @@ context('Subscriber tests', () => {
     })
 
     it('Check if Subscriber with invalid values gets rejected', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
@@ -185,7 +185,7 @@ context('Subscriber tests', () => {
             apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
         })
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
@@ -224,7 +224,7 @@ context('Subscriber tests', () => {
             })
         })
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
@@ -281,7 +281,7 @@ context('Subscriber tests', () => {
             })
         })
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
@@ -348,7 +348,7 @@ context('Subscriber tests', () => {
             })
         })
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
@@ -404,7 +404,7 @@ context('Subscriber tests', () => {
             apiCreateSubscriber({ data: subscriber, authHeader })
         })
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / subscriber')
 
         cy.locationShouldBe('#/subscriber')

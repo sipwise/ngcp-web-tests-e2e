@@ -316,7 +316,7 @@ context('Administrator Roles tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveAdminBy({ name: admin.login, authHeader })
             })
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.createAdminUI(admin)
 
             searchInDataTable(admin.login)
@@ -333,7 +333,7 @@ context('Administrator Roles tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveAdminBy({ name: admin_reseller.login, authHeader })
             })
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.createAdminUI(admin_reseller)
 
             searchInDataTable(admin_reseller.login)
@@ -350,7 +350,7 @@ context('Administrator Roles tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveAdminBy({ name: admin_ccareadmin.login, authHeader })
             })
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.createAdminUI(admin_ccareadmin)
 
             searchInDataTable(admin_ccareadmin.login)
@@ -367,7 +367,7 @@ context('Administrator Roles tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveAdminBy({ name: admin_ccare.login, authHeader })
             })
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.createAdminUI(admin_ccare)
 
             searchInDataTable(admin_ccare.login)
@@ -387,7 +387,7 @@ context('Administrator Roles tests', () => {
                 apiCreateAdmin({ data: testadmin_otherreseller, authHeader })
             })
 
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -416,7 +416,7 @@ context('Administrator Roles tests', () => {
                 apiCreateAdmin({ data: admin_ccareadmin, authHeader })
             })
 
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -449,7 +449,7 @@ context('Administrator Roles tests', () => {
                 apiCreateAdmin({ data: testadmin_otherreseller, authHeader })
             })
 
-            cy.quickLogin(admin.login, admin.password)
+            cy.quickLoginAUI(admin.login, admin.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -470,7 +470,7 @@ context('Administrator Roles tests', () => {
                 apiCreateAdmin({ data: admin, authHeader })
             })
 
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -484,7 +484,7 @@ context('Administrator Roles tests', () => {
                 apiCreateAdmin({ data: admin_reseller, authHeader })
             })
 
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -498,7 +498,7 @@ context('Administrator Roles tests', () => {
                 apiCreateAdmin({ data: admin_ccare, authHeader })
             })
 
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -512,7 +512,7 @@ context('Administrator Roles tests', () => {
                 apiCreateAdmin({ data: admin_ccareadmin, authHeader })
             })
 
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -533,7 +533,7 @@ context('Administrator Roles tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveAdminBy({ name: admin_master.login, authHeader })
             })
-            cy.quickLogin(admin_system.login, admin_system.password)
+            cy.quickLoginAUI(admin_system.login, admin_system.password)
             cy.createAdminUI(admin_master)
 
             searchInDataTable(admin_master.login)
@@ -550,7 +550,7 @@ context('Administrator Roles tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveAdminBy({ name: admin_lawfulintercept.login, authHeader })
             })
-            cy.quickLogin(admin_system.login, admin_system.password)
+            cy.quickLoginAUI(admin_system.login, admin_system.password)
             cy.createAdminUI(admin_lawfulintercept)
 
             searchInDataTable(admin_lawfulintercept.login)
@@ -572,7 +572,7 @@ context('Administrator Roles tests', () => {
                 apiCreateAdmin({ data: admin_lawfulintercept, authHeader })
             })
 
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -594,7 +594,7 @@ context('Administrator Roles tests', () => {
                 apiCreateAdmin({ data: admin_lawfulintercept, authHeader })
             })
 
-            cy.quickLogin(admin_lawfulintercept.login, admin_lawfulintercept.password)
+            cy.quickLoginAUI(admin_lawfulintercept.login, admin_lawfulintercept.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -618,7 +618,7 @@ context('Administrator Roles tests', () => {
                 apiCreateAdmin({ data: admin_lawfulintercept, authHeader })
             })
 
-            cy.quickLogin(admin_system.login, admin_system.password)
+            cy.quickLoginAUI(admin_system.login, admin_system.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -648,7 +648,7 @@ context('Administrator Roles tests', () => {
                 apiCreateAdmin({ data: admin_master, authHeader })
             })
 
-            cy.quickLogin(admin_system.login, admin_system.password)
+            cy.quickLoginAUI(admin_system.login, admin_system.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -662,7 +662,7 @@ context('Administrator Roles tests', () => {
                 apiCreateAdmin({ data: admin_lawfulintercept, authHeader })
             })
 
-            cy.quickLogin(admin_system.login, admin_system.password)
+            cy.quickLoginAUI(admin_system.login, admin_system.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -685,7 +685,7 @@ context('Administrator Roles tests', () => {
                 apiCreateDomain({ data: domain, authHeader})
             })
 
-            cy.quickLogin(testadminreseller_otherreseller.login, testadminreseller_otherreseller.password)
+            cy.quickLoginAUI(testadminreseller_otherreseller.login, testadminreseller_otherreseller.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -725,7 +725,7 @@ context('Administrator Roles tests', () => {
                 apiCreateAdmin({ data: testadminreseller_otherreseller, authHeader })
             })
 
-            cy.quickLogin(testadminreseller_otherreseller.login, testadminreseller_otherreseller.password)
+            cy.quickLoginAUI(testadminreseller_otherreseller.login, testadminreseller_otherreseller.password)
             cy.navigateMainMenu('settings / domain')
 
             cy.locationShouldBe('#/domain')
@@ -752,7 +752,7 @@ context('Administrator Roles tests', () => {
                 apiCreateAdmin({ data: admin_reseller, authHeader })
             })
 
-            cy.quickLogin(admin_reseller.login, admin_reseller.password)
+            cy.quickLoginAUI(admin_reseller.login, admin_reseller.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -794,7 +794,7 @@ context('Administrator Roles tests', () => {
                 })
             })
 
-            cy.quickLogin(admin_ccareadmin.login, admin_ccareadmin.password)
+            cy.quickLoginAUI(admin_ccareadmin.login, admin_ccareadmin.password)
             cy.navigateMainMenu('settings / customer')
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
@@ -830,7 +830,7 @@ context('Administrator Roles tests', () => {
                 apiCreateAdmin({ data: admin_ccareadmin, authHeader })
             })
 
-            cy.quickLogin(admin_ccareadmin.login, admin_ccareadmin.password)
+            cy.quickLoginAUI(admin_ccareadmin.login, admin_ccareadmin.password)
             cy.navigateMainMenu('settings / customer')
 
             cy.locationShouldBe('#/customer')
@@ -878,7 +878,7 @@ context('Administrator Roles tests', () => {
                 })
             })
 
-            cy.quickLogin(admin_ccare.login, admin_ccare.password)
+            cy.quickLoginAUI(admin_ccare.login, admin_ccare.password)
             cy.navigateMainMenu('settings / customer')
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer_reseller.external_id, 'External #')
@@ -942,7 +942,7 @@ context('Administrator Roles tests', () => {
                 })
             })
 
-            cy.quickLogin(admin_ccare.login, admin_ccare.password)
+            cy.quickLoginAUI(admin_ccare.login, admin_ccare.password)
             cy.navigateMainMenu('settings / customer')
             cy.locationShouldBe('#/customer')
 
@@ -981,7 +981,7 @@ context('Administrator Roles tests', () => {
                 apiCreateBillingProfile({ data: billingProfile, authHeader })
             })
 
-            cy.quickLogin(admin_ccare.login, admin_ccare.password)
+            cy.quickLoginAUI(admin_ccare.login, admin_ccare.password)
             cy.navigateMainMenu('settings / customer')
 
             cy.locationShouldBe('#/customer')
