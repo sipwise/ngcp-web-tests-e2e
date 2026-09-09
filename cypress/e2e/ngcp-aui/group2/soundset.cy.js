@@ -142,7 +142,7 @@ context('Soundset tests', () => {
     })
 
     it('Check if soundset with invalid values gets rejected', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / sound')
         cy.locationShouldBe('#/sound')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -155,7 +155,7 @@ context('Soundset tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
         })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / sound')
         cy.locationShouldBe('#/sound')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -169,7 +169,7 @@ context('Soundset tests', () => {
     })
 
     it('Edit a soundset', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / sound')
 
         cy.locationShouldBe('#/sound')
@@ -188,7 +188,7 @@ context('Soundset tests', () => {
     })
 
     it('Upload/Delete sound in soundset', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / sound')
         cy.locationShouldBe('#/sound')
         searchInDataTable(soundSet.name)
@@ -219,7 +219,7 @@ context('Soundset tests', () => {
     })
 
     it('Upload default soundset files', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         if (issppro) {
             cy.navigateMainMenu('settings / sound')
 
@@ -253,7 +253,7 @@ context('Soundset tests', () => {
     })
 
     it('Assign soundset to customer', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / sound')
 
         cy.locationShouldBe('#/sound')
@@ -267,7 +267,7 @@ context('Soundset tests', () => {
     })
 
     it('Delete soundset', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / sound')
         cy.locationShouldBe('#/sound')
         deleteItemOnListPageBy(soundSet.name)

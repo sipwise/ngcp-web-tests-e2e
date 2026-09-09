@@ -111,7 +111,7 @@ context('Phonebook tests', () => {
             this.skip()
         }
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / phonebook', false)
 
         cy.locationShouldBe('#/phonebook')
@@ -131,7 +131,7 @@ context('Phonebook tests', () => {
             apiRemoveResellerPhonebookBy({name: ResellerPhonebook.name, authHeader})
         })
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / phonebook', false)
 
         cy.locationShouldBe('#/phonebook')
@@ -148,7 +148,7 @@ context('Phonebook tests', () => {
             this.skip()
         }
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / phonebook', false)
 
         cy.locationShouldBe('#/phonebook')
@@ -163,7 +163,7 @@ context('Phonebook tests', () => {
             this.skip()
         }
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / phonebook', false)
 
         cy.locationShouldBe('#/phonebook')
@@ -185,7 +185,7 @@ context('Phonebook tests', () => {
             this.skip()
         }
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / phonebook', false)
 
         cy.locationShouldBe('#/phonebook')

@@ -91,7 +91,7 @@ context('NCOS tests', () => {
 
     context('NCOS Set tests', () => {
         it('Try to create NCOS set with invalid values', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / ncossets', false)
 
             cy.locationShouldBe('#/ncossets')
@@ -111,7 +111,7 @@ context('NCOS tests', () => {
                 apiRemoveNCOSSetBy({ name: NCOSSet.name, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / ncossets', false)
 
             cy.locationShouldBe('#/ncossets')
@@ -140,7 +140,7 @@ context('NCOS tests', () => {
                 apiCreateNCOSSet({ data: NCOSSet, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / ncossets', false)
 
             cy.locationShouldBe('#/ncossets')
@@ -173,7 +173,7 @@ context('NCOS tests', () => {
                 apiCreateNCOSSet({ data: NCOSSet, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / ncossets', false)
 
             cy.locationShouldBe('#/ncossets')
@@ -188,7 +188,7 @@ context('NCOS tests', () => {
 
     context('NCOS Level tests', () => {
         it('Try to create a NCOS Level with invalid values', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / ncos', false)
 
             cy.locationShouldBe('#/ncos')
@@ -206,7 +206,7 @@ context('NCOS tests', () => {
                 apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / ncos', false)
 
             cy.locationShouldBe('#/ncos')
@@ -235,7 +235,7 @@ context('NCOS tests', () => {
                 apiCreateNCOSLevel({ data: NCOSLevel, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / ncos', false)
 
             cy.locationShouldBe('#/ncos')
@@ -270,7 +270,7 @@ context('NCOS tests', () => {
                 apiCreateNCOSLevel({ data: NCOSLevel, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / ncossets', false)
 
             cy.locationShouldBe('#/ncossets')
@@ -306,7 +306,7 @@ context('NCOS tests', () => {
                 apiCreateNCOSLevel({ data: NCOSLevel, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / ncos', false)
 
             cy.locationShouldBe('#/ncos')

@@ -147,7 +147,6 @@ context('Extension Settings tests', () => {
                 apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
                 apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             })
-            cy.visit('/')
         }
     })
 
@@ -168,9 +167,7 @@ context('Extension Settings tests', () => {
                 this.skip()
             }
 
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/call-queues"]').click()
 
@@ -188,9 +185,7 @@ context('Extension Settings tests', () => {
                 this.skip()
             }
 
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/call-queues"]').click()
 
@@ -210,9 +205,7 @@ context('Extension Settings tests', () => {
                 this.skip()
             }
 
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/call-queues"]').click()
 
@@ -231,9 +224,7 @@ context('Extension Settings tests', () => {
                 this.skip()
             }
 
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/ms-configs"]').click()
 
@@ -256,9 +247,7 @@ context('Extension Settings tests', () => {
                 apiCreateSubscriber({ data: pbx_subscriber, authHeader })
             })
 
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/ms-configs"]').click()
 
@@ -284,12 +273,10 @@ context('Extension Settings tests', () => {
                 this.skip()
             }
 
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
-waitPageProgressCSC()
+            waitPageProgressCSC()
             cy.get('button[data-cy="csc-pbx-auto-attendant-add-slot"]').click()
             cy.get('div[role="list"][data-cy="q-list-0"]').click()
             cy.get('div[data-cy="csc-list-item-title"]').contains('Slot: 0').should('be.visible')
@@ -305,12 +292,10 @@ waitPageProgressCSC()
                 this.skip()
             }
 
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
-waitPageProgressCSC()
+            waitPageProgressCSC()
             cy.get('button[data-cy="csc-pbx-auto-attendant-add-slot"]').click()
             cy.get('div[role="list"][data-cy="q-list-0"]').click()
             cy.get('div[role="list"][data-cy="q-list-1"]').click()

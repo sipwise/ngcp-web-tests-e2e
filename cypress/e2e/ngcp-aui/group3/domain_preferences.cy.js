@@ -135,7 +135,7 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all Access Restriction settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
@@ -173,7 +173,7 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all Application settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
@@ -193,7 +193,7 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all Call Blocking settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
@@ -209,7 +209,7 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all IMS application server settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
@@ -223,7 +223,7 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all Internal settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
@@ -305,7 +305,7 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all Media Codec Transcoding Options settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
@@ -390,7 +390,7 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all NAT and Media Flow Control settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
@@ -425,7 +425,7 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all Number Manipulations settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
@@ -468,7 +468,7 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all Number Portability settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
@@ -487,7 +487,7 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all Remote Authentication settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
@@ -501,7 +501,7 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all Session Timers settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
