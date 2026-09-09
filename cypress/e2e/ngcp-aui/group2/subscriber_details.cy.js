@@ -120,7 +120,7 @@ context('Subscriber Details tests', () => {
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
 
             cy.locationShouldBe('#/subscriber')
@@ -181,7 +181,7 @@ context('Subscriber Details tests', () => {
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
 
             cy.locationShouldBe('#/subscriber')
@@ -234,7 +234,7 @@ context('Subscriber Details tests', () => {
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -266,7 +266,7 @@ context('Subscriber Details tests', () => {
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -324,7 +324,7 @@ context('Subscriber Details tests', () => {
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -373,7 +373,7 @@ context('Subscriber Details tests', () => {
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -421,7 +421,7 @@ context('Subscriber Details tests', () => {
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -458,7 +458,7 @@ context('Subscriber Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -501,7 +501,7 @@ context('Subscriber Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -536,7 +536,7 @@ context('Subscriber Details tests', () => {
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
 
             cy.locationShouldBe('#/subscriber')
@@ -569,7 +569,7 @@ context('Subscriber Details tests', () => {
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
 
             cy.locationShouldBe('#/subscriber')
@@ -608,7 +608,7 @@ context('Subscriber Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
 
             cy.locationShouldBe('#/subscriber')
@@ -649,7 +649,7 @@ context('Subscriber Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
 
             cy.locationShouldBe('#/subscriber')

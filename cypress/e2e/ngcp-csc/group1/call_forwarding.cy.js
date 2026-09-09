@@ -187,7 +187,6 @@ context('Call Forwarding tests', () => {
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
         })
-        cy.visit('/')
     })
 
     after(() => {
@@ -202,9 +201,7 @@ context('Call Forwarding tests', () => {
     })
 
     it('Creating a malformed Call Forward (Number/Custom Announcement) should not be possible', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-forwarding"]').click()
 
@@ -227,9 +224,7 @@ context('Call Forwarding tests', () => {
     })
 
     it('Add and delete available, not available and busy Call Forwarding', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-forwarding"]').click()
 
@@ -265,10 +260,8 @@ context('Call Forwarding tests', () => {
         cy.get('div[id="csc-wrapper-call-forwarding"]').contains('If busy').should('not.exist')
     })
 
-    it('Add two numbers to forward to', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+    it('Add two numbers to forward to, move numbers around', () => {
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-forwarding"]').click()
 
@@ -296,9 +289,7 @@ context('Call Forwarding tests', () => {
     })
 
     it('Add "Forward to voicebox" and delete it', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-forwarding"]').click()
 
@@ -321,9 +312,7 @@ context('Call Forwarding tests', () => {
     })
 
     it('Enable and Disable a Call Forward condition', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-forwarding"]').click()
 
@@ -337,9 +326,7 @@ context('Call Forwarding tests', () => {
     })
 
     it('Create a cft and update timeout', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-forwarding"]').click()
 
@@ -357,9 +344,7 @@ context('Call Forwarding tests', () => {
     })
 
     it('Make sure that forwards other than primary number dont get changed', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-forwarding"]').click()
 
@@ -379,9 +364,7 @@ context('Call Forwarding tests', () => {
     })
 
     it('Hover over call forward time to check if popup appears', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-forwarding"]').click()
 
@@ -407,8 +390,7 @@ context('Call Forwarding tests', () => {
                 this.skip()
             }
 
-            cy.loginUiCSC(pbxPilotLoginInfo.username, pbxPilotLoginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
+            cy.quickLoginCSC(pbxPilotLoginInfo.username, pbxPilotLoginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/call-forwarding"]').click()
             cy.get('button[data-cy="csc-add-forwarding"]').click()
@@ -435,8 +417,7 @@ context('Call Forwarding tests', () => {
                 apiCreateSubscriber({ data: pbx_second_seat, authHeader })
             })
 
-            cy.loginUiCSC(pbxPilotLoginInfo.username, pbxPilotLoginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
+            cy.quickLoginCSC(pbxPilotLoginInfo.username, pbxPilotLoginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/call-forwarding"]').click()
             cy.get('button[data-cy="csc-add-forwarding"]').click()

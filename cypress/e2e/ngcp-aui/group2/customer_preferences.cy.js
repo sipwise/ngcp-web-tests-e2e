@@ -144,7 +144,7 @@ context('Customer Preferences tests', () => {
     })
 
     it('Test all Access Restriction settings in customer', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
@@ -169,7 +169,7 @@ context('Customer Preferences tests', () => {
     })
 
     it('Test all Application settings in customer', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
@@ -188,7 +188,7 @@ context('Customer Preferences tests', () => {
     })
 
     it('Test all Call Blocking settings in customer', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
@@ -216,7 +216,7 @@ context('Customer Preferences tests', () => {
     })
 
     it('Test all Internal settings in customer', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
@@ -235,7 +235,7 @@ context('Customer Preferences tests', () => {
     })
 
     it('Test all Number Manipulation settings in customer', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
