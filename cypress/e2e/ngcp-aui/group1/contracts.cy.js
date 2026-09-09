@@ -125,7 +125,7 @@ context('Contract tests', () => {
 
         context(`Contract type: ${contractType}`, () => {
             it(`Check if ${contractType} Contract with invalid values gets rejected`, () => {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / contract')
 
                 cy.locationShouldBe('#/contract')
@@ -144,7 +144,7 @@ context('Contract tests', () => {
                     apiRemoveContractBy({ name: peeringContract.external_id, authHeader })
                     apiRemoveContractBy({ name: resellerContract.external_id, authHeader })
                 })
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / contract')
 
                 cy.locationShouldBe('#/contract')
@@ -172,7 +172,7 @@ context('Contract tests', () => {
             })
 
             it(`Edit ${contractType} Contract status`, () => {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / contract')
 
                 cy.locationShouldBe('#/contract')
@@ -194,7 +194,7 @@ context('Contract tests', () => {
             })
 
             it(`Delete ${contractType} Contract`, () => {
-                cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+                cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / contract')
 
                 cy.locationShouldBe('#/contract')

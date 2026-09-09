@@ -144,7 +144,7 @@ context('Header manipulation tests', () => {
                 this.skip()
             }
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / header', false)
 
             cy.locationShouldBe('#/header')
@@ -166,7 +166,7 @@ context('Header manipulation tests', () => {
                 apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / header', false)
 
             cy.locationShouldBe('#/header')
@@ -197,7 +197,7 @@ context('Header manipulation tests', () => {
                 apiCreateHeaderRuleset({ data: headerRuleset, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / header', false)
 
             cy.locationShouldBe('#/header')
@@ -228,8 +228,8 @@ context('Header manipulation tests', () => {
                 apiCreateHeaderRuleset({ data: headerRuleset, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / header', false)
 
             cy.locationShouldBe('#/header')
@@ -254,7 +254,7 @@ context('Header manipulation tests', () => {
                 apiCreateHeaderRuleset({ data: headerRuleset, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / header', false)
 
             cy.locationShouldBe('#/header')
@@ -286,7 +286,7 @@ context('Header manipulation tests', () => {
                 apiCreateHeaderRuleset({ data: headerRuleset, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / header', false)
 
             cy.locationShouldBe('#/header')
@@ -323,7 +323,7 @@ context('Header manipulation tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / header', false)
 
             cy.locationShouldBe('#/header')
@@ -363,7 +363,7 @@ context('Header manipulation tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / header', false)
 
             cy.locationShouldBe('#/header')
@@ -397,7 +397,7 @@ context('Header manipulation tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / header', false)
 
             cy.locationShouldBe('#/header')
@@ -437,7 +437,7 @@ context('Header manipulation tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / header', false)
 
             cy.locationShouldBe('#/header')
@@ -482,7 +482,7 @@ context('Header manipulation tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / header', false)
 
             cy.locationShouldBe('#/header')
@@ -530,7 +530,7 @@ context('Header manipulation tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / header', false)
 
             cy.locationShouldBe('#/header')
@@ -570,7 +570,7 @@ context('Header manipulation tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / header', false)
 
             cy.locationShouldBe('#/header')
@@ -610,7 +610,7 @@ context('Header manipulation tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / header', false)
 
             cy.locationShouldBe('#/header')
@@ -655,7 +655,7 @@ context('Header manipulation tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / header', false)
 
             cy.locationShouldBe('#/header')
@@ -702,7 +702,7 @@ context('Header manipulation tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / header', false)
 
             cy.locationShouldBe('#/header')

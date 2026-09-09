@@ -44,7 +44,7 @@ const SecondLNPNumber = {
 context('LNP tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
 
         Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
         cy.log('Preparing environment...')
@@ -76,7 +76,7 @@ context('LNP tests', () => {
 
     context('LNP Carrier tests', () => {
         it('Check if LNP Carrier with invalid values gets rejected', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
@@ -94,7 +94,7 @@ context('LNP tests', () => {
                 apiRemoveLNPCarrierBy({ name: LNPCarrier.name, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
@@ -125,7 +125,7 @@ context('LNP tests', () => {
                 apiCreateLNPCarrier({ data: LNPCarrier, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
@@ -154,7 +154,7 @@ context('LNP tests', () => {
                 apiCreateLNPCarrier({ data: LNPCarrier, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
@@ -175,7 +175,7 @@ context('LNP tests', () => {
                 apiCreateLNPCarrier({ data: LNPCarrier, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
@@ -202,7 +202,7 @@ context('LNP tests', () => {
                 apiCreateLNPCarrier({ data: LNPCarrier, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
@@ -241,7 +241,7 @@ context('LNP tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
@@ -280,7 +280,7 @@ context('LNP tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
@@ -306,7 +306,7 @@ context('LNP tests', () => {
                 apiCreateLNPCarrier({ data: LNPCarrier, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
@@ -332,7 +332,7 @@ context('LNP tests', () => {
                 apiCreateLNPCarrier({ data: LNPCarrier, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
@@ -370,7 +370,7 @@ context('LNP tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
@@ -407,7 +407,7 @@ context('LNP tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
@@ -435,7 +435,7 @@ context('LNP tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
@@ -466,7 +466,7 @@ context('LNP tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')
@@ -540,7 +540,7 @@ context('LNP tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / lnp', false)
 
             cy.locationShouldBe('#/lnp/carriers')

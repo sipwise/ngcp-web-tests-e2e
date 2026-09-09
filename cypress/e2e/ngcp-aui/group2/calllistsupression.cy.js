@@ -63,7 +63,7 @@ context('Call List Suppressions tests', () => {
     })
 
     it('Check if Call List Suppression with invalid values gets rejected', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / calllistsuppression')
         cy.locationShouldBe('#/calllistsuppression')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -79,7 +79,7 @@ context('Call List Suppressions tests', () => {
             apiRemoveCallListSuppressionBy({ name: callListSuppression.label, authHeader })
         })
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / calllistsuppression')
         cy.locationShouldBe('#/calllistsuppression')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -96,7 +96,7 @@ context('Call List Suppressions tests', () => {
     })
 
     it('Edit Call List Suppression', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / calllistsuppression')
         cy.locationShouldBe('#/calllistsuppression')
         searchInDataTable(callListSuppression.label, 'Label')
@@ -116,7 +116,7 @@ context('Call List Suppressions tests', () => {
     })
 
     it('Download Call List Suppression', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / calllistsuppression')
         cy.locationShouldBe('#/calllistsuppression')
         searchInDataTable(callListSuppression.label, 'Label')
@@ -134,7 +134,7 @@ context('Call List Suppressions tests', () => {
             apiCreateCallListSuppression({ data: secondCallListSuppression, authHeader })
         })
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / calllistsuppression')
         cy.locationShouldBe('#/calllistsuppression')
 
@@ -153,7 +153,7 @@ context('Call List Suppressions tests', () => {
     })
 
     it('Delete Call List Suppression', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / calllistsuppression')
         cy.locationShouldBe('#/calllistsuppression')
 

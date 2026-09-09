@@ -124,14 +124,11 @@ context('Auto Attendant tests', () => {
             apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader })
         })
-        
-        cy.visit('/')
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
         cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
-        
+
         cy.get('button[data-cy="csc-pbx-auto-attendant-add-slot"]').should('be.visible')
         cy.get('button[data-cy="csc-pbx-auto-attendant-add-slot"]').click()
         cy.wait(500)
@@ -161,10 +158,7 @@ context('Auto Attendant tests', () => {
             })
         })
 
-        cy.visit('/')
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
         cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
 
@@ -197,10 +191,7 @@ context('Auto Attendant tests', () => {
             })
         })
 
-        cy.visit('/')
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
         cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
 
@@ -232,10 +223,7 @@ context('Auto Attendant tests', () => {
             })
         })
 
-        cy.visit('/')
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
         cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
 

@@ -112,7 +112,7 @@ context('Emergency mapping tests', () => {
 
     context('Emergency Mapping Container tests', () => {
         it('Check if emergency mapping container with invalid values gets rejected', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / emergencymapping')
             cy.locationShouldBe('#/emergencymapping')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -127,7 +127,7 @@ context('Emergency mapping tests', () => {
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / emergencymapping')
             cy.locationShouldBe('#/emergencymapping')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -149,7 +149,7 @@ context('Emergency mapping tests', () => {
                 apiCreateEmergencyMappingContainer({ data: emergencyMappingContainer, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / emergencymapping')
             cy.locationShouldBe('#/emergencymapping')
             searchInDataTable(emergencyMappingContainer.name, 'Name')
@@ -177,7 +177,7 @@ context('Emergency mapping tests', () => {
                 apiCreateEmergencyMappingContainer({ data: emergencyMappingContainer, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / emergencymapping')
             cy.locationShouldBe('#/emergencymapping')
             deleteItemOnListPageBy(emergencyMappingContainer.name)
@@ -197,7 +197,7 @@ context('Emergency mapping tests', () => {
                 apiCreateEmergencyMappingContainer({ data: emergencyMappingContainer, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / emergencymapping')
             cy.locationShouldBe('#/emergencymapping')
             searchInDataTable(emergencyMappingContainer.name)
@@ -222,7 +222,7 @@ context('Emergency mapping tests', () => {
                 apiCreateEmergencyMappingContainer({ data: emergencyMappingContainer, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / emergencymapping')
             cy.locationShouldBe('#/emergencymapping')
             searchInDataTable(emergencyMappingContainer.name)
@@ -253,7 +253,7 @@ context('Emergency mapping tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / emergencymapping')
             cy.locationShouldBe('#/emergencymapping')
             searchInDataTable(emergencyMappingContainer.name)
@@ -290,7 +290,7 @@ context('Emergency mapping tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / emergencymapping')
             cy.locationShouldBe('#/emergencymapping')
             searchInDataTable(emergencyMappingContainer.name)

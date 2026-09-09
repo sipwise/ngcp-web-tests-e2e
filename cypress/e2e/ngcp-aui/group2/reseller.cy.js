@@ -76,7 +76,7 @@ context('Reseller tests', () => {
     })
 
     it('Check if reseller with invalid values gets rejected', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / reseller')
 
         cy.locationShouldBe('#/reseller')
@@ -95,7 +95,7 @@ context('Reseller tests', () => {
             apiRemoveResellerBy({ name: reseller.name, authHeader })
             apiRemoveContractBy({ name: contract.external_id, authHeader })
         })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / reseller')
 
         cy.locationShouldBe('#/reseller')
@@ -123,7 +123,7 @@ context('Reseller tests', () => {
     })
 
     it('Edit reseller status to "locked"', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / reseller')
 
         cy.locationShouldBe('#/reseller')
@@ -140,7 +140,7 @@ context('Reseller tests', () => {
     })
 
     it('Delete reseller and check if they are deleted', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / reseller')
 
         cy.locationShouldBe('#/reseller')

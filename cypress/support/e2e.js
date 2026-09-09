@@ -33,6 +33,17 @@ const quiet = {
     log: debugging
 }
 
+// Mirrors Quasar's LocalStorage type-prefixing (see quasar/src/plugins/storage/engine/web-storage.js)
+// so values written directly to `localStorage` (bypassing the LocalStorage plugin) are readable by the app.
+const QUASAR_STORAGE_PREFIX = {
+    string: '__q_strn|',
+    number: '__q_numb|'
+}
+
+function setQuasarLocalStorage (key, value, type = 'string') {
+    localStorage[key] = QUASAR_STORAGE_PREFIX[type] + value
+}
+
 Cypress.Commands.add('navigateMainMenu', (path = '', waitForPageLoading = true) => {
     Cypress.log({
         name: 'navigateMainMenu',
@@ -147,7 +158,8 @@ but they do so in different ways:
 ### `quickLogin` Command
 - This command performs authentication by directly making an API request to the backend.
 - It calls loginAPI() to authenticate the user and then navigates to the home page.
-- This method bypasses the UI, but then checks the login succeeded by checking the presence of the side menu.
+- This method bypasses the UI. It asserts the login API call returned a 200 before navigating,
+  then double-checks the login succeeded by checking the presence of the side menu.
 - Useful for all those cases where we are not interested in testing the UI login flow.
 
 ### `loginUI` Command
@@ -160,22 +172,28 @@ but they do so in different ways:
 ### `loginAPI` Command
 - This command performs authentication by directly making an API request to the backend.
 - It sends a POST request to the `/login_jwt` endpoint with the username and password.
-- If the response is successful, it decodes the JWT token and stores it in the local storage.
+- If the response is successful, it stores the JWT in local storage together with the id the app
+  keys the session on (the admin id decoded from the JWT for AUI, the subscriber id from the
+  response body for CSC), matching how each app's store persists a successful login.
+- It does not throw on a failed login: it resolves with the raw response so callers (including
+  tests that intentionally log in with bad credentials) can inspect the status themselves.
 - This method bypasses the UI completely.
 */
 
-Cypress.Commands.add('loginAPI', (username, password) => {
+Cypress.Commands.add('AUIloginAPI', (username, password) => {
     const log = Cypress.log({
-        name: 'loginAPI',
+        name: 'AUIloginAPI',
         displayName: 'LOGIN (API)',
         message: `🔒 Authenticating: ${username}`,
         autoEnd: false
     })
-    const ngcpConfig = Cypress.config('ngcpConfig')
+
     const loginData = {
         username,
         password
     }
+
+    const ngcpConfig = Cypress.config('ngcpConfig')
     const apiLoginURL = `${ngcpConfig.apiHost}/login_jwt`
 
     return cy
@@ -195,16 +213,13 @@ Cypress.Commands.add('loginAPI', (username, password) => {
                 const decodedJwt = jwtDecode(jwt)
                 adminId = decodedJwt.id
 
-                const quasarFrameworkStrDataPrefix = '__q_strn|'
-                const quasarFrameworkNumbDataPrefix = '__q_numb|'
-                localStorage.aui_jwt = quasarFrameworkStrDataPrefix + jwt
-                localStorage.aui_adminId = quasarFrameworkNumbDataPrefix + Number(adminId)
+                setQuasarLocalStorage('aui_jwt', jwt)
+                setQuasarLocalStorage('aui_adminId', Number(adminId), 'number')
             }
 
             const logData = {
                 apiURL: apiLoginURL,
                 username,
-                password,
                 jwt,
                 adminId
             }
@@ -222,6 +237,91 @@ Cypress.Commands.add('loginAPI', (username, password) => {
         })
 })
 
+Cypress.Commands.add('CSCloginAPI', (username, password) => {
+    const log = Cypress.log({
+        name: 'CSCloginAPI',
+        displayName: 'LOGIN (API) CSC',
+        message: `🔒 Authenticating: ${username}`,
+        autoEnd: false
+    })
+
+    const loginData = {
+        username,
+        password
+    }
+
+    const apiLoginURL = `${Cypress.config('baseUrl')}/login_jwt`
+
+    return cy
+        .request({
+            method: 'POST',
+            url: apiLoginURL,
+            body: loginData,
+            failOnStatusCode: false,
+            ...quiet
+        })
+        .then((response) => {
+            const statusCode = response.status || response.statusCode
+            let jwt
+            let subscriberId
+            if (Number(statusCode) === 200) {
+                jwt = response.body.jwt
+                subscriberId = `${response.body.subscriber_id}`
+
+                setQuasarLocalStorage('csc_jwt', jwt)
+                setQuasarLocalStorage('csc_subscriberId', subscriberId)
+            }
+
+            const logData = {
+                apiURL: apiLoginURL,
+                username,
+                jwt,
+                subscriberId
+            }
+            log.set({
+                consoleProps () {
+                    return logData
+                }
+            })
+            log.end()
+
+            return {
+                ...logData,
+                response
+            }
+        })
+})
+
+Cypress.Commands.add('quickLoginAUI', (username, password) => {
+    cy.clearLocalStorage()
+    const loginResponse = cy.AUIloginAPI(username, password).then((result) => {
+        const statusCode = result.response.status || result.response.statusCode
+        expect(statusCode, `AUI API login failed for user "${username}"`).to.equal(200)
+        return result
+    })
+    cy.visit('/')
+    // adding wait here, to be sure that inputs are intractable \ accessible
+    cy.wait(500)
+    cy.get('.q-drawer', { timeout: 10000 }).should('be.visible')
+    cy.get('a[href="#/dashboard"]').should('be.visible')
+    return loginResponse
+})
+
+Cypress.Commands.add('quickLoginCSC', (username, password) => {
+    cy.clearLocalStorage()
+    const loginResponse = cy.CSCloginAPI(username, password).then((result) => {
+        const statusCode = result.response.status || result.response.statusCode
+        expect(statusCode, `CSC API login failed for user "${username}"`).to.equal(200)
+        return result
+    })
+    cy.visit('/')
+    // adding wait here, to be sure that inputs are intractable \ accessible
+    cy.wait(500)
+    cy.get('.q-drawer', { timeout: 10000 }).should('be.visible')
+    cy.get('a[href="#/user/dashboard"]').should('be.visible')
+    return loginResponse
+})
+
 Cypress.Commands.add('loginUiAUI', (username, password, waitForSidemenu = true) => {
     const log = Cypress.log({
         name: 'loginUiAUI',
@@ -231,6 +331,8 @@ Cypress.Commands.add('loginUiAUI', (username, password, waitForSidemenu = true) 
     })
 
     cy.intercept('POST', '**/login_jwt').as('loginRequest')
+    cy.get('input[data-cy=aui-input-username][aria-disabled="true"]').should('not.exist')
+    cy.get('input[data-cy=aui-input-password][aria-disabled="true"]').should('not.exist')
     cy.get('input[data-cy=aui-input-username]', quiet).type(username, quiet)
     cy.get('input[data-cy=aui-input-password]', quiet).type(password, quiet)
     cy.get('[data-cy=sign-in]', quiet).click(quiet)
@@ -267,6 +369,7 @@ Cypress.Commands.add('loginUiAUI', (username, password, waitForSidemenu = true) 
         // according to the user type.
         // So, to be sure that we are logged in we are waiting for an unique UI element of MainLayout
         cy.get('.q-drawer', quiet, { timeout: 10000 }).should('be.visible', quiet)
+        cy.get('a[href="#/dashboard"]').should('be.visible')
     }
 
     log.end()
@@ -281,6 +384,8 @@ Cypress.Commands.add('loginUiCSC', (username, password, waitForSidemenu = true) 
     })
 
     cy.intercept('POST', '**/login_jwt').as('loginRequest')
+    cy.get('input[data-cy="csc-login-username"][aria-disabled="true"]').should('not.exist')
+    cy.get('input[data-cy="csc-login-password"][aria-disabled="true"]').should('not.exist')
     cy.get('input[data-cy="csc-login-username"]', quiet).type(username, quiet)
     cy.get('input[data-cy="csc-login-password"]', quiet).type(password, quiet)
     cy.get('button[data-cy="csc-login-button"]', quiet).click(quiet)
@@ -318,22 +423,11 @@ Cypress.Commands.add('loginUiCSC', (username, password, waitForSidemenu = true) 
         //       according to the user type.
         //       So, to be sure that we are logged in we are waiting for an unique UI element of MainLayout
         cy.get('.q-drawer', quiet, { timeout: 10000 }).should('be.visible', quiet)
+        cy.get('a[href="#/user/dashboard"]').should('be.visible')
     }
 
     log.end()
     return reqResponse
-})
-
-Cypress.Commands.add('quickLogin', (username, password) => {
-    cy.clearLocalStorage()
-    const loginResponse = cy.loginAPI(username, password)
-    cy.visit('/')
-    // adding wait here, to be sure that inputs are intractable \ accessible
-    cy.wait(500)
-
-
-    cy.get('.q-drawer', { timeout: 10000 }).should('be.visible')
-    return loginResponse
 })
 
 Cypress.Commands.add('logoutUiAUI', () => {
@@ -344,10 +438,10 @@ Cypress.Commands.add('logoutUiAUI', () => {
         autoEnd: true
     })
 
-    cy.intercept('GET', '**/ajax_logout').as('v1LogoutRequest')
     cy.get('button[data-cy=usermenu-btn]', quiet).click(quiet)
     cy.get('[data-cy=logout-btn]', quiet).click(quiet)
-    cy.wait('@v1LogoutRequest', quiet)
+    cy.get('input[data-cy="aui-input-username"]').should('be.visible')
+    cy.get('input[data-cy="aui-input-password"]').should('be.visible')
     cy.url(quiet).should((url) => {
         // NOTE: "should" does not support "{ log: false }" so it's a workaround for that
         const loginPageURL = /\/#\/login\/admin$/
@@ -355,7 +449,6 @@ Cypress.Commands.add('logoutUiAUI', () => {
             expect(url).to.match(loginPageURL)
         }
     })
-
     log.end()
 })
 
@@ -374,7 +467,7 @@ Cypress.Commands.add('createAdminUI', (admin) => {
 })
 
 export const apiLoginAsSuperuser = () => {
-    return cy.loginAPI('administrator', 'administrator').then(({ jwt }) => {
+    return cy.AUIloginAPI('administrator', 'administrator').then(({ jwt }) => {
         return {
             headers: {
                 authorization: `Bearer ${jwt}`
@@ -686,7 +779,7 @@ export const apiRemoveCustomerById = ({ id, authHeader }) => {
                 }
             })
         }
-        
+
         return cy.log('Customer not found or already terminated...', id)
     })
 }
@@ -1807,7 +1900,7 @@ export const apiRemoveNCOSSetBy = ({ name, authHeader }) => {
                     ...authHeader
                 })
             })
-            
+
         } else {
             return cy.log('Ncos set not found', name)
         }

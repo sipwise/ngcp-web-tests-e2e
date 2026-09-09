@@ -74,7 +74,6 @@ context('Reminder tests', () => {
 
             apiCreateSubscriber({ data: subscriber, authHeader })
         })
-        cy.visit('/')
     })
 
     after(() => {
@@ -87,9 +86,7 @@ context('Reminder tests', () => {
     })
 
     it('Enable/Disable reminder', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/reminder"]').click()
 
@@ -105,9 +102,7 @@ context('Reminder tests', () => {
     })
 
     it('Set occurance and then enable reminder', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/reminder"]').click()
 
@@ -125,9 +120,7 @@ context('Reminder tests', () => {
     })
 
     it('Set time and then enable reminder', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/reminder"]').click()
 

@@ -76,7 +76,6 @@ context('Voicebox tests', () => {
                 apiCreateSubscriber({ data:  subscriber, authHeader })
             })
         })
-        cy.visit('/')
     })
 
     after(() => {
@@ -89,9 +88,7 @@ context('Voicebox tests', () => {
     })
 
     it('Switch between all Voicebox languages', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/voicebox"]').click()
 
@@ -168,9 +165,7 @@ context('Voicebox tests', () => {
     })
 
     it('Change and Undo PIN', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/voicebox"]').click()
 
@@ -200,9 +195,7 @@ context('Voicebox tests', () => {
     })
 
     it('Change and Undo Email', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/voicebox"]').click()
 
@@ -235,9 +228,7 @@ context('Voicebox tests', () => {
     })
 
     it('Enable/Disable attach/delete Voicemail', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/voicebox"]').click()
 
@@ -264,9 +255,7 @@ context('Voicebox tests', () => {
     })
 
     it('Upload/Delete busy greeting sound', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/voicebox"]').click()
 
@@ -291,9 +280,7 @@ context('Voicebox tests', () => {
     })
 
     it('Upload/Delete unavailable greeting sound', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/voicebox"]').click()
 

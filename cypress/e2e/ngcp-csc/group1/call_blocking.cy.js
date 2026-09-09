@@ -80,9 +80,8 @@ context('Call Blocking tests', () => {
                         }
                     },
                     authHeader
-                    })
-        })
-        cy.visit('/')
+                })
+            })
         })
     })
 
@@ -96,9 +95,7 @@ context('Call Blocking tests', () => {
     })
 
     it('Enable incoming call block', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-blocking/incoming"]').click()
 
@@ -116,9 +113,7 @@ context('Call Blocking tests', () => {
     })
 
     it('Add blocked number and enable blocklist for incoming calls', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-blocking/incoming"]').click()
 
@@ -138,9 +133,7 @@ context('Call Blocking tests', () => {
     })
 
     it('Add/Edit/Delete blocked numbers for incoming calls', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-blocking/incoming"]').click()
 
@@ -180,9 +173,7 @@ context('Call Blocking tests', () => {
     })
 
     it('Add blocked number and enable blocklist for outgoing calls', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-blocking/outgoing"]').click()
 
@@ -198,13 +189,11 @@ context('Call Blocking tests', () => {
 
         cy.get('div[data-cy="csc-block-all"]').click()
         cy.get('div[data-cy="csc-block-all"][aria-checked="true"]').should('be.visible')
-        cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('block').should('be.visible')        
+        cy.get('i.q-icon.material-icons[data-cy="q-icon"]').contains('block').should('be.visible')
     })
 
     it('Add/Edit/Delete blocked numbers for outgoing calls', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-blocking/outgoing"]').click()
 

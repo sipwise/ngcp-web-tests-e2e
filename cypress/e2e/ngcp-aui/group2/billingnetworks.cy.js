@@ -129,7 +129,7 @@ context('Billing Network', () => {
             })
         })
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / network', false)
 
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -166,7 +166,7 @@ context('Billing Network', () => {
             })
         })
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / network', false)
 
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -205,7 +205,7 @@ context('Billing Network', () => {
             })
         })
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / network', false)
 
         searchInDataTable(secondBillingNetwork.blocks[0].ip, "IP")
@@ -248,7 +248,7 @@ context('Billing Network', () => {
             })
         })
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / network', false)
 
         deleteItemOnListPageBy(deleteBillingNetwork.name, "Name")

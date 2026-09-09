@@ -72,7 +72,6 @@ context('Speed Dial "General" tests', () => {
 
             apiCreateSubscriber({ data: subscriber, authHeader })
         })
-        cy.visit('/')
     })
 
     after(() => {
@@ -85,9 +84,7 @@ context('Speed Dial "General" tests', () => {
     })
 
     it('Add/Delete speed dial', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/speeddial"]').click()
 
@@ -109,9 +106,7 @@ context('Speed Dial "General" tests', () => {
     })
 
     it('Add/Delete two speed dials', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/speeddial"]').click()
 

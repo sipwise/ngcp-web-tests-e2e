@@ -108,7 +108,6 @@ context('Sound Set (CSC) page tests', () => {
                 apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
                 apiCreateSoundSet({ data: soundSet, authHeader })
             })
-            cy.visit('/')
         }
     })
 
@@ -126,9 +125,7 @@ context('Sound Set (CSC) page tests', () => {
             this.skip()
         }
 
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/sound-sets"]').click()
 
@@ -145,9 +142,7 @@ context('Sound Set (CSC) page tests', () => {
             apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
         })
 
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/sound-sets"]').click()
 
@@ -176,9 +171,7 @@ context('Sound Set (CSC) page tests', () => {
             this.skip()
         }
 
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/sound-sets"]').click()
 
@@ -197,9 +190,7 @@ context('Sound Set (CSC) page tests', () => {
             this.skip()
         }
 
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/sound-sets"]').click()
 
@@ -229,9 +220,7 @@ context('Sound Set (CSC) page tests', () => {
             this.skip()
         }
 
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/sound-sets"]').click()
 

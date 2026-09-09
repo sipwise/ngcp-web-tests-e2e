@@ -71,7 +71,6 @@ context('Call Settings "General" tests', () => {
             apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader })
         })
-        cy.visit('/')
     })
 
     after(() => {
@@ -84,9 +83,7 @@ context('Call Settings "General" tests', () => {
     })
 
     it('Enable/Disable "Music on Hold"', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-settings"]').click()
 
@@ -98,9 +95,7 @@ context('Call Settings "General" tests', () => {
     })
 
     it('Enable/Disable "Hide your number to the callee"', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-blocking/privacy"]').click()
 
