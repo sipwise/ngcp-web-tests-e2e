@@ -186,7 +186,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -221,7 +221,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -262,7 +262,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -306,7 +306,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -341,7 +341,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -385,7 +385,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -429,7 +429,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -472,7 +472,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -504,7 +504,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -537,7 +537,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -575,7 +575,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -619,7 +619,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -651,7 +651,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -694,7 +694,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -731,7 +731,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -778,7 +778,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -830,7 +830,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -865,7 +865,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -897,7 +897,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -933,7 +933,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -970,7 +970,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -1007,7 +1007,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -1046,7 +1046,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -1091,7 +1091,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -1138,7 +1138,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')
@@ -1171,7 +1171,7 @@ context('Reseller Details tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / reseller', false)
 
             cy.locationShouldBe('#/reseller')

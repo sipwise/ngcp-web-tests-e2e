@@ -198,7 +198,7 @@ context('Billing vouchers tests', () => {
         if (!issppro) {
             this.skip()
         }
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / voucher')
         cy.locationShouldBe('#/voucher')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -216,7 +216,7 @@ context('Billing vouchers tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
         })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / voucher')
 
         cy.locationShouldBe('#/voucher')
@@ -240,7 +240,7 @@ context('Billing vouchers tests', () => {
         if (!issppro) {
             this.skip()
         }
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / voucher')
 
         cy.locationShouldBe('#/voucher')
@@ -264,7 +264,7 @@ context('Billing vouchers tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
         })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / voucher')
         waitPageProgressAUI()
         cy.locationShouldBe('#/voucher')
@@ -286,7 +286,7 @@ context('Billing vouchers tests', () => {
         if (!issppro) {
             this.skip()
         }
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / voucher')
 
         cy.locationShouldBe('#/voucher')

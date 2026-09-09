@@ -119,7 +119,7 @@ context('Profile Package tests', () => {
     })
 
     it('Check if Profile Package with invalid values gets rejected', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / package')
 
         cy.locationShouldBe('#/package')
@@ -138,7 +138,7 @@ context('Profile Package tests', () => {
             apiRemoveProfilePackageBy({ name: profilePackage.name, authHeader })
         })
 
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / package')
 
         cy.locationShouldBe('#/package')
@@ -154,7 +154,7 @@ context('Profile Package tests', () => {
     })
 
     it('Edit a Profile Package', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / package')
 
         cy.locationShouldBe('#/package')
@@ -173,7 +173,7 @@ context('Profile Package tests', () => {
     })
 
     it('Delete Profile Package and check if they are deleted', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / package')
 
         cy.locationShouldBe('#/package')

@@ -167,7 +167,7 @@ context('Customer tests', () => {
     ].forEach(({ loginType, login, password }) => {
         context(`Admin login type: ${loginType}`, () => {
             it('Check if customer with invalid values gets rejected', () => {
-                cy.quickLogin(login, password)
+                cy.quickLoginAUI(login, password)
                 cy.navigateMainMenu('settings / customer')
 
                 cy.locationShouldBe('#/customer')
@@ -185,7 +185,7 @@ context('Customer tests', () => {
                     customer.external_id = 'newCustomer' + getRandomNum()
                 })
 
-                cy.quickLogin(login, password)
+                cy.quickLoginAUI(login, password)
                 cy.navigateMainMenu('settings / customer')
 
                 cy.locationShouldBe('#/customer')
@@ -200,7 +200,7 @@ context('Customer tests', () => {
             })
 
             it('Edit customer status to "locked"', () => {
-                cy.quickLogin(login, password)
+                cy.quickLoginAUI(login, password)
                 cy.navigateMainMenu('settings / customer')
 
                 cy.locationShouldBe('#/customer')
@@ -219,7 +219,7 @@ context('Customer tests', () => {
             })
 
             it('Delete customer and check if they are deleted', () => {
-                cy.quickLogin(login, password)
+                cy.quickLoginAUI(login, password)
                 cy.navigateMainMenu('settings / customer')
 
                 cy.locationShouldBe('#/customer')

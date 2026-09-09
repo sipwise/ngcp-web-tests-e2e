@@ -111,7 +111,7 @@ context('Peering tests', () => {
 
     context('Peering Group tests', () => {
         it('Check if Peering Group with invalid values gets rejected', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
@@ -131,7 +131,7 @@ context('Peering tests', () => {
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
@@ -159,7 +159,7 @@ context('Peering tests', () => {
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
@@ -191,7 +191,7 @@ context('Peering tests', () => {
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
@@ -212,7 +212,7 @@ context('Peering tests', () => {
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
@@ -249,7 +249,7 @@ context('Peering tests', () => {
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
@@ -287,7 +287,7 @@ context('Peering tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
@@ -327,7 +327,7 @@ context('Peering tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
@@ -356,7 +356,7 @@ context('Peering tests', () => {
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
@@ -386,7 +386,7 @@ context('Peering tests', () => {
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
@@ -424,7 +424,7 @@ context('Peering tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
@@ -464,7 +464,7 @@ context('Peering tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
@@ -493,7 +493,7 @@ context('Peering tests', () => {
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
@@ -527,7 +527,7 @@ context('Peering tests', () => {
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
@@ -564,7 +564,7 @@ context('Peering tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')
@@ -604,7 +604,7 @@ context('Peering tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / peering', false)
 
             cy.locationShouldBe('#/peering')

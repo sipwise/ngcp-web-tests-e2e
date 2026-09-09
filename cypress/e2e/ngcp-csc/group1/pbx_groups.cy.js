@@ -174,9 +174,7 @@ context('PBX Groups Tests', () => {
 
         cy.visit('/')
 
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/groups"]').click()
         cy.get('button[data-cy="groups-add-new"]').click()
@@ -204,9 +202,7 @@ context('PBX Groups Tests', () => {
 
         cy.visit('/')
 
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/groups"]').click()
         cy.get('button[data-cy="groups-add-new"]').click()
@@ -242,9 +238,7 @@ context('PBX Groups Tests', () => {
 
         cy.visit('/')
 
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/groups"]').click()
         cy.get('div[class="csc-list-item-title"]').click()
@@ -288,9 +282,7 @@ context('PBX Groups Tests', () => {
 
         cy.visit('/')
 
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/groups"]').click()
         cy.get('div[class="csc-list-item-title"]').click()
@@ -353,11 +345,7 @@ context('PBX Groups Tests', () => {
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
 
-        cy.visit('/')
-
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/groups"]').click()
         cy.get('div[class="csc-list-item-title"]').click()
@@ -415,11 +403,7 @@ context('PBX Groups Tests', () => {
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
 
-        cy.visit('/')
-
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/groups"]').click()
         cy.get('div[class="csc-list-item-title"]').click()
@@ -467,11 +451,7 @@ context('PBX Groups Tests', () => {
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
 
-        cy.visit('/')
-
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/groups"]').click()
         cy.get('div[class="csc-list-item-title"]').click()
@@ -515,11 +495,7 @@ context('PBX Groups Tests', () => {
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
 
-        cy.visit('/')
-
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/groups"]').click()
         cy.get('div[class="csc-list-item-title"]').click()
@@ -556,11 +532,7 @@ context('PBX Groups Tests', () => {
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
 
-        cy.visit('/')
-
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/groups"]').click()
 

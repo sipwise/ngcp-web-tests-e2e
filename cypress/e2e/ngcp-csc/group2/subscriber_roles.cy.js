@@ -187,10 +187,6 @@ context('Subscriber Roles tests', () => {
             loginInfo.password = `${subscriber.webpassword}`
         })
 
-        beforeEach(() => {
-            cy.visit('/')
-        })
-
         after(() => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberBy({ name: subscriber.external_id, authHeader })
@@ -198,9 +194,7 @@ context('Subscriber Roles tests', () => {
         })
 
         it('Login and check if subscriber cannot see pbx and admin pages, cannot see SIP password fields', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('button[data-cy="user-menu"]').click()
             cy.get('a[data-cy="user-settings"]').click()
 
@@ -212,9 +206,7 @@ context('Subscriber Roles tests', () => {
         })
 
         it('Check if subscriber can create/delete an object (speed dial)', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/speeddial"]').click()
 
@@ -245,7 +237,6 @@ context('Subscriber Roles tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiCreateSubscriber({ data: admin_subscriber, authHeader })
             })
-            cy.visit('/')
         })
 
         afterEach(() => {
@@ -255,9 +246,7 @@ context('Subscriber Roles tests', () => {
         })
 
         it('Login and check if admin subscriber cannot see pbx and admin pages, can see SIP password fields', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('button[data-cy="user-menu"]').click()
             cy.get('a[data-cy="user-settings"]').click()
 
@@ -269,9 +258,7 @@ context('Subscriber Roles tests', () => {
         })
 
         it('Change and copy SIP password', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.wrap(
                 Cypress.automation('remote:debugger:protocol', {
                     command: 'Browser.grantPermissions',
@@ -301,9 +288,7 @@ context('Subscriber Roles tests', () => {
         })
 
         it('Check if admin subscriber can create/delete an object (speed dial)', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/speeddial"]').click()
 
@@ -335,12 +320,6 @@ context('Subscriber Roles tests', () => {
             }
         })
 
-        beforeEach(() => {
-            if(iscloudpbx) {
-                cy.visit('/')
-            }
-        })
-
         after(() => {
             if(iscloudpbx) {
                 apiLoginAsSuperuser().then(authHeader => {
@@ -355,9 +334,7 @@ context('Subscriber Roles tests', () => {
             if (!iscloudpbx) {
                 this.skip()
             }
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('button[data-cy="user-menu"]').click()
             cy.get('a[data-cy="user-settings"]').click()
 
@@ -372,9 +349,7 @@ context('Subscriber Roles tests', () => {
             if (!iscloudpbx) {
                 this.skip()
             }
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/speeddial"]').click()
 
@@ -395,9 +370,7 @@ context('Subscriber Roles tests', () => {
             if (!iscloudpbx) {
                 this.skip()
             }
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/call-queues"]').click()
             waitPageProgressCSC()
@@ -426,7 +399,6 @@ context('Subscriber Roles tests', () => {
                 apiLoginAsSuperuser().then(authHeader => {
                     apiCreateSubscriber({ data: pbx_admin_subscriber, authHeader })
                 })
-                cy.visit('/')
             }
         })
 
@@ -450,9 +422,7 @@ context('Subscriber Roles tests', () => {
             if (!iscloudpbx) {
                 this.skip()
             }
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('button[data-cy="user-menu"]').click()
             cy.get('a[data-cy="user-settings"]').click()
 
@@ -467,9 +437,7 @@ context('Subscriber Roles tests', () => {
             if (!iscloudpbx) {
                 this.skip()
             }
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.wrap(
                 Cypress.automation('remote:debugger:protocol', {
                     command: 'Browser.grantPermissions',
@@ -502,9 +470,7 @@ context('Subscriber Roles tests', () => {
             if (!iscloudpbx) {
                 this.skip()
             }
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/speeddial"]').click()
 
@@ -525,9 +491,7 @@ context('Subscriber Roles tests', () => {
             if (!iscloudpbx) {
                 this.skip()
             }
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/call-queues"]').click()
 

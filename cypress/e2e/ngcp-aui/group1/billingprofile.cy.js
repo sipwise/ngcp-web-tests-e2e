@@ -102,7 +102,7 @@ context('Billing profile tests', () => {
     })
     context('Billing Profile tests', () => {
         it('Check if billing profile with invalid values gets rejected', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -121,7 +121,7 @@ context('Billing profile tests', () => {
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -147,7 +147,7 @@ context('Billing profile tests', () => {
                 apiCreateBillingProfile({ data: billingProfile, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -177,7 +177,7 @@ context('Billing profile tests', () => {
                 apiCreateBillingProfile({ data: billingProfile, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -198,7 +198,7 @@ context('Billing profile tests', () => {
                 apiCreateBillingProfile({ data: billingProfile, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -226,7 +226,7 @@ context('Billing profile tests', () => {
                 apiCreateBillingProfile({ data: billingProfile, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -258,7 +258,7 @@ context('Billing profile tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -294,7 +294,7 @@ context('Billing profile tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -321,7 +321,7 @@ context('Billing profile tests', () => {
                 apiCreateBillingProfile({ data: billingProfile, authHeader })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -352,7 +352,7 @@ context('Billing profile tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -391,7 +391,7 @@ context('Billing profile tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')
@@ -434,7 +434,7 @@ context('Billing profile tests', () => {
                 })
             })
 
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / billing')
 
             cy.locationShouldBe('#/billing')

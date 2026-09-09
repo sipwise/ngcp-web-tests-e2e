@@ -76,7 +76,7 @@ context('Email template tests', () => {
     })
 
     it('Check if email template with invalid values gets rejected', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emailtemplate')
 
         cy.locationShouldBe('#/emailtemplate/custom')
@@ -94,7 +94,7 @@ context('Email template tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveEmailTemplateBy({ name: emailTemplate.name, authHeader })
         })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emailtemplate')
         cy.locationShouldBe('#/emailtemplate/custom')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -113,7 +113,7 @@ context('Email template tests', () => {
     })
 
     it('Edit a email template', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emailtemplate')
 
         cy.locationShouldBe('#/emailtemplate/custom')
@@ -129,7 +129,7 @@ context('Email template tests', () => {
     })
 
     it('Delete email template', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emailtemplate')
 
         cy.locationShouldBe('#/emailtemplate/custom')

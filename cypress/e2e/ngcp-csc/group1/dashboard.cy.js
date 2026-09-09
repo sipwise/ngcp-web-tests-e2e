@@ -88,7 +88,6 @@ context('Dashboard tests', () => {
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
         })
-        cy.visit('/')
     })
 
     after(() => {
@@ -101,9 +100,7 @@ context('Dashboard tests', () => {
     })
 
     it('Check if links in Dashboard work properly', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="dashboard-view-voicebox"] a').click()
         cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Voicemails found')
         cy.get('a[href="#/user/dashboard"]').click()
@@ -117,9 +114,7 @@ context('Dashboard tests', () => {
     })
 
     it('Make a test call', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/home"]').click()
         cy.get('input[data-cy="csc-call-number-input"]').type('testcontact')
         cy.get('button[data-cy="start-call"]').click()
@@ -131,9 +126,7 @@ context('Dashboard tests', () => {
 
     it('Try to access every page in conversations tab', () => {
         cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/conversations"]:first').click()
         if (issppro){
             cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')
