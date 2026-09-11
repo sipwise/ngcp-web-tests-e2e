@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.2.1.9+0~mr26.2.1.9) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [5d7bf89] MT#65940 fix auiSelectLazySelect weird behaviour when calling it multiple times in a row
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 11 Sep 2026 12:38:08 +0200
+
 ngcp-web-tests-e2e (26.2.1.8+0~mr26.2.1.8) unstable; urgency=medium
 
   [ Debora Crescenzo ]
