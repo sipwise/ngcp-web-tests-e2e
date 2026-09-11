@@ -610,6 +610,7 @@ context('Administrator tests', () => {
         })
     })
 
+    //WARNING: If Create/Download API certificate test fails, the following tests will fail as well. Tests shoud usually never depend on each other, but in this case it is not possible to do it any other way.
     context('Admin certificates tests', () => {
         before(() => {
             apiLoginAsSuperuser().then(authHeader => {
@@ -636,6 +637,11 @@ context('Administrator tests', () => {
         })
 
         it('Create and Download API certificate from second administrator', () => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveAdminBy({ name: admin1.login, authHeader })
+                apiCreateAdmin({ data: admin1, authHeader })
+            })
+
             cy.quickLogin(admin1.login, admin1.password)
             cy.navigateMainMenu('settings / administrator')
 
