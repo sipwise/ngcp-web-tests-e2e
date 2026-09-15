@@ -327,7 +327,6 @@ context('Customer Details tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--customerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div').contains('Contact Details').click()
             cy.get('div[data-cy="customer-contactdetails-table"]').contains('Firstname Lastname').should('be.visible')
             cy.get('div[data-cy="customer-contactdetails-table"]').contains('testcompany').should('be.visible')
