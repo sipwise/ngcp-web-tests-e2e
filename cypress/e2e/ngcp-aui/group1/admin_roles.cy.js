@@ -424,7 +424,7 @@ context('Administrator Roles tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
 
-            waitPageProgressAUI()
+            cy.get('label[data-cy="roles-list"] input').should('exist')
             cy.qSelect({ dataCy: 'roles-list', filter: 'ccare', itemContains: 'ccare -' })
 
             cy.get('[data-cy="aui-save-button"]').click()
@@ -626,7 +626,7 @@ context('Administrator Roles tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
 
-            waitPageProgressAUI()
+            cy.get('label[data-cy="roles-list"] input').should('exist')
             cy.qSelect({ dataCy: 'roles-list', filter: 'admin', itemContains: 'admin' })
 
             cy.get('[data-cy="aui-save-button"]').click()
