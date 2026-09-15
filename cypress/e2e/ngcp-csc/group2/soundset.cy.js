@@ -16,6 +16,7 @@ import {
 const ngcpConfig = Cypress.config('ngcpConfig')
 const fixturesFolder = Cypress.config('fixturesFolder')
 const path = require('path')
+let iscloudpbx = null
 
 const domain = {
     domain: 'domainSoundsetCSC',
@@ -83,17 +84,32 @@ context('Sound Set (CSC) page tests', () => {
                 pbx_subscriber_pilot.customer_id = id
                 soundSet.customer_id = id
             })
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.cloudpbx) {
+                    iscloudpbx = true
+                } else {
+                    cy.log('Not a CloudPBX enabled instance, skipping all tests...');
+                    iscloudpbx = false
+                    return
+                }
+            })
         })
     })
 
     beforeEach(() => {
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
-            apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
-            apiCreateSoundSet({ data: soundSet, authHeader })
-        })
-        cy.visit('/')
+        if (iscloudpbx) {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
+                apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+                apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
+                apiCreateSoundSet({ data: soundSet, authHeader })
+            })
+            cy.visit('/')
+        }
     })
 
     after(() => {
@@ -105,7 +121,11 @@ context('Sound Set (CSC) page tests', () => {
         })
     })
 
-    it('Check if Sound Set with empty values gets rejected', () => {
+    it('Check if Sound Set with empty values gets rejected', function () {
+        if (!iscloudpbx) {
+            this.skip()
+        }
+
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -116,7 +136,11 @@ context('Sound Set (CSC) page tests', () => {
         cy.get('button[data-cy="csc-sound-set-play-create"][aria-disabled="true"]').should('be.visible')
     })
 
-    it('Create Sound Set', () => {
+    it('Create Sound Set', function () {
+        if (!iscloudpbx) {
+            this.skip()
+        }
+
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
         })
@@ -147,7 +171,11 @@ context('Sound Set (CSC) page tests', () => {
         cy.get('div[aria-label="Loop"][aria-checked="true"]').should('be.visible')
     })
 
-    it('Edit Sound Set', () => {
+    it('Edit Sound Set', function () {
+        if (!iscloudpbx) {
+            this.skip()
+        }
+
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -164,7 +192,11 @@ context('Sound Set (CSC) page tests', () => {
         cy.get('div[class="csc-list-item-subtitle"]').find('div[aria-checked="true"]').should('be.visible')
     })
 
-    it('Upload a sound to a Sound Set', () => {
+    it('Upload a sound to a Sound Set', function () {
+        if (!iscloudpbx) {
+            this.skip()
+        }
+
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
@@ -192,7 +224,11 @@ context('Sound Set (CSC) page tests', () => {
         cy.get('span').contains('No file attached').should('be.visible')
     })
 
-    it('Delete Sound Set', () => {
+    it('Delete Sound Set', function () {
+        if (!iscloudpbx) {
+            this.skip()
+        }
+
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
