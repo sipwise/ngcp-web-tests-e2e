@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.2.1.10+0~mr26.2.1.10) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [c54bfad] MT#63950 remove waitPageProgress from customer_details contract tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 15 Sep 2026 13:31:36 +0200
+
 ngcp-web-tests-e2e (26.2.1.9+0~mr26.2.1.9) unstable; urgency=medium
 
   [ Nico Schedel ]
