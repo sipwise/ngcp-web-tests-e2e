@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.2.1.11+0~mr26.2.1.11) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [0b43437] MT#63950 remove waitPageProgress from admin_roles tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 16 Sep 2026 10:14:51 +0200
+
 ngcp-web-tests-e2e (26.2.1.10+0~mr26.2.1.10) unstable; urgency=medium
 
   [ Nico Schedel ]
