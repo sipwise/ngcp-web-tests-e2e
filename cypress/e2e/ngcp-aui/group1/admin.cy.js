@@ -472,7 +472,6 @@ context('Administrator tests', () => {
             cy.get('div[data-cy="aui-list-action--delete"]').should('not.exist')
             cy.get('a[data-cy="aui-data-table-row-menu--adminEdit"]').click()
 
-            waitPageProgressAUI()
             cy.get('label[data-cy="aui-select-reseller"]').should('not.exist')
             cy.get('div[data-cy="roles-list"]').should('not.exist')
             cy.get('label[data-cy="password-field"]').should('not.exist')
