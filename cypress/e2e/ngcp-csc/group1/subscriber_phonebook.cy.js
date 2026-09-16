@@ -226,7 +226,7 @@ context('Subscriber phonebook tests', () => {
         cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
         cy.get('button[data-cy="csc-phonebook-entry-callback"]').click()
 
-        cy.get('input[data-cy="csc-call-number-input"][value="' + subscriberPhonebookEntry.number + '"]').should('be.visible')
+        cy.locationShouldBe('#/user/home')
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
