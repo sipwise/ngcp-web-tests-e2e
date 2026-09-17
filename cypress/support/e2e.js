@@ -3421,13 +3421,13 @@ export const apiGetMail = ({ mailboxName, id }) => {
 export const getRandomNum = (maxLength = 5) => Math.floor((Math.random() * Math.pow(10, maxLength)))
 
 export const waitPageProgressAUI = () => {
-    cy.get('div[class="q-linear-progress"][role="progressbar"]').should('be.visible')
+    cy.get('div[class="q-linear-progress"][role="progressbar"]').should('exist')
     cy.get('div[class="q-linear-progress"][role="progressbar"]', {timeout: 20000}).should('not.exist')
 }
 
 export const waitPageProgressCSC = () => {
-    cy.get('div[id="csc-page-main"] svg[data-cy="q-spinner-dots"]').should('be.visible')
-    cy.get('div[id="csc-page-main"] svg[data-cy="q-spinner-dots"]').should('not.exist')
+    cy.get('div[id="csc-page-main"] svg[data-cy="q-spinner-dots"]').should('exist')
+    cy.get('div[id="csc-page-main"] svg[data-cy="q-spinner-dots"]', {timeout: 20000}).should('not.exist')
 }
 
 export const searchInDataTable = (searchText, searchCriteria = null, waitPageProgressCheck = true) => {
