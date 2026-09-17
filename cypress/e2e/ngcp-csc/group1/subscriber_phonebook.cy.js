@@ -222,10 +222,23 @@ context('Subscriber phonebook tests', () => {
 
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
         cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
-        cy.get('button[data-cy="csc-phonebook-entry-callback"]').click()
+        cy.window().then((win) => {
+            win.addEventListener('unhandledrejection', (event) => {
+                const reason = event.reason || {}
+                if (reason.name === 'SecurityError' && String(reason.message).includes('ServiceWorkerRegistration')) {
+                    event.preventDefault()
+                }
+            })
+        })
 
+        cy.on('uncaught:exception', (err) => {
+            if (err.name === 'SecurityError' && err.message.includes('ServiceWorkerRegistration')) {
+                return false
+            }
+        })
+        cy.get('button[data-cy="csc-phonebook-entry-callback"]').click()
+        cy.get('div[class="csc-phone-number"]').should('be.visible')
         cy.locationShouldBe('#/user/home')
 
         // Cleanup
