@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.2.1.12+0~mr26.2.1.12) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [dc511d6] MT#63950 remove waitPageProgress from emergencyMapping edit tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 17 Sep 2026 09:52:34 +0200
+
 ngcp-web-tests-e2e (26.2.1.11+0~mr26.2.1.11) unstable; urgency=medium
 
   [ Nico Schedel ]
