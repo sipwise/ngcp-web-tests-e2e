@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (26.0.1.17+0~mr26.0.1.17) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [32eb64f] MT#65812 fix for updated auiSelectLazySelect logic
+  * [8d641f8] MT#63950 replace be.visible with exist inside waitPageProgress
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 21 Sep 2026 11:44:47 +0200
+
 ngcp-web-tests-e2e (26.0.1.16+0~mr26.0.1.16) unstable; urgency=medium
 
   [ Nico Schedel ]
