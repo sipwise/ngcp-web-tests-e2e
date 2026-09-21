@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.2.1.13+0~mr26.2.1.13) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [c76ef04] MT#63950 replace be.visible with exist inside waitPageProgress
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 21 Sep 2026 11:44:41 +0200
+
 ngcp-web-tests-e2e (26.2.1.12+0~mr26.2.1.12) unstable; urgency=medium
 
   [ Nico Schedel ]
