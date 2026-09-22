@@ -88,8 +88,9 @@ context('Call Recordings tests', () => {
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-        cy.get('a[href="#/user/recordings"]').click()
+        cy.get('a[href="#/user/conversations"]:first').click()
+        cy.get('div[data-cy="q-tab-recording"][aria-disabled="true"]').should('not.exist')
+        cy.get('div[data-cy="q-tab-recording"]').click()
 
         cy.get('button').contains('Filter').click()
         cy.get('div[data-cy="csc-call-recording-filters"] label').click()
@@ -108,8 +109,9 @@ context('Call Recordings tests', () => {
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-        cy.get('a[href="#/user/recordings"]').click()
+        cy.get('a[href="#/user/conversations"]:first').click()
+        cy.get('div[data-cy="q-tab-recording"][aria-disabled="true"]').should('not.exist')
+        cy.get('div[data-cy="q-tab-recording"]').click()
 
         cy.get('button').contains('Filter').click()
         cy.get('div[data-cy="csc-call-recording-filters"] label').click()
@@ -125,8 +127,9 @@ context('Call Recordings tests', () => {
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-        cy.get('a[href="#/user/recordings"]').click()
+        cy.get('a[href="#/user/conversations"]:first').click()
+        cy.get('div[data-cy="q-tab-recording"][aria-disabled="true"]').should('not.exist')
+        cy.get('div[data-cy="q-tab-recording"]').click()
 
         cy.get('button').contains('Filter').click()
         cy.get('div[data-cy="csc-call-recording-filters"] label').click()
@@ -142,8 +145,9 @@ context('Call Recordings tests', () => {
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-        cy.get('a[href="#/user/recordings"]').click()
+        cy.get('a[href="#/user/conversations"]:first').click()
+        cy.get('div[data-cy="q-tab-recording"][aria-disabled="true"]').should('not.exist')
+        cy.get('div[data-cy="q-tab-recording"]').click()
 
         cy.get('button').contains('Filter').click()
         cy.get('div[data-cy="csc-call-recording-filters"] label').click()
