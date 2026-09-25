@@ -1004,8 +1004,8 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
             waitPageProgressAUI()
-            cy.get('td[data-cy="q-td--mappings"] span').eq(7).contains('null').should('exist')
-            cy.get('td[data-cy="q-td--mappings"] span').eq(8).contains('null').should('exist')
+            cy.get('td[data-cy="q-td--sourceset"]').eq(1).contains('All sources').should('exist')
+            cy.get('td[data-cy="q-td--bnumberset"]').eq(1).contains('Any number').should('exist')
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
@@ -1067,10 +1067,10 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('td[data-cy="q-td--more-menu-left"]').eq(1).click()
             cy.get('div[data-cy="aui-data-table-row-menu--delete"]').click()
             cy.get('button[data-cy="btn-confirm"]').click()
-            cy.get('td[data-cy="q-td--mappings"] span').eq(6).contains('[]').should('exist')
-            cy.get('td[data-cy="q-td--mappings"] span').eq(7).contains('[]').should('exist')
-            cy.get('td[data-cy="q-td--mappings"] span').eq(8).contains('[]').should('exist')
-            cy.get('td[data-cy="q-td--mappings"] span').eq(9).contains('[]').should('exist')
+            cy.get('td[data-cy="q-td--timeset"]').eq(1).contains('-').should('exist')
+            cy.get('td[data-cy="q-td--sourceset"]').eq(1).contains('-').should('exist')
+            cy.get('td[data-cy="q-td--bnumberset"]').eq(1).contains('-').should('exist')
+            cy.get('td[data-cy="q-td--destinationset"]').eq(1).contains('-').should('exist')
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
