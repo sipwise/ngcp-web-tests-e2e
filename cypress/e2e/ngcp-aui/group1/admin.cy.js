@@ -232,7 +232,7 @@ context('Administrator tests', () => {
             searchInDataTable(admin1.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
-            waitPageProgressAUI()
+            cy.get('label[data-cy="roles-list"]').should('be.visible')
             cy.qSelect({ dataCy: 'roles-list', filter: 'ccareadmin', itemContains: 'ccareadmin' })
 
             cy.get('[data-cy="aui-save-button"]').click()
