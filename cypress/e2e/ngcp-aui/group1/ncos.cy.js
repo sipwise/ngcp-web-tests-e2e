@@ -61,9 +61,9 @@ context('NCOS tests', () => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
             apiRemoveNCOSSetBy({ name: NCOSSet.name, authHeader })
-            apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
+            apiRemoveNCOSLevelBy({ level: NCOSLevel.level, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
@@ -82,9 +82,9 @@ context('NCOS tests', () => {
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveNCOSSetBy({ name: NCOSSet.name, authHeader })
-            apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
+            apiRemoveNCOSLevelBy({ level: NCOSLevel.level, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
         })
     })
@@ -203,7 +203,7 @@ context('NCOS tests', () => {
         it('Create a NCOS Level', () => {
             // Delete NCOS Level if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
+                apiRemoveNCOSLevelBy({ level: NCOSLevel.level, authHeader })
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
@@ -224,14 +224,14 @@ context('NCOS tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
+                apiRemoveNCOSLevelBy({ level: NCOSLevel.level, authHeader })
             })
         })
 
         it('Edit a NCOS Level', () => {
             // Create NCOS Level
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
+                apiRemoveNCOSLevelBy({ level: NCOSLevel.level, authHeader })
                 apiCreateNCOSLevel({ data: NCOSLevel, authHeader })
             })
 
@@ -257,14 +257,14 @@ context('NCOS tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
+                apiRemoveNCOSLevelBy({ level: NCOSLevel.level, authHeader })
             })
         })
 
         it('Add/Remove NCOS Level to NCOS Set', () => {
             // Create NCOS Level and NCOS Set
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
+                apiRemoveNCOSLevelBy({ level: NCOSLevel.level, authHeader })
                 apiRemoveNCOSSetBy({ name: NCOSSet.name, authHeader })
                 apiCreateNCOSSet({ data: NCOSSet, authHeader })
                 apiCreateNCOSLevel({ data: NCOSLevel, authHeader })
@@ -296,7 +296,7 @@ context('NCOS tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
+                apiRemoveNCOSLevelBy({ level: NCOSLevel.level, authHeader })
                 apiRemoveNCOSSetBy({ name: NCOSSet.name, authHeader })
             })
         })
@@ -304,7 +304,7 @@ context('NCOS tests', () => {
         it('Delete NCOS Level', () => {
             // Create NCOS Level
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
+                apiRemoveNCOSLevelBy({ level: NCOSLevel.level, authHeader })
                 apiCreateNCOSLevel({ data: NCOSLevel, authHeader })
             })
 
@@ -316,7 +316,7 @@ context('NCOS tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveNCOSLevelBy({ name: NCOSLevel.level, authHeader })
+                apiRemoveNCOSLevelBy({ level: NCOSLevel.level, authHeader })
             })
         })
     })

@@ -75,12 +75,12 @@ context('Emergency mapping tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+            apiRemoveEmergencyMappingBy({ code: emergencyMapping.code, authHeader })
             apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             apiRemoveResellerBy({ name: editReseller.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: editContract.external_id, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: editContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -100,12 +100,12 @@ context('Emergency mapping tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
-            apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+            apiRemoveEmergencyMappingBy({ code: emergencyMapping.code, authHeader })
             apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             apiRemoveResellerBy({ name: editReseller.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: editContract.external_id, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: editContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
     })
@@ -217,7 +217,7 @@ context('Emergency mapping tests', () => {
         it('Create a new emergency mapping', () => {
             // Setup: Create Emergency Mapping Container, delete Emergency Mapping if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+                apiRemoveEmergencyMappingBy({ code: emergencyMapping.code, authHeader })
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
                 apiCreateEmergencyMappingContainer({ data: emergencyMappingContainer, authHeader })
             })
@@ -238,7 +238,7 @@ context('Emergency mapping tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+                apiRemoveEmergencyMappingBy({ code: emergencyMapping.code, authHeader })
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             })
         })
@@ -246,7 +246,7 @@ context('Emergency mapping tests', () => {
         it('Edit emergency mapping', () => {
             // Setup: Create Emergency Mapping Container and Emergency Mapping
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+                apiRemoveEmergencyMappingBy({ code: emergencyMapping.code, authHeader })
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
                 apiCreateEmergencyMappingContainer({ data: emergencyMappingContainer, authHeader }).then(({ id }) => {
                     apiCreateEmergencyMapping({ data: { ...emergencyMapping, emergency_container_id: id }, authHeader })
@@ -275,7 +275,7 @@ context('Emergency mapping tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+                apiRemoveEmergencyMappingBy({ code: emergencyMapping.code, authHeader })
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             })
         })
@@ -283,7 +283,7 @@ context('Emergency mapping tests', () => {
         it('Delete emergency mapping', () => {
             // Setup: Create Emergency Mapping Container and Emergency Mapping
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+                apiRemoveEmergencyMappingBy({ code: emergencyMapping.code, authHeader })
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
                 apiCreateEmergencyMappingContainer({ data: emergencyMappingContainer, authHeader }).then(({ id }) => {
                     apiCreateEmergencyMapping({ data: { ...emergencyMapping, emergency_container_id: id }, authHeader })
@@ -301,7 +301,7 @@ context('Emergency mapping tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+                apiRemoveEmergencyMappingBy({ code: emergencyMapping.code, authHeader })
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             })
         })

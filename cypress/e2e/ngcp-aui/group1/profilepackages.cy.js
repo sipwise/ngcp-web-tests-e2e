@@ -75,7 +75,7 @@ context('Profile Package tests', () => {
             apiRemoveBillingProfileBy({ name: editBillingProfile.name, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -113,7 +113,7 @@ context('Profile Package tests', () => {
             apiRemoveBillingProfileBy({ name: editBillingProfile.name, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
     })

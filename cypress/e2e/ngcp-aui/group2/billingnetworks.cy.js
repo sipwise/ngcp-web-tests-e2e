@@ -97,7 +97,7 @@ context('Billing Network', () => {
             apiRemoveBillingNetworkBy({ name: billingNetwork.name + "2", authHeader})
             apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -114,7 +114,7 @@ context('Billing Network', () => {
             apiRemoveBillingNetworkBy({ name: secondBillingNetwork.name, authHeader })
             apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader})
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
     })
@@ -123,7 +123,7 @@ context('Billing Network', () => {
         // Setup: Create Reseller
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
                 apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
             })
@@ -151,7 +151,7 @@ context('Billing Network', () => {
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
         })
     })
 
@@ -160,7 +160,7 @@ context('Billing Network', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveBillingNetworkBy({ name: billingNetwork.name + "2", authHeader})
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
                 apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
             })
@@ -188,7 +188,7 @@ context('Billing Network', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveBillingNetworkBy({ name: billingNetwork.name + "2", authHeader})
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
         })
     })
 
@@ -197,7 +197,7 @@ context('Billing Network', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveBillingNetworkBy({ name: secondBillingNetwork, authHeader})
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
                 apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
                     apiCreateBillingNetwork({ data: { ...secondBillingNetwork, reseller_id: id }, authHeader })
@@ -231,7 +231,7 @@ context('Billing Network', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveBillingNetworkBy({ name: secondBillingNetwork.name, authHeader})
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
         })
     })
 
@@ -240,7 +240,7 @@ context('Billing Network', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveBillingNetworkBy({ name: deleteBillingNetwork.name, authHeader})
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
                 apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
                     apiCreateBillingNetwork({ data: { ...deleteBillingNetwork, reseller_id: id }, authHeader })
@@ -257,7 +257,7 @@ context('Billing Network', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveBillingNetworkBy({ name: deleteBillingNetwork.name, authHeader})
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
         })
     })
 })

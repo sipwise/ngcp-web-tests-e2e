@@ -116,12 +116,12 @@ context('PBX Groups Tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_admin_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_admin_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader }).then(({ id }) => {
                 pbxGroup.domain_id = id
@@ -152,12 +152,12 @@ context('PBX Groups Tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_admin_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_admin_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 
@@ -168,7 +168,7 @@ context('PBX Groups Tests', () => {
 
         // Setup: Create Subscriber Pilot, delete Subscriber Pilot if exists
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
         })
 
@@ -182,7 +182,7 @@ context('PBX Groups Tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
         })
     })
 
@@ -193,9 +193,9 @@ context('PBX Groups Tests', () => {
 
         // Setup: Create Subscribers, delete Subscribers and Group if exists
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             apiCreateSubscriber({ data: pbx_subscriber, authHeader })
         })
@@ -217,9 +217,9 @@ context('PBX Groups Tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
         })
     })
 
@@ -230,8 +230,8 @@ context('PBX Groups Tests', () => {
 
         // Setup: Create Subscribers and group
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
@@ -261,9 +261,9 @@ context('PBX Groups Tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
         })
     })
 
@@ -274,8 +274,8 @@ context('PBX Groups Tests', () => {
 
         // Setup: Create Subscribers and group
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
@@ -326,9 +326,9 @@ context('PBX Groups Tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
         })
     })
 
@@ -339,8 +339,8 @@ context('PBX Groups Tests', () => {
 
         // Setup: Create Subscribers and group
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
@@ -384,9 +384,9 @@ context('PBX Groups Tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
         })
     })
 
@@ -397,8 +397,8 @@ context('PBX Groups Tests', () => {
 
         // Setup: Create Subscribers and group
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
@@ -432,9 +432,9 @@ context('PBX Groups Tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
         })
     })
 
@@ -445,8 +445,8 @@ context('PBX Groups Tests', () => {
 
         // Setup: Create Subscribers and group
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
@@ -476,9 +476,9 @@ context('PBX Groups Tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
         })
     })
 
@@ -489,8 +489,8 @@ context('PBX Groups Tests', () => {
 
         // Setup: Create Subscribers and group
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
@@ -512,9 +512,9 @@ context('PBX Groups Tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
         })
     })
 
@@ -526,8 +526,8 @@ context('PBX Groups Tests', () => {
 
         // Setup: Create Subscribers and group
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
@@ -546,9 +546,9 @@ context('PBX Groups Tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
         })
     })
 })

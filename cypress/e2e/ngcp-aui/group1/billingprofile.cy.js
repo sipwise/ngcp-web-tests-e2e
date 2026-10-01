@@ -71,11 +71,11 @@ context('Billing profile tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+            apiRemoveBillingProfileFeeBy({ destination: billingProfileFee.destination, authHeader })
             apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -92,11 +92,11 @@ context('Billing profile tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+            apiRemoveBillingProfileFeeBy({ destination: billingProfileFee.destination, authHeader })
             apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
     })
@@ -344,7 +344,7 @@ context('Billing profile tests', () => {
         it('Create a billing profile fee', () => {
             // Setup: Create Billing Profile, delete Billing Profile Fee if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+                apiRemoveBillingProfileFeeBy({ destination: billingProfileFee.destination, authHeader })
                 apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiCreateBillingProfile({ data: billingProfile, authHeader }).then(({ id }) => {
@@ -369,7 +369,7 @@ context('Billing profile tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+                apiRemoveBillingProfileFeeBy({ destination: billingProfileFee.destination, authHeader })
                 apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             })
@@ -378,7 +378,7 @@ context('Billing profile tests', () => {
         it('Edit a billing profile fee direction', () => {
             // Setup: Create Billing Profile, Billing Zone and Billing Profile Fee
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+                apiRemoveBillingProfileFeeBy({ destination: billingProfileFee.destination, authHeader })
                 apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiCreateBillingProfile({ data: billingProfile, authHeader }).then(({ id }) => {
@@ -412,7 +412,7 @@ context('Billing profile tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+                apiRemoveBillingProfileFeeBy({ destination: billingProfileFee.destination, authHeader })
                 apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             })
@@ -421,7 +421,7 @@ context('Billing profile tests', () => {
         it('Delete a billing profile fee and check if it is deleted', () => {
             // Setup: Create Billing Profile, Billing Zone and Billing Profile Fee
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+                apiRemoveBillingProfileFeeBy({ destination: billingProfileFee.destination, authHeader })
                 apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiCreateBillingProfile({ data: billingProfile, authHeader }).then(({ id }) => {
@@ -447,7 +447,7 @@ context('Billing profile tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+                apiRemoveBillingProfileFeeBy({ destination: billingProfileFee.destination, authHeader })
                 apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             })

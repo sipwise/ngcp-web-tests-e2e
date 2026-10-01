@@ -104,9 +104,9 @@ context('Subscriber Details tests', () => {
                 }
             })
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader }).then(({ id }) => domain.id = id )
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -120,9 +120,9 @@ context('Subscriber Details tests', () => {
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(()=> {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader }).then(()=> {
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
             })
         })
     })
@@ -131,7 +131,7 @@ context('Subscriber Details tests', () => {
         it('Change Voicemail settings', () => {
             // Setup: Create Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
@@ -185,14 +185,14 @@ context('Subscriber Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
         it('Upload/Redownload greetings in Voicemail settings', () => {
             // Setup: Create Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
@@ -230,7 +230,7 @@ context('Subscriber Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
             deleteDownloadsFolder()
         })
@@ -245,7 +245,7 @@ context('Subscriber Details tests', () => {
 
             // Setup: Create Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
@@ -265,7 +265,7 @@ context('Subscriber Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -277,7 +277,7 @@ context('Subscriber Details tests', () => {
 
             // Setup: Create Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
@@ -323,7 +323,7 @@ context('Subscriber Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -335,7 +335,7 @@ context('Subscriber Details tests', () => {
 
             // Setup: Create Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
@@ -372,7 +372,7 @@ context('Subscriber Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -384,7 +384,7 @@ context('Subscriber Details tests', () => {
 
             // Setup: Create Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
@@ -422,7 +422,7 @@ context('Subscriber Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
     })
@@ -432,7 +432,7 @@ context('Subscriber Details tests', () => {
             // Setup: Create Subscriber, delete Location Mapping if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
@@ -459,7 +459,7 @@ context('Subscriber Details tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -467,7 +467,7 @@ context('Subscriber Details tests', () => {
             // Setup: Create Subscriber and Location Mapping
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateLocationMapping({ data: { ...locationmapping, subscriber_id: id }, authHeader })
                 })
@@ -502,7 +502,7 @@ context('Subscriber Details tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -510,7 +510,7 @@ context('Subscriber Details tests', () => {
             // Setup: Create Subscriber and Location Mapping
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateLocationMapping({ data: { ...locationmapping, subscriber_id: id }, authHeader })
                 })
@@ -533,7 +533,7 @@ context('Subscriber Details tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
     })
@@ -547,7 +547,7 @@ context('Subscriber Details tests', () => {
 
             // Setup: Create Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
@@ -567,7 +567,7 @@ context('Subscriber Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -580,7 +580,7 @@ context('Subscriber Details tests', () => {
             // Setup: Create Subscriber, delete Phonebook if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebook.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
 
@@ -604,7 +604,7 @@ context('Subscriber Details tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebook.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -617,7 +617,7 @@ context('Subscriber Details tests', () => {
             // Setup: Create Subscriber and Phonebook
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebook.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateSubscriberPhonebook({ data: { ...subscriberPhonebook, subscriber_id: id }, authHeader })
                 })
@@ -645,7 +645,7 @@ context('Subscriber Details tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebook.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -658,7 +658,7 @@ context('Subscriber Details tests', () => {
             // Setup: Create Subscriber and Phonebook
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebook.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateSubscriberPhonebook({ data: { ...subscriberPhonebook, subscriber_id: id }, authHeader })
                 })
@@ -678,7 +678,7 @@ context('Subscriber Details tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebook.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
     })
@@ -687,7 +687,7 @@ context('Subscriber Details tests', () => {
         it('Create multiple Speeddials', () => {
             // Setup: Create Customer and Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                     apiCreateSubscriber({ data: { ...subscriber, customer_id: id }, authHeader })
                 })
@@ -715,15 +715,15 @@ context('Subscriber Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             })
         })
 
         it('Edit and save Speeddials', () => {
             // Setup: Create Customer, Subsriber and Speeddial
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                     apiCreateSubscriber({ data: { ...subscriber, customer_id: id }, authHeader }).then(({ id }) => {
                         apiEditSubscriberSpeeddial({ subid: id, data: speeddial, authHeader})
@@ -751,15 +751,15 @@ context('Subscriber Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             })
         })
 
         it('Edit and reset Speeddials', () => {
             // Setup: Create Customer, Subsriber and Speeddial
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                     apiCreateSubscriber({ data: { ...subscriber, customer_id: id }, authHeader }).then(({ id }) => {
                         apiEditSubscriberSpeeddial({ subid: id, data: speeddial, authHeader})
@@ -786,15 +786,15 @@ context('Subscriber Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             })
         })
 
         it('Delete Speeddial', () => {
             // Setup: Create Customer, Subsriber and Speeddial
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                     apiCreateSubscriber({ data: { ...subscriber, customer_id: id }, authHeader }).then(({ id }) => {
                         apiEditSubscriberSpeeddial({ subid: id, data: speeddial, authHeader})
@@ -820,8 +820,8 @@ context('Subscriber Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             })
         })
     })

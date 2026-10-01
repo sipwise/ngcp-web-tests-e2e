@@ -82,10 +82,10 @@ context('Peering tests', () => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
             apiRemovePeeringServerBy({ name: peeringServer.name, authHeader })
-            apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
-            apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.pattern, authHeader })
+            apiRemovePeeringOutboundRuleBy({ description: PeeringOutboundRule.description, authHeader})
+            apiRemovePeeringInboundRuleBy({ group_id: peeringInboundRule.pattern, authHeader })
             apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
@@ -101,10 +101,10 @@ context('Peering tests', () => {
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
             apiRemovePeeringServerBy({ name: peeringServer.name, authHeader })
-            apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
-            apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.pattern, authHeader })
+            apiRemovePeeringOutboundRuleBy({ description: PeeringOutboundRule.description, authHeader})
+            apiRemovePeeringInboundRuleBy({ group_id: peeringInboundRule.pattern, authHeader })
             apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
         })
     })
@@ -244,7 +244,7 @@ context('Peering tests', () => {
         it('Create an Inbound Peering Rule', () => {
             // Setup: Create Peering Group, remove Inbound Peering Rule if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.group_id, authHeader })
+                apiRemovePeeringInboundRuleBy({ group_id: peeringInboundRule.group_id, authHeader })
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader })
             })
@@ -272,7 +272,7 @@ context('Peering tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.group_id, authHeader })
+                apiRemovePeeringInboundRuleBy({ group_id: peeringInboundRule.group_id, authHeader })
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
             })
         })
@@ -280,7 +280,7 @@ context('Peering tests', () => {
         it('Edit an Inbound Peering Rule', () => {
             // Setup: Create Peering Group and Inbound Peering Rule
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.group_id, authHeader })
+                apiRemovePeeringInboundRuleBy({ group_id: peeringInboundRule.group_id, authHeader })
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader }).then(({ id }) => {
                     apiCreatePeeringInboundRule({ data: { ...peeringInboundRule, group_id: id}, authHeader })
@@ -312,7 +312,7 @@ context('Peering tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.group_id, authHeader })
+                apiRemovePeeringInboundRuleBy({ group_id: peeringInboundRule.group_id, authHeader })
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
             })
         })
@@ -320,7 +320,7 @@ context('Peering tests', () => {
         it('Delete Inbound Peering Rule', () => {
             // Setup: Create Peering Group and Inbound Peering Rule
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.group_id, authHeader })
+                apiRemovePeeringInboundRuleBy({ group_id: peeringInboundRule.group_id, authHeader })
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader }).then(({ id }) => {
                     apiCreatePeeringInboundRule({ data: { ...peeringInboundRule, group_id: id}, authHeader })
@@ -342,7 +342,7 @@ context('Peering tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.group_id, authHeader })
+                apiRemovePeeringInboundRuleBy({ group_id: peeringInboundRule.group_id, authHeader })
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
             })
         })
@@ -381,7 +381,7 @@ context('Peering tests', () => {
         it('Create an Outbound Peering Rule', () => {
             // Setup: Create Peering Group, remove Outbound Peering Rule if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
+                apiRemovePeeringOutboundRuleBy({ description: PeeringOutboundRule.description, authHeader})
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader })
             })
@@ -409,7 +409,7 @@ context('Peering tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
+                apiRemovePeeringOutboundRuleBy({ description: PeeringOutboundRule.description, authHeader})
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
             })
         })
@@ -417,7 +417,7 @@ context('Peering tests', () => {
         it('Edit an Outbound Peering Rule', () => {
             // Setup: Create Peering Group and Outbound Peering Rule
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
+                apiRemovePeeringOutboundRuleBy({ description: PeeringOutboundRule.description, authHeader})
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader }).then(({ id }) => {
                     apiCreatePeeringOutboundRule({ data: { ...PeeringOutboundRule, group_id: id}, authHeader })
@@ -449,7 +449,7 @@ context('Peering tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
+                apiRemovePeeringOutboundRuleBy({ description: PeeringOutboundRule.description, authHeader})
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
             })
         })
@@ -457,7 +457,7 @@ context('Peering tests', () => {
         it('Delete Outbound Peering Rule', () => {
             // Setup: Create Peering Group and Outbound Peering Rule
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
+                apiRemovePeeringOutboundRuleBy({ description: PeeringOutboundRule.description, authHeader})
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader }).then(({ id }) => {
                     apiCreatePeeringOutboundRule({ data: { ...PeeringOutboundRule, group_id: id}, authHeader })
@@ -479,7 +479,7 @@ context('Peering tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
+                apiRemovePeeringOutboundRuleBy({ description: PeeringOutboundRule.description, authHeader})
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
             })
         })

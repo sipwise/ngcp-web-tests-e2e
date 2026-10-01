@@ -91,9 +91,9 @@ context('Fax settings page tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -123,7 +123,7 @@ context('Fax settings page tests', () => {
                     return
                 }
             })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -131,9 +131,9 @@ context('Fax settings page tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 
@@ -144,7 +144,7 @@ context('Fax settings page tests', () => {
 
         // Setup: Create Subscriber, delete Subscriber if exists
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data:  subscriber, authHeader })
         })
 
@@ -158,7 +158,7 @@ context('Fax settings page tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -169,7 +169,7 @@ context('Fax settings page tests', () => {
 
         // Setup: Create Subscriber, delete Subscriber if exists
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data:  subscriber, authHeader })
         })
 
@@ -196,7 +196,7 @@ context('Fax settings page tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -207,7 +207,7 @@ context('Fax settings page tests', () => {
 
         // Setup: Create Subscriber, delete Subscriber if exists
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data:  subscriber, authHeader })
         })
 
@@ -228,7 +228,7 @@ context('Fax settings page tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -239,7 +239,7 @@ context('Fax settings page tests', () => {
 
         // Setup: Create Subscriber, delete Subscriber if exists
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data:  subscriber, authHeader })
         })
 
@@ -259,7 +259,7 @@ context('Fax settings page tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -270,7 +270,7 @@ context('Fax settings page tests', () => {
 
         // Setup: Create Subscriber, delete Subscriber if exists
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data:  subscriber, authHeader })
         })
 
@@ -314,7 +314,7 @@ context('Fax settings page tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -325,7 +325,7 @@ context('Fax settings page tests', () => {
 
         // Setup: Create Subscriber, delete Subscriber if exists
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data:  subscriber, authHeader })
         })
 
@@ -351,7 +351,7 @@ context('Fax settings page tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -362,7 +362,7 @@ context('Fax settings page tests', () => {
 
         // Setup: Create PBX Subscriber, delete Subscriber if exists
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader })
         })
 
@@ -383,7 +383,7 @@ context('Fax settings page tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
         })
     })
 
@@ -394,7 +394,7 @@ context('Fax settings page tests', () => {
 
         // Setup: Create PBX Subscriber, delete Subscriber if exists
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader })
         })
 
@@ -414,7 +414,7 @@ context('Fax settings page tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
         })
     })
 
@@ -425,7 +425,7 @@ context('Fax settings page tests', () => {
 
         // Setup: Create PBX Subscriber, delete Subscriber if exists
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader })
         })
 
@@ -448,7 +448,7 @@ context('Fax settings page tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
         })
     })
 
@@ -459,7 +459,7 @@ context('Fax settings page tests', () => {
 
         // Setup: Create PBX Subscriber, delete Subscriber if exists
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader })
         })
 
@@ -484,7 +484,7 @@ context('Fax settings page tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
         })
     })
 })

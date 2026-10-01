@@ -93,11 +93,11 @@ context('Soundset tests', () => {
                 }
             })
             apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
-            apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: customerPbx.external_id, authHeader })
             apiRemoveCustomerContactBy({ email: customerPbx.email, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
@@ -132,11 +132,11 @@ context('Soundset tests', () => {
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
-            apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: customerPbx.external_id, authHeader })
             apiRemoveCustomerContactBy({ email: customerPbx.email, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
         })
     })

@@ -43,7 +43,7 @@ context('Reseller tests', () => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -56,7 +56,7 @@ context('Reseller tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             cy.log('Cleaning up db...')
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
 
             cy.log('Seeding up db...')
             apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
@@ -70,7 +70,7 @@ context('Reseller tests', () => {
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
     })
@@ -93,7 +93,7 @@ context('Reseller tests', () => {
     it('Create a reseller', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
         })
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / reseller', false)

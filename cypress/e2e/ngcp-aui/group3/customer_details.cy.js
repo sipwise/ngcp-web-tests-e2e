@@ -232,20 +232,20 @@ context('Customer Details tests', () => {
                 }
             })
             if (iscloudpbx) {
-                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceBy({ station_name: pbxDevice.station_name, authHeader})
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             } else {
                 cy.log("CloudPBX is not enabled, skipping device deletion...")
             }
             apiRemoveSoundSetBy({ name: soundset.name, authHeader })
             apiRemoveCustomerLocationBy({ name: location.name, authHeader })
             apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader }).then(({ id }) => {
                 pilotSubscriber.domain_id = id
@@ -270,10 +270,10 @@ context('Customer Details tests', () => {
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
             if (iscloudpbx) {
-                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceBy({ station_name: pbxDevice.station_name, authHeader})
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             } else {
                 cy.log("CloudPBX is not enabled, skipping device deletion...")
             }
@@ -285,12 +285,12 @@ context('Customer Details tests', () => {
             }
             apiRemoveCustomerLocationBy({ name: location.name, authHeader })
             apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
-            apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+            apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 
@@ -298,7 +298,7 @@ context('Customer Details tests', () => {
         it('Edit contact settings to see if changes display in customer details', () => {
             // Setup: Create Customer and Contact
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
@@ -333,7 +333,7 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -344,7 +344,7 @@ context('Customer Details tests', () => {
         it('Set contract cash balance and check log & balance', () => {
             // Setup: Create Customer and Contact
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
@@ -376,7 +376,7 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -384,7 +384,7 @@ context('Customer Details tests', () => {
         it('Use Top up Voucher and check log & balance', () => {
             // Setup: Create Customer, Contact and Billing Voucher
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -415,7 +415,7 @@ context('Customer Details tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -423,7 +423,7 @@ context('Customer Details tests', () => {
         it('Use Top up Cash and check log & balance', () => {
             // Setup: Create Customer and Contact
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
@@ -456,7 +456,7 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -466,7 +466,7 @@ context('Customer Details tests', () => {
         it('Try to edit Fraud limits with invalid values', () => {
             // Setup: Create Customer and Contact
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
@@ -492,7 +492,7 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -500,7 +500,7 @@ context('Customer Details tests', () => {
         it('Add/Delete/Reset fraud limits and emails to customer details', () => {
             // Setup: Create Customer and Contact
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
@@ -544,7 +544,7 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -554,7 +554,7 @@ context('Customer Details tests', () => {
         it('Try to create location with invalid values', () => {
             // Setup: Create Customer and Contact
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
@@ -583,7 +583,7 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -592,7 +592,7 @@ context('Customer Details tests', () => {
             // Setup: Create Customer and Contact, remove Customer Location if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerLocationBy({ name: location.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
@@ -621,7 +621,7 @@ context('Customer Details tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerLocationBy({ name: location.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -630,7 +630,7 @@ context('Customer Details tests', () => {
             // Setup: Create Customer, Contact and Location
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerLocationBy({ name: location.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -665,7 +665,7 @@ context('Customer Details tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerLocationBy({ name: location.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -674,7 +674,7 @@ context('Customer Details tests', () => {
             // Setup: Create Customer, Contact and Location
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerLocationBy({ name: location.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -697,7 +697,7 @@ context('Customer Details tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerLocationBy({ name: location.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -711,8 +711,8 @@ context('Customer Details tests', () => {
             }
             // Setup: Create Customer and Contact
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -737,8 +737,8 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -750,9 +750,9 @@ context('Customer Details tests', () => {
             }
             // Setup: Create Customer and Contact, remove PBX Group if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -761,7 +761,7 @@ context('Customer Details tests', () => {
                 })
             })
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader})
+                apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader})
             })
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / customer', false)
@@ -783,9 +783,9 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -797,9 +797,9 @@ context('Customer Details tests', () => {
             }
             // Setup: Create Customer, Contact and PBX Group
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -830,9 +830,9 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -844,9 +844,9 @@ context('Customer Details tests', () => {
             }
             // Setup: Create Customer, Contact and PBX Group
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -869,9 +869,9 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pbxGroup.username, authHeader })
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -885,7 +885,7 @@ context('Customer Details tests', () => {
             }
             // Setup: Create Customer and Contact
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
@@ -909,7 +909,7 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -921,11 +921,11 @@ context('Customer Details tests', () => {
             }
             // Setup: Create Customer, Contact and PBX Device dependencies
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceBy({ station_name: pbxDevice.station_name, authHeader})
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -964,11 +964,11 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceBy({ station_name: pbxDevice.station_name, authHeader})
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -980,12 +980,12 @@ context('Customer Details tests', () => {
             }
             // Setup: Create Customer, Contact and PBX Device + dependencies
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceBy({ station_name: pbxDevice.station_name, authHeader})
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -1027,12 +1027,12 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceBy({ station_name: pbxDevice.station_name, authHeader})
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1044,12 +1044,12 @@ context('Customer Details tests', () => {
             }
             // Setup: Create Customer, Contact and PBX Device + dependencies
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceBy({ station_name: pbxDevice.station_name, authHeader})
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -1098,12 +1098,12 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceBy({ station_name: pbxDevice.station_name, authHeader})
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1115,12 +1115,12 @@ context('Customer Details tests', () => {
             }
             // Setup: Create Customer, Contact and PBX Device + dependencies
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceBy({ station_name: pbxDevice.station_name, authHeader})
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -1153,12 +1153,12 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceBy({ name: pbxDevice.station_name, authHeader})
+                apiRemovePbxDeviceBy({ station_name: pbxDevice.station_name, authHeader})
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1172,7 +1172,7 @@ context('Customer Details tests', () => {
             }
             // Setup: Create Customer and Contact
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
@@ -1194,7 +1194,7 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1207,7 +1207,7 @@ context('Customer Details tests', () => {
             // Setup: Create Customer and Contact, delete Phonebook if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
@@ -1233,7 +1233,7 @@ context('Customer Details tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1246,7 +1246,7 @@ context('Customer Details tests', () => {
             // Setup: Create Customer, Contact and Phonebook
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -1276,7 +1276,7 @@ context('Customer Details tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1289,7 +1289,7 @@ context('Customer Details tests', () => {
             // Setup: Create Customer, Contact and Phonebook
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -1311,7 +1311,7 @@ context('Customer Details tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1321,7 +1321,7 @@ context('Customer Details tests', () => {
         it('Check if reseller values are correct', () => {
             // Setup: Create Customer and Contact
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
@@ -1342,7 +1342,7 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1356,7 +1356,7 @@ context('Customer Details tests', () => {
             }
             // Setup: Create Customer and Contact
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
@@ -1378,7 +1378,7 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1393,9 +1393,9 @@ context('Customer Details tests', () => {
             })
             // Setup: Create Customer and contact, remove Soundset if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
                 apiRemoveSoundSetBy({ name: soundset.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -1435,9 +1435,9 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
                 apiRemoveSoundSetBy({ name: soundset.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1450,7 +1450,7 @@ context('Customer Details tests', () => {
             // Setup: Create Customer, Contact and Soundset
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSoundSetBy({ name: soundset.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -1483,7 +1483,7 @@ context('Customer Details tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSoundSetBy({ name: soundset.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1496,7 +1496,7 @@ context('Customer Details tests', () => {
             // Setup: Create Customer, Contact and Soundset
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSoundSetBy({ name: soundset.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -1519,7 +1519,7 @@ context('Customer Details tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSoundSetBy({ name: soundset.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1529,7 +1529,7 @@ context('Customer Details tests', () => {
         it('Create multiple Speeddials', () => {
             // Setup: Create Customer and Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -1564,8 +1564,8 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1573,7 +1573,7 @@ context('Customer Details tests', () => {
         it('Edit and save Speeddials', () => {
             // Setup: Create Customer, Subsriber and Speeddial
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -1607,8 +1607,8 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1616,7 +1616,7 @@ context('Customer Details tests', () => {
         it('Edit and reset Speeddials', () => {
             // Setup: Create Customer, Subsriber and Speeddial
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -1649,8 +1649,8 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1658,7 +1658,7 @@ context('Customer Details tests', () => {
         it('Delete Speeddial', () => {
             // Setup: Create Customer, Subsriber and Speeddial
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -1692,8 +1692,8 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1704,7 +1704,7 @@ context('Customer Details tests', () => {
             // Setup: Create Customer, Contact and PBX Group
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerLocationBy({ name: location.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -1732,8 +1732,8 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1742,7 +1742,7 @@ context('Customer Details tests', () => {
             // Setup: Create Customer, Contact and PBX Group
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerLocationBy({ name: location.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -1772,8 +1772,8 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })
@@ -1782,7 +1782,7 @@ context('Customer Details tests', () => {
             // Setup: Create Customer, Contact and PBX Group
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCustomerLocationBy({ name: location.name, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
                 apiCreateCustomerContact({ data: customerContact, authHeader }).then(({ id }) => {
                     apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader }).then(({ id }) => {
@@ -1804,8 +1804,8 @@ context('Customer Details tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             })
         })

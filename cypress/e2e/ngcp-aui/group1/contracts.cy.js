@@ -69,12 +69,12 @@ context('Contract tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveContractBy({ name: peeringContract.external_id, authHeader })
-            apiRemoveContractBy({ name: resellerContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: peeringContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: resellerContract.external_id, authHeader })
             apiRemoveBillingProfileBy({ name: dependencyBillingProfile.name, authHeader })
             apiRemoveResellerBy({ name: dependencyReseller.name, authHeader })
-            apiRemoveContractBy({ name: dependencyContract.external_id, authHeader })
-            apiRemoveSystemContactBy({email:systemContactDependency.email, authHeader })
+            apiRemoveContractBy({ external_id: dependencyContract.external_id, authHeader })
+            apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
                 resellerContract.contact_id = id
@@ -94,8 +94,8 @@ context('Contract tests', () => {
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
             cy.log('Cleaning up db...')
-            apiRemoveContractBy({ name: peeringContract.external_id, authHeader })
-            apiRemoveContractBy({ name: resellerContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: peeringContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: resellerContract.external_id, authHeader })
 
             cy.log('Seeding db...')
             apiCreateContract({ data: peeringContract, authHeader })
@@ -107,12 +107,12 @@ context('Contract tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveContractBy({ name: peeringContract.external_id, authHeader })
-            apiRemoveContractBy({ name: resellerContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: peeringContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: resellerContract.external_id, authHeader })
             apiRemoveBillingProfileBy({ name: dependencyBillingProfile.name, authHeader })
             apiRemoveResellerBy({ name: dependencyReseller.name, authHeader })
-            apiRemoveContractBy({ name: dependencyContract.external_id, authHeader })
-            apiRemoveSystemContactBy({email:systemContactDependency.email, authHeader })
+            apiRemoveContractBy({ external_id: dependencyContract.external_id, authHeader })
+            apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
         })
     })
 
@@ -141,8 +141,8 @@ context('Contract tests', () => {
 
             it(`Create a ${contractType} Contract`, () => {
                 apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveContractBy({ name: peeringContract.external_id, authHeader })
-                    apiRemoveContractBy({ name: resellerContract.external_id, authHeader })
+                    apiRemoveContractBy({ external_id: peeringContract.external_id, authHeader })
+                    apiRemoveContractBy({ external_id: resellerContract.external_id, authHeader })
                 })
                 cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / contract')

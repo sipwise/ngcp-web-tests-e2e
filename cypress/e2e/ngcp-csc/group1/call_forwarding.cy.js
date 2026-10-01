@@ -136,9 +136,9 @@ function createCallForwarding(type, destinationType) {
 }
 
 function removePbxSubscribers(authHeader) {
-    apiRemoveSubscriberBy({ name: pbx_second_seat.username, authHeader })
-    apiRemoveSubscriberBy({ name: pbx_seat.username, authHeader })
-    return apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+    apiRemoveSubscriberBy({ username: pbx_second_seat.username, authHeader })
+    apiRemoveSubscriberBy({ username: pbx_seat.username, authHeader })
+    return apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
 }
 
 function createPbxSubscribers(authHeader) {
@@ -152,11 +152,11 @@ context('Call Forwarding tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             removePbxSubscribers(authHeader)
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -184,7 +184,7 @@ context('Call Forwarding tests', () => {
 
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(() => {
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader }).then(() => {
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
         })
@@ -193,11 +193,11 @@ context('Call Forwarding tests', () => {
     after(() => {
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             removePbxSubscribers(authHeader)
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 

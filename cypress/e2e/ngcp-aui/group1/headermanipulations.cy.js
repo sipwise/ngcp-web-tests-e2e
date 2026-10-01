@@ -96,12 +96,12 @@ context('Header manipulation tests', () => {
             }).then(({ body }) => {
                 if (body.type === 'sppro') {
                     issppro = true
-                    apiRemoveHeaderRuleConditionBy({ name: headerRuleCondition.match_name, authHeader })
+                    apiRemoveHeaderRuleConditionBy({ match_name: headerRuleCondition.match_name, authHeader })
                     apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
                     apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
                     apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
                     apiRemoveResellerBy({ name: reseller.name, authHeader })
-                    apiRemoveContractBy({ name: contract.external_id, authHeader })
+                    apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                     apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
                     cy.log('Data clean up pre-tests completed')
                     apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -125,12 +125,12 @@ context('Header manipulation tests', () => {
         cy.log('Data clean up...')
         if (issppro) {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveHeaderRuleConditionBy({ name: headerRuleCondition.match_name, authHeader })
+                apiRemoveHeaderRuleConditionBy({ match_name: headerRuleCondition.match_name, authHeader })
                 apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
                 apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
                 apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         } else {
@@ -602,7 +602,7 @@ context('Header manipulation tests', () => {
 
             // Setup: Create Header Rule Set and Header Rule, delete Header Rule Condition if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveHeaderRuleConditionBy({ name: headerRuleCondition.match_name, authHeader })
+                apiRemoveHeaderRuleConditionBy({ match_name: headerRuleCondition.match_name, authHeader })
                 apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
                 apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
                 apiCreateHeaderRuleset({ data: headerRuleset, authHeader }).then(({ id }) => {
@@ -632,7 +632,7 @@ context('Header manipulation tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveHeaderRuleConditionBy({ name: headerRuleCondition.match_name, authHeader })
+                apiRemoveHeaderRuleConditionBy({ match_name: headerRuleCondition.match_name, authHeader })
                 apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
                 apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
             })
@@ -679,7 +679,7 @@ context('Header manipulation tests', () => {
             cy.get('td[data-cy="q-td--expression"]').should('contain.text', 'contains')
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveHeaderRuleConditionBy({ name: headerRuleCondition.match_name, authHeader })
+                apiRemoveHeaderRuleConditionBy({ match_name: headerRuleCondition.match_name, authHeader })
                 apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
                 apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
             })
@@ -720,7 +720,7 @@ context('Header manipulation tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveHeaderRuleConditionBy({ name: headerRuleCondition.match_name, authHeader })
+                apiRemoveHeaderRuleConditionBy({ match_name: headerRuleCondition.match_name, authHeader })
                 apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
                 apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
             })

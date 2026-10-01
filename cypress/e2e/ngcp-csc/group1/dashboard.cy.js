@@ -57,9 +57,9 @@ context('Dashboard tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -78,13 +78,13 @@ context('Dashboard tests', () => {
                     issppro = false
                 }
             })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(() => {
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader }).then(() => {
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
         })
@@ -94,8 +94,8 @@ context('Dashboard tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 

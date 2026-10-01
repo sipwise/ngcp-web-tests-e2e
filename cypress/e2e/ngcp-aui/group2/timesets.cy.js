@@ -68,8 +68,8 @@ context('Timeset tests', () => {
             apiRemoveTimesetBy({ name: timeset.name, authHeader })
             apiRemoveResellerBy({ name: editReseller.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: editContract.external_id, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: editContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             //TODO find a way to delete contacts without receiving error: LOCKED - contact still in use
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             cy.log('Data clean up pre-tests completed')
@@ -99,8 +99,8 @@ context('Timeset tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveResellerBy({ name: editReseller.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: editContract.external_id, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: editContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             //TODO find a way to delete contacts without receiving error: LOCKED - contact still in use
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
         })

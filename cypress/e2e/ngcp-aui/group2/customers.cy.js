@@ -89,9 +89,9 @@ context('Customer tests', () => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-            apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
+            apiRemoveAdminBy({ login: mainResellerAdmin.login, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -131,13 +131,13 @@ context('Customer tests', () => {
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-            apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
+            apiRemoveAdminBy({ login: mainResellerAdmin.login, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
             // Customer contacts are considered locked when linked to an active customer.
             // We remove all of the, at the end to give the time to the dbs to update the
             // customer state of deleted items to "terminated"
             apiRemoveCustomerContactsByIds({ids: customerContactIdsToRemove, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
     })

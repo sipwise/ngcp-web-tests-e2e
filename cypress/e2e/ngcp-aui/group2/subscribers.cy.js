@@ -119,14 +119,14 @@ context('Subscriber tests', () => {
                     cy.log('Not a CloudPBX enabled instance, skipping "Pilot" and "Seat" subscriber tests...');
                 }
             })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: seatSubscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: seatSubscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
             apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
             apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
-            apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveCustomerBy({ external_id: customerPbx.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -147,14 +147,14 @@ context('Subscriber tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: seatSubscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: seatSubscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
             apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
             apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
-            apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveCustomerBy({ external_id: customerPbx.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 
@@ -187,7 +187,7 @@ context('Subscriber tests', () => {
     it('Create Subscriber', () => {
         // Setup: Delete Subscriber if exists
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
 
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
@@ -220,7 +220,7 @@ context('Subscriber tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -229,7 +229,7 @@ context('Subscriber tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
             apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader })
             apiCreateSubscriberProfileSet({ data: profileSet, authHeader }).then(({ id }) => {
                 apiCreateSubscriberProfile({ data: { ...subscriberProfile, profile_set_id: id }, authHeader })
@@ -274,7 +274,7 @@ context('Subscriber tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
             apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -288,7 +288,7 @@ context('Subscriber tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
             apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
-            apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
             apiCreateSubscriber({ data: pilotSubscriber, authHeader })
             apiCreateSubscriberProfileSet({ data: profileSet, authHeader }).then(({ id }) => {
                 apiCreateSubscriberProfile({ data: { ...subscriberProfile, profile_set_id: id }, authHeader })
@@ -340,7 +340,7 @@ context('Subscriber tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
             apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
-            apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
         })
     })
 
@@ -354,8 +354,8 @@ context('Subscriber tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
             apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
-            apiRemoveSubscriberBy({ name: seatSubscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: seatSubscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
             apiCreateSubscriber({ data: pilotSubscriber, authHeader })
             apiCreateSubscriber({ data: seatSubscriber, authHeader })
             apiCreateSubscriberProfileSet({ data: profileSet, authHeader }).then(({ id }) => {
@@ -408,15 +408,15 @@ context('Subscriber tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
             apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
-            apiRemoveSubscriberBy({ name: seatSubscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pilotSubscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: seatSubscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
         })
     })
 
     it('Delete Subscriber and check if they are deleted', () => {
         // Setup: Create Subscriber
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader })
         })
 
@@ -428,7 +428,7 @@ context('Subscriber tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 })

@@ -97,9 +97,9 @@ context('Login page tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
                 cy.log('Preparing environment...')
-                apiRemoveAdminBy({ name: admin.login, authHeader })
+                apiRemoveAdminBy({ login: admin.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
                 cy.log('Data clean up pre-tests completed')
 
@@ -127,9 +127,9 @@ context('Login page tests', () => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin.login, authHeader })
+                apiRemoveAdminBy({ login: admin.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })

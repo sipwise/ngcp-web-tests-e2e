@@ -91,12 +91,12 @@ context('Customer Preferences tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-            apiRemoveNCOSLevelBy({ name: ncosLevel.level, authHeader })
+            apiRemoveNCOSLevelBy({ level: ncosLevel.level, authHeader })
             apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -117,7 +117,7 @@ context('Customer Preferences tests', () => {
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
             cy.log('Cleaning up db...')
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
 
             cy.log('Seeding db...')
@@ -133,12 +133,12 @@ context('Customer Preferences tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-            apiRemoveNCOSLevelBy({ name: ncosLevel.level, authHeader })
+            apiRemoveNCOSLevelBy({ level: ncosLevel.level, authHeader })
             apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
     })

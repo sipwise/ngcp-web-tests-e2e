@@ -249,7 +249,7 @@ function createCFMappingEntries() {
         apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
         apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
         apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-        apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(() => {
+        apiRemoveSubscriberBy({ username: subscriber.username, authHeader }).then(() => {
             apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                 subscriber.subscriber_id = id
                 apiCreateCFSourceSet({ data: {...sourceset, subscriber_id: id}, authHeader }).then(({ id }) => {
@@ -300,9 +300,9 @@ context('Subscriber Call Forwarding tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
 
             apiCreateDomain({ data: domain, authHeader }).then(({ id }) => domain.id = id )
@@ -316,11 +316,11 @@ context('Subscriber Call Forwarding tests', () => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(()=> {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader }).then(()=> {
                     apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
                     apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
-                    apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                    apiRemoveDomainBy({ name: domain.domain, authHeader })
+                    apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                    apiRemoveDomainBy({ domain: domain.domain, authHeader })
                 })
         })
     })
@@ -329,7 +329,7 @@ context('Subscriber Call Forwarding tests', () => {
         it('Check if source set with empty values gets rejected', () => {
             // Setup: Create Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
@@ -350,7 +350,7 @@ context('Subscriber Call Forwarding tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -358,7 +358,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber, delete Source Set if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
@@ -386,7 +386,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -394,7 +394,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber and Source Set
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateCFSourceSet({ data: {...sourceset, subscriber_id: id}, authHeader })
                 })
@@ -423,7 +423,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -431,7 +431,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber and Source Set
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateCFSourceSet({ data: {...sourceset, subscriber_id: id}, authHeader })
                 })
@@ -452,7 +452,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
     })
@@ -461,7 +461,7 @@ context('Subscriber Call Forwarding tests', () => {
         it('Check if timeset with empty values gets rejected', () => {
             // Setup: Create Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
@@ -482,7 +482,7 @@ context('Subscriber Call Forwarding tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -490,7 +490,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber, delete Time Set if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
@@ -524,7 +524,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -532,7 +532,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber and Time Set
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateCFTimeSet({ data: {...timesetAPI, subscriber_id: id}, authHeader })
                 })
@@ -561,7 +561,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -569,7 +569,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber and Time Set
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateCFTimeSet({ data: {...timesetAPI, subscriber_id: id}, authHeader })
                 })
@@ -590,7 +590,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
     })
@@ -599,7 +599,7 @@ context('Subscriber Call Forwarding tests', () => {
         it('Check if Bnumber set with empty values gets rejected', () => {
             // Setup: Create Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
@@ -620,7 +620,7 @@ context('Subscriber Call Forwarding tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -628,7 +628,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber, delete Bnumber Set if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFBnumberSetBy({ name: bnumberset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
@@ -656,7 +656,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFBnumberSetBy({ name: bnumberset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -664,7 +664,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber and Bnumber Set
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateCFBnumberSet({ data: {...bnumberset, subscriber_id: id}, authHeader })
                 })
@@ -693,7 +693,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFBnumberSetBy({ name: bnumberset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -701,7 +701,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber and Bnumber Set
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateCFBnumberSet({ data: {...bnumberset, subscriber_id: id}, authHeader })
                 })
@@ -722,7 +722,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFBnumberSetBy({ name: bnumberset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
     })
@@ -731,7 +731,7 @@ context('Subscriber Call Forwarding tests', () => {
         it('Check if destinationset with empty values gets rejected', () => {
             // Setup: Create Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
@@ -752,7 +752,7 @@ context('Subscriber Call Forwarding tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
         })
@@ -761,7 +761,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber, delete Destination Set if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
@@ -792,7 +792,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -800,7 +800,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber and Destination Set
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateCFDestinationSet({ data: {...destinationset, subscriber_id: id}, authHeader })
                 })
@@ -829,7 +829,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -837,7 +837,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber and Destination Set
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateCFDestinationSet({ data: {...destinationset, subscriber_id: id}, authHeader })
                 })
@@ -858,7 +858,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
     })
@@ -867,7 +867,7 @@ context('Subscriber Call Forwarding tests', () => {
         it('Add all elements to cfb', () => {
             // Setup: Create Subscriber and all CF Types
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(() => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader }).then(() => {
                     apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                         apiCreateCFSourceSet({ data: {...sourceset, subscriber_id: id}, authHeader })
                         apiCreateCFTimeSet({ data: {...timesetAPI, subscriber_id: id}, authHeader })
@@ -907,7 +907,7 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -942,7 +942,7 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -978,7 +978,7 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -1013,7 +1013,7 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -1048,7 +1048,7 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -1078,7 +1078,7 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
     })
@@ -1087,7 +1087,7 @@ context('Subscriber Call Forwarding tests', () => {
         it('Add all elements to cft', () => {
             // Setup: Create Subscriber and all CF Types
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(() => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader }).then(() => {
                     apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                         apiCreateCFSourceSet({ data: {...sourceset, subscriber_id: id}, authHeader })
                         apiCreateCFTimeSet({ data: {...timesetAPI, subscriber_id: id}, authHeader })
@@ -1128,8 +1128,8 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFBnumberSetBy({ name: bnumberset.name, authHeader })
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -1167,7 +1167,7 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -1203,7 +1203,7 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
     })

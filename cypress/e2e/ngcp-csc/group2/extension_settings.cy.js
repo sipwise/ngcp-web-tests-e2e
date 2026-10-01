@@ -109,10 +109,10 @@ context('Extension Settings tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -135,16 +135,16 @@ context('Extension Settings tests', () => {
                     iscloudpbx = false
                 }
             })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
         })
     })
 
     beforeEach(() => {
         if (iscloudpbx) {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-                apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
                 apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             })
         }
@@ -154,10 +154,10 @@ context('Extension Settings tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 
@@ -243,7 +243,7 @@ context('Extension Settings tests', () => {
 
             apiLoginAsSuperuser().then(authHeader => {
                 // Setup: Create second PBX Subscriber, delete if already exists 
-                apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
                 apiCreateSubscriber({ data: pbx_subscriber, authHeader })
             })
 
@@ -262,7 +262,7 @@ context('Extension Settings tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
             })
         })
     })

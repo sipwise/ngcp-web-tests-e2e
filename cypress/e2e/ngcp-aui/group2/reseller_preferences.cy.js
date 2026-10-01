@@ -54,7 +54,7 @@ context('Reseller Preferences tests', () => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
             apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             cy.log('Data clean up pre-tests completed')
@@ -69,7 +69,7 @@ context('Reseller Preferences tests', () => {
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
@@ -78,7 +78,7 @@ context('Reseller Preferences tests', () => {
     it('Test all access restrictions preferences in reseller', () => {
         // Setup: Create Reseller
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
             apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
                 apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
@@ -103,7 +103,7 @@ context('Reseller Preferences tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
         })
     })
@@ -112,7 +112,7 @@ context('Reseller Preferences tests', () => {
         // Setup: Create Reseller and Rewrite Rule Set
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
             apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
                 apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
@@ -137,7 +137,7 @@ context('Reseller Preferences tests', () => {
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
         })
     })

@@ -131,13 +131,13 @@ context('Subscriber Roles tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: admin_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_admin_subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: admin_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_admin_subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -168,13 +168,13 @@ context('Subscriber Roles tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: admin_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_admin_subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: admin_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_admin_subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 
@@ -189,7 +189,7 @@ context('Subscriber Roles tests', () => {
 
         after(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.external_id, authHeader })
             })
         })
 
@@ -227,7 +227,7 @@ context('Subscriber Roles tests', () => {
     context('Test admin subscriber', () => {
         before(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: admin_subscriber.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: admin_subscriber.external_id, authHeader })
                 loginInfo.username = `${admin_subscriber.webusername}@${domain.domain}`
                 loginInfo.password = `${admin_subscriber.webpassword}`
             })
@@ -241,7 +241,7 @@ context('Subscriber Roles tests', () => {
 
         afterEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: admin_subscriber.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: admin_subscriber.external_id, authHeader })
             })
         })
 
@@ -310,8 +310,8 @@ context('Subscriber Roles tests', () => {
         before(() => {
             if(iscloudpbx) {
                 apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveSubscriberBy({ name: pbx_subscriber.external_id, authHeader })
-                    apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_subscriber.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.external_id, authHeader })
                     apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
                     apiCreateSubscriber({ data: pbx_subscriber, authHeader })
                 })
@@ -323,8 +323,8 @@ context('Subscriber Roles tests', () => {
         after(() => {
             if(iscloudpbx) {
                 apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveSubscriberBy({ name: pbx_subscriber.external_id, authHeader })
-                    apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_subscriber.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.external_id, authHeader })
                 })
             }
 
@@ -385,8 +385,8 @@ context('Subscriber Roles tests', () => {
         before(() => {
             if(iscloudpbx){
                 apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveSubscriberBy({ name: pbx_admin_subscriber.external_id, authHeader })
-                    apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_admin_subscriber.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.external_id, authHeader })
                     apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
                 })
                 loginInfo.username = `${pbx_admin_subscriber.webusername}@${domain.domain}`
@@ -405,7 +405,7 @@ context('Subscriber Roles tests', () => {
         after(() => {
             if(iscloudpbx) {
                 apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.external_id, authHeader })
                 })
             }
         })
@@ -413,7 +413,7 @@ context('Subscriber Roles tests', () => {
         afterEach(() => {
             if(iscloudpbx) {
                 apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveSubscriberBy({ name: pbx_admin_subscriber.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_admin_subscriber.external_id, authHeader })
                 })
             }
         })

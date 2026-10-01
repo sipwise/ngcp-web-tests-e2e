@@ -115,7 +115,7 @@ context('Device management tests', () => {
                 if (body.cloudpbx) {
                     iscloudpbx = true
                     apiRemoveResellerBy({ name: reseller.name, authHeader })
-                    apiRemoveContractBy({ name: contract.external_id, authHeader })
+                    apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                     apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
                     cy.log('Data clean up pre-tests completed')
                     apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -150,11 +150,11 @@ context('Device management tests', () => {
         if (iscloudpbx) {
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceFirmwareBy({ name: pbxDeviceFirmware.tag, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceFirmwareBy({ tag: pbxDeviceFirmware.tag, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         } else {
@@ -189,7 +189,7 @@ context('Device management tests', () => {
 
             // Setup: Delete Device Model if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
@@ -212,7 +212,7 @@ context('Device management tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             })
         })
 
@@ -224,7 +224,7 @@ context('Device management tests', () => {
 
             // Setup: Create Device Model
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
                 apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader})
             })
 
@@ -249,7 +249,7 @@ context('Device management tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             })
         })
 
@@ -261,7 +261,7 @@ context('Device management tests', () => {
 
             // Setup: Create Device Model
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
                 apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader})
             })
 
@@ -288,7 +288,7 @@ context('Device management tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             })
         })
 
@@ -300,7 +300,7 @@ context('Device management tests', () => {
 
             // Setup: Create Device Model
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
                 apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader})
             })
 
@@ -326,7 +326,7 @@ context('Device management tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             })
         })
 
@@ -338,7 +338,7 @@ context('Device management tests', () => {
 
             // Setup: Create Device Model
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
                 apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader})
             })
 
@@ -350,7 +350,7 @@ context('Device management tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             })
         })
     })
@@ -383,8 +383,8 @@ context('Device management tests', () => {
 
             // Setup: Create Device Model, delete Device Firmware if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceFirmwareBy({ name: pbxDeviceFirmware.tag, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceFirmwareBy({ tag: pbxDeviceFirmware.tag, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
                 apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader})
             })
 
@@ -409,8 +409,8 @@ context('Device management tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceFirmwareBy({ name: pbxDeviceFirmware.tag, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceFirmwareBy({ tag: pbxDeviceFirmware.tag, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             })
         })
 
@@ -422,8 +422,8 @@ context('Device management tests', () => {
 
             // Setup: Create Device Model and Firmware
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceFirmwareBy({ name: pbxDeviceFirmware.tag, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceFirmwareBy({ tag: pbxDeviceFirmware.tag, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
                 apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader}).then(({ id }) => {
                     cy.fixture("firmware.z", 'binary').then((file) => {
                         apiCreatePbxDeviceFirmware({ parameters: { ...pbxDeviceFirmware, device_id: id }, blobData: Cypress.Blob.binaryStringToBlob(file, 'application/octet-stream'), authHeader })
@@ -453,8 +453,8 @@ context('Device management tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceFirmwareBy({ name: pbxDeviceFirmware.tag, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceFirmwareBy({ tag: pbxDeviceFirmware.tag, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             })
         })
 
@@ -466,8 +466,8 @@ context('Device management tests', () => {
 
             // Setup: Create Device Model and Firmware
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceFirmwareBy({ name: pbxDeviceFirmware.tag, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceFirmwareBy({ tag: pbxDeviceFirmware.tag, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
                 apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader}).then(({ id }) => {
                     cy.fixture("firmware.z", 'binary').then((file) => {
                         apiCreatePbxDeviceFirmware({ parameters: { ...pbxDeviceFirmware, device_id: id }, blobData: Cypress.Blob.binaryStringToBlob(file, 'application/octet-stream'), authHeader })
@@ -492,8 +492,8 @@ context('Device management tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceFirmwareBy({ name: pbxDeviceFirmware.tag, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceFirmwareBy({ tag: pbxDeviceFirmware.tag, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             })
         })
 
@@ -505,8 +505,8 @@ context('Device management tests', () => {
 
             // Setup: Create Device Model and Firmware
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceFirmwareBy({ name: pbxDeviceFirmware.tag, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceFirmwareBy({ tag: pbxDeviceFirmware.tag, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
                 apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader}).then(({ id }) => {
                     cy.fixture("firmware.z", 'binary').then((file) => {
                         apiCreatePbxDeviceFirmware({ parameters: { ...pbxDeviceFirmware, device_id: id }, blobData: Cypress.Blob.binaryStringToBlob(file, 'application/octet-stream'), authHeader })
@@ -523,8 +523,8 @@ context('Device management tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceFirmwareBy({ name: pbxDeviceFirmware.tag, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceFirmwareBy({ tag: pbxDeviceFirmware.tag, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             })
         })
     })
@@ -557,8 +557,8 @@ context('Device management tests', () => {
 
             // Setup: Create Device Model, delete Device Config if it exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
                 apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader})
             })
 
@@ -582,8 +582,8 @@ context('Device management tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             })
         })
 
@@ -595,8 +595,8 @@ context('Device management tests', () => {
 
             // Setup: Create Device Config
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
                 apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader}).then(({ id }) => {
                     cy.fixture("deviceconfigtestfile.xml").then((text) => {
                         apiCreatePbxDeviceConfig({ parameters: { ...pbxDeviceConfig, device_id: id }, data: text, authHeader })
@@ -625,8 +625,8 @@ context('Device management tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             })
         })
 
@@ -638,8 +638,8 @@ context('Device management tests', () => {
 
             // Setup: Create Device Config
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
                 apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader}).then(({ id }) => {
                     cy.fixture("deviceconfigtestfile.xml").then((text) => {
                         apiCreatePbxDeviceConfig({ parameters: { ...pbxDeviceConfig, device_id: id }, data: text, authHeader })
@@ -656,8 +656,8 @@ context('Device management tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             })
         })
     })
@@ -690,8 +690,8 @@ context('Device management tests', () => {
             // Setup: Create Device Config, delete Device Profile if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
                 apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader}).then(({ id }) => {
                     cy.fixture("deviceconfigtestfile.xml").then((text) => {
                         apiCreatePbxDeviceConfig({ parameters: { ...pbxDeviceConfig, device_id: id }, data: text, authHeader })
@@ -719,8 +719,8 @@ context('Device management tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             })
         })
 
@@ -733,8 +733,8 @@ context('Device management tests', () => {
             // Setup: Create Device Profile
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
                 apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader}).then(({ id }) => {
                     cy.fixture("deviceconfigtestfile.xml").then((text) => {
                         apiCreatePbxDeviceConfig({ parameters: { ...pbxDeviceConfig, device_id: id }, data: text, authHeader }).then(({ id }) => {
@@ -770,8 +770,8 @@ context('Device management tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             })
         })
 
@@ -784,8 +784,8 @@ context('Device management tests', () => {
             // Setup: Create Device Profile
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
                 apiCreatePbxDeviceModel({ data: deviceModelFormData, authHeader}).then(({ id }) => {
                     cy.fixture("deviceconfigtestfile.xml").then((text) => {
                         apiCreatePbxDeviceConfig({ parameters: { ...pbxDeviceConfig, device_id: id }, data: text, authHeader }).then(({ id }) => {
@@ -806,8 +806,8 @@ context('Device management tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ name: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ name: pbxDeviceModel.model, authHeader })
+                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             })
         })
     })

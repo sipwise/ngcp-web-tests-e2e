@@ -90,10 +90,10 @@ context('Subscriber phonebook tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriberSharedPhonebook.username, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriberSharedPhonebook.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -127,10 +127,10 @@ context('Subscriber phonebook tests', () => {
                 apiRemoveSubscriberPhonebookBy({name: secondSubscriberPhonebookEntry.name, authHeader})
                 apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
             }
-            apiRemoveSubscriberBy({ name: subscriberSharedPhonebook.username, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriberSharedPhonebook.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 
@@ -142,7 +142,7 @@ context('Subscriber phonebook tests', () => {
         // Setup: Create Subscriber, delete Phonebook if exists
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader })
         })
 
@@ -160,7 +160,7 @@ context('Subscriber phonebook tests', () => {
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -172,7 +172,7 @@ context('Subscriber phonebook tests', () => {
         // Setup: Create Subscriber and Subscriber Phonebook
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                 apiCreateSubscriberPhonebook({data: { ...subscriberPhonebookEntry, subscriber_id: id }, authHeader})
             })
@@ -192,7 +192,7 @@ context('Subscriber phonebook tests', () => {
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -204,7 +204,7 @@ context('Subscriber phonebook tests', () => {
         // Setup: Create Subscriber and Subscriber Phonebook
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                 apiCreateSubscriberPhonebook({data: { ...subscriberPhonebookEntry, subscriber_id: id }, authHeader})
             })
@@ -233,7 +233,7 @@ context('Subscriber phonebook tests', () => {
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -245,8 +245,8 @@ context('Subscriber phonebook tests', () => {
         // Setup: Create Subscribers and Subscriber Phonebook
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebookEntry.name, authHeader })
-            apiRemoveSubscriberBy({ name: subscriberSharedPhonebook.username, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriberSharedPhonebook.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                 apiCreateSubscriberPhonebook({ data: { ...subscriberPhonebookEntry, subscriber_id: id }, authHeader })
             })
@@ -270,8 +270,8 @@ context('Subscriber phonebook tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriberSharedPhonebook.username, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriberSharedPhonebook.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebookEntry.name, authHeader })
         })
     })
@@ -285,7 +285,7 @@ context('Subscriber phonebook tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebookEntry.name, authHeader })
             apiRemoveSubscriberPhonebookBy({ name: secondSubscriberPhonebookEntry.name, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                 apiCreateSubscriberPhonebook({ data: { ...subscriberPhonebookEntry, subscriber_id: id }, authHeader })
                 apiCreateSubscriberPhonebook({ data: { ...secondSubscriberPhonebookEntry, subscriber_id: id }, authHeader })
@@ -324,7 +324,7 @@ context('Subscriber phonebook tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebookEntry.name, authHeader })
             apiRemoveSubscriberPhonebookBy({ name: secondSubscriberPhonebookEntry.name, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -336,7 +336,7 @@ context('Subscriber phonebook tests', () => {
         // Setup: Create Subscriber and Subscriber Phonebook
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                 apiCreateSubscriberPhonebook({data: { ...subscriberPhonebookEntry, subscriber_id: id }, authHeader})
             })
@@ -353,7 +353,7 @@ context('Subscriber phonebook tests', () => {
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebookEntry.name, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 })

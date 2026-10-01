@@ -81,9 +81,9 @@ context('Auto Attendant tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             cy.request({
@@ -109,8 +109,8 @@ context('Auto Attendant tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 
@@ -121,7 +121,7 @@ context('Auto Attendant tests', () => {
 
         // Setup: Create Subscriber, delete Subscriber if exists
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader })
         })
 
@@ -152,7 +152,7 @@ context('Auto Attendant tests', () => {
 
         // Setup: Create Subscriber and auto attendant
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader }).then(({ id }) => {
                 apiEditAutoAttendant({ subid: id, data: autoattendant, authHeader})
             })
@@ -185,7 +185,7 @@ context('Auto Attendant tests', () => {
 
         // Setup: Create Subscriber and auto attendant
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader }).then(({ id }) => {
                 apiEditAutoAttendant({ subid: id, data: autoattendant, authHeader})
             })
@@ -217,7 +217,7 @@ context('Auto Attendant tests', () => {
 
         // Setup: Create Subscriber and auto attendant
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader }).then(({ id }) => {
                 apiEditAutoAttendant({ subid: id, data: autoattendantDelete, authHeader})
             })
