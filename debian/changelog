@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.0.1.18+0~mr26.0.1.18) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [a24c4f3] MT#63950 remove waitPageProgress from admin enable ccare test
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 01 Oct 2026 10:40:48 +0200
+
 ngcp-web-tests-e2e (26.0.1.17+0~mr26.0.1.17) unstable; urgency=medium
 
   [ Nico Schedel ]
