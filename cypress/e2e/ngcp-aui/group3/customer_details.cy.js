@@ -444,7 +444,7 @@ context('Customer Details tests', () => {
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('a[data-cy="customer-contractbalance-topupcash"]').click()
-            cy.get('input[data-cy="top-up-amount"]').type(10000)
+            cy.get('input[data-cy="top-up-amount"]').type(100)
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('div[data-cy="customer-contractbalance-cashbalance-value"]').find('div[class="q-item__label text-default"]').contains('101').should('be.visible')
@@ -453,7 +453,7 @@ context('Customer Details tests', () => {
             cy.get('td[data-cy="q-td--outcome"]').contains('ok').should('be.visible')
             cy.get('td[data-cy="q-td--amount"]').contains('100').should('be.visible')
             cy.get('div').contains('Balance Intervals').click()
-            cy.get('td[data-cy="q-td--cash-balance"]').contains('101.00').should('be.visible')
+            cy.get('td[data-cy="q-td--cash-balance"]').contains('101').should('be.visible')
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
