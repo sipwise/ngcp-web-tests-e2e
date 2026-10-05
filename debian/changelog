@@ -1,3 +1,50 @@
+ngcp-web-tests-e2e (27.0.0.0+0~mr27.0.0.0) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [db4f022] MT#65155 create autoattendant tests in CSC UI
+  * [2c93dc5] MT#63950 remove more waitPageProgress from customer details tests
+  * [a31227d] MT#63950 remove waitPageProgess in admin roles (searchInDataTable)
+  * [ed08558] MT#63950 remove waitPageProgess in header manipulations (menu navigation)
+  * [e4e3fc7] MT#65741 fix: [CSC] Call blocking number entry gets cut off
+  * [a556fe0] MT#65624 fix blocks data-cy for updated billing network table
+  * [bb915c2] MT#65741 fix: [CSC] Call blocking number entry gets cut off (outgoing)
+  * [a3a8b5a] MT#65759 update tests for added call forward number field
+  * [8b359f7] MT#63950 remove waitPageProgess in admin roles (empty site navigation)
+  * [8131e04] MT#63950 remove waitPageProgress from lnp navigateMainMenu()
+  * [62937d4] MT#65705 add billing network page tests
+  * [be734da] MT#65812 fix for updated auiSelectLazySelect logic
+  * [b058463] MT#65812 rework qspinner detection in listbox
+  * [d3d5fc8] MT#63950 remove waitPageProgress from reseller_details phonebook tests
+  * [722eea6] MT#63950 remove waitPageProgress from customer_details phonebook tests
+  * [b0c7fcf] MT#65705 fix edit billing network tests in case it needs to retry
+  * [dfc44c4] MT#63950 remove waitPageProgress from billing zone tests
+  * [ace2cfd] MT#63950 remove waitPageProgress from billing fee tests
+  * [2d30ffc] MT#65705 fix for: fix edit billing network tests in case it needs to retry
+  * [762b78f] MT#63950 remove waitPageProgress from emergencyMapping edit tests
+  * [483a183] MT#65939 [AUI] wait out blocked search input while adding new ncos level
+  * [0cf22ed] MT#65940 fix auiSelectLazySelect weird behaviour when calling it multiple times in a row
+  * [d0627b9] MT#65976 [AUI] fix "admin download certificate" test issues (Step 1)
+  * [e4b81af] MT#64395 [CSC] add tests for sound set page
+  * [20141e0] MT#63950 remove waitPageProgress from admin_roles tests
+  * [ab4bf35] MT#63950 remove waitPageProgress from customer_details contract tests
+  * [c38805b] MT#64395 make csc soundset tests cloudpbx-only
+  * [52fdb02] MT#66014 rework callback test check (temporary fix)
+  * [ea98a1c] MT#63950 remove failing waitPageProgress from reseller admin create test
+  * [af52ef9] MT#66014 catch SecurityError exception to work aroung callback issues
+  * [a1174b0] MT#63950 replace be.visible with exist inside waitPageProgress
+  * [2fe7d2a] MT#63279 go to conversations tab instead of now deprecated recordings button
+  * [b373277] MT#65901 [AUI] Create tests for Call List Suppressions
+  * [595f54d] MT#63950 remove waitPageProgress from admin enable ccare test
+  * [86f9745] MT#66188 recordings/subscriber_roles: add qSelect to fix test failures
+  * [50e3c7f] MT#65667 [CSC] Improve login behaviour for CSC tests
+
+  [ Debora Crescenzo ]
+  * [938d2b0] MT#65720 fix flaky language switcher clicks in i18n login tests
+  * [02f33bb] MT#65775 Bump transitive dependencies flagged by dependabot
+  * [1673e7f] MT#65999 Amend CF Summary tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 05 Oct 2026 12:36:21 +0200
+
 ngcp-web-tests-e2e (26.3.0.0+0~mr26.3.0.0) unstable; urgency=medium
 
   [ Nico Schedel ]
