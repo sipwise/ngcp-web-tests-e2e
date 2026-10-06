@@ -195,12 +195,13 @@ context('Subscriber tests', () => {
         cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsSubscribers"]').click()
         waitPageProgressAUI()
         cy.get('a[data-cy="aui-list-action--add"]').click()
-        waitPageProgressAUI()
-        cy.auiSelectLazySelect({ dataCy: 'aui-select-domain', filter: domain.domain, itemContains: domain.domain })
+
+        cy.get('input[data-cy="subscriber-web-username"]').should('be.visible')
         cy.get('input[data-cy="subscriber-web-username"]').type(subscriber.username)
         cy.get('[data-cy="subscriber-password-generate"]:first').click()
         cy.get('input[data-cy="subscriber-sip-username"]').type(subscriber.username)
         cy.get('[data-cy="subscriber-password-generate"]:last').click()
+        cy.auiSelectLazySelect({ dataCy: 'aui-select-domain', filter: domain.domain, itemContains: domain.domain })
         cy.get('input[data-cy="subscriber-email"]').type(subscriber.email)
         cy.get('input[data-cy="subscriber-external-id"]').type(subscriber.external_id)
         cy.get('input[data-cy="aui-primary-number-cc"]').type(subscriber.primary_number.cc)
@@ -242,8 +243,9 @@ context('Subscriber tests', () => {
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
         waitPageProgressAUI()
-
         cy.get('a[data-cy="aui-edit-button"]').click()
+
+        cy.get('input[data-cy="subscriber-email"]').should('be.visible')
         cy.get('input[data-cy="subscriber-email"]').clear()
         cy.get('input[data-cy="subscriber-email"]').type('newtest@mail.com')
         cy.get('input[data-cy="subscriber-web-username"]').clear()
@@ -299,8 +301,9 @@ context('Subscriber tests', () => {
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
         waitPageProgressAUI()
-
         cy.get('a[data-cy="aui-edit-button"]').click()
+        
+        cy.get('label[data-cy="aui-input-subscriber-username"] input').should('be.visible')
         cy.get('label[data-cy="aui-input-subscriber-username"] input').type(pilotSubscriber.external_id)
         cy.get('input[data-cy="subscriber-email"]').clear()
         cy.get('input[data-cy="subscriber-email"]').type('newtest@mail.com')
@@ -366,8 +369,9 @@ context('Subscriber tests', () => {
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
         waitPageProgressAUI()
-
         cy.get('a[data-cy="aui-edit-button"]').click()
+
+        cy.get('label[data-cy="aui-input-subscriber-username"] input').should('be.visible')
         cy.get('label[data-cy="aui-input-subscriber-username"] input').type(seatSubscriber.external_id)
         cy.get('input[data-cy="subscriber-email"]').clear()
         cy.get('input[data-cy="subscriber-email"]').type('newtest@mail.com')
