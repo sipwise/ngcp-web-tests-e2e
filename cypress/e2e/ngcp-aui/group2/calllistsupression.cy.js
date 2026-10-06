@@ -64,7 +64,7 @@ context('Call List Suppressions tests', () => {
 
     it('Check if Call List Suppression with invalid values gets rejected', () => {
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / calllistsuppression')
+        cy.navigateMainMenu('settings / calllistsuppression', false)
         cy.locationShouldBe('#/calllistsuppression')
         cy.get('a[data-cy="aui-list-action--add"]').click()
         cy.get('[data-cy=aui-save-button]').click()
@@ -80,7 +80,7 @@ context('Call List Suppressions tests', () => {
         })
 
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / calllistsuppression')
+        cy.navigateMainMenu('settings / calllistsuppression', false)
         cy.locationShouldBe('#/calllistsuppression')
         cy.get('a[data-cy="aui-list-action--add"]').click()
 
@@ -97,7 +97,7 @@ context('Call List Suppressions tests', () => {
 
     it('Edit Call List Suppression', () => {
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / calllistsuppression')
+        cy.navigateMainMenu('settings / calllistsuppression', false)
         cy.locationShouldBe('#/calllistsuppression')
         searchInDataTable(callListSuppression.label, 'Label')
 
@@ -117,7 +117,7 @@ context('Call List Suppressions tests', () => {
 
     it('Download Call List Suppression', () => {
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / calllistsuppression')
+        cy.navigateMainMenu('settings / calllistsuppression', false)
         cy.locationShouldBe('#/calllistsuppression')
         searchInDataTable(callListSuppression.label, 'Label')
 
@@ -135,7 +135,7 @@ context('Call List Suppressions tests', () => {
         })
 
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / calllistsuppression')
+        cy.navigateMainMenu('settings / calllistsuppression', false)
         cy.locationShouldBe('#/calllistsuppression')
 
         cy.get('a[data-cy="aui-call-list-suppression-upload"]').click()
@@ -154,7 +154,7 @@ context('Call List Suppressions tests', () => {
 
     it('Delete Call List Suppression', () => {
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / calllistsuppression')
+        cy.navigateMainMenu('settings / calllistsuppression', false)
         cy.locationShouldBe('#/calllistsuppression')
 
         deleteItemOnListPageBy(callListSuppression.label, 'Label')

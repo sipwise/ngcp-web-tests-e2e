@@ -95,7 +95,6 @@ context('Subscriber Profile tests', () => {
         cy.get('[data-cy="aui-save-button"]').click()
         cy.contains('.q-notification', 'Subscriber Profile Set saved successfully').should('be.visible')
         cy.get('[data-cy="aui-close-button"]').click()
-        waitPageProgressAUI()
         cy.contains('[data-cy="q-td--description"]', profileSet.descriptionNew).should('be.visible')
     })
 
