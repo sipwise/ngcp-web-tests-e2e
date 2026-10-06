@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.2.1.15+0~mr26.2.1.15) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [3c597c7] MT#65667 [CSC] Improve login behaviour for CSC tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 06 Oct 2026 14:07:48 +0200
+
 ngcp-web-tests-e2e (26.2.1.14+0~mr26.2.1.14) unstable; urgency=medium
 
   [ Nico Schedel ]
