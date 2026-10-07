@@ -89,20 +89,6 @@ context('Fax settings page tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
-            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
-            apiRemoveDomainBy({ domain: domain.domain, authHeader })
-            cy.log('Data clean up pre-tests completed')
-            apiCreateDomain({ data: domain, authHeader })
-            apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
-                    subscriber.customer_id = id
-            })
-            apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
-                    pbx_subscriber_pilot.customer_id = id
-            })
-            apiCreateSubscriber({ data:  subscriber, authHeader })
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -110,31 +96,55 @@ context('Fax settings page tests', () => {
             }).then(({ body }) => {
                 if (body.type === 'sppro') {
                     issppro = true
+                    Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                    apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                    apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                    apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                    apiCreateDomain({ data: domain, authHeader })
+                    apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                        subscriber.customer_id = id
+                    })
                 } else {
-                    cy.log('Not a SPPRO instance, skipping all tests...');
                     issppro = false
+                    cy.log('Not a SPPRO instance, skipping all tests...')
                     return
                 }
                 if (body.cloudpbx) {
                     iscloudpbx = true
+                    apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
+                    apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+                    apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
+                        pbx_subscriber_pilot.customer_id = id
+                    })
+                    cy.log('Finished data creation, start running tests...')
                 } else {
-                    cy.log('Not a CloudPBX enabled instance, skipping "Mail2Fax" tests...');
                     iscloudpbx = false
+                    cy.log('Not a CloudPBX enabled instance, skipping "Mail2Fax" tests...')
+                    cy.log('Finished data creation, start running tests...')
                     return
                 }
             })
-            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
-            apiRemoveDomainBy({ domain: domain.domain, authHeader })
-        })
+        if (iscloudpbx) {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
+                apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+            })
+        }
+        if (issppro) {
+            Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            })
+            cy.log('Cleanup complete!')
+        } else {
+            cy.log('Not a SPPRO instance, skipping cleanup...')
+        }
     })
 
     it('Try to enable fax to mail', function () {

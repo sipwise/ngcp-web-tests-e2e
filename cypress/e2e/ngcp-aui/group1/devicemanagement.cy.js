@@ -23,13 +23,12 @@ import {
     apiRemovePbxDeviceProfileBy
 } from '../../../support/e2e'
 
-
+let iscloudpbx = null
 const deviceModelFormData = new FormData()
 const downloadsFolder = Cypress.config('downloadsFolder')
 const fixturesFolder = Cypress.config('fixturesFolder')
 const ngcpConfig = Cypress.config('ngcpConfig')
 const path = require('path')
-let iscloudpbx = null
 
 const contract = {
     contact_id: 0,
@@ -106,7 +105,6 @@ context('Device management tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
-            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -114,10 +112,11 @@ context('Device management tests', () => {
             }).then(({ body }) => {
                 if (body.cloudpbx) {
                     iscloudpbx = true
+                    Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
                     apiRemoveResellerBy({ name: reseller.name, authHeader })
                     apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                     apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
-                    cy.log('Data clean up pre-tests completed')
+                    cy.log('Finished data cleanup')
                     apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                         contract.contact_id = id
                     })
@@ -135,9 +134,10 @@ context('Device management tests', () => {
                         deviceModelFormData.append("mac_image", new Blob([file], { type: "text/plain" }), 'empty.txt')
                         deviceModelFormData.append("front_thumbnail", new Blob([file], { type: "text/plain" }), 'empty.txt')
                     })
+                    cy.log('Finished data creation, start running tests...')
                 } else {
                     iscloudpbx = false
-                    cy.log('Not a CloudPBX enabled instance, skipping all tests...');
+                    cy.log('Not a CloudPBX enabled instance, skipping all tests...')
                     return
                 }
             })
@@ -145,9 +145,8 @@ context('Device management tests', () => {
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
         if (iscloudpbx) {
+            Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
                 apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
@@ -157,8 +156,9 @@ context('Device management tests', () => {
                 apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
+            cy.log('Cleanup complete!')
         } else {
-            cy.log('CloudPBX is not enabled, skipping cleanup...')
+            cy.log('Not a CloudPBX enabled instance, skipping cleanup...')
         }
     })
 

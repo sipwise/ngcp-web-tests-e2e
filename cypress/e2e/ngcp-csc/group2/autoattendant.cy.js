@@ -12,8 +12,8 @@ import {
     apiEditAutoAttendant,
 } from '../../../support/e2e'
 
-const ngcpConfig = Cypress.config('ngcpConfig')
 let iscloudpbx = false
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 const domain = {
     domain: 'domainAutoAttendant',
@@ -79,13 +79,6 @@ context('Auto Attendant tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
-            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
-            apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ domain: domain.domain, authHeader })
-            cy.log('Data clean up pre-tests completed')
-            apiCreateDomain({ data: domain, authHeader })
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -93,12 +86,19 @@ context('Auto Attendant tests', () => {
             }).then(({ body }) => {
                 if (body.cloudpbx) {
                     iscloudpbx = true
+                    Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                    apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
+                    apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+                    apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                    cy.log('Finished data cleanup')
+                    apiCreateDomain({ data: domain, authHeader })
                     apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
                         pbx_subscriber_pilot.customer_id = id
                     })
+                    cy.log('Finished data creation, start running tests...')
                 } else {
-                    cy.log('Not a CloudPBX enabled instance, skipping "Mail2Fax" tests...');
                     iscloudpbx = false
+                    cy.log('Not a CloudPBX enabled instance, skipping all tests...')
                     return
                 }
             })
@@ -106,12 +106,17 @@ context('Auto Attendant tests', () => {
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ domain: domain.domain, authHeader })
-        })
+        if (iscloudpbx) {
+            Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
+                apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            })
+            cy.log('Cleanup complete!')
+        } else {
+            cy.log('Not a CloudPBX enabled instance, skipping cleanup...')
+        }
     })
 
     it('Create multiple Auto Attendants', function () {

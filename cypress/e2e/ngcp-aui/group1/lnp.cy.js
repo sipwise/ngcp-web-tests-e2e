@@ -43,9 +43,6 @@ const SecondLNPNumber = {
 
 context('LNP tests', () => {
     before(() => {
-        Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
-        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-
         Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
         cy.log('Preparing environment...')
         apiLoginAsSuperuser().then(authHeader => {

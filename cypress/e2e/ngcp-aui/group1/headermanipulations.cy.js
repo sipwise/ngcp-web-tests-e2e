@@ -22,8 +22,8 @@ import {
     apiRemoveHeaderRulesetBy
 } from '../../../support/e2e'
 
-const ngcpConfig = Cypress.config('ngcpConfig')
 let issppro = null
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 const contract = {
     contact_id: 0,
@@ -88,7 +88,6 @@ context('Header manipulation tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
-            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -96,6 +95,7 @@ context('Header manipulation tests', () => {
             }).then(({ body }) => {
                 if (body.type === 'sppro') {
                     issppro = true
+                    Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
                     apiRemoveHeaderRuleConditionBy({ match_name: headerRuleCondition.match_name, authHeader })
                     apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
                     apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
@@ -103,7 +103,7 @@ context('Header manipulation tests', () => {
                     apiRemoveResellerBy({ name: reseller.name, authHeader })
                     apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                     apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
-                    cy.log('Data clean up pre-tests completed')
+                    cy.log('Finished data cleanup')
                     apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                         apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                             apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id}) => {
@@ -111,9 +111,10 @@ context('Header manipulation tests', () => {
                             })
                         })
                     })
+                    cy.log('Finished data creation, start running tests...')
                 } else {
-                    cy.log('Not a SPPRO instance, skipping all tests...');
                     issppro = false
+                    cy.log('Not a SPPRO instance, skipping all tests...')
                     return
                 }
             })
@@ -121,9 +122,8 @@ context('Header manipulation tests', () => {
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
         if (issppro) {
+            Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveHeaderRuleConditionBy({ match_name: headerRuleCondition.match_name, authHeader })
                 apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
@@ -133,8 +133,9 @@ context('Header manipulation tests', () => {
                 apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
+            cy.log('Cleanup complete!')
         } else {
-            cy.log('Skipping cleanup, because this is not an SPPRO instance');
+            cy.log('Not a SPPRO instance, skipping cleanup...')
         }
     })
 

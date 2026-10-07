@@ -24,10 +24,10 @@ import {
     apiRemoveBillingVoucherByPackageId
 } from '../../../support/e2e'
 
+let issppro = null
 const fixturesFolder = Cypress.config('fixturesFolder')
 const ngcpConfig = Cypress.config('ngcpConfig')
 const path = require('path')
-let issppro = null
 
 const contract = {
     contact_id: null,
@@ -90,6 +90,7 @@ const billingProfile = {
 
 context('Billing vouchers tests', () => {
     before(() => {
+        Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         // Generate CSV file with dynamic date (current date + 1 year)
         // Format as YYYY-MM-DD HH:MM:SS
         const oneYearFromNow = new Date()
@@ -112,9 +113,7 @@ context('Billing vouchers tests', () => {
             .substring(0, 19)
         billingVoucher.valid_until = formattedDateTwoYearsFromNow
 
-        Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
-            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -122,7 +121,7 @@ context('Billing vouchers tests', () => {
             }).then(({ body }) => {
                 if (body.type === 'sppro') {
                     issppro = true
-                    cy.log('Preparing environment...', billingVoucher.valid_until)
+                    Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
                     apiGetProfilePackageId({ name: profilePackage.name, authHeader }).then(({ id }) => {
                         apiRemoveBillingVoucherByPackageId({ package_id: id, authHeader, code: billingVoucher.code })
                     })
@@ -133,7 +132,7 @@ context('Billing vouchers tests', () => {
                     apiRemoveCustomerContactBy({ email: customerPbx.email, authHeader })
                     apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                     apiRemoveProfilePackageBy({name: profilePackage.name, authHeader})
-                    cy.log('Data clean up pre-tests completed')
+                    cy.log('Finished data cleanup')
                     apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                         apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                             apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
@@ -153,9 +152,10 @@ context('Billing vouchers tests', () => {
                     apiCreateProfilePackage({data: profilePackage, authHeader}).then(({ id }) => {
                         billingVoucher.package_id = id
                     })
+                    cy.log('Finished data creation')
                 } else {
-                    cy.log('Not a SPPRO instance, skipping all tests...');
                     issppro = false
+                    cy.log('Not a SPPRO instance, skipping all tests...')
                     return
                 }
             })
@@ -164,21 +164,21 @@ context('Billing vouchers tests', () => {
 
     beforeEach(() => {
         if (issppro) {
+            cy.log('Start beforeEach() preperation...')
             apiLoginAsSuperuser().then(authHeader => {
-                cy.log('Cleaning up db...')
                 apiRemoveBillingVoucherByResellerId({reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code})
-
-                cy.log('Seeding db...')
                 apiCreateBillingVoucher({data: billingVoucher, authHeader})
             })
+            cy.log('beforeEach() preperation complete, start running tests...')
+        } else {
+            cy.log('Not a SPPRO instance, skipping beforeEach() preperation...')
         }
 
     })
 
     after(() => {
         if (issppro) {
-            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-            cy.log('Data clean up...')
+            Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
@@ -189,8 +189,9 @@ context('Billing vouchers tests', () => {
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiRemoveProfilePackageBy({name: profilePackage.name, authHeader})
             })
+            cy.log('Cleanup complete!')
         } else {
-            cy.log('Skipping cleanup, because this is not an SPPRO instance');
+            cy.log('Not a SPPRO instance, skipping cleanup...')
         }
     })
 

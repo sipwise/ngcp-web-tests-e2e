@@ -158,10 +158,6 @@ context('Call Forwarding tests', () => {
             apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
             apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
-            apiCreateDomain({ data: domain, authHeader })
-            apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
-                subscriber.customer_id = id
-            })
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -178,6 +174,10 @@ context('Call Forwarding tests', () => {
                     pbx_seat.customer_id = id
                     pbx_second_seat.customer_id = id
                 })
+            })
+            apiCreateDomain({ data: domain, authHeader })
+            apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                subscriber.customer_id = id
             })
         })
     })

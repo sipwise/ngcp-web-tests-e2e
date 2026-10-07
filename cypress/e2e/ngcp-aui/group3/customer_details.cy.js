@@ -38,6 +38,10 @@ import {
     apiEditCustomerSpeeddial
 } from '../../../support/e2e'
 
+let iscloudpbx = false
+let issppro = false
+const ngcpConfig = Cypress.config('ngcpConfig')
+
 const billingProfile = {
     name: 'billingProfileCustomerDetails',
     handle: 'profilehandle' + getRandomNum(),
@@ -159,9 +163,6 @@ const pbxDevice = {
     lines: []
 }
 
-let iscloudpbx = false
-let issppro = false
-const ngcpConfig = Cypress.config('ngcpConfig')
 const deviceModelFormData = new FormData()
 
 context('Customer Details tests', () => {
@@ -199,6 +200,7 @@ context('Customer Details tests', () => {
     }
 
     before(() => {
+        Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         // Generate CSV file with dynamic date (current date + 1 year)
         // Format as YYYY-MM-DD HH:MM:SS
         const oneYearFromNow = new Date()
@@ -209,7 +211,6 @@ context('Customer Details tests', () => {
 
         billingVoucher.valid_until = formattedDateOneYearFromNow
 
-        Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.request({
@@ -220,25 +221,21 @@ context('Customer Details tests', () => {
                 if (body.type === 'sppro') {
                     issppro = true
                 } else {
-                    cy.log('Not a SPPRO instance, skipping "Phonebook" tests...');
                     issppro = false
+                    cy.log('Not a SPPRO instance, skipping "Phonebook" tests...')
                 }
 
                 if (body.cloudpbx) {
                     iscloudpbx = true
+                    apiRemovePbxDeviceBy({ station_name: pbxDevice.station_name, authHeader})
+                    apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
+                    apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
+                    apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
                 } else {
                     iscloudpbx = false
-                    cy.log('Not a CloudPBX enabled instance, skipping "PBX Groups", "PBX Devices" and "Soundset" tests...');
+                    cy.log('Not a CloudPBX enabled instance, skipping Device deletion and "PBX Groups", "PBX Devices" and "Soundset" tests...')
                 }
             })
-            if (iscloudpbx) {
-                apiRemovePbxDeviceBy({ station_name: pbxDevice.station_name, authHeader})
-                apiRemovePbxDeviceProfileBy({ name: pbxDeviceProfile.name, authHeader})
-                apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
-                apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
-            } else {
-                cy.log("CloudPBX is not enabled, skipping device deletion...")
-            }
             apiRemoveSoundSetBy({ name: soundset.name, authHeader })
             apiRemoveCustomerLocationBy({ name: location.name, authHeader })
             apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
@@ -246,7 +243,7 @@ context('Customer Details tests', () => {
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             apiRemoveDomainBy({ domain: domain.domain, authHeader })
-            cy.log('Data clean up pre-tests completed')
+            cy.log('Finished data cleanup')
             apiCreateDomain({ data: domain, authHeader }).then(({ id }) => {
                 pilotSubscriber.domain_id = id
                 pbxGroup.domain_id = id
@@ -262,11 +259,12 @@ context('Customer Details tests', () => {
                 deviceModelFormData.append("mac_image", new Blob([file], { type: "text/plain" }), 'empty.txt')
                 deviceModelFormData.append("front_thumbnail", new Blob([file], { type: "text/plain" }), 'empty.txt')
             })
+            cy.log('Finished data creation, start running tests...')
         })
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
+        Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
             if (iscloudpbx) {
@@ -275,13 +273,13 @@ context('Customer Details tests', () => {
                 apiRemovePbxDeviceConfigBy({ version: pbxDeviceConfig.version, authHeader })
                 apiRemovePbxDeviceModelBy({ model: pbxDeviceModel.model, authHeader })
             } else {
-                cy.log("CloudPBX is not enabled, skipping device deletion...")
+                cy.log('Not a CloudPBX enabled instance, skipping Device deletion...')
             }
             apiRemoveSoundSetBy({ name: soundset.name, authHeader })
             if (issppro) {
                 apiRemoveCustomerPhonebookBy({ name: customerPhonebook.name, authHeader })
             } else {
-                cy.log("Instance is CE, not PRO. Skipping Customer Phonebook deletion...")
+                cy.log('Not a SPPRO instance, skipping Customer Phonebook deletion...')
             }
             apiRemoveCustomerLocationBy({ name: location.name, authHeader })
             apiRemoveBillingVoucherByResellerId({ reseller_id: billingVoucher.reseller_id, authHeader, code: billingVoucher.code })
@@ -292,6 +290,7 @@ context('Customer Details tests', () => {
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
+        cy.log('Cleanup complete!')
     })
 
     context('Contact Details', () => {

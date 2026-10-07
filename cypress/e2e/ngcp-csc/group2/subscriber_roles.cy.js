@@ -12,8 +12,8 @@ import {
     waitPageProgressCSC,
 } from '../../../support/e2e'
 
-const ngcpConfig = Cypress.config('ngcpConfig')
 let iscloudpbx = false
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 const domain = {
     domain: 'domainSubscriberRoles',
@@ -130,15 +130,11 @@ context('Subscriber Roles tests', () => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
             apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiRemoveSubscriberBy({ username: admin_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ username: pbx_admin_subscriber.username, authHeader })
             apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
-            apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
             apiRemoveDomainBy({ domain: domain.domain, authHeader })
-            cy.log('Data clean up pre-tests completed')
+            cy.log('Finished data cleanup')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                 subscriber.customer_id = id
@@ -151,31 +147,37 @@ context('Subscriber Roles tests', () => {
             }).then(({ body }) => {
                 if (body.cloudpbx) {
                     iscloudpbx = true
+                    apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_admin_subscriber.username, authHeader })
+                    apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
                     apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
                         pbx_subscriber_pilot.customer_id = id
                         pbx_subscriber.customer_id = id
                         pbx_admin_subscriber.customer_id = id
                     })
                 } else {
-                    cy.log('Not a CloudPBX enabled instance, skipping "PBX Subscriber" tests...');
+                    cy.log('Not a CloudPBX enabled instance, skipping "PBX Subscriber" tests...')
                     iscloudpbx = false
                 }
             })
+            cy.log('Finished data creation, start running tests...')
         })
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
+        Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
         apiLoginAsSuperuser().then(authHeader => {
+            if (iscloudpbx) {
+                apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbx_admin_subscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+            }
             apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiRemoveSubscriberBy({ username: admin_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ username: pbx_admin_subscriber.username, authHeader })
             apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
-            apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
             apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
+        cy.log('Cleanup complete!')
     })
 
     context('Test subscriber', () => {
@@ -267,7 +269,7 @@ context('Subscriber Roles tests', () => {
                     origin: window.location.origin,
                     },
                 }),
-            );
+            )
             cy.get('button[data-cy="user-menu"]').click()
             cy.get('a[data-cy="user-settings"]').click()
 
@@ -282,7 +284,7 @@ context('Subscriber Roles tests', () => {
             cy.wait(500)
             cy.window().then((win) => {
                 win.navigator.clipboard.readText().then((text) => {
-                expect(text).to.eq('testpassword');
+                expect(text).to.eq('testpassword')
                 })
             })
         })
@@ -446,7 +448,7 @@ context('Subscriber Roles tests', () => {
                     origin: window.location.origin,
                     },
                 }),
-            );
+            )
             cy.get('button[data-cy="user-menu"]').click()
             cy.get('a[data-cy="user-settings"]').click()
 
@@ -461,7 +463,7 @@ context('Subscriber Roles tests', () => {
             cy.wait(500)
             cy.window().then((win) => {
                 win.navigator.clipboard.readText().then((text) => {
-                expect(text).to.eq('testpassword');
+                expect(text).to.eq('testpassword')
                 })
             })
         })

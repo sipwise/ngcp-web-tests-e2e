@@ -121,21 +121,6 @@ context('Reseller Details tests', () => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.request({
-                method: 'GET',
-                url: `${ngcpConfig.apiHost}/api/platforminfo`,
-                ...authHeader
-            }).then(({ body }) => {
-                if (body.type === 'sppro') {
-                    issppro = true
-                } else {
-                    cy.log('Not a SPPRO instance, skipping Phonebook tests...');
-                    issppro = false
-                }
-            })
-            if (issppro) {
-                apiRemoveResellerPhonebookBy({ name: resellerPhonebook.name, authHeader })
-            }
             apiRemoveBillingProfileBy({ name: internalBillingProfile.name, authHeader })
             apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
@@ -147,16 +132,29 @@ context('Reseller Details tests', () => {
             apiRemoveResellerBy({ name: reseller.name, authHeader })
             apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
-            cy.log('Data clean up pre-tests completed')
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.type === 'sppro') {
+                    issppro = true
+                    apiRemoveResellerPhonebookBy({ name: resellerPhonebook.name, authHeader })
+                } else {
+                    issppro = false
+                    cy.log('Not a SPPRO instance, skipping Phonebook tests...')
+                }
+            })
+            cy.log('Finished data cleanup')
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                 contract.contact_id = id
             })
+            cy.log('Finished data creation, start running tests...')
         })
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
+        Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
         apiLoginAsSuperuser().then(authHeader => {
             if (issppro) {
                 apiRemoveResellerPhonebookBy({ name: resellerPhonebook.name, authHeader })
@@ -173,6 +171,7 @@ context('Reseller Details tests', () => {
             apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
+        cy.log('Cleanup complete!')
     })
 
     context('Administrator', () => {

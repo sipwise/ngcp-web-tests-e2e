@@ -9,11 +9,10 @@ import {
     apiRemoveCustomerBy,
     apiCreateSubscriber,
     apiRemoveSubscriberBy,
-    waitPageProgressCSC,
 } from '../../../support/e2e'
 
+let iscloudpbx = null
 const ngcpConfig = Cypress.config('ngcpConfig')
-var iscloudpbx = null
 
 const domain = {
     domain: 'domainDashboard',
@@ -114,25 +113,6 @@ context('PBX Groups Tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
-            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ username: pbx_admin_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
-            apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ domain: domain.domain, authHeader })
-            cy.log('Data clean up pre-tests completed')
-            apiCreateDomain({ data: domain, authHeader }).then(({ id }) => {
-                pbxGroup.domain_id = id
-            })
-            apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
-                pbx_subscriber.customer_id = id
-                pbx_admin_subscriber.customer_id = id
-                pbx_subscriber_pilot.customer_id = id
-                pbxGroup.customer_id = id
-            })
-            apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -140,25 +120,48 @@ context('PBX Groups Tests', () => {
             }).then(({ body }) => {
                 if (body.cloudpbx) {
                     iscloudpbx = true
+                    Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                    apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_admin_subscriber.username, authHeader })
+                    apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
+                    apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+                    apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                    cy.log('Finished data cleanup')
+                    apiCreateDomain({ data: domain, authHeader }).then(({ id }) => {
+                        pbxGroup.domain_id = id
+                    })
+                    apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
+                        pbx_subscriber.customer_id = id
+                        pbx_admin_subscriber.customer_id = id
+                        pbx_subscriber_pilot.customer_id = id
+                        pbxGroup.customer_id = id
+                    })
+                    apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
+                    cy.log('Finished data creation, start running tests...')
                 } else {
                     iscloudpbx = false
-                    cy.log('Not a CloudPBX enabled instance, skipping all tests...');
+                    cy.log('Not a CloudPBX enabled instance, skipping all tests...')
                 }
             })
         })
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ username: pbx_admin_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
-            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
-            apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ domain: domain.domain, authHeader })
-        })
+        if (iscloudpbx) {
+            Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbx_admin_subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbxGroup.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
+                apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            })
+            cy.log('Cleanup complete!')
+        } else {
+            cy.log('Not a CloudPBX enabled instance, skipping cleanup...')
+        }
     })
 
     it('Try to create an empty PBX Group', function () {
@@ -171,8 +174,6 @@ context('PBX Groups Tests', () => {
             apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
         })
-
-        cy.visit('/')
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
@@ -199,8 +200,6 @@ context('PBX Groups Tests', () => {
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             apiCreateSubscriber({ data: pbx_subscriber, authHeader })
         })
-
-        cy.visit('/')
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
@@ -235,8 +234,6 @@ context('PBX Groups Tests', () => {
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
-
-        cy.visit('/')
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
@@ -279,8 +276,6 @@ context('PBX Groups Tests', () => {
             apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             apiCreateSubscriber({ data: pbxGroup, authHeader })
         })
-
-        cy.visit('/')
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()

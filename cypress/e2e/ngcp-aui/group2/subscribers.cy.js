@@ -30,11 +30,11 @@ const customer = {
     type: 'sipaccount'
 }
 
-const customerPbx = {
+const pbxCustomer = {
     billing_profile_definition: 'id',
     billing_profile_id: 1,
     customer_id: 0,
-    external_id: 'customerPbxCypress1',
+    external_id: 'pbxCustomerSubscriberCypress',
     contact_id: 1,
     status: 'active',
     type: 'pbxaccount'
@@ -47,30 +47,32 @@ const domain = {
 
 const pilotSubscriber = {
     username: 'subscriberPilotCypress',
+    webusername: 'subscriberPilotCypress',
     email: 'subscriberPilotCypress@test.com',
     external_id: 'subid11',
     password: 'sub!SUB' + getRandomNum() + '#pass$',
+    webpassword: 'sub!SUB' + getRandomNum() + '#pass$',
     is_pbx_pilot: true,
     primary_number: {
-        sn: getRandomNum(),
-        ac: getRandomNum(),
+        sn: 66,
+        ac: 74,
         cc: 7717
     },
     domain: domain.domain,
     customer_id: 0,
-    subscriber_id: 0
 }
 
 const seatSubscriber = {
     username: 'subscriberSeatCypress' ,
+    webusername: 'subscriberSeatCypress',
     email: 'subscriberSeatCypress@test.com',
     external_id: 'subid22',
     password: 'sub!SUB' + getRandomNum() + '#pass$',
+    webpassword: 'sub!SUB' + getRandomNum() + '#pass$',
     is_pbx_pilot: false,
     pbx_extension: 44,
     domain: domain.domain,
     customer_id: 0,
-    subscriber_id: 0
 }
 
 const profileSet = {
@@ -114,48 +116,49 @@ context('Subscriber tests', () => {
             }).then(({ body }) => {
                 if (body.cloudpbx) {
                     iscloudpbx = true
+                    apiRemoveSubscriberBy({ username: seatSubscriber.username, authHeader })
+                    apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                    apiRemoveCustomerBy({ external_id: pbxCustomer.external_id, authHeader })
+                    apiCreateCustomer({ data: pbxCustomer, authHeader }).then(({ id }) => {
+                        pbxCustomer.customer_id = id
+                        pilotSubscriber.customer_id = id
+                        seatSubscriber.customer_id = id
+                    })
                 } else {
                     iscloudpbx = false
-                    cy.log('Not a CloudPBX enabled instance, skipping "Pilot" and "Seat" subscriber tests...');
+                    cy.log('Not a CloudPBX enabled instance, skipping "Pilot" and "Seat" subscriber tests...')
                 }
             })
-            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ username: seatSubscriber.username, authHeader })
-            apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
             apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
             apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
-            apiRemoveCustomerBy({ external_id: customerPbx.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             apiRemoveDomainBy({ domain: domain.domain, authHeader })
-            cy.log('Data clean up pre-tests completed')
+            cy.log('Finished data cleanup')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                 customer.customer_id = id
                 subscriber.customer_id = id
             })
-            if(iscloudpbx) {
-                apiCreateCustomer({ data: customerPbx, authHeader }).then(({ id }) => {
-                    customerPbx.customer_id = id
-                    pilotSubscriber.customer_id = id
-                    seatSubscriber.customer_id = id
-                })
-            }
+            cy.log('Finished data creation, start running tests...')
         })
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
+        Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            if (iscloudpbx) {
+                apiRemoveSubscriberBy({ username: seatSubscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: pbxCustomer.external_id, authHeader })
+            }
             apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ username: seatSubscriber.username, authHeader })
-            apiRemoveSubscriberBy({ username: pilotSubscriber.username, authHeader })
             apiRemoveSubscriberProfileBy({ name: subscriberProfile.name, authHeader })
             apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
-            apiRemoveCustomerBy({ external_id: customerPbx.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
+        cy.log('Cleanup complete!')
     })
 
     it('Check if Subscriber with invalid values gets rejected', () => {
@@ -299,12 +302,13 @@ context('Subscriber tests', () => {
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
-        searchInDataTable(customerPbx.external_id, 'External #')
+        searchInDataTable(pbxCustomer.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.intercept('GET', '**/api/customers/' + customerPbx.customer_id + '*').as('getCustomerDetails')
+        cy.intercept('GET', '**/api/customers/' + pbxCustomer.customer_id + '*').as('getCustomerDetails')
         cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsSubscribers"]').click()
         cy.wait('@getCustomerDetails')
+
         searchInDataTable(pilotSubscriber.external_id, 'Subscriber External ID')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
@@ -367,10 +371,10 @@ context('Subscriber tests', () => {
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
-        searchInDataTable(customerPbx.external_id, 'External #')
+        searchInDataTable(pbxCustomer.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.intercept('GET', '**/api/customers/' + customerPbx.customer_id + '*').as('getCustomerDetails')
+        cy.intercept('GET', '**/api/customers/' + pbxCustomer.customer_id + '*').as('getCustomerDetails')
         cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsSubscribers"]').click()
         cy.wait('@getCustomerDetails')
         searchInDataTable(seatSubscriber.external_id, 'Subscriber External ID')

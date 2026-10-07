@@ -20,7 +20,6 @@ import {
     apiEditSubscriberSpeeddial
 } from '../../../support/e2e'
 
-let iscloudpbx = false
 let issppro = null
 const downloadsFolder = Cypress.config('downloadsFolder')
 const fixturesFolder = Cypress.config('fixturesFolder')
@@ -91,6 +90,11 @@ context('Subscriber Details tests', () => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+            cy.log('Preparing environment...')
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            cy.log('Finished data cleanup')
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -99,32 +103,27 @@ context('Subscriber Details tests', () => {
                 if (body.type === 'sppro') {
                     issppro = true
                 } else {
-                    cy.log('Not a SPPRO instance, skipping "Fax Settings" and "Phonebook" tests...');
                     issppro = false
+                    cy.log('Not a SPPRO instance, skipping "Fax Settings" and "Phonebook" tests...')
                 }
             })
-            cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
-            apiRemoveDomainBy({ domain: domain.domain, authHeader })
-            cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader }).then(({ id }) => domain.id = id )
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                 subscriber.customer_id = id
             })
+            cy.log('Finished data creation, start running tests...')
         })
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
+        Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
-            apiRemoveSubscriberBy({ username: subscriber.username, authHeader }).then(()=> {
-                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
-                apiRemoveDomainBy({ domain: domain.domain, authHeader })
-            })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
+        cy.log('Cleanup complete!')
     })
 
     context('Voicemail settings', () => {
@@ -223,7 +222,7 @@ context('Subscriber Details tests', () => {
             cy.url().then((pathname) => {
                 const filename = path.join(downloadsFolder, 'voicemail_unavail_' + pathname.split('/')[6] + '.wav')
                 cy.readFile(filename, 'binary', { timeout: 5000 }).should(buffer => expect(buffer.length).to.be.gt(8400))
-            });
+            })
             cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="file-delete-button"]').click()
             cy.get('button[data-cy="btn-confirm"]').click()
             cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="file-select-button"]').should('be.visible')

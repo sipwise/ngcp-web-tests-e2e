@@ -10,9 +10,11 @@ import {
     apiRemoveSubscriberBy,
     getRandomNum,
     apiRemoveSubscriberPhonebookBy,
-    apiCreateSubscriberPhonebook,
-    waitPageProgressCSC,
+    apiCreateSubscriberPhonebook
 } from '../../../support/e2e'
+
+let issppro = null
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 const domain = {
     domain: 'domainSubscriberPhonebook',
@@ -81,26 +83,10 @@ const secondSubscriberPhonebookEntry = {
     shared: true
 }
 
-const ngcpConfig = Cypress.config('ngcpConfig')
-let issppro = null
-
 context('Subscriber phonebook tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
-            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ username: subscriberSharedPhonebook.username, authHeader })
-            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
-            apiRemoveDomainBy({ domain: domain.domain, authHeader })
-            cy.log('Data clean up pre-tests completed')
-            apiCreateDomain({ data: domain, authHeader })
-            apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
-                    subscriber.customer_id = id
-                    subscriberSharedPhonebook.customer_id = id
-            })
-            apiCreateSubscriber({ data: subscriber, authHeader })
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -108,11 +94,24 @@ context('Subscriber phonebook tests', () => {
             }).then(({ body }) => {
                 if (body.type === 'sppro') {
                     issppro = true
+                    Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
                     apiRemoveSubscriberPhonebookBy({name: secondSubscriberPhonebookEntry.name, authHeader})
                     apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
+                    apiRemoveSubscriberBy({ username: subscriberSharedPhonebook.username, authHeader })
+                    apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                    apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                    apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                    cy.log('Finished data cleanup')
+                    apiCreateDomain({ data: domain, authHeader })
+                    apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                            subscriber.customer_id = id
+                            subscriberSharedPhonebook.customer_id = id
+                    })
+                    apiCreateSubscriber({ data: subscriber, authHeader })
+                    cy.log('Finished data creation, start running tests...')
                 } else {
-                    cy.log('Not a SPPRO instance, skipping all tests...');
                     issppro = false
+                    cy.log('Not a SPPRO instance, skipping all tests...')
                     return
                 }
             })
@@ -120,18 +119,21 @@ context('Subscriber phonebook tests', () => {
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
-        apiLoginAsSuperuser().then(authHeader => {
-            if (issppro) {
+        if (issppro) {
+            Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
+            apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberPhonebookBy({name: secondSubscriberPhonebookEntry.name, authHeader})
                 apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
-            }
-            apiRemoveSubscriberBy({ username: subscriberSharedPhonebook.username, authHeader })
-            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
-            apiRemoveDomainBy({ domain: domain.domain, authHeader })
-        })
+                apiRemoveSubscriberBy({ username: subscriberSharedPhonebook.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            })
+            cy.log('Cleanup complete!')
+        } else {
+            cy.log('Not a SPPRO instance, skipping cleanup...')
+        }
+
     })
 
     it('Create subscriber phonebook entry', function () {
