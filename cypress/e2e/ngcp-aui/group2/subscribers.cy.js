@@ -13,7 +13,6 @@ import {
     apiCreateSubscriberProfile,
     apiRemoveSubscriberProfileBy,
     getRandomNum,
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable
 } from '../../../support/e2e'
@@ -24,6 +23,7 @@ const ngcpConfig = Cypress.config('ngcpConfig')
 const customer = {
     billing_profile_definition: 'id',
     billing_profile_id: 1,
+    customer_id: 0,
     external_id: `customerSubTests`,
     contact_id: 1,
     status: 'active',
@@ -33,6 +33,7 @@ const customer = {
 const customerPbx = {
     billing_profile_definition: 'id',
     billing_profile_id: 1,
+    customer_id: 0,
     external_id: 'customerPbxCypress1',
     contact_id: 1,
     status: 'active',
@@ -129,10 +130,12 @@ context('Subscriber tests', () => {
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                customer.customer_id = id
                 subscriber.customer_id = id
             })
             if(iscloudpbx) {
                 apiCreateCustomer({ data: customerPbx, authHeader }).then(({ id }) => {
+                    customerPbx.customer_id = id
                     pilotSubscriber.customer_id = id
                     seatSubscriber.customer_id = id
                 })
@@ -163,10 +166,12 @@ context('Subscriber tests', () => {
         searchInDataTable(customer.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+        cy.intercept('GET', '**/api/customers/' + customer.customer_id + '*').as('getCustomerDetails')
         cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsSubscribers"]').click()
-        waitPageProgressAUI()
+
+        cy.wait('@getCustomerDetails')
+        cy.get('a[data-cy="aui-list-action--add"]').should('be.visible')
         cy.get('a[data-cy="aui-list-action--add"]').click()
-        waitPageProgressAUI()
         cy.get('[data-cy="aui-save-button"]').click()
         cy.get('label[data-cy="aui-select-domain"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
         cy.get('label[data-cy="subscriber-sip-username"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -192,21 +197,24 @@ context('Subscriber tests', () => {
         searchInDataTable(customer.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+        cy.intercept('GET', '**/api/customers/' + customer.customer_id + '*').as('getCustomerDetails')
         cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsSubscribers"]').click()
-        waitPageProgressAUI()
-        cy.get('a[data-cy="aui-list-action--add"]').click()
 
+        cy.wait('@getCustomerDetails')
+        cy.locationShouldBe('#/customer/' + customer.customer_id + '/details/subscribers')
+        cy.get('a[data-cy="aui-list-action--add"]').should('be.visible')
+        cy.get('a[data-cy="aui-list-action--add"]').click()
         cy.get('input[data-cy="subscriber-web-username"]').should('be.visible')
         cy.get('input[data-cy="subscriber-web-username"]').type(subscriber.username)
         cy.get('[data-cy="subscriber-password-generate"]:first').click()
         cy.get('input[data-cy="subscriber-sip-username"]').type(subscriber.username)
         cy.get('[data-cy="subscriber-password-generate"]:last').click()
-        cy.auiSelectLazySelect({ dataCy: 'aui-select-domain', filter: domain.domain, itemContains: domain.domain })
         cy.get('input[data-cy="subscriber-email"]').type(subscriber.email)
         cy.get('input[data-cy="subscriber-external-id"]').type(subscriber.external_id)
         cy.get('input[data-cy="aui-primary-number-cc"]').type(subscriber.primary_number.cc)
         cy.get('input[data-cy="aui-primary-number-ac"]').type(subscriber.primary_number.ac)
         cy.get('input[data-cy="aui-primary-number-sn"]').type(subscriber.primary_number.sn)
+        cy.auiSelectLazySelect({ dataCy: 'aui-select-domain', filter: domain.domain, itemContains: domain.domain })
         cy.get('[data-cy="aui-save-button"]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 
@@ -235,14 +243,15 @@ context('Subscriber tests', () => {
         searchInDataTable(customer.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+        cy.intercept('GET', '**/api/customers/' + customer.customer_id + '*').as('getCustomerDetails')
         cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsSubscribers"]').click()
-        waitPageProgressAUI()
 
+        cy.wait('@getCustomerDetails')
         searchInDataTable(subscriber.external_id, 'Subscriber External ID')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
-        waitPageProgressAUI()
+        cy.get('a[data-cy="aui-edit-button"]').should('be.visible')
         cy.get('a[data-cy="aui-edit-button"]').click()
 
         cy.get('input[data-cy="subscriber-email"]').should('be.visible')
@@ -293,16 +302,16 @@ context('Subscriber tests', () => {
         searchInDataTable(customerPbx.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+        cy.intercept('GET', '**/api/customers/' + customerPbx.customer_id + '*').as('getCustomerDetails')
         cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsSubscribers"]').click()
-        waitPageProgressAUI()
-
+        cy.wait('@getCustomerDetails')
         searchInDataTable(pilotSubscriber.external_id, 'Subscriber External ID')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
-        waitPageProgressAUI()
+        cy.get('a[data-cy="aui-edit-button"]').should('be.visible')
         cy.get('a[data-cy="aui-edit-button"]').click()
-        
+
         cy.get('label[data-cy="aui-input-subscriber-username"] input').should('be.visible')
         cy.get('label[data-cy="aui-input-subscriber-username"] input').type(pilotSubscriber.external_id)
         cy.get('input[data-cy="subscriber-email"]').clear()
@@ -361,14 +370,14 @@ context('Subscriber tests', () => {
         searchInDataTable(customerPbx.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+        cy.intercept('GET', '**/api/customers/' + customerPbx.customer_id + '*').as('getCustomerDetails')
         cy.get('a[data-cy="aui-data-table-row-menu--customerDetailsSubscribers"]').click()
-        waitPageProgressAUI()
-
+        cy.wait('@getCustomerDetails')
         searchInDataTable(seatSubscriber.external_id, 'Subscriber External ID')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
-        waitPageProgressAUI()
+        cy.get('a[data-cy="aui-edit-button"]').should('be.visible')
         cy.get('a[data-cy="aui-edit-button"]').click()
 
         cy.get('label[data-cy="aui-input-subscriber-username"] input').should('be.visible')
