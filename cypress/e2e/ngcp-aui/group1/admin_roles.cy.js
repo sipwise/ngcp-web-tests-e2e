@@ -688,7 +688,7 @@ context('Administrator roles tests', () => {
             cy.quickLogin(testadminreseller_otherreseller.login, testadminreseller_otherreseller.password)
             cy.navigateMainMenu('settings / administrator')
 
-            cy.locationShouldBe('#/administrator')
+            cy.locationShouldBe('#/administrator', false)
             cy.get('a[data-cy="aui-list-action--add"]').should('not.exist')
             searchInDataTable(admin_reseller.login)
             cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
