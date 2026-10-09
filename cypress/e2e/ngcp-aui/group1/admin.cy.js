@@ -506,7 +506,7 @@ context('Administrator tests', () => {
                     cy.get('div').contains('Settings').click()
                 }
             })
-            cy.navigateMainMenu('settings / administrator')
+            cy.navigateMainMenu('settings / administrator', false)
 
             cy.locationShouldBe('#/administrator')
             cy.get('a[data-cy="aui-list-action--add"]').should('be.visible')
