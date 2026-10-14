@@ -550,7 +550,6 @@ context('LNP tests', () => {
             cy.get('div[data-cy="phonebook-purge"]').click()
             cy.get('button[data-cy="aui-save-button"]:last').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-            waitPageProgressAUI()
             searchInDataTable(LNPCarrier.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
