@@ -1,3 +1,12 @@
+ngcp-web-tests-e2e (26.0.1.19+0~mr26.0.1.19) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [d3ec301] MT#66185 update top up cash tests for updated top up logic
+  * [c0c173f] MT#63950 remove some waitPageProgress from admin_roles / admin tests
+  * [43f3917] MT#63950 remove failing waitPageProgress from reseller admin create test
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 14 Oct 2026 11:12:31 +0200
+
 ngcp-web-tests-e2e (26.0.1.18+0~mr26.0.1.18) unstable; urgency=medium
 
   [ Nico Schedel ]
