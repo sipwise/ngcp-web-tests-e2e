@@ -573,7 +573,7 @@ context('Administrator Roles tests', () => {
             })
 
             cy.quickLoginAUI(admin_master.login, admin_master.password)
-            cy.navigateMainMenu('settings / administrator')
+            cy.navigateMainMenu('settings / administrator', false)
 
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin_lawfulintercept.login)
@@ -595,7 +595,7 @@ context('Administrator Roles tests', () => {
             })
 
             cy.quickLoginAUI(admin_lawfulintercept.login, admin_lawfulintercept.password)
-            cy.navigateMainMenu('settings / administrator')
+            cy.navigateMainMenu('settings / administrator', false)
 
             cy.locationShouldBe('#/administrator')
 
@@ -619,7 +619,7 @@ context('Administrator Roles tests', () => {
             })
 
             cy.quickLoginAUI(admin_system.login, admin_system.password)
-            cy.navigateMainMenu('settings / administrator')
+            cy.navigateMainMenu('settings / administrator', false)
 
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin_lawfulintercept.login)
@@ -649,7 +649,7 @@ context('Administrator Roles tests', () => {
             })
 
             cy.quickLoginAUI(admin_system.login, admin_system.password)
-            cy.navigateMainMenu('settings / administrator')
+            cy.navigateMainMenu('settings / administrator', false)
 
             cy.locationShouldBe('#/administrator')
             deleteItemOnListPageBy(admin_master.login)
@@ -663,7 +663,7 @@ context('Administrator Roles tests', () => {
             })
 
             cy.quickLoginAUI(admin_system.login, admin_system.password)
-            cy.navigateMainMenu('settings / administrator')
+            cy.navigateMainMenu('settings / administrator', false)
 
             cy.locationShouldBe('#/administrator')
             deleteItemOnListPageBy(admin_lawfulintercept.login)
