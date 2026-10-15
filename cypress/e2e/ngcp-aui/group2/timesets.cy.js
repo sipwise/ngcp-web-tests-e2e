@@ -11,7 +11,6 @@ import {
     apiRemoveTimesetBy,
     deleteItemOnListPageBy,
     searchInDataTable,
-    waitPageProgressAUI,
     apiRemoveSystemContactBy
 } from '../../../support/e2e'
 
@@ -143,7 +142,6 @@ context('Timeset tests', () => {
         cy.get('[data-cy=aui-save-button]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         cy.get('[data-cy="aui-close-button"]').click()
-        waitPageProgressAUI()
         cy.get('td[data-cy="q-td--reseller-name"]').contains(editReseller.name).should('be.visible')
     })
 

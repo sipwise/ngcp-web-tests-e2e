@@ -17,8 +17,7 @@ import {
     apiRemoveSoundSetBy, 
     apiRemoveSystemContactBy,
     deleteItemOnListPageBy,
-    searchInDataTable,
-    waitPageProgressAUI
+    searchInDataTable
 } from '../../../support/e2e'
 
 let issppro = null
@@ -183,7 +182,6 @@ context('Soundset tests', () => {
         cy.get('[data-cy="aui-save-button"]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         cy.get('[data-cy="aui-close-button"]').click()
-        waitPageProgressAUI()
         cy.get('td[data-cy="q-td--name"]').contains(soundSet.name).should('be.visible')
         cy.get('td[data-cy="q-td--description"]').contains('testDescription').should('be.visible')
         cy.get('td[data-cy="q-td--expose-to-customer"]').find('div[aria-checked="false"]').should('be.visible')
@@ -198,7 +196,6 @@ context('Soundset tests', () => {
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--soundSetHandles"]').click()
 
-        waitPageProgressAUI()
         cy.get('div[data-cy="aui-list-item-title"]').contains('voucher_recharge').should('be.visible')
         cy.get('div[data-cy="aui-list-item-title"]').contains('calling_card').scrollIntoView()
         cy.get('div[data-cy="aui-list-item-title"]').contains('calling_card').click()
@@ -230,7 +227,6 @@ context('Soundset tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--soundSetDefault"]').click()
-            waitPageProgressAUI()
             cy.qSelect({ dataCy: 'soundsets-language', itemContains: 'de' })
             cy.get('div[data-cy="soundsets-loopplay"]').click()
             cy.get('div[data-cy="soundsets-replace_existing"]').click()
@@ -245,7 +241,6 @@ context('Soundset tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--soundSetDefault"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="soundsets-loopplay"]').click()
             cy.get('div[data-cy="soundsets-replace_existing"]').click()
             cy.get('div[class="aui-base-sub-context"]').click()

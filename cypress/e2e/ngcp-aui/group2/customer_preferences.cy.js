@@ -19,7 +19,6 @@ import {
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     getRandomNum,
-    waitPageProgressAUI,
     searchInDataTable,
     clickDataTableSelectedMoreMenuItem,
     testPreferencesChipField,
@@ -150,10 +149,10 @@ context('Customer Preferences tests', () => {
         cy.locationShouldBe('#/customer')
         searchInDataTable(customer.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/customerpreferences/*' }).as('getCustomerPreferences')
         clickDataTableSelectedMoreMenuItem('customerPreferences')
 
-        waitPageProgressAUI()
-        cy.wait(1000)
+        cy.wait('@getCustomerPreferences')
         cy.qSelect({ dataCy: 'category-selection', itemContains: 'Access Restrictions' })
         testPreferencesChipField('allowed_clis"]')
         testPreferencesListField('allowed_clis_reject_policy', 'Force CLIR')
@@ -175,10 +174,10 @@ context('Customer Preferences tests', () => {
         cy.locationShouldBe('#/customer')
         searchInDataTable(customer.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/customerpreferences/*' }).as('getCustomerPreferences')
         clickDataTableSelectedMoreMenuItem('customerPreferences')
 
-        waitPageProgressAUI()
-        cy.wait(1000)
+        cy.wait('@getCustomerPreferences')
         cy.qSelect({ dataCy: 'category-selection', itemContains: 'Applications' })
         testPreferencesToggleField('malicious_call_identification')
         testPreferencesToggleField('play_announce_before_call_setup')
@@ -194,10 +193,10 @@ context('Customer Preferences tests', () => {
         cy.locationShouldBe('#/customer')
         searchInDataTable(customer.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/customerpreferences/*' }).as('getCustomerPreferences')
         clickDataTableSelectedMoreMenuItem('customerPreferences')
 
-        waitPageProgressAUI()
-        cy.wait(1000)
+        cy.wait('@getCustomerPreferences')
         cy.qSelect({ dataCy: 'category-selection', itemContains: 'Call Blockings' })
         testPreferencesToggleField('adm_block_in_clir')
         testPreferencesChipField('adm_block_in_list')
@@ -222,10 +221,10 @@ context('Customer Preferences tests', () => {
         cy.locationShouldBe('#/customer')
         searchInDataTable(customer.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/customerpreferences/*' }).as('getCustomerPreferences')
         clickDataTableSelectedMoreMenuItem('customerPreferences')
 
-        waitPageProgressAUI()
-        cy.wait(1000)
+        cy.wait('@getCustomerPreferences')
         cy.qSelect({ dataCy: 'category-selection', itemContains: 'Internals' })
         testPreferencesListField('advice_of_charge', 'Currency')
         testPreferencesTextField('concurrent_calls_quota', 123)
@@ -241,10 +240,10 @@ context('Customer Preferences tests', () => {
         cy.locationShouldBe('#/customer')
         searchInDataTable(customer.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/customerpreferences/*' }).as('getCustomerPreferences')
         clickDataTableSelectedMoreMenuItem('customerPreferences')
 
-        waitPageProgressAUI()
-        cy.wait(1000)
+        cy.wait('@getCustomerPreferences')
         cy.qSelect({ dataCy: 'category-selection', itemContains: 'Number Manipulations' })
         testPreferencesTextField('emergency_cli')
         testPreferencesListField('emergency_mapping_container', emergencyMappingContainer.name)

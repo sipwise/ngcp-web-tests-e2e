@@ -14,8 +14,7 @@ import {
     apiRemoveSystemContactBy,
     clickDataTableSelectedMoreMenuItem,
     deleteItemOnListPageBy,
-    searchInDataTable,
-    waitPageProgressAUI
+    searchInDataTable
 } from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -156,7 +155,6 @@ context('Emergency mapping tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--emergencyMappingContainerEdit"]').click()
-            waitPageProgressAUI()
             cy.get('label[data-cy="aui-select-reseller"] i').contains('cancel').click()
             cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: editReseller.name , itemContains: editReseller.name })
             cy.get('[data-cy="aui-save-button"]').click()
@@ -202,8 +200,10 @@ context('Emergency mapping tests', () => {
             cy.locationShouldBe('#/emergencymapping')
             searchInDataTable(emergencyMappingContainer.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.intercept('GET', '**/api/emergencymappings/**').as('getEmergencyMappingPage')
             clickDataTableSelectedMoreMenuItem('emergencyMappingList')
-            waitPageProgressAUI()
+
+            cy.wait('@getEmergencyMappingPage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('input[data-cy="emergency-code"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -227,8 +227,10 @@ context('Emergency mapping tests', () => {
             cy.locationShouldBe('#/emergencymapping')
             searchInDataTable(emergencyMappingContainer.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.intercept('GET', '**/api/emergencymappings/**').as('getEmergencyMappingPage')
             clickDataTableSelectedMoreMenuItem('emergencyMappingList')
-            waitPageProgressAUI()
+
+            cy.wait('@getEmergencyMappingPage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="emergency-code"]').type(emergencyMapping.code)
             cy.get('input[data-cy="emergency-prefix"]').type(emergencyMapping.prefix)
@@ -258,13 +260,14 @@ context('Emergency mapping tests', () => {
             cy.locationShouldBe('#/emergencymapping')
             searchInDataTable(emergencyMappingContainer.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.intercept('GET', '**/api/emergencymappings/**').as('getEmergencyMappingPage')
             clickDataTableSelectedMoreMenuItem('emergencyMappingList')
-            waitPageProgressAUI()
+
+            cy.wait('@getEmergencyMappingPage')
             searchInDataTable(emergencyMapping.code, 'Number')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--emergencyMappingEdit"]').click()
-            waitPageProgressAUI()
             cy.get('input[data-cy="emergency-prefix"]').clear().type('testprefix')
             cy.get('input[data-cy="emergency-suffix"]').clear().type('testsuffix')
             cy.get('[data-cy="aui-save-button"]').click()
@@ -295,8 +298,10 @@ context('Emergency mapping tests', () => {
             cy.locationShouldBe('#/emergencymapping')
             searchInDataTable(emergencyMappingContainer.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.intercept('GET', '**/api/emergencymappings/**').as('getEmergencyMappingPage')
             clickDataTableSelectedMoreMenuItem('emergencyMappingList')
-            waitPageProgressAUI()
+
+            cy.wait('@getEmergencyMappingPage')
             deleteItemOnListPageBy(emergencyMapping.code)
 
             // Cleanup

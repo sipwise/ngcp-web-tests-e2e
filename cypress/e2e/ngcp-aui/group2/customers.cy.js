@@ -15,11 +15,10 @@ import {
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     getRandomNum,
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiRemoveCustomerContactsByIds,
-    apiRemoveCustomerById,
+    apiRemoveCustomerById
 } from '../../../support/e2e'
 
 const randomNumber = getRandomNum()
@@ -208,13 +207,10 @@ context('Customer tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--customerEdit"]').click()
-                waitPageProgressAUI()
 
                 cy.qSelect({ dataCy: 'customer-status', filter: '', itemContains: 'Locked' })
                 cy.get('[data-cy="aui-save-button"]').click()
-                waitPageProgressAUI()
                 cy.get('[data-cy="aui-close-button"]').click()
-                waitPageProgressAUI()
                 cy.get('span[data-cy="aui-data-table-inline-edit--select"] span').contains('Locked')
             })
 

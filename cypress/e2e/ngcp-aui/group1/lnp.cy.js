@@ -2,7 +2,6 @@
 
 import {
     apiLoginAsSuperuser,
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiCreateLNPCarrier,
@@ -74,7 +73,7 @@ context('LNP tests', () => {
     context('LNP Carrier tests', () => {
         it('Check if LNP Carrier with invalid values gets rejected', () => {
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp', false)
+            cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -92,7 +91,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp', false)
+            cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -101,7 +100,6 @@ context('LNP tests', () => {
             cy.get('input[data-cy="lnpcarrier-name"]').type(LNPCarrier.name)
             cy.get('input[data-cy="lnpcarrier-prefix"]').type(LNPCarrier.prefix)
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.locationShouldBe('#/lnp/carriers')
@@ -123,14 +121,13 @@ context('LNP tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp', false)
+            cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp/carriers')
             searchInDataTable(LNPCarrier.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--lnpCarrierEdit"]').click()
-            waitPageProgressAUI()
             cy.get('input[data-cy="lnpcarrier-prefix"]').clear().type('testdescription')
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
@@ -152,7 +149,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp', false)
+            cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp/carriers')
             deleteItemOnListPageBy(LNPCarrier.name)
@@ -173,14 +170,16 @@ context('LNP tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp', false)
+            cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp/carriers')
             searchInDataTable(LNPCarrier.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept('GET', '**/api/lnpnumbers/**').as('getLNPNumbersPage')
             cy.get('a[data-cy="aui-data-table-row-menu--lnpCarrierNumbersList"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getLNPNumbersPage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="lnpnumber-number"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -200,21 +199,21 @@ context('LNP tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp', false)
+            cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp/carriers')
             searchInDataTable(LNPCarrier.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept('GET', '**/api/lnpnumbers/**').as('getLNPNumbersPage')
             cy.get('a[data-cy="aui-data-table-row-menu--lnpCarrierNumbersList"]').click()
-            waitPageProgressAUI()
 
+            cy.wait('@getLNPNumbersPage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="lnpnumber-number"]').type(LNPNumber.number)
             cy.get('input[data-cy="lnpnumber-routingnumber"]').type(LNPNumber.routing_number)
             cy.get('input[data-cy="lnpnumber-type"]').type(LNPNumber.type)
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('td[data-cy="q-td--number"]:first').should('contain.text', LNPNumber.number)
@@ -239,19 +238,20 @@ context('LNP tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp', false)
+            cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp/carriers')
             searchInDataTable(LNPCarrier.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept('GET', '**/api/lnpnumbers/**').as('getLNPNumbersPage')
             cy.get('a[data-cy="aui-data-table-row-menu--lnpCarrierNumbersList"]').click()
 
+            cy.wait('@getLNPNumbersPage')
             searchInDataTable(LNPNumber.number)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--lnpCarrierNumberEdit"]').click()
-            waitPageProgressAUI()
             cy.get('input[data-cy="lnpnumber-type"]').clear().type('testtype')
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
@@ -278,13 +278,16 @@ context('LNP tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp', false)
+            cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp/carriers')
             searchInDataTable(LNPCarrier.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept('GET', '**/api/lnpnumbers/**').as('getLNPNumbersPage')
             cy.get('a[data-cy="aui-data-table-row-menu--lnpCarrierNumbersList"]').click()
+
+            cy.wait('@getLNPNumbersPage')
             deleteItemOnListPageBy(LNPNumber.number)
 
             // Cleanup
@@ -304,7 +307,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp', false)
+            cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[href="#/lnp/numbers"]').click()
@@ -330,7 +333,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp', false)
+            cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[href="#/lnp/numbers"]').click()
@@ -342,7 +345,6 @@ context('LNP tests', () => {
             cy.get('input[data-cy="lnpnumber-routingnumber"]').type(SecondLNPNumber.routing_number)
             cy.get('input[data-cy="lnpnumber-type"]').type(SecondLNPNumber.type)
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             searchInDataTable(SecondLNPNumber.number)
@@ -368,7 +370,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp', false)
+            cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[href="#/lnp/numbers"]').click()
@@ -378,7 +380,6 @@ context('LNP tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--lnpNumberEdit"]').click()
-            waitPageProgressAUI()
             cy.get('input[data-cy="lnpnumber-type"]').clear().type('testtype')
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
@@ -405,7 +406,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp', false)
+            cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[href="#/lnp/numbers"]').click()
@@ -433,7 +434,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp', false)
+            cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[href="#/lnp/numbers"]').click()
@@ -464,7 +465,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp', false)
+            cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[href="#/lnp/numbers"]').click()
@@ -492,19 +493,17 @@ context('LNP tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--lnpCarrierNumbersList"]').click()
-            waitPageProgressAUI()
             cy.get('td[data-cy="q-td--number"]:first').should('contain.text', LNPNumber.number)
             cy.get('td[data-cy="q-td--routing-number"]:first').should('contain.text', LNPNumber.routing_number)
             cy.get('td[data-cy="q-td--type"]:first').should('contain.text', LNPNumber.type)
             cy.get('td[data-cy="q-td--number"]:last').should('not.contain.text', '100')
             cy.get('td[data-cy="q-td--routing-number"]:last').should('not.contain.text', 'csvCarrierNumberRouting')
             cy.get('td[data-cy="q-td--type"]:last').should('not.contain.text', 'csvCarrierNumberType')
-            cy.navigateMainMenu('settings / lnp', false)
+            cy.navigateMainMenu('settings / lnp')
             searchInDataTable('csvLNPCarrierTest')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--lnpCarrierNumbersList"]').click()
-            waitPageProgressAUI()
             cy.get('td[data-cy="q-td--number"]').should('not.contain.text', LNPNumber.number)
             cy.get('td[data-cy="q-td--routing-number"]').should('not.contain.text', LNPNumber.routing_number)
             cy.get('td[data-cy="q-td--type"]').should('not.contain.text', LNPNumber.type)
@@ -538,7 +537,7 @@ context('LNP tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / lnp', false)
+            cy.navigateMainMenu('settings / lnp')
 
             cy.locationShouldBe('#/lnp/carriers')
             cy.get('a[data-cy="lnp-carriers-list-upload-csv"]').click()
@@ -551,7 +550,6 @@ context('LNP tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--lnpCarrierNumbersList"]').click()
-            waitPageProgressAUI()
             cy.get('td[data-cy="q-td--number"]').should('not.contain.text', LNPNumber.number)
             cy.get('td[data-cy="q-td--routing-number"]').should('not.contain.text', LNPNumber.routing_number)
             cy.get('td[data-cy="q-td--type"]').should('not.contain.text', LNPNumber.type)

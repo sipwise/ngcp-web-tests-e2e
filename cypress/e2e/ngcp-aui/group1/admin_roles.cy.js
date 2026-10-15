@@ -23,8 +23,7 @@ import {
     apiRemoveCustomerContactBy,
     apiCreateBillingProfile,
     apiRemoveBillingProfileBy,
-    deleteItemOnListPageBy,
-    waitPageProgressAUI
+    deleteItemOnListPageBy
 } from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -573,7 +572,7 @@ context('Administrator Roles tests', () => {
             })
 
             cy.quickLoginAUI(admin_master.login, admin_master.password)
-            cy.navigateMainMenu('settings / administrator', false)
+            cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin_lawfulintercept.login)
@@ -595,7 +594,7 @@ context('Administrator Roles tests', () => {
             })
 
             cy.quickLoginAUI(admin_lawfulintercept.login, admin_lawfulintercept.password)
-            cy.navigateMainMenu('settings / administrator', false)
+            cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
 
@@ -619,7 +618,7 @@ context('Administrator Roles tests', () => {
             })
 
             cy.quickLoginAUI(admin_system.login, admin_system.password)
-            cy.navigateMainMenu('settings / administrator', false)
+            cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin_lawfulintercept.login)
@@ -649,7 +648,7 @@ context('Administrator Roles tests', () => {
             })
 
             cy.quickLoginAUI(admin_system.login, admin_system.password)
-            cy.navigateMainMenu('settings / administrator', false)
+            cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
             deleteItemOnListPageBy(admin_master.login)
@@ -663,7 +662,7 @@ context('Administrator Roles tests', () => {
             })
 
             cy.quickLoginAUI(admin_system.login, admin_system.password)
-            cy.navigateMainMenu('settings / administrator', false)
+            cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
             deleteItemOnListPageBy(admin_lawfulintercept.login)
@@ -688,24 +687,24 @@ context('Administrator Roles tests', () => {
             cy.quickLoginAUI(testadminreseller_otherreseller.login, testadminreseller_otherreseller.password)
             cy.navigateMainMenu('settings / administrator')
 
-            cy.locationShouldBe('#/administrator', false)
+            cy.locationShouldBe('#/administrator')
             cy.get('a[data-cy="aui-list-action--add"]').should('not.exist')
             searchInDataTable(admin_reseller.login)
             cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
 
-            cy.navigateMainMenu('settings / customer', false)
+            cy.navigateMainMenu('settings / customer')
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id)
             cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
 
-            cy.navigateMainMenu('settings / contact', false)
+            cy.navigateMainMenu('settings / contact')
             cy.locationShouldBe('#/contact')
             searchInDataTable("default-customer@default.invalid")
             cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
 
-            cy.navigateMainMenu('settings / domain', false)
+            cy.navigateMainMenu('settings / domain')
             cy.locationShouldBe('#/domain')
-            searchInDataTable(domain.domain, null, false)
+            searchInDataTable(domain.domain, null)
             cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
 
             // Clean up

@@ -9,7 +9,6 @@ import {
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     getRandomNum,
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiCreateHeaderRule,
@@ -146,7 +145,7 @@ context('Header manipulation tests', () => {
             }
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / header', false)
+            cy.navigateMainMenu('settings / header')
 
             cy.locationShouldBe('#/header')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -168,7 +167,7 @@ context('Header manipulation tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / header', false)
+            cy.navigateMainMenu('settings / header')
 
             cy.locationShouldBe('#/header')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -177,7 +176,6 @@ context('Header manipulation tests', () => {
             cy.get('input[data-cy="header-rule-set-name"]').type(headerRuleset.name)
             cy.get('input[data-cy="header-rule-set-description"]').type(headerRuleset.description)
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.locationShouldBe('#/header')
 
@@ -199,7 +197,7 @@ context('Header manipulation tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / header', false)
+            cy.navigateMainMenu('settings / header')
 
             cy.locationShouldBe('#/header')
             searchInDataTable(headerRuleset.name)
@@ -231,7 +229,7 @@ context('Header manipulation tests', () => {
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / header', false)
+            cy.navigateMainMenu('settings / header')
 
             cy.locationShouldBe('#/header')
             deleteItemOnListPageBy(headerRuleset.name)
@@ -256,14 +254,16 @@ context('Header manipulation tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / header', false)
+            cy.navigateMainMenu('settings / header')
 
             cy.locationShouldBe('#/header')
             searchInDataTable(headerRuleset.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRulePage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="headerrules-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -288,19 +288,20 @@ context('Header manipulation tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / header', false)
+            cy.navigateMainMenu('settings / header')
 
             cy.locationShouldBe('#/header')
             searchInDataTable(headerRuleset.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRulePage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="headerrules-name"]').type(headerRule.name)
             cy.get('input[data-cy="headerrules-description"]').type(headerRule.description)
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 
             // Cleanup
@@ -325,14 +326,16 @@ context('Header manipulation tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / header', false)
+            cy.navigateMainMenu('settings / header')
 
             cy.locationShouldBe('#/header')
             searchInDataTable(headerRuleset.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRulePage')
             searchInDataTable(headerRule.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
@@ -365,14 +368,16 @@ context('Header manipulation tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / header', false)
+            cy.navigateMainMenu('settings / header')
 
             cy.locationShouldBe('#/header')
             searchInDataTable(headerRuleset.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRulePage')
             deleteItemOnListPageBy(headerRule.name)
 
             // Cleanup
@@ -399,19 +404,23 @@ context('Header manipulation tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / header', false)
+            cy.navigateMainMenu('settings / header')
 
             cy.locationShouldBe('#/header')
             searchInDataTable(headerRuleset.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRulePage')
             searchInDataTable(headerRule.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/*/actions/' }).as('getHeaderRuleActionsPage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActions"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRuleActionsPage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="headerruleactions-header"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -439,23 +448,26 @@ context('Header manipulation tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / header', false)
+            cy.navigateMainMenu('settings / header')
 
             cy.locationShouldBe('#/header')
             searchInDataTable(headerRuleset.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRulePage')
             searchInDataTable(headerRule.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/*/actions/' }).as('getHeaderRuleActionsPage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActions"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRuleActionsPage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="headerruleactions-header"]').type(headerRuleAction.header)
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 
             // Cleanup
@@ -484,19 +496,23 @@ context('Header manipulation tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / header', false)
+            cy.navigateMainMenu('settings / header')
 
             cy.locationShouldBe('#/header')
             searchInDataTable(headerRuleset.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRulePage')
             searchInDataTable(headerRule.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/*/actions/' }).as('getHeaderRuleActionsPage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActions"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRuleActionsPage')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActionEdit"]').click()
@@ -532,19 +548,23 @@ context('Header manipulation tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / header', false)
+            cy.navigateMainMenu('settings / header')
 
             cy.locationShouldBe('#/header')
             searchInDataTable(headerRuleset.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRulePage')
             searchInDataTable(headerRule.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/*/actions/' }).as('getHeaderRuleActionsPage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActions"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRuleActionsPage')
             deleteItemOnListPageBy()
 
             // Cleanup
@@ -572,19 +592,23 @@ context('Header manipulation tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / header', false)
+            cy.navigateMainMenu('settings / header')
 
             cy.locationShouldBe('#/header')
             searchInDataTable(headerRuleset.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRulePage')
             searchInDataTable(headerRule.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/*/conditions/' }).as('getHeaderRuleConditionsPage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditions"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRuleConditionsPage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="headerruleconditions-matchName"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -612,23 +636,26 @@ context('Header manipulation tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / header', false)
+            cy.navigateMainMenu('settings / header')
 
             cy.locationShouldBe('#/header')
             searchInDataTable(headerRuleset.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRulePage')
             searchInDataTable(headerRule.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/*/conditions/' }).as('getHeaderRuleConditionsPage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditions"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRuleConditionsPage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="headerruleconditions-matchName"]').type(headerRuleCondition.match_part)
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 
             // Cleanup
@@ -657,19 +684,23 @@ context('Header manipulation tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / header', false)
+            cy.navigateMainMenu('settings / header')
 
             cy.locationShouldBe('#/header')
             searchInDataTable(headerRuleset.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRulePage')
             searchInDataTable(headerRule.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/*/conditions/' }).as('getHeaderRuleConditionsPage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditions"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRuleConditionsPage')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditionEdit"]').click()
@@ -704,19 +735,23 @@ context('Header manipulation tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / header', false)
+            cy.navigateMainMenu('settings / header')
 
             cy.locationShouldBe('#/header')
             searchInDataTable(headerRuleset.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRulePage')
             searchInDataTable(headerRule.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/*/conditions/' }).as('getHeaderRuleConditionsPage')
             cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditions"]').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getHeaderRuleConditionsPage')
             deleteItemOnListPageBy()
 
             // Cleanup

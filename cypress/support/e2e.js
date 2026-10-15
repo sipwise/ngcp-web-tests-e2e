@@ -44,7 +44,7 @@ function setQuasarLocalStorage (key, value, type = 'string') {
     localStorage[key] = QUASAR_STORAGE_PREFIX[type] + value
 }
 
-Cypress.Commands.add('navigateMainMenu', (path = '', waitForPageLoading = true) => {
+Cypress.Commands.add('navigateMainMenu', (path = '') => {
     Cypress.log({
         name: 'navigateMainMenu',
         displayName: 'navigateMainMenu',
@@ -57,15 +57,9 @@ Cypress.Commands.add('navigateMainMenu', (path = '', waitForPageLoading = true) 
         const [ _ , subItemKey] = pathParts;
         cy.get('div').contains('Settings').click();
         cy.get('a[href="#/' + subItemKey + '"]:first').click();
-
     } else if (pathParts.length === 1) {
         const subItemKey = pathParts[0];
         cy.get('a[href="#/' + subItemKey + '"]:first').click();
-    }
-
-    if (waitForPageLoading) {
-        cy.get('div[class="q-linear-progress"][role="progressbar"]').should('be.visible');
-        cy.get('div[class="q-linear-progress"][role="progressbar"]').should('not.exist')
     }
 });
 
@@ -93,7 +87,6 @@ Cypress.Commands.add(
         }
         ;(subject ? cy.wrap(subject) : cy.get('body')).then($parent => {
             const inputElementExists = $parent.find(inputElementSelector).length
-
             if (typeof filter !== 'undefined' && filter !== '') {
                 if (inputElementExists) {
                     cy.wrap($parent).find(inputElementSelector).type(filter)
@@ -116,6 +109,7 @@ Cypress.Commands.add(
                 cy.contains(`${dropdownListId} .q-item`, itemContains).scrollIntoView()
                 cy.contains(`${dropdownListId} .q-item`, itemContains).should('be.visible')
                 cy.contains(`${dropdownListId} .q-item`, itemContains).click()
+                cy.get('div[role="listbox"]').should('not.exist')
             })
         })
     }
@@ -2955,33 +2949,68 @@ export const apiGetMail = ({ mailboxName, id }) => {
 
 export const getRandomNum = (maxLength = 5) => Math.floor((Math.random() * Math.pow(10, maxLength)))
 
-export const waitPageProgressAUI = () => {
-    cy.get('div[class="q-linear-progress"][role="progressbar"]').should('exist')
-    cy.get('div[class="q-linear-progress"][role="progressbar"]', {timeout: 20000}).should('not.exist')
-}
-
 export const waitPageProgressCSC = () => {
     cy.get('div[id="csc-page-main"] svg[data-cy="q-spinner-dots"]').should('exist')
     cy.get('div[id="csc-page-main"] svg[data-cy="q-spinner-dots"]', {timeout: 20000}).should('not.exist')
 }
 
-export const searchInDataTable = (searchText, searchCriteria = null, waitPageProgressCheck = true) => {
-    cy.get('label[data-cy="aui-data-table-filter-criteria"]', {timeout: 20000}).should('be.visible')
-    cy.get('label[data-cy="aui-data-table-filter-criteria"][aria-disabled="true"]', {timeout: 20000}).should('not.exist')
+let dataTableSearchCounter = 0
+
+// waitForSearchRequest must be false for client-side filtered tables
+// (useClientSideFilteringAndPagination in AUI), because they do not send any request when searching
+export const searchInDataTable = (searchText, searchCriteria = null, waitForSearchRequest = true, ajax = false) => {
+    const searchValue = String(searchText)
     if (searchCriteria !== null) {
+        cy.get('label[data-cy="aui-data-table-filter-criteria"]').should('be.visible')
+        cy.get('label[data-cy="aui-data-table-filter-criteria"][aria-disabled="true"]', {timeout: 20000}).should('not.exist')
         cy.qSelect({ dataCy: 'aui-data-table-filter-criteria', filter: '', itemContains: searchCriteria })
-        cy.get('label[data-cy="aui-input-search--datatable"][aria-disabled="true"]', {timeout: 20000}).should('not.exist')
     }
-    cy.get('input[data-cy="aui-input-search--datatable"]').clear()
-    cy.get('input[data-cy="aui-input-search--datatable"]').type(searchText)
-    if (waitPageProgressCheck) {
-        waitPageProgressAUI()
-    }
+
+    cy.get('label[data-cy="aui-input-search--datatable"]').should('be.visible')
+    cy.get('label[data-cy="aui-input-search--datatable"][aria-disabled="true"]', {timeout: 20000}).should('not.exist')
+
+    cy.get('input[data-cy="aui-input-search--datatable"]').invoke('val').then(currentValue => {
+        // AUI restores the last filter from localStorage, and an unchanged filter does not trigger a request
+        const expectRequest = waitForSearchRequest && currentValue !== searchValue
+
+        // The search field name differs per table, so we match the request by the searched value.
+        // The intercept is registered before typing, so even a very fast response is caught.
+        dataTableSearchCounter++
+        const alias = `dataTableSearch${dataTableSearchCounter}`
+        if (expectRequest) {
+            if(ajax) {
+                cy.intercept('GET', '**/ajax?**', (req) => {
+                    if (Object.values(req.query).some(value => String(value).includes(searchValue))) {
+                        req.alias = alias
+                    }
+                })
+            } else {
+                const expectedValues = [searchValue, btoa(searchValue)]
+                cy.intercept('GET', '**/api/**', (req) => {
+                    if (Object.values(req.query)
+                        .some(value => expectedValues
+                            .some(expected => String(value).includes(expected))
+                        )) {
+                        req.alias = alias
+                    }
+                })
+            }
+        }
+
+        cy.get('input[data-cy="aui-input-search--datatable"]').clear()
+        cy.get('input[data-cy="aui-input-search--datatable"]').type(searchValue)
+        cy.get('input[data-cy="aui-input-search--datatable"]').should('have.value', searchValue)
+
+        if (expectRequest) {
+            cy.wait(`@${alias}`, {responseTimeout: 20000})
+            cy.get('label[data-cy="aui-input-search--datatable"][aria-disabled="true"]', {timeout: 20000}).should('not.exist')
+        }
+    })
 }
 
-export const deleteItemOnListPageBy = (searchText = null, searchCriteria = null) => {
+export const deleteItemOnListPageBy = (searchText = null, searchCriteria = null, waitForSearchRequest = true, ajax = false) => {
     if (searchText !== null) {
-        searchInDataTable(searchText, searchCriteria)
+        searchInDataTable(searchText, searchCriteria, waitForSearchRequest, ajax)
     }
     cy.get('td[data-cy="q-td--more-menu-left"]').click()
     cy.get('div[data-cy="aui-data-table-row-menu--delete"]').click()

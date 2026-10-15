@@ -18,7 +18,6 @@ import {
     apiRemoveCustomerBy,
     apiRemoveCustomerContactBy,
     apiRemoveBillingProfileBy,
-    waitPageProgressAUI,
     searchInDataTable,
     apiGetProfilePackageId,
     apiRemoveBillingVoucherByPackageId
@@ -267,13 +266,11 @@ context('Billing vouchers tests', () => {
         })
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / voucher')
-        waitPageProgressAUI()
         cy.locationShouldBe('#/voucher')
         cy.get('a[data-cy="q-btn--1"]').click()
         cy.get('input[type="file"][data-cy="upload-field"]').selectFile(path.join(fixturesFolder, 'billing_vouchers_entries.csv'), { force: 'true' })
         cy.get('div[data-cy="purge"]').click()
         cy.get('button[data-cy="aui-save-button"]').click()
-        waitPageProgressAUI()
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveBillingVoucherByResellerId({reseller_id: 1, authHeader, code: billingVoucher.code})
         })

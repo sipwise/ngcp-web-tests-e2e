@@ -2,7 +2,6 @@
 
 import {
     getRandomNum,
-    waitPageProgressAUI,
     searchInDataTable,
     deleteItemOnListPageBy,
     clickDataTableSelectedMoreMenuItem,
@@ -178,17 +177,15 @@ context('Contract tests', () => {
                 cy.locationShouldBe('#/contract')
 
                 if (contractType === 'peering') {
-                    searchInDataTable(peeringContract.external_id)
+                    searchInDataTable(peeringContract.external_id, null, true, true)
                 } else {
-                    searchInDataTable(resellerContract.external_id)
+                    searchInDataTable(resellerContract.external_id, null, true, true)
                 }
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 clickDataTableSelectedMoreMenuItem('contractEdit')
-                waitPageProgressAUI()
                 cy.wait(500)
                 cy.qSelect({ dataCy: 'contract-status', filter: 'Pending', itemContains: 'Pending' })
                 cy.get('[data-cy="aui-save-button"]').click()
-                waitPageProgressAUI()
                 cy.get('[data-cy="aui-close-button"]').click()
                 cy.get('span[data-cy="aui-data-table-inline-edit--select"] span').contains('Pending').should('be.visible')
             })
@@ -199,9 +196,9 @@ context('Contract tests', () => {
 
                 cy.locationShouldBe('#/contract')
                 if (contractType === 'peering') {
-                    deleteItemOnListPageBy(peeringContract.external_id)
+                    deleteItemOnListPageBy(peeringContract.external_id, null, true, true)
                 } else {
-                    deleteItemOnListPageBy(resellerContract.external_id)
+                    deleteItemOnListPageBy(resellerContract.external_id, null, true, true)
                 }
             })
         })

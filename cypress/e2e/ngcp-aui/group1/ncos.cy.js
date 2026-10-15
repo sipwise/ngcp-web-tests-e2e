@@ -2,7 +2,6 @@
 
 import {
     getRandomNum,
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiCreateContract,
@@ -92,7 +91,7 @@ context('NCOS tests', () => {
     context('NCOS Set tests', () => {
         it('Try to create NCOS set with invalid values', () => {
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / ncossets', false)
+            cy.navigateMainMenu('settings / ncossets')
 
             cy.locationShouldBe('#/ncossets')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -112,7 +111,7 @@ context('NCOS tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / ncossets', false)
+            cy.navigateMainMenu('settings / ncossets')
 
             cy.locationShouldBe('#/ncossets')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -141,7 +140,7 @@ context('NCOS tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / ncossets', false)
+            cy.navigateMainMenu('settings / ncossets')
 
             cy.locationShouldBe('#/ncossets')
             searchInDataTable(NCOSSet.name)
@@ -174,7 +173,7 @@ context('NCOS tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / ncossets', false)
+            cy.navigateMainMenu('settings / ncossets')
 
             cy.locationShouldBe('#/ncossets')
             deleteItemOnListPageBy(NCOSSet.name)
@@ -189,7 +188,7 @@ context('NCOS tests', () => {
     context('NCOS Level tests', () => {
         it('Try to create a NCOS Level with invalid values', () => {
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / ncos', false)
+            cy.navigateMainMenu('settings / ncos')
 
             cy.locationShouldBe('#/ncos')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -207,7 +206,7 @@ context('NCOS tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / ncos', false)
+            cy.navigateMainMenu('settings / ncos')
 
             cy.locationShouldBe('#/ncos')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -236,7 +235,7 @@ context('NCOS tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / ncos', false)
+            cy.navigateMainMenu('settings / ncos')
 
             cy.locationShouldBe('#/ncos')
             searchInDataTable(NCOSLevel.level)
@@ -271,22 +270,23 @@ context('NCOS tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / ncossets', false)
+            cy.navigateMainMenu('settings / ncossets')
 
             cy.locationShouldBe('#/ncossets')
             searchInDataTable(NCOSSet.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept('GET', '**/api/v2/ncos/levels/**').as('getNCOSSetLevelListPage')
             cy.get('a[data-cy="aui-data-table-row-menu--ncosSetLevelsList"]').click()
 
-            waitPageProgressAUI()
+            cy.wait('@getNCOSSetLevelListPage')
+
             cy.get('button[data-cy="row-more-menu-btn"]:first').click()
             cy.get('div[data-cy="aui-data-table-row-menu--addLevel"]').click()
 
             cy.get('label[data-cy="aui-input-search--datatable"][aria-disabled="true"]').should('exist')
             cy.get('label[data-cy="aui-input-search--datatable"][aria-disabled="true"]').should('not.exist')
             cy.get('div[data-cy="ncos-set-levels-list"] input:last').type('thisshouldneverexist123')
-            waitPageProgressAUI()
 
             cy.get('button[data-cy="row-more-menu-btn"]:first').click()
             cy.get('div[data-cy="aui-data-table-row-menu--delete"]').click()
@@ -309,7 +309,7 @@ context('NCOS tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / ncos', false)
+            cy.navigateMainMenu('settings / ncos')
 
             cy.locationShouldBe('#/ncos')
             deleteItemOnListPageBy(NCOSLevel.level)

@@ -9,7 +9,6 @@ import {
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     getRandomNum,
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable
 } from '../../../support/e2e'
@@ -77,7 +76,7 @@ context('Reseller tests', () => {
 
     it('Check if reseller with invalid values gets rejected', () => {
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / reseller', false)
+        cy.navigateMainMenu('settings / reseller')
 
         cy.locationShouldBe('#/reseller')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -96,7 +95,7 @@ context('Reseller tests', () => {
             apiRemoveContractBy({ external_id: contract.external_id, authHeader })
         })
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / reseller', false)
+        cy.navigateMainMenu('settings / reseller')
 
         cy.locationShouldBe('#/reseller')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -116,7 +115,6 @@ context('Reseller tests', () => {
         cy.auiSelectLazySelect({ dataCy: 'aui-select-contract', filter: reseller.contract_id, itemContains: 'default-system' })
         cy.get('[data-cy="reseller-name"] input').type(reseller.name)
         cy.get('[data-cy="aui-save-button"]').click()
-        waitPageProgressAUI()
 
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         cy.locationShouldBe('#/reseller')
@@ -124,24 +122,22 @@ context('Reseller tests', () => {
 
     it('Edit reseller status to "locked"', () => {
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / reseller', false)
+        cy.navigateMainMenu('settings / reseller')
 
         cy.locationShouldBe('#/reseller')
         searchInDataTable(reseller.name)
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--resellerEdit"]').click()
-        waitPageProgressAUI()
         cy.qSelect({ dataCy: 'reseller-status', filter: '', itemContains: 'Locked' })
         cy.get('[data-cy="aui-save-button"]').click()
-        waitPageProgressAUI()
         cy.get('[data-cy="aui-close-button"]').click()
         cy.get('[data-cy="aui-data-table-inline-edit--select"]').should('contain.text', 'Locked')
     })
 
     it('Delete reseller and check if they are deleted', () => {
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / reseller', false)
+        cy.navigateMainMenu('settings / reseller')
 
         cy.locationShouldBe('#/reseller')
         deleteItemOnListPageBy(reseller.name)

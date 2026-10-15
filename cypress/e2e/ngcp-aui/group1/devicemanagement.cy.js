@@ -18,7 +18,6 @@ import {
     deleteItemOnListPageBy,
     testPreferencesTextField,
     testPreferencesToggleField,
-    waitPageProgressAUI,
     apiCreatePbxDeviceProfile,
     apiRemovePbxDeviceProfileBy
 } from '../../../support/e2e'
@@ -170,7 +169,7 @@ context('Device management tests', () => {
             }
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
 
             cy.locationShouldBe('#/devicemanagement/model')
 
@@ -193,7 +192,7 @@ context('Device management tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
 
             cy.locationShouldBe('#/devicemanagement/model')
 
@@ -229,7 +228,7 @@ context('Device management tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
 
             cy.locationShouldBe('#/devicemanagement/model')
 
@@ -266,7 +265,7 @@ context('Device management tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
 
             cy.locationShouldBe('#/devicemanagement/model')
 
@@ -305,16 +304,17 @@ context('Device management tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
 
             cy.locationShouldBe('#/devicemanagement/model')
 
             searchInDataTable(pbxDeviceModel.model, "Model")
             cy.get('div[data-cy="q-checkbox"]').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/api/pbxdevicepreferences/*' }).as('getPbxDeviceModelPreferences')
             cy.get('a[data-cy="aui-data-table-row-menu--deviceManagementModelPreferences"]').click()
 
-            waitPageProgressAUI()
+            cy.wait('@getPbxDeviceModelPreferences')
             testPreferencesToggleField('DNS-SRV-enable')
             testPreferencesTextField('admin-name')
             testPreferencesTextField('admin-pass')
@@ -343,7 +343,7 @@ context('Device management tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
 
             cy.locationShouldBe('#/devicemanagement/model')
             deleteItemOnListPageBy(pbxDeviceModel.model, 'Model')
@@ -363,7 +363,7 @@ context('Device management tests', () => {
             }
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
             cy.get('a[href="#/devicemanagement/firmware"]').click()
 
             cy.locationShouldBe('#/devicemanagement/firmware')
@@ -389,7 +389,7 @@ context('Device management tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
             cy.get('a[href="#/devicemanagement/firmware"]').click()
 
             cy.locationShouldBe('#/devicemanagement/firmware')
@@ -432,7 +432,7 @@ context('Device management tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
             cy.get('a[href="#/devicemanagement/firmware"]').click()
 
             cy.locationShouldBe('#/devicemanagement/firmware')
@@ -476,7 +476,7 @@ context('Device management tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
             cy.get('a[href="#/devicemanagement/firmware"]').click()
 
             cy.locationShouldBe('#/devicemanagement/firmware')
@@ -515,7 +515,7 @@ context('Device management tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
             cy.get('a[href="#/devicemanagement/firmware"]').click()
 
             cy.locationShouldBe('#/devicemanagement/firmware')
@@ -537,7 +537,7 @@ context('Device management tests', () => {
             }
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
             cy.get('a[href="#/devicemanagement/configuration"]').click()
 
             cy.locationShouldBe('#/devicemanagement/configuration')
@@ -563,7 +563,7 @@ context('Device management tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
             cy.get('a[href="#/devicemanagement/configuration"]').click()
 
             cy.locationShouldBe('#/devicemanagement/configuration')
@@ -605,7 +605,7 @@ context('Device management tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
             cy.get('a[href="#/devicemanagement/configuration"]').click()
 
             cy.locationShouldBe('#/devicemanagement/configuration')
@@ -648,7 +648,7 @@ context('Device management tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
             cy.get('a[href="#/devicemanagement/configuration"]').click()
 
             cy.locationShouldBe('#/devicemanagement/configuration')
@@ -670,7 +670,7 @@ context('Device management tests', () => {
             }
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
             cy.get('a[href="#/devicemanagement/profile"]').click()
 
             cy.locationShouldBe('#/devicemanagement/profile')
@@ -700,7 +700,7 @@ context('Device management tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
             cy.get('a[href="#/devicemanagement/profile"]').click()
 
             cy.locationShouldBe('#/devicemanagement/profile')
@@ -746,7 +746,7 @@ context('Device management tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
             cy.get('a[href="#/devicemanagement/profile"]').click()
 
             cy.locationShouldBe('#/devicemanagement/profile')
@@ -754,9 +754,10 @@ context('Device management tests', () => {
             searchInDataTable(pbxDeviceProfile.name, "Name")
             cy.get('div[data-cy="q-checkbox"]').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/api/pbxdeviceprofilepreferences/*' }).as('getPbxDeviceProfilePreferences')
             cy.get('a[data-cy="aui-data-table-row-menu--deviceManagementProfilePreferences"]').click()
 
-            waitPageProgressAUI()
+            cy.wait('@getPbxDeviceProfilePreferences')
             testPreferencesToggleField('DNS-SRV-enable')
             testPreferencesTextField('admin-name')
             testPreferencesTextField('admin-pass')
@@ -797,7 +798,7 @@ context('Device management tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / devicemanagement', false)
+            cy.navigateMainMenu('settings / devicemanagement')
             cy.get('a[href="#/devicemanagement/profile"]').click()
 
             cy.locationShouldBe('#/devicemanagement/profile')

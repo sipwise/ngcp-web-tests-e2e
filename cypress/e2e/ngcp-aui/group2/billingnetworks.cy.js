@@ -8,7 +8,6 @@ import {
     apiRemoveContractBy,
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiCreateBillingNetwork,
@@ -130,7 +129,7 @@ context('Billing Network', () => {
         })
 
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / network', false)
+        cy.navigateMainMenu('settings / network')
 
         cy.get('a[data-cy="aui-list-action--add"]').click()
         cy.get('button[data-cy="aui-save-button"]').click()
@@ -167,7 +166,7 @@ context('Billing Network', () => {
         })
 
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / network', false)
+        cy.navigateMainMenu('settings / network')
 
         cy.get('a[data-cy="aui-list-action--add"]').click()
         cy.get('label[data-cy="billingnetworks-name"]').type(billingNetwork.name + "2")
@@ -206,20 +205,19 @@ context('Billing Network', () => {
         })
 
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / network', false)
+        cy.navigateMainMenu('settings / network')
 
         searchInDataTable(secondBillingNetwork.blocks[0].ip, "IP")
         cy.get('div[class="aui-data-table"] .q-checkbox:last').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--billingNetworkEdit"]').click()
-        waitPageProgressAUI()
         cy.get('input[data-cy="billingnetworks-ip"]:first').clear().type('1.1.1.1')
         cy.get('input[data-cy="billingnetworks-mask"]:first').clear().type('16')
         cy.get('input[data-cy="billingnetworks-ip"]:last').clear().type('2.2.2.2')
         cy.get('input[data-cy="billingnetworks-mask"]:last').clear().type('16')
         cy.get('button[data-cy="aui-save-button"]').click()
-        cy.get('[data-cy="aui-close-button"]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+        cy.get('[data-cy="aui-close-button"]').click()
         searchInDataTable(billingNetwork.blocks[0].ip, "IP")
         cy.get('td[data-cy="q-td--name"]').contains(secondBillingNetwork.name).should('be.visible')
         cy.get('td[data-cy="q-td--blocks"]').contains('1.1.1.1/16').should('be.visible')
@@ -249,7 +247,7 @@ context('Billing Network', () => {
         })
 
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / network', false)
+        cy.navigateMainMenu('settings / network')
 
         deleteItemOnListPageBy(deleteBillingNetwork.name, "Name")
 

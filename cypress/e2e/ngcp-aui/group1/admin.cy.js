@@ -2,7 +2,6 @@
 
 import {
     getRandomNum,
-    waitPageProgressAUI,
     deleteDownloadsFolder,
     deleteItemOnListPageBy,
     clickDataTableSelectedMoreMenuItem,
@@ -179,7 +178,6 @@ context('Administrator tests', () => {
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin1.login)
             cy.get('[data-cy="aui-data-table-inline-edit--toggle"]:first').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-negative')
             cy.get('div[data-cy="aui-data-table-inline-edit--toggle"]:first[aria-checked="true"]').should('be.visible')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -280,25 +278,21 @@ context('Administrator tests', () => {
                 }
             })
 
-            // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('settings / administrator', false)
+            cy.navigateMainMenu('settings / administrator')
             cy.locationShouldBe('#/administrator')
             cy.get('div[data-cy^=aui-list-action]').should('not.exist')
 
-            // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('customer', false)
+            cy.navigateMainMenu('customer')
             cy.locationShouldBe('#/customer')
             cy.get('div[data-cy=aui-list-action--customer-creation]').should('not.exist');
             cy.get('div[data-cy=aui-list-action--customer-edit]').should('not.exist');
             cy.get('div[data-cy=aui-list-action--delete]').should('not.exist');
 
-            // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('contact', false)
+            cy.navigateMainMenu('contact')
             cy.locationShouldBe('#/contact');
             cy.get('div[data-cy^=aui-list-action]').should('not.exist');
 
-            // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('domain', false)
+            cy.navigateMainMenu('domain')
             cy.locationShouldBe('#/domain');
             cy.get('div[data-cy=aui-list-action--domain-creation]').should('not.exist');
             cy.get('div[data-cy=aui-list-action--delete]').should('not.exist')
@@ -450,7 +444,6 @@ context('Administrator tests', () => {
             cy.get('input[data-cy="password-retype-field"]').type(secondaryResellerAdmin.password)
             cy.get('div[data-cy="can-reset-password-flag"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 
             cy.logoutUiAUI()
@@ -506,7 +499,7 @@ context('Administrator tests', () => {
                     cy.get('div').contains('Settings').click()
                 }
             })
-            cy.navigateMainMenu('settings / administrator', false)
+            cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
             cy.get('a[data-cy="aui-list-action--add"]').should('be.visible')

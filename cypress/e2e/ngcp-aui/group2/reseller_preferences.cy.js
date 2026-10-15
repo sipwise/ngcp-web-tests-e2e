@@ -12,7 +12,6 @@ import {
     apiRemoveSystemContactBy,
     getRandomNum,
     searchInDataTable,
-    waitPageProgressAUI,
     clickDataTableSelectedMoreMenuItem,
     testPreferencesTextField,
     testPreferencesListField
@@ -86,14 +85,15 @@ context('Reseller Preferences tests', () => {
         })
 
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / reseller', false)
+        cy.navigateMainMenu('settings / reseller')
 
         cy.locationShouldBe('#/reseller')
         searchInDataTable(reseller.name)
         cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/resellerpreferences/*' }).as('getResellerPreferences')
         clickDataTableSelectedMoreMenuItem('resellerPreferences')
 
-        waitPageProgressAUI()
+        cy.wait('@getResellerPreferences')
         testPreferencesTextField('concurrent_max', 123, true)
         testPreferencesTextField('concurrent_max_in', 123, true)
         testPreferencesTextField('concurrent_max_in_total', 123, true)
@@ -122,14 +122,15 @@ context('Reseller Preferences tests', () => {
         })
 
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / reseller', false)
+        cy.navigateMainMenu('settings / reseller')
 
         cy.locationShouldBe('#/reseller')
         searchInDataTable(reseller.name)
         cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/resellerpreferences/*' }).as('getResellerPreferences')
         clickDataTableSelectedMoreMenuItem('resellerPreferences')
 
-        waitPageProgressAUI()
+        cy.wait('@getResellerPreferences')
         cy.get('div[data-cy="q-item--cdr-export-field-separator"]').scrollIntoView()
         testPreferencesTextField('cdr_export_field_separator')
         testPreferencesListField('cdr_export_sclidui_rwrs', rewriteRuleSet.name)

@@ -10,7 +10,6 @@ import {
     apiRemoveResellerBy,
     apiRemoveResellerPhonebookBy,
     apiRemoveSystemContactBy,
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiRemoveAdminBy,
@@ -186,14 +185,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Administrator Logins').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('button[data-cy="aui-save-button"]').click()
@@ -221,14 +219,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Administrator Logins').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
@@ -262,24 +259,22 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Administrator Logins').click()
             searchInDataTable(testadmin.login)
             cy.get('td[data-cy="q-td--read-only"]').click()
-            waitPageProgressAUI()
             cy.get('td[data-cy="q-td--read-only"]').find('div[role="switch"][aria-checked="true"]').should('be.visible')
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
             cy.logoutUiAUI()
             cy.wait(500)
             cy.loginUiAUI(testadmin.login, testadmin.password, false)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
             cy.get('a[data-cy="aui-list-action--add"]').should('not.exist')
             cy.get('a[data-cy="aui-list-action--edit-menu-btn"]').should('not.exist')
             cy.get('a[data-cy="aui-list-action--delete"]').should('not.exist')
@@ -306,14 +301,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Administrator Logins').click()
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--delete"]').click()
@@ -341,14 +335,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Networks').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('button[data-cy="aui-save-button"]').click()
@@ -385,14 +378,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Networks').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('label[data-cy="billingnetworks-name"]').type(billingNetwork.name + "2")
@@ -429,20 +421,18 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Networks').click()
             searchInDataTable(billingNetwork.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetailsBillingNetworkEdit"]').click()
-            waitPageProgressAUI()
             cy.get('input[data-cy="billingnetworks-ip"]:last').clear().type('3.3.3.3')
             cy.get('input[data-cy="billingnetworks-mask"]:last').clear().type('16')
             cy.get('button[data-cy="aui-save-button"]').click()
@@ -472,14 +462,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Networks').click()
             deleteItemOnListPageBy(billingNetwork.name)
 
@@ -504,14 +493,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Profiles').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('button[data-cy="aui-save-button"]').click()
@@ -537,14 +525,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Profiles').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="billingprofiles-handle"]').type(billingProfile.handle)
@@ -575,14 +562,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Profiles').click()
             searchInDataTable(billingProfile.name)
             cy.get('td[data-cy="q-td--prepaid"] input').click({ force: true })
@@ -590,7 +576,7 @@ context('Reseller Details tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetailsBillingProfileEdit"]').click()
-            waitPageProgressAUI()
+            cy.get('input[data-cy="billingprofiles-name"]').should('have.value', billingProfile.name)
             cy.get('div[data-cy="billingprofiles-prepaid"]').click()
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('[data-cy="aui-close-button"]').click()
@@ -619,14 +605,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Profiles').click()
             deleteItemOnListPageBy(billingProfile.name)
 
@@ -651,16 +636,14 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Branding').click()
-            waitPageProgressAUI()
             cy.get('[data-cy="color-picker"]:first').click()
             cy.get('div[class="q-color-picker"]').should('be.visible')
             cy.get('input[data-cy="csc-font-color"]').click()
@@ -694,14 +677,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Customers').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
@@ -731,14 +713,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Customers').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: customerContact.email, itemContains: customerContact.email })
@@ -778,25 +759,22 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Customers').click()
             searchInDataTable(customer.external_id, 'External #')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetailsCustomerEdit"]').click()
-            waitPageProgressAUI()
             cy.qSelect({ dataCy: 'customer-status', filter: '', itemContains: 'Locked' })
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
-            waitPageProgressAUI()
             cy.get('span[data-cy="aui-data-table-inline-edit--select"] span').contains('Locked')
 
             // Cleanup
@@ -830,14 +808,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Customers').click()
 
             deleteItemOnListPageBy(customer.external_id, 'External #')
@@ -865,14 +842,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Domains').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy=aui-save-button]').click()
@@ -897,14 +873,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Domains').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="domain-name"]').type(domain.domain)
@@ -933,14 +908,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Domains').click()
             searchInDataTable(domain.domain)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -970,14 +944,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Domains').click()
             deleteItemOnListPageBy(domain.domain)
 
@@ -1007,14 +980,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('button[data-cy="aui-save-button"]').click()
@@ -1045,14 +1017,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="phonebook-name"]').type(resellerPhonebook.name)
@@ -1089,14 +1060,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
             searchInDataTable(resellerPhonebook.name, 'Name')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -1135,14 +1105,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
             deleteItemOnListPageBy(resellerPhonebook.name, 'Name')
 
@@ -1167,14 +1136,13 @@ context('Reseller Details tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Reseller Base Information').click()
             cy.get('div[data-cy="aui-single-row-table--0"] td').contains(reseller.name).should('be.visible')
             cy.get('div[data-cy="aui-single-row-table--0"] td').contains(reseller.status).should('be.visible')
