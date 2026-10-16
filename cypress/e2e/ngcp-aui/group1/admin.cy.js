@@ -590,13 +590,15 @@ context('Administrator tests', () => {
             })
             cy.navigateMainMenu('settings / administrator')
 
-            cy.locationShouldBe('#/administrator');
-            searchInDataTable(secondaryResellerAdmin.login);
-            cy.get('div[class="aui-data-table"] .q-checkbox').click();
-            clickDataTableSelectedMoreMenuItem('adminResetPassword');
-            cy.get('input[data-cy="password-input"]').type('averyshinynewpwd');
-            cy.get('input[data-cy="password-retype-input"]').type('averyshinynewpwd');
-            cy.get('button[data-cy="save-button"]').click();
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(secondaryResellerAdmin.login)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            clickDataTableSelectedMoreMenuItem('adminResetPassword')
+            cy.get('input[data-cy="password-input"]').click()
+            cy.get('input[data-cy="password-input"]').type('averyshinynewpwd', { delay: 10 })
+            cy.get('input[data-cy="password-retype-input"]').click()
+            cy.get('input[data-cy="password-retype-input"]').type('averyshinynewpwd', { delay: 10 })
+            cy.get('button[data-cy="save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
 
