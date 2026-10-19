@@ -451,6 +451,28 @@ Cypress.Commands.add('logoutUiAUI', () => {
     log.end()
 })
 
+Cypress.Commands.add('logoutUiCSC', () => {
+    const log = Cypress.log({
+        name: 'logoutUiCSC',
+        displayName: 'LOGOUT UI (CSC)',
+        message: '🚪',
+        autoEnd: true
+    })
+
+    cy.get('button[data-cy="user-menu"]', quiet).click(quiet)
+    cy.get('[data-cy="user-logout"]', quiet).click(quiet)
+    cy.get('input[data-cy="csc-login-username"]').should('be.visible')
+    cy.get('input[data-cy="csc-login-password"]').should('be.visible')
+    cy.url(quiet).should((url) => {
+        // NOTE: "should" does not support "{ log: false }" so it's a workaround for that
+        const loginPageURL = /\/#\/login$/
+        if (!loginPageURL.test(url)) {
+            expect(url).to.match(loginPageURL)
+        }
+    })
+    log.end()
+})
+
 Cypress.Commands.add('createAdminUI', (admin) => {
     cy.navigateMainMenu('settings / administrator')
     cy.locationShouldBe('#/administrator')
@@ -2887,6 +2909,21 @@ export const apiRemoveCallListSuppressionBy = ({ name, authHeader }) => {
         } else {
             return cy.log('No Call List Suppression found', name)
         }
+    })
+}
+
+export const apiGetCFMappingByID = ({ id, authHeader }) => {
+    cy.log('Get CFMapping of subscriber ID...', id)
+    return cy.request({
+        method: 'GET',
+        url: `${ngcpConfig.apiHost}/api/cfmappings/${id}?expand=all`,
+        headers: {
+            ...authHeader.headers,
+            'content-type': 'application/json'
+        }
+    }).then(({ body }) => {
+        const cfid = body?.id
+        return { cfid }
     })
 }
 
