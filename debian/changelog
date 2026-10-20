@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (26.3.1.2+0~mr26.3.1.2) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [0270e12] MT#65883 fix admin password reset test after cypress upgrade
+  * [faaf5fd] MT#65883 Upgrade Cypress, Browsers, Dependencies and Docker for mr26.3
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 20 Oct 2026 11:36:54 +0200
+
 ngcp-web-tests-e2e (26.3.1.1+0~mr26.3.1.1) unstable; urgency=medium
 
   [ Nico Schedel ]
