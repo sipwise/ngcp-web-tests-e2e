@@ -986,6 +986,7 @@ context('Administrator Roles tests', () => {
 
             cy.locationShouldBe('#/customer')
             cy.get('a[data-cy="aui-list-action--add"]').click()
+            cy.get('input[data-cy="customer-external-id"]').type(customer.external_id)
             cy.get('label[data-cy="aui-select-contact"]').click()
             cy.get('div[data-cy="q-item-label"]').contains(customerContact_reseller.email).should('be.visible')
             cy.get('div[data-cy="q-item-label"]').contains('#1 - default-customer@default.invalid').should('not.exist')
@@ -994,7 +995,6 @@ context('Administrator Roles tests', () => {
             cy.get('div[data-cy="q-item-label"]').contains(billingProfile.name).should('be.visible')
             cy.get('div[data-cy="q-item-label"]').contains('Default Billing Profile').should('not.exist')
             cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: customerContact_reseller.email, itemContains: customerContact_reseller.email })
-            cy.get('input[data-cy="customer-external-id"]').type(customer.external_id)
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 
