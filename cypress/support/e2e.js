@@ -579,7 +579,7 @@ export const apiCreateReseller = ({ data, authHeader }) => {
             'content-type': 'application/json'
         }
     }).then(({ headers }) => {
-        const id = headers?.location.split('/')[3]
+        const id = Number(headers?.location.split('/')[3])
         return { id }
     })
 }
