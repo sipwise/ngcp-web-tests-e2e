@@ -9,6 +9,7 @@ Homepage: https://sipwise.com/
 Package: ngcp-web-tests-e2e
 Architecture: all
 Depends:
+ nodejs (>= 26),
  ${misc:Depends},
  ${shlibs:Depends},
 Description: Additional e2e test scripts for both ngcp-admin-ui and ngcp-csc-ui
