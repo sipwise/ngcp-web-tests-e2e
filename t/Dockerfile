@@ -5,7 +5,16 @@ FROM docker.mgm.sipwise.com/sipwise-trixie:latest
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT=2026-10-15
+ENV REFRESHED_AT=2026-11-06
+ENV NODE_PATH=/usr/lib/nodejs:/usr/share/nodejs
+
+# Prepare .bashrc and .bash_history for test runs
+RUN echo 'alias yarn="node .yarn/releases/yarn-*.cjs"' > /root/.bashrc
+RUN echo "./run_web_e2e" > /root/.bash_history
+
+# files that get-code generates
+COPY t/sources.list.d/builddeps.list /etc/apt/sources.list.d/
+COPY t/sources.list.d/preferences /etc/apt/preferences.d/
 
 RUN apt-get update && \
     apt-get install --assume-yes --no-install-recommends \
@@ -19,16 +28,26 @@ RUN apt-get update && \
         xz-utils && \
     apt-get clean
 
-# Install node corepack for yarn, check if its installed properly
-RUN corepack enable
-RUN node --version && corepack --version
+# Preperation for yarn and Cypress installation
+COPY package.json /tmp/
+COPY yarn.lock /tmp/
+COPY .yarnrc.yml /tmp/
+COPY .yarn /tmp/.yarn/
+COPY README.md /tmp/
+WORKDIR /tmp
+
+# Install yarn (4.18.1) and Cypress (16.2.0), check if its installed properly
+RUN node .yarn/releases/yarn-*.cjs install && \
+    node .yarn/releases/yarn-*.cjs cypress install -f && \
+    node .yarn/releases/yarn-*.cjs cypress verify
+RUN node --version && node .yarn/releases/yarn-*.cjs --version && node .yarn/releases/yarn-*.cjs cypress --version
 
 # Installing Chrome (154.0.8037.98)
 RUN wget https://deb.sipwise.com/files/google-chrome-stable_154_amd64.deb && \
     apt install -y ./google-chrome-stable_154_amd64.deb && \
     rm -f google-chrome-stable_154_amd64.deb
 
-# Installing firefox (lang=en_US) (157.0.1)
+# Installing Firefox (lang=en_US) (157.0.1)
 RUN wget https://deb.sipwise.com/files/firefox-157.0.1.deb && \
     apt install -y ./firefox-157.0.1.deb  && \
     rm -f firefox-157.0.1.deb
@@ -38,15 +57,6 @@ WORKDIR /code
 ADD package.json /code/
 ADD yarn.lock /code/
 ADD .yarnrc.yml /code/
-
-RUN yarn install
-RUN yarn cypress install -f && \
-    yarn cypress verify
-
-# Sanity check
-RUN yarn --version
-
-RUN echo "./run_web_e2e" >/root/.bash_history
 
 ################################################################################
 # Instructions for usage
