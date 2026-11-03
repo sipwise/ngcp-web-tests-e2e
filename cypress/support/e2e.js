@@ -2966,8 +2966,6 @@ export const waitPageProgressCSC = () => {
     cy.get('div[id="csc-page-main"] svg[data-cy="q-spinner-dots"]', {timeout: 20000}).should('not.exist')
 }
 
-let dataTableSearchCounter = 0
-
 // waitForSearchRequest must be false for client-side filtered tables
 // (useClientSideFilteringAndPagination in AUI), because they do not send any request when searching
 export const searchInDataTable = (searchText, searchCriteria = null, waitForSearchRequest = true, ajax = false) => {
@@ -2987,18 +2985,17 @@ export const searchInDataTable = (searchText, searchCriteria = null, waitForSear
 
         // The search field name differs per table, so we match the request by the searched value.
         // The intercept is registered before typing, so even a very fast response is caught.
-        dataTableSearchCounter++
-        const alias = `dataTableSearch${dataTableSearchCounter}`
+        const alias = 'dataTableSearch'
         if (expectRequest) {
             if(ajax) {
-                cy.intercept('GET', '**/ajax?**', (req) => {
+                cy.intercept({ method: 'GET', path: '**/ajax?**', times: 1 }, (req) => {
                     if (Object.values(req.query).some(value => String(value).includes(searchValue))) {
                         req.alias = alias
                     }
                 })
             } else {
                 const expectedValues = [searchValue, btoa(searchValue)]
-                cy.intercept('GET', '**/api/**', (req) => {
+                cy.intercept({ method: 'GET', pathname: '**/api/**', times: 1 }, (req) => {
                     if (Object.values(req.query)
                         .some(value => expectedValues
                             .some(expected => String(value).includes(expected))

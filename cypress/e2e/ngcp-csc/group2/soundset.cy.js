@@ -149,8 +149,10 @@ context('Sound Set (CSC) page tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/soundsets/' }).as('getSoundsetPage')
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/sound-sets"]').click()
+        cy.wait('@getSoundsetPage')
 
         cy.get('button[data-cy="csc-sound-set-add"]').click()
         cy.get('input[data-cy="csc-sound-set-name"]').should('be.visible')
@@ -178,8 +180,10 @@ context('Sound Set (CSC) page tests', () => {
         }
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/soundsets/' }).as('getSoundsetPage')
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/sound-sets"]').click()
+        cy.wait('@getSoundsetPage')
 
         cy.get('div[class="csc-list-item-title"]').contains(soundSet.name).click()
         cy.get('div[data-cy="csc-sound-set-edit-default"]').click()
@@ -197,8 +201,10 @@ context('Sound Set (CSC) page tests', () => {
         }
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/soundsets/' }).as('getSoundsetPage')
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/sound-sets"]').click()
+        cy.wait('@getSoundsetPage')
 
         cy.get('div[class="csc-list-item-title"]').contains(soundSet.name).click()
         cy.get('div[data-cy="csc-list-item-title"]').contains('music_on_hold').click()
@@ -227,8 +233,10 @@ context('Sound Set (CSC) page tests', () => {
         }
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/soundsets/' }).as('getSoundsetPage')
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/sound-sets"]').click()
+        cy.wait('@getSoundsetPage')
 
         cy.get('div[class="csc-list-item-head-menu"] button').click()
         cy.get('div[data-cy="q-item-section"]').contains('Remove').click()

@@ -9,7 +9,6 @@ import {
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
     getRandomNum,
-    waitPageProgressCSC,
     apiGetCFMappingByID
 } from '../../../support/e2e'
 
@@ -150,7 +149,9 @@ function createCallForwarding(type, destinationType, number = '0123456789', pbx 
         cy.get('[data-cy="csc-cf-seat-select"]').closest('.q-select').click()
         cy.get('.q-menu').filter(':visible').contains('.q-item', pbx_second_seat.display_name).click()
     }
+    cy.intercept({ method: 'GET', pathname: '**/api/cfmappings/*' }).as('getCFMappingsPage')
     cy.get('[data-cy="csc-cf-save"]').click()
+    cy.wait('@getCFMappingsPage')
 }
 
 context('Call Forwarding tests', () => {
@@ -307,7 +308,6 @@ context('Call Forwarding tests', () => {
             cy.get('span[data-cy="csc-cf-destination"]').first().click()
             cy.get('input:visible').should('be.enabled').focus().clear().type('9876543210')
             cy.get('button').contains('Set').click()
-            waitPageProgressCSC()
             cy.get('span[data-cy="csc-cf-destination"]').first().contains('9876543210').should('be.visible')
 
             cy.get('button[data-cy="q-btn"]').last().click()

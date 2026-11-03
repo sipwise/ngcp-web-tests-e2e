@@ -8,7 +8,6 @@ import {
     apiRemoveDomainBy,
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
-    waitPageProgressCSC,
     getRandomNum
 } from '../../../support/e2e'
 
@@ -159,11 +158,13 @@ context('Fax settings page tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/faxserversettings/*' }).as('getFaxSettingsPage')
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
+        cy.wait('@getFaxSettingsPage')
+
         cy.get('div[data-cy="faxtomail-enable"][aria-disabled="true"]').should('not.exist')
         cy.get('div[data-cy="faxtomail-enable"] input').click({ force: true })
-
         cy.get('button[data-cy="appsicon-more"]').should('be.visible')
 
         // Cleanup
@@ -184,8 +185,10 @@ context('Fax settings page tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/faxserversettings/*' }).as('getFaxSettingsPage')
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
+        cy.wait('@getFaxSettingsPage')
 
         cy.get('div[data-cy="faxtomail-t38"][aria-disabled="true"]').should('not.exist')
         cy.get('div[data-cy="faxtomail-t38"] input').click({ force: true })
@@ -222,11 +225,13 @@ context('Fax settings page tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/faxserversettings/*' }).as('getFaxSettingsPage')
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
+        cy.wait('@getFaxSettingsPage')
+
         cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
         cy.get('button[data-cy="destination-add"]').click()
-
         cy.get('input[data-cy="destination-email"]').type('invalidemail')
         cy.get('div[role="alert"]').contains('Input a valid email address').should('be.visible')
         cy.get('button[data-cy="destinaton-creation-confirm"][aria-disabled="true"]').should('be.visible')
@@ -254,11 +259,13 @@ context('Fax settings page tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/faxserversettings/*' }).as('getFaxSettingsPage')
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
+        cy.wait('@getFaxSettingsPage')
+
         cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
         cy.get('button[data-cy="destination-add"]').click()
-
         cy.get('input[data-cy="destination-email"]').type('test@mail.com')
         cy.get('[data-cy="destinaton-filetype"]').click()
         cy.get('div[role="listbox"]').contains('PS').click()
@@ -285,11 +292,13 @@ context('Fax settings page tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/faxserversettings/*' }).as('getFaxSettingsPage')
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
+        cy.wait('@getFaxSettingsPage')
+
         cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
         cy.get('button[data-cy="destination-add"]').click()
-
         cy.get('input[data-cy="destination-email"]').type('test@mail.com')
         cy.get('[data-cy="destinaton-filetype"]').click()
         cy.get('div[role="listbox"]').contains('PS').click()
@@ -340,11 +349,13 @@ context('Fax settings page tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/faxserversettings/*' }).as('getFaxSettingsPage')
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
+        cy.wait('@getFaxSettingsPage')
+
         cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
         cy.get('button[data-cy="destination-add"]').click()
-
         cy.get('input[data-cy="destination-email"]').type('test@mail.com')
         cy.get('[data-cy="destinaton-filetype"]').click()
         cy.get('div[role="listbox"]').contains('PS').click()
@@ -356,7 +367,6 @@ context('Fax settings page tests', () => {
         cy.get('div[data-cy="destination-delete"]').click()
 
         cy.get('button[data-cy="csc-dialog-delete"]').click()
-        waitPageProgressCSC()
         cy.get('div[data-cy="csc-list-item-title"]').should('not.exist')
 
         // Cleanup
@@ -377,10 +387,14 @@ context('Fax settings page tests', () => {
         })
 
         cy.quickLoginCSC(pbxloginInfo.username, pbxloginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/faxserversettings/*' }).as('getFaxSettingsPage')
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
-        cy.get('div[class="q-tab__label"]').contains('Mail to Fax').click()
+        cy.wait('@getFaxSettingsPage')
 
+        cy.intercept({ method: 'GET', pathname: '**/api/mailtofaxsettings/*' }).as('getMailToFaxPage')
+        cy.get('div[class="q-tab__label"]').contains('Mail to Fax').click()
+        cy.wait('@getMailToFaxPage')
         cy.get('div[data-cy="csc-mailtofax-active"][aria-disabled="true"]').should('not.exist')
         cy.get('div[data-cy="csc-mailtofax-active"]').click()
         cy.get('div[data-cy="csc-mailtofax-active"][aria-disabled="true"]').should('not.exist')
@@ -409,10 +423,14 @@ context('Fax settings page tests', () => {
         })
 
         cy.quickLoginCSC(pbxloginInfo.username, pbxloginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/faxserversettings/*' }).as('getFaxSettingsPage')
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
-        cy.get('div[class="q-tab__label"]').contains('Mail to Fax').click()
+        cy.wait('@getFaxSettingsPage')
 
+        cy.intercept({ method: 'GET', pathname: '**/api/mailtofaxsettings/*' }).as('getMailToFaxPage')
+        cy.get('div[class="q-tab__label"]').contains('Mail to Fax').click()
+        cy.wait('@getMailToFaxPage')
         cy.get('input[data-cy="csc-mailtofax-secretkey"]').type('secretkey')
         cy.get('button[data-cy="q-btn-1"]').click()
         cy.get('input[data-cy="csc-mailtofax-secretkey"][value="secretkey"]').should('be.visible')
@@ -440,10 +458,14 @@ context('Fax settings page tests', () => {
         })
 
         cy.quickLoginCSC(pbxloginInfo.username, pbxloginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/faxserversettings/*' }).as('getFaxSettingsPage')
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
-        cy.get('div[class="q-tab__label"]').contains('Mail to Fax').click()
+        cy.wait('@getFaxSettingsPage')
 
+        cy.intercept({ method: 'GET', pathname: '**/api/mailtofaxsettings/*' }).as('getMailToFaxPage')
+        cy.get('div[class="q-tab__label"]').contains('Mail to Fax').click()
+        cy.wait('@getMailToFaxPage')
         cy.get('button[data-cy="csc-mailtofax-secretnotify-add"]').click()
         cy.get('input[data-cy="csc-mailtofax-secretkey-renew-email"]').type('test.mail@test.com')
         cy.get('button[data-cy="csc-mailtofax-secretkey-renew-createbutton"]').click()
@@ -474,10 +496,14 @@ context('Fax settings page tests', () => {
         })
 
         cy.quickLoginCSC(pbxloginInfo.username, pbxloginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/faxserversettings/*' }).as('getFaxSettingsPage')
         cy.get('a[href="#/user/fax-settings"]').should('be.visible')
         cy.get('a[href="#/user/fax-settings"]').click()
-        cy.get('div[class="q-tab__label"]').contains('Mail to Fax').click()
+        cy.wait('@getFaxSettingsPage')
 
+        cy.intercept({ method: 'GET', pathname: '**/api/mailtofaxsettings/*' }).as('getMailToFaxPage')
+        cy.get('div[class="q-tab__label"]').contains('Mail to Fax').click()
+        cy.wait('@getMailToFaxPage')
         cy.get('button[data-cy="csc-mailtofax-acl-add"]').click()
         cy.get('input[data-cy="csc-mailtofax-acl-email"]').type('test.mail@test.com')
         cy.get('input[data-cy="csc-mailtofax-acl-ip"]').type('2.2.2.2')

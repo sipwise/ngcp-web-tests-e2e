@@ -8,8 +8,7 @@ import {
     apiRemoveDomainBy,
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
-    getRandomNum,
-    waitPageProgressCSC,
+    getRandomNum
 } from '../../../support/e2e'
 
 let iscloudpbx = false
@@ -138,6 +137,7 @@ context('Extension Settings tests', () => {
         if (iscloudpbx) {
             cy.log('Start beforeEach() preperation...')
             apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
                 apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
                 apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             })
@@ -171,8 +171,10 @@ context('Extension Settings tests', () => {
             }
 
             cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+            cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallQueuePage')
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/call-queues"]').click()
+            cy.wait('@getCallQueuePage')
 
             cy.get('div[data-cy="csc-call-queue-feature-switch"][aria-disabled="true"]').should('not.exist')
             cy.get('div[data-cy="csc-call-queue-feature-switch"][aria-checked="false"]').should('be.visible')
@@ -189,8 +191,10 @@ context('Extension Settings tests', () => {
             }
 
             cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+            cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallQueuePage')
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/call-queues"]').click()
+            cy.wait('@getCallQueuePage')
 
             cy.get('input[data-cy="csc-call-queue-length"]').clear().type('invalidtest')
             cy.get('input[data-cy="csc-call-queue-wrapup-time"]').clear().type('invalidtest')
@@ -209,8 +213,10 @@ context('Extension Settings tests', () => {
             }
 
             cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+            cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallQueuePage')
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/call-queues"]').click()
+            cy.wait('@getCallQueuePage')
 
             cy.get('input[data-cy="csc-call-queue-length"]').clear().type('30')
             cy.get('span[class="block"]').contains('Save').click()
@@ -228,8 +234,10 @@ context('Extension Settings tests', () => {
             }
 
             cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+            cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getMSPage')
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/ms-configs"]').click()
+            cy.wait('@getMSPage')
 
             cy.get('div[data-cy="csc-manager-secretary-toggle"][aria-disabled="true"]').should('not.exist')
             cy.get('div[data-cy="csc-manager-secretary-toggle"]').click()
@@ -251,13 +259,15 @@ context('Extension Settings tests', () => {
             })
 
             cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+            cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getMSPage')
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/ms-configs"]').click()
+            cy.wait('@getMSPage')
 
             cy.get('div[data-cy="csc-manager-secretary-toggle"][aria-disabled="true"]').should('not.exist')
             cy.get('div[data-cy="csc-manager-secretary-toggle"]').click()
             cy.get('div[data-cy="csc-manager-secretary-toggle"][aria-checked="true"]').should('be.visible')
-            waitPageProgressCSC()
+            cy.get('div[data-cy="csc-manager-secretary-toggle"][aria-disabled="true"]').should('not.exist')
 
             cy.get('[data-cy="csc-manager-secretary-dropdown"]').click()
             cy.get('div[role="listbox"]').should('be.visible')
@@ -279,9 +289,11 @@ context('Extension Settings tests', () => {
             }
 
             cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+            cy.intercept({ method: 'GET', pathname: '**/api/autoattendants/' }).as('getAutoAttendantPage')
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
-            waitPageProgressCSC()
+            cy.wait('@getAutoAttendantPage')
+
             cy.get('button[data-cy="csc-pbx-auto-attendant-add-slot"]').click()
             cy.get('div[role="list"][data-cy="q-list-0"]').click()
             cy.get('div[data-cy="csc-list-item-title"]').contains('Slot: 0').should('be.visible')
@@ -299,8 +311,10 @@ context('Extension Settings tests', () => {
 
             cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
+            cy.intercept({ method: 'GET', pathname: '**/api/autoattendants/' }).as('getAutoAttendantPage')
             cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
-            waitPageProgressCSC()
+            cy.wait('@getAutoAttendantPage')
+
             cy.get('button[data-cy="csc-pbx-auto-attendant-add-slot"]').click()
             cy.get('div[role="list"][data-cy="q-list-0"]').click()
             cy.get('div[role="list"][data-cy="q-list-1"]').click()

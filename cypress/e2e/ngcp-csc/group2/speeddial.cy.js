@@ -85,8 +85,10 @@ context('Speed Dial "General" tests', () => {
 
     it('Add/Delete speed dial', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/speeddials/*' }).as('getSpeeddialPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/speeddial"]').click()
+        cy.wait('@getSpeeddialPage')
 
         cy.get('button[data-cy="csc-speeddial-add"]').click()
         cy.get('[data-cy="csc-speeddial-slot"]').click()
@@ -107,8 +109,10 @@ context('Speed Dial "General" tests', () => {
 
     it('Add/Delete two speed dials', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/speeddials/*' }).as('getSpeeddialPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/speeddial"]').click()
+        cy.wait('@getSpeeddialPage')
 
         cy.get('button[data-cy="csc-speeddial-add"]').click()
         cy.get('[data-cy="csc-speeddial-slot"]').click()

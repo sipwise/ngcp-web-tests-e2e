@@ -87,7 +87,9 @@ context('Call Recordings tests', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/conversations"]:first').click()
         cy.get('div[data-cy="q-tab-recording"][aria-disabled="true"]').should('not.exist')
+        cy.intercept({ method: 'GET', pathname: '**/api/callrecordings/' }).as('getCallRecordingPage')
         cy.get('div[data-cy="q-tab-recording"]').click()
+        cy.wait('@getCallRecordingPage')
 
         cy.get('button').contains('Filter').click()
         cy.get('[data-cy="csc-recording-filter"]').closest('.q-select').should('be.visible')
@@ -106,7 +108,9 @@ context('Call Recordings tests', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/conversations"]:first').click()
         cy.get('div[data-cy="q-tab-recording"][aria-disabled="true"]').should('not.exist')
+        cy.intercept({ method: 'GET', pathname: '**/api/callrecordings/' }).as('getCallRecordingPage')
         cy.get('div[data-cy="q-tab-recording"]').click()
+        cy.wait('@getCallRecordingPage')
 
         cy.get('button').contains('Filter').click()
         cy.get('[data-cy="csc-recording-filter"]').closest('.q-select').should('be.visible')
@@ -122,7 +126,9 @@ context('Call Recordings tests', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/conversations"]:first').click()
         cy.get('div[data-cy="q-tab-recording"][aria-disabled="true"]').should('not.exist')
+        cy.intercept({ method: 'GET', pathname: '**/api/callrecordings/' }).as('getCallRecordingPage')
         cy.get('div[data-cy="q-tab-recording"]').click()
+        cy.wait('@getCallRecordingPage')
 
         cy.get('button').contains('Filter').click()
         cy.get('[data-cy="csc-recording-filter"]').closest('.q-select').should('be.visible')
@@ -138,7 +144,9 @@ context('Call Recordings tests', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/conversations"]:first').click()
         cy.get('div[data-cy="q-tab-recording"][aria-disabled="true"]').should('not.exist')
+        cy.intercept({ method: 'GET', pathname: '**/api/callrecordings/' }).as('getCallRecordingPage')
         cy.get('div[data-cy="q-tab-recording"]').click()
+        cy.wait('@getCallRecordingPage')
 
         cy.get('button').contains('Filter').click()
         cy.get('[data-cy="csc-recording-filter"]').closest('.q-select').should('be.visible')

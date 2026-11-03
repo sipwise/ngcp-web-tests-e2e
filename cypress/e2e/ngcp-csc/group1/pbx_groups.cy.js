@@ -202,16 +202,19 @@ context('PBX Groups Tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscribers/' }).as('getPBXGroupsPage')
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
+        cy.wait('@getPBXGroupsPage')
         cy.get('button[data-cy="groups-add-new"]').click()
+
+
         cy.get('input[data-cy="group-name"]').type(pbxGroup.username)
         cy.get('input[data-cy="group-extension"]').type(pbxGroup.pbx_extension)
         cy.get('[data-cy="group-seats"]').click()
         cy.get('div[role="listbox"]').should('be.visible')
         cy.get('span').contains(pbx_subscriber.username).click()
         cy.get('button[data-cy="group-btn-save"]').click()
-
         cy.get('div[class="csc-list-item-title"]').contains(pbxGroup.username).should('be.visible')
         cy.get('div[class="csc-list-item-subtitle"]:first').contains(pbxGroup.pbx_extension).should('be.visible')
         cy.get('div[class="csc-list-item-subtitle"]:last').contains(pbx_subscriber.username).should('be.visible')
@@ -238,8 +241,10 @@ context('PBX Groups Tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscribers/' }).as('getPBXGroupsPage')
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
+        cy.wait('@getPBXGroupsPage')
         cy.get('div[class="csc-list-item-title"]').click()
 
         cy.get('div[data-cy="csc-group-announcement-cfucfna"]').click()
@@ -280,8 +285,10 @@ context('PBX Groups Tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscribers/' }).as('getPBXGroupsPage')
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
+        cy.wait('@getPBXGroupsPage')
         cy.get('div[class="csc-list-item-title"]').click()
 
         cy.qSelect({ dataCy: 'csc-group-hunt-policy', itemContains: 'Circular Ringing' })
@@ -343,10 +350,14 @@ context('PBX Groups Tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscribers/' }).as('getPBXGroupsPage')
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
+        cy.wait('@getPBXGroupsPage')
         cy.get('div[class="csc-list-item-title"]').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/cfmappings/*' }).as('getPBXGroupsCFPage')
         cy.get('div[data-cy="q-tab-call-forwards"]').click()
+        cy.wait('@getPBXGroupsCFPage')
 
         // Create CF Always
         createCallForwarding('cfu', 'Voicebox')
@@ -401,10 +412,14 @@ context('PBX Groups Tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscribers/' }).as('getPBXGroupsPage')
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
+        cy.wait('@getPBXGroupsPage')
         cy.get('div[class="csc-list-item-title"]').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/voicemailgreetings/' }).as('getPBXGroupsVoiceboxPage')
         cy.get('div[data-cy="q-tab-voicebox"]').click()
+        cy.wait('@getPBXGroupsVoiceboxPage')
 
         cy.get('div[data-cy="voicebox-attach-file"][aria-disabled="true"]').should('not.exist')
         cy.get('div[data-cy="voicebox-attach-file"][aria-checked="true"]').should('be.visible')
@@ -449,10 +464,14 @@ context('PBX Groups Tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscribers/' }).as('getPBXGroupsPage')
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
+        cy.wait('@getPBXGroupsPage')
         cy.get('div[class="csc-list-item-title"]').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/faxserversettings/*' }).as('getPBXGroupsFax2MailPage')
         cy.get('div[data-cy="q-tab-fax-2-mail"]').click()
+        cy.wait('@getPBXGroupsFax2MailPage')
 
         cy.get('div[data-cy="faxtomail-t38"][aria-disabled="true"]').should('not.exist')
         cy.get('div[data-cy="faxtomail-t38"] input').click({ force: true })
@@ -493,10 +512,14 @@ context('PBX Groups Tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscribers/' }).as('getPBXGroupsPage')
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
+        cy.wait('@getPBXGroupsPage')
         cy.get('div[class="csc-list-item-title"]').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/mailtofaxsettings/*' }).as('getPBXGroupsMail2FaxPage')
         cy.get('div[data-cy="q-tab-mail-2-fax"]').click()
+        cy.wait('@getPBXGroupsMail2FaxPage')
 
         cy.get('input[data-cy="csc-mailtofax-secretkey"]').type('secretkey')
         cy.get('button[data-cy="q-btn-1"]').click()
@@ -530,8 +553,10 @@ context('PBX Groups Tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscribers/' }).as('getPBXGroupsPage')
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
+        cy.wait('@getPBXGroupsPage')
 
         cy.get('div[class="csc-list-item-title"]').contains(pbxGroup.username).should('be.visible')
 

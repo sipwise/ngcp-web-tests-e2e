@@ -8,8 +8,7 @@ import {
     apiRemoveDomainBy,
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
-    getRandomNum,
-    waitPageProgressCSC,
+    getRandomNum
 } from '../../../support/e2e'
 
 let iscloudpbx = false
@@ -69,7 +68,7 @@ const pbx_subscriber_pilot = {
     primary_number: {
         sn: 17,
         ac: 23,
-        cc: 7777
+        cc: 7378
     },
 }
 
@@ -374,11 +373,11 @@ context('Subscriber Roles tests', () => {
             }
             cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
+            cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallQueuePage')
             cy.get('a[href="#/user/extension-settings/call-queues"]').click()
-            waitPageProgressCSC()
 
+            cy.wait('@getCallQueuePage')
             cy.get('div[data-cy="csc-call-queue-feature-switch"]').click()
-
             cy.get('div[data-cy="csc-call-queue-feature-switch"][aria-checked="true"]').should('be.visible')
         })
     })
@@ -495,11 +494,11 @@ context('Subscriber Roles tests', () => {
             }
             cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
+            cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallQueuePage')
             cy.get('a[href="#/user/extension-settings/call-queues"]').click()
 
-            waitPageProgressCSC()
+            cy.wait('@getCallQueuePage')
             cy.get('div[data-cy="csc-call-queue-feature-switch"]').click()
-
             cy.get('div[data-cy="csc-call-queue-feature-switch"][aria-checked="true"]').should('be.visible')
         })
     })

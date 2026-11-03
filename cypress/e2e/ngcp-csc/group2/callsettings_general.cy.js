@@ -84,8 +84,10 @@ context('Call Settings "General" tests', () => {
 
     it('Enable/Disable "Music on Hold"', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallSettingsGeneralPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-settings"]').click()
+        cy.wait('@getCallSettingsGeneralPage')
 
         cy.get('div[data-cy="music-on-hold"][aria-disabled="true"]').should('not.exist')
         cy.get('div[data-cy="music-on-hold"]').click()
@@ -96,8 +98,10 @@ context('Call Settings "General" tests', () => {
 
     it('Enable/Disable "Hide your number to the callee"', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getPrivacyPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-blocking/privacy"]').click()
+        cy.wait('@getPrivacyPage')
 
         cy.get('div[data-cy="csc-callee-hide"] svg').should('not.exist')
         cy.get('div[data-cy="csc-privacy-hide"] svg').should('not.exist')

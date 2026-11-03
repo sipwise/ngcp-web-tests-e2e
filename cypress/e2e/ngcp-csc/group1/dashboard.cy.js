@@ -125,7 +125,6 @@ context('Dashboard tests', () => {
     })
 
     it('Try to access every page in conversations tab', () => {
-        cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/conversations"]:first').click()
         if (issppro){

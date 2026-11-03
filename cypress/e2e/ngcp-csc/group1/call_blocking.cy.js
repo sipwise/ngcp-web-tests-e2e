@@ -96,9 +96,11 @@ context('Call Blocking tests', () => {
 
     it('Enable incoming call block', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallBlockPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-blocking/incoming"]').click()
 
+        cy.wait('@getCallBlockPage')
         cy.get('div[data-cy="csc-enable-incoming"]').click()
         cy.get('div[data-cy="csc-enable-incoming"][aria-checked="true"]').should('be.visible')
 
@@ -114,9 +116,11 @@ context('Call Blocking tests', () => {
 
     it('Add blocked number and enable blocklist for incoming calls', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallBlockPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-blocking/incoming"]').click()
 
+        cy.wait('@getCallBlockPage')
         cy.get('button[data-cy="csc-add-number"]').click()
         cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
         cy.get('button[data-cy="csc-block-number-save"]').click()
@@ -134,9 +138,11 @@ context('Call Blocking tests', () => {
 
     it('Add/Edit/Delete blocked numbers for incoming calls', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallBlockPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-blocking/incoming"]').click()
 
+        cy.wait('@getCallBlockPage')
         cy.get('button[data-cy="csc-add-number"]').click()
         cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
         cy.get('button[data-cy="csc-block-number-save"]').click()
@@ -174,9 +180,11 @@ context('Call Blocking tests', () => {
 
     it('Add blocked number and enable blocklist for outgoing calls', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallBlockPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-blocking/outgoing"]').click()
 
+        cy.wait('@getCallBlockPage')
         cy.get('button[data-cy="csc-add-number"]').click()
         cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
         cy.get('button[data-cy="csc-block-number-save"]').click()
@@ -194,9 +202,11 @@ context('Call Blocking tests', () => {
 
     it('Add/Edit/Delete blocked numbers for outgoing calls', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallBlockPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-blocking/outgoing"]').click()
 
+        cy.wait('@getCallBlockPage')
         cy.get('button[data-cy="csc-add-number"]').click()
         cy.get('input[data-cy="csc-block-number-input"]').type('testnumber')
         cy.get('button[data-cy="csc-block-number-save"]').click()

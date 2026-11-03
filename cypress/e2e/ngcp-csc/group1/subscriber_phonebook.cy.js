@@ -149,9 +149,11 @@ context('Subscriber phonebook tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/subscribers/*/phonebook' }).as('getSubscriberPhonebookPage')
         cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
-        cy.get('button[data-cy="csc-phonebook-add"]').click()
+        cy.wait('@getSubscriberPhonebookPage')
 
+        cy.get('button[data-cy="csc-phonebook-add"]').click()
         cy.get('input[data-cy="csc-phonebook-add-name"]').type(subscriberPhonebookEntry.name)
         cy.get('input[data-cy="csc-phonebook-add-number"]').type(subscriberPhonebookEntry.number)
         cy.get('button[data-cy="csc-phonebook-add-confirm"]').click()
@@ -181,7 +183,9 @@ context('Subscriber phonebook tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/subscribers/*/phonebook' }).as('getSubscriberPhonebookPage')
         cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
+        cy.wait('@getSubscriberPhonebookPage')
         cy.get('i').contains('more_vert').click()
         cy.get('div[data-cy="csc-phonebook-entry-edit"]').click()
 
@@ -213,7 +217,9 @@ context('Subscriber phonebook tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/subscribers/*/phonebook' }).as('getSubscriberPhonebookPage')
         cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
+        cy.wait('@getSubscriberPhonebookPage')
         cy.window().then((win) => {
             win.addEventListener('unhandledrejection', (event) => {
                 const reason = event.reason || {}
@@ -256,7 +262,9 @@ context('Subscriber phonebook tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/subscribers/*/phonebook' }).as('getSubscriberPhonebookPage')
         cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
+        cy.wait('@getSubscriberPhonebookPage')
         cy.get('div[role="switch"][data-cy="q-toggle"]').click()
         cy.get('div[role="switch"][data-cy="q-toggle"][aria-checked="true"]').should('be.visible')
 
@@ -295,7 +303,9 @@ context('Subscriber phonebook tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/subscribers/*/phonebook' }).as('getSubscriberPhonebookPage')
         cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
+        cy.wait('@getSubscriberPhonebookPage')
         cy.get('button[data-cy="groups-filter-open"]').click()
         cy.qSelect({ dataCy: 'csc-phonebook-search-filter', itemContains: 'Name' })
         cy.get('input[data-cy="csc-phonebook-entry-search-input"]').type(subscriberPhonebookEntry.name)
@@ -345,7 +355,9 @@ context('Subscriber phonebook tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/subscribers/*/phonebook' }).as('getSubscriberPhonebookPage')
         cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
+        cy.wait('@getSubscriberPhonebookPage')
         cy.get('i').contains('more_vert').click()
         cy.get('div[data-cy="csc-phonebook-entry-delete"]').click()
         cy.get('span[class="block"]').contains('OK').click()

@@ -131,8 +131,10 @@ context('Auto Attendant tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/autoattendants/' }).as('getAutoAttendantsPage')
         cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
         cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
+        cy.wait('@getAutoAttendantsPage')
 
         cy.get('button[data-cy="csc-pbx-auto-attendant-add-slot"]').should('be.visible')
         cy.get('button[data-cy="csc-pbx-auto-attendant-add-slot"]').click()
@@ -164,8 +166,10 @@ context('Auto Attendant tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/autoattendants/' }).as('getAutoAttendantsPage')
         cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
         cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
+        cy.wait('@getAutoAttendantsPage')
 
         cy.get('div[class="csc-list-item transition-generic"]:first').click()
         cy.get('input[data-cy="csc-pbx-auto-attendant-destination"]').clear().type('testdestination')
@@ -197,8 +201,10 @@ context('Auto Attendant tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/autoattendants/' }).as('getAutoAttendantsPage')
         cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
         cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
+        cy.wait('@getAutoAttendantsPage')
 
         cy.get('div[class="csc-list-item transition-generic"]:first').click()
         cy.get('input[data-cy="csc-pbx-auto-attendant-destination"]').clear().type('testdestination')
@@ -229,8 +235,10 @@ context('Auto Attendant tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/autoattendants/' }).as('getAutoAttendantsPage')
         cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
         cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
+        cy.wait('@getAutoAttendantsPage')
 
         cy.get('div[class="csc-list-item-head-menu"]').click()
         cy.get('div[data-cy="csc-pbx-auto-attendant-delete"]').click()
