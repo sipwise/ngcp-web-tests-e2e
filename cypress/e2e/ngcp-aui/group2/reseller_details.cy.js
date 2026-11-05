@@ -342,8 +342,11 @@ context('Reseller Details tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/api/billingnetworks/' }).as('getBillingNetworksList')
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Networks').click()
+            cy.wait('@getBillingNetworksList')
             cy.get('a[data-cy="aui-list-action--add"]').click()
+
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="billingnetworks-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('label[data-cy="billingnetworks-description"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -385,8 +388,11 @@ context('Reseller Details tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/api/billingnetworks/' }).as('getBillingNetworksList')
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Networks').click()
+            cy.wait('@getBillingNetworksList')
             cy.get('a[data-cy="aui-list-action--add"]').click()
+
             cy.get('label[data-cy="billingnetworks-name"]').type(billingNetwork.name + "2")
             cy.get('label[data-cy="billingnetworks-description"]').type(billingNetwork.description)
             cy.get('label[data-cy="billingnetworks-ip"]').type(billingNetwork.blocks[0].ip)
@@ -428,11 +434,15 @@ context('Reseller Details tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/api/billingnetworks/' }).as('getBillingNetworksList')
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Networks').click()
+            cy.wait('@getBillingNetworksList')
             searchInDataTable(billingNetwork.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetailsBillingNetworkEdit"]').click()
+
+            cy.get('input[data-cy="billingnetworks-ip"][value="' + billingNetwork.blocks[1].ip + '"]').should('be.visible')
             cy.get('input[data-cy="billingnetworks-ip"]:last').clear().type('3.3.3.3')
             cy.get('input[data-cy="billingnetworks-mask"]:last').clear().type('16')
             cy.get('button[data-cy="aui-save-button"]').click()
@@ -469,7 +479,10 @@ context('Reseller Details tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/api/billingnetworks/' }).as('getBillingNetworksList')
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Networks').click()
+            cy.wait('@getBillingNetworksList')
+
             deleteItemOnListPageBy(billingNetwork.name)
 
             // Cleanup
