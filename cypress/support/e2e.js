@@ -79,6 +79,7 @@ Cypress.Commands.add(
     { prevSubject: ['optional', 'element'] },
     (subject, { dataCy, filter, itemContains, first = false, last = false }) => {
         let inputElementSelector = `[data-cy="${dataCy}"].q-field__native`
+        let disabledInputElementSelector = `[aria-disabled="true"][data-cy="${dataCy}"].q-field__native`
         if(first) {
             inputElementSelector += ':first'
         }
@@ -95,8 +96,10 @@ Cypress.Commands.add(
                 }
             } else {
                 if (inputElementExists) {
+                    cy.wrap($parent).find(disabledInputElementSelector).should('not.exist')
                     cy.wrap($parent).find(inputElementSelector).click({ force: true })
                 } else {
+                    cy.wrap($parent).find(disabledInputElementSelector).should('not.exist')
                     cy.wrap($parent).find(inputElementSelector).parents('label').click({ force: true })
                 }
             }
