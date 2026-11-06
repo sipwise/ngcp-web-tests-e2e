@@ -153,7 +153,7 @@ context('Customer Preferences tests', () => {
         clickDataTableSelectedMoreMenuItem('customerPreferences')
 
         cy.wait('@getCustomerPreferences')
-        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Access Restrictions' })
+        cy.qSelect({ dataCy: 'category-selection', filter: 'Access Restrictions', itemContains: 'Access Restrictions' })
         testPreferencesChipField('allowed_clis"]')
         testPreferencesListField('allowed_clis_reject_policy', 'Force CLIR')
         testPreferencesTextField('allowed_ips_header')
@@ -178,7 +178,7 @@ context('Customer Preferences tests', () => {
         clickDataTableSelectedMoreMenuItem('customerPreferences')
 
         cy.wait('@getCustomerPreferences')
-        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Applications' })
+        cy.qSelect({ dataCy: 'category-selection', filter: 'Applications', itemContains: 'Applications' })
         testPreferencesToggleField('malicious_call_identification')
         testPreferencesToggleField('play_announce_before_call_setup')
         testPreferencesListField('play_announce_before_recording', 'External calls only')
@@ -197,7 +197,7 @@ context('Customer Preferences tests', () => {
         clickDataTableSelectedMoreMenuItem('customerPreferences')
 
         cy.wait('@getCustomerPreferences')
-        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Call Blockings' })
+        cy.qSelect({ dataCy: 'category-selection', filter: 'Call Blockings', itemContains: 'Call Blockings' })
         testPreferencesToggleField('adm_block_in_clir')
         testPreferencesChipField('adm_block_in_list')
         testPreferencesToggleField('adm_block_in_mode')
@@ -225,7 +225,7 @@ context('Customer Preferences tests', () => {
         clickDataTableSelectedMoreMenuItem('customerPreferences')
 
         cy.wait('@getCustomerPreferences')
-        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Internals' })
+        cy.qSelect({ dataCy: 'category-selection', filter: 'Internals', itemContains: 'Internals' })
         testPreferencesListField('advice_of_charge', 'Currency')
         testPreferencesTextField('concurrent_calls_quota', 123)
         testPreferencesTextField('conference_max_participants', 123)
@@ -244,7 +244,7 @@ context('Customer Preferences tests', () => {
         clickDataTableSelectedMoreMenuItem('customerPreferences')
 
         cy.wait('@getCustomerPreferences')
-        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Number Manipulations' })
+        cy.qSelect({ dataCy: 'category-selection', filter: 'Number Manipulations', itemContains: 'Number Manipulations' })
         testPreferencesTextField('emergency_cli')
         testPreferencesListField('emergency_mapping_container', emergencyMappingContainer.name)
         testPreferencesTextField('emergency_prefix', 123)
