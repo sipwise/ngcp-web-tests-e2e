@@ -90,7 +90,7 @@ context('Call Recordings tests', () => {
         cy.get('div[data-cy="q-tab-recording"]').click()
 
         cy.get('button').contains('Filter').click()
-        cy.get('div[data-cy="csc-recording-filter"]').should('be.visible')
+        cy.get('[data-cy="csc-recording-filter"]').closest('.q-select').should('be.visible')
         cy.qSelect({ dataCy: 'csc-recording-filter', itemContains: 'Timerange' })
         cy.get('div[class="q-field__prepend q-field__marginal row no-wrap items-center"] i:first').click()
         cy.get('div[class="q-date q-date--portrait q-date--portrait-standard q-date--dark q-dark"]').contains('Close').click()
@@ -109,7 +109,7 @@ context('Call Recordings tests', () => {
         cy.get('div[data-cy="q-tab-recording"]').click()
 
         cy.get('button').contains('Filter').click()
-        cy.get('div[data-cy="csc-recording-filter"]').should('be.visible')
+        cy.get('[data-cy="csc-recording-filter"]').closest('.q-select').should('be.visible')
         cy.qSelect({ dataCy: 'csc-recording-filter', itemContains: 'Caller' })
         cy.get('input[data-cy="csc-recording-filter-input"]').type('testcaller')
         cy.get('div[class="q-field__append q-field__marginal row no-wrap items-center"] i').contains('search').click()
@@ -125,7 +125,7 @@ context('Call Recordings tests', () => {
         cy.get('div[data-cy="q-tab-recording"]').click()
 
         cy.get('button').contains('Filter').click()
-        cy.get('div[data-cy="csc-recording-filter"]').should('be.visible')
+        cy.get('[data-cy="csc-recording-filter"]').closest('.q-select').should('be.visible')
         cy.qSelect({ dataCy: 'csc-recording-filter', itemContains: 'Callee' })
         cy.get('input[data-cy="csc-recording-filter-input"]').type('testcallee')
         cy.get('div[class="q-field__append q-field__marginal row no-wrap items-center"] i').contains('search').click()
@@ -141,7 +141,7 @@ context('Call Recordings tests', () => {
         cy.get('div[data-cy="q-tab-recording"]').click()
 
         cy.get('button').contains('Filter').click()
-        cy.get('div[data-cy="csc-recording-filter"]').should('be.visible')
+        cy.get('[data-cy="csc-recording-filter"]').closest('.q-select').should('be.visible')
         cy.qSelect({ dataCy: 'csc-recording-filter', itemContains: 'CallID' })
         cy.get('input[data-cy="csc-recording-filter-input"]').type('testcallid')
         cy.get('div[class="q-field__append q-field__marginal row no-wrap items-center"] i').contains('search').click()

@@ -95,7 +95,7 @@ const loginInfo = {
 function createCallForwarding(type, destinationType) {
     cy.get('button[data-cy="csc-add-pbx-forwarding"]').click()
     cy.get(`[data-cy="q-tab-${type}"]`).click()
-    cy.get('[data-cy="csc-cf-destination-type"]').click()
+    cy.get('[data-cy="csc-cf-destination-type"]').closest('.q-select').click()
     cy.get('.q-menu').should('be.visible').within(() => {
         cy.contains('.q-item', destinationType).click()
     })
@@ -103,7 +103,7 @@ function createCallForwarding(type, destinationType) {
         cy.get('[data-cy="csc-cf-destination-number"]').should('be.visible').type('0123456789')
     }
     if (destinationType === 'Custom Announcement') {
-        cy.get('[data-cy="csc-cf-custom-announcement"]').click()
+        cy.get('[data-cy="csc-cf-custom-announcement"]').closest('.q-select').click()
         cy.get('.q-menu').filter(':visible').contains('.q-item', 'custom_announcement_0').click()
     }
     cy.get('[data-cy="csc-cf-save"]').click()
@@ -177,7 +177,7 @@ context('PBX Groups Tests', () => {
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
-        cy.get('a[href="#/user/pbx-configuration/groups"]').click()
+        cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
         cy.get('button[data-cy="groups-add-new"]').click()
         cy.get('button[data-cy="group-btn-save"][aria-disabled="true"]').should('be.visible')
 
@@ -203,11 +203,13 @@ context('PBX Groups Tests', () => {
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
-        cy.get('a[href="#/user/pbx-configuration/groups"]').click()
+        cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
         cy.get('button[data-cy="groups-add-new"]').click()
         cy.get('input[data-cy="group-name"]').type(pbxGroup.username)
         cy.get('input[data-cy="group-extension"]').type(pbxGroup.pbx_extension)
-        cy.qSelect({ dataCy: 'group-seats', itemContains: pbx_subscriber.username })
+        cy.get('[data-cy="group-seats"]').click()
+        cy.get('div[role="listbox"]').should('be.visible')
+        cy.get('span').contains(pbx_subscriber.username).click()
         cy.get('button[data-cy="group-btn-save"]').click()
 
         cy.get('div[class="csc-list-item-title"]').contains(pbxGroup.username).should('be.visible')
@@ -237,7 +239,7 @@ context('PBX Groups Tests', () => {
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
-        cy.get('a[href="#/user/pbx-configuration/groups"]').click()
+        cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
         cy.get('div[class="csc-list-item-title"]').click()
 
         cy.get('div[data-cy="csc-group-announcement-cfucfna"]').click()
@@ -279,7 +281,7 @@ context('PBX Groups Tests', () => {
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
-        cy.get('a[href="#/user/pbx-configuration/groups"]').click()
+        cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
         cy.get('div[class="csc-list-item-title"]').click()
 
         cy.qSelect({ dataCy: 'csc-group-hunt-policy', itemContains: 'Circular Ringing' })
@@ -342,7 +344,7 @@ context('PBX Groups Tests', () => {
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
-        cy.get('a[href="#/user/pbx-configuration/groups"]').click()
+        cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
         cy.get('div[class="csc-list-item-title"]').click()
         cy.get('div[data-cy="q-tab-call-forwards"]').click()
 
@@ -400,7 +402,7 @@ context('PBX Groups Tests', () => {
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
-        cy.get('a[href="#/user/pbx-configuration/groups"]').click()
+        cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
         cy.get('div[class="csc-list-item-title"]').click()
         cy.get('div[data-cy="q-tab-voicebox"]').click()
 
@@ -448,7 +450,7 @@ context('PBX Groups Tests', () => {
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
-        cy.get('a[href="#/user/pbx-configuration/groups"]').click()
+        cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
         cy.get('div[class="csc-list-item-title"]').click()
         cy.get('div[data-cy="q-tab-fax-2-mail"]').click()
 
@@ -492,7 +494,7 @@ context('PBX Groups Tests', () => {
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
-        cy.get('a[href="#/user/pbx-configuration/groups"]').click()
+        cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
         cy.get('div[class="csc-list-item-title"]').click()
         cy.get('div[data-cy="q-tab-mail-2-fax"]').click()
 
@@ -529,7 +531,7 @@ context('PBX Groups Tests', () => {
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
-        cy.get('a[href="#/user/pbx-configuration/groups"]').click()
+        cy.get('.q-drawer a[href="#/user/pbx-configuration/groups"]').click()
 
         cy.get('div[class="csc-list-item-title"]').contains(pbxGroup.username).should('be.visible')
 

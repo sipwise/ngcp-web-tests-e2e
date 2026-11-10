@@ -78,14 +78,23 @@ Cypress.Commands.add(
     'qSelect',
     { prevSubject: ['optional', 'element'] },
     (subject, { dataCy, filter, itemContains, first = false, last = false }) => {
-        let inputElementSelector = `[data-cy="${dataCy}"].q-field__native`
-        let disabledInputElementSelector = `[aria-disabled="true"][data-cy="${dataCy}"].q-field__native`
+        let positionFilter = ''
         if(first) {
-            inputElementSelector += ':first'
+            positionFilter += ':first'
         }
         if(last) {
-            inputElementSelector += ':last'
+            positionFilter += ':last'
         }
+        // Quasar < 2.32 puts data-cy on the .q-field__native wrapper, newer versions
+        // put it on the hidden .q-select__focus-target input, so match both
+        const inputElementSelector = [
+            `[data-cy="${dataCy}"].q-field__native${positionFilter}`,
+            `[data-cy="${dataCy}"].q-select__focus-target${positionFilter}`
+        ].join(', ')
+        const disabledInputElementSelector = [
+            `[aria-disabled="true"][data-cy="${dataCy}"].q-field__native`,
+            `[data-cy="${dataCy}"].q-select__focus-target:disabled`
+        ].join(', ')
         ;(subject ? cy.wrap(subject) : cy.get('body')).then($parent => {
             const inputElementExists = $parent.find(inputElementSelector).length
             if (typeof filter !== 'undefined' && filter !== '') {

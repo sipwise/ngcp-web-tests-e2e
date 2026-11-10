@@ -135,7 +135,7 @@ function createCallForwarding(type, destinationType, number = '0123456789', pbx 
         cy.get('button[data-cy="csc-add-forwarding"]').click()
     }
     cy.get(`[data-cy="q-tab-${type}"]`).click()
-    cy.get('[data-cy="csc-cf-destination-type"]').click()
+    cy.get('[data-cy="csc-cf-destination-type"]').closest('.q-select').click()
     cy.get('.q-menu').should('be.visible').within(() => {
         cy.contains('.q-item', destinationType).click()
     })
@@ -143,11 +143,11 @@ function createCallForwarding(type, destinationType, number = '0123456789', pbx 
         cy.get('[data-cy="csc-cf-destination-number"]').should('be.visible').type(number)
     }
     if (destinationType === 'Custom Announcement') {
-        cy.get('[data-cy="csc-cf-custom-announcement"]').click()
+        cy.get('[data-cy="csc-cf-custom-announcement"]').closest('.q-select').click()
         cy.get('.q-menu').filter(':visible').contains('.q-item', 'custom_announcement_0').click()
     }
     if (destinationType === 'Seat') {
-        cy.get('[data-cy="csc-cf-seat-select"]').click()
+        cy.get('[data-cy="csc-cf-seat-select"]').closest('.q-select').click()
         cy.get('.q-menu').filter(':visible').contains('.q-item', pbx_second_seat.display_name).click()
     }
     cy.get('[data-cy="csc-cf-save"]').click()
@@ -224,19 +224,19 @@ context('Call Forwarding tests', () => {
 
             cy.get('button[data-cy="csc-add-forwarding"]').click()
             cy.get('[data-cy="q-tab-cfu"]').click()
-            cy.get('[data-cy="csc-cf-destination-type"]').click()
+            cy.get('[data-cy="csc-cf-destination-type"]').closest('.q-select').click()
             cy.get('.q-menu').should('be.visible').within(() => {
                 cy.contains('.q-item', 'Number').click()
             })
             cy.get('[data-cy="csc-cf-destination-number"]').should('be.visible')
             cy.get('[data-cy="csc-cf-save"]').should('be.disabled')
 
-            cy.get('[data-cy="csc-cf-destination-type"]').click()
+            cy.get('[data-cy="csc-cf-destination-type"]').closest('.q-select').click()
             cy.get('.q-menu').should('be.visible').within(() => {
                 cy.contains('.q-item', 'Custom Announcement').click()
             })
 
-            cy.get('[data-cy="csc-cf-custom-announcement"]').should('be.visible')
+            cy.get('[data-cy="csc-cf-custom-announcement"]').closest('.q-select').should('be.visible')
             cy.get('[data-cy="csc-cf-save"]').should('be.disabled')
         })
 
@@ -410,7 +410,7 @@ context('Call Forwarding tests', () => {
             createCallForwarding('cft', 'Voicebox')
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
             cy.get('div[id="csc-wrapper-call-forwarding"]').contains('On no answer').should('be.visible')
-            cy.get('span[style="white-space: nowrap;"]').contains("60 seconds").trigger('mouseenter')
+            cy.get('span[style="white-space: nowrap;"]').contains("60 seconds").trigger('mouseenter').trigger('pointerenter')
             cy.get('div[role="tooltip"]').contains('This setting is synced with "After Ring Timeout", which can be edited above').should('exist')
         })
     })
@@ -440,11 +440,11 @@ context('Call Forwarding tests', () => {
             cy.get('a[href="#/user/call-forwarding"]').click()
             cy.get('button[data-cy="csc-add-forwarding"]').click()
             cy.get('[data-cy="q-tab-cfu"]').click()
-            cy.get('[data-cy="csc-cf-destination-type"]').click()
+            cy.get('[data-cy="csc-cf-destination-type"]').closest('.q-select').click()
             cy.get('.q-menu').should('be.visible').within(() => {
                 cy.contains('.q-item', 'Seat').click()
             })
-            cy.get('[data-cy="csc-cf-seat-select"]').click()
+            cy.get('[data-cy="csc-cf-seat-select"]').closest('.q-select').click()
             cy.get('input:visible').last().clear().type(pbx_seat.display_name)
             cy.contains('.q-item', pbx_seat.display_name).click()
             cy.get('[data-cy="csc-cf-save"]').click()
@@ -464,12 +464,12 @@ context('Call Forwarding tests', () => {
             cy.get('a[href="#/user/call-forwarding"]').click()
             cy.get('button[data-cy="csc-add-forwarding"]').click()
             cy.get('[data-cy="q-tab-cfu"]').click()
-            cy.get('[data-cy="csc-cf-destination-type"]').click()
+            cy.get('[data-cy="csc-cf-destination-type"]').closest('.q-select').click()
             cy.get('.q-menu').should('be.visible').within(() => {
                 cy.contains('.q-item', 'Seat').click()
             })
             cy.get('.q-menu').should('not.exist')
-            cy.get('[data-cy="csc-cf-seat-select"]').click()
+            cy.get('[data-cy="csc-cf-seat-select"]').closest('.q-select').click()
             cy.get('.q-menu').should('be.visible')
             cy.contains('.q-item', pbx_seat.display_name).click()
             cy.get('[data-cy="csc-cf-save"]').click()
@@ -509,7 +509,7 @@ context('Call Forwarding tests', () => {
             cy.quickLoginCSC(pbxPilotLoginInfo.username, pbxPilotLoginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
             cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
-            cy.get('a[href="#/user/pbx-configuration/seats"]').click()
+            cy.get('.q-drawer a[href="#/user/pbx-configuration/seats"]').click()
 
             cy.get('div[data-cy="q-item-label"]').contains(pbx_seat.display_name).click()
             cy.get('div[data-cy="q-tab-call-forwards"][aria-disabled="true"]').should('not.exist')
@@ -534,7 +534,7 @@ context('Call Forwarding tests', () => {
             cy.quickLoginCSC(pbxPilotLoginInfo.username, pbxPilotLoginInfo.password)
             cy.get('a[href="#/user/dashboard"]').should('be.visible')
             cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
-            cy.get('a[href="#/user/pbx-configuration/seats"]').click()
+            cy.get('.q-drawer a[href="#/user/pbx-configuration/seats"]').click()
 
             cy.get('div[data-cy="q-item-label"]').contains(pbx_seat.display_name).click()
             cy.get('div[data-cy="q-tab-call-forwards"][aria-disabled="true"]').should('not.exist')
