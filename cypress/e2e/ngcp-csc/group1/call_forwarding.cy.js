@@ -274,7 +274,7 @@ context('Call forwarding page tests', () => {
         cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
         cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
         cy.get('div[data-cy="csc-forwarding-ring-primary"]').click()
-        cy.get('span[style="white-space: nowrap;"]').contains("60 seconds").trigger('mouseenter')
+        cy.get('span[style="white-space: nowrap;"]').contains("60 seconds").trigger('mouseenter').trigger('pointerenter')
         cy.get('div[role="tooltip"]').contains('This setting is synced with "After Ring Timeout", which can be edited above').should('exist')
     })
 })
