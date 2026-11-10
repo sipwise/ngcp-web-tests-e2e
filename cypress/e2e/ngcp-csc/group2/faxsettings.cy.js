@@ -254,7 +254,7 @@ context('Fax settings page tests', () => {
         cy.get('button[data-cy="destination-add"]').click()
 
         cy.get('input[data-cy="destination-email"]').type('test@mail.com')
-        cy.get('div[data-cy="destinaton-filetype"]').click()
+        cy.get('[data-cy="destinaton-filetype"]').click()
         cy.get('div[role="listbox"]').contains('PS').click()
         cy.get('button[data-cy="destinaton-creation-confirm"]').click()
         cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
@@ -286,7 +286,7 @@ context('Fax settings page tests', () => {
         cy.get('button[data-cy="destination-add"]').click()
 
         cy.get('input[data-cy="destination-email"]').type('test@mail.com')
-        cy.get('div[data-cy="destinaton-filetype"]').click()
+        cy.get('[data-cy="destinaton-filetype"]').click()
         cy.get('div[role="listbox"]').contains('PS').click()
         cy.get('button[data-cy="destinaton-creation-confirm"]').click()
         cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
@@ -342,7 +342,7 @@ context('Fax settings page tests', () => {
         cy.get('button[data-cy="destination-add"]').click()
 
         cy.get('input[data-cy="destination-email"]').type('test@mail.com')
-        cy.get('div[data-cy="destinaton-filetype"]').click()
+        cy.get('[data-cy="destinaton-filetype"]').click()
         cy.get('div[role="listbox"]').contains('PS').click()
         cy.get('button[data-cy="destinaton-creation-confirm"]').click()
         cy.get('button[data-cy="destination-add"][disabled="disabled"]').should('not.exist')
