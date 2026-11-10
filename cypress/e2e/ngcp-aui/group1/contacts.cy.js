@@ -116,6 +116,7 @@ context('Contact tests', () => {
                 cy.get('a[href="' + formUrl + '"]').click()
 
                 cy.locationShouldBe(formUrl)
+                cy.get('input[data-cy="email-field"]').should('be.visible')
                 cy.get('[data-cy="aui-save-button"]').click()
                 if (contactType === 'customer') {
                     cy.get('input[data-cy="aui-select-reseller"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -146,6 +147,7 @@ context('Contact tests', () => {
                 cy.get('a[href="' + formUrl + '"]').click()
 
                 cy.locationShouldBe(formUrl)
+                cy.get('input[data-cy="email-field"]').should('be.visible')
                 if (contactType === 'customer') {
                     cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: reseller.name, itemContains: reseller.name })
                     cy.get('input[data-cy="email-field"]').type(customerContact.email)
@@ -172,7 +174,8 @@ context('Contact tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 clickDataTableSelectedMoreMenuItem('contactEdit')
 
-                // cy.locationShouldBe(formUrl) // TODO: parametric URLs
+                cy.get('input[data-cy="firstname-field"]').should('be.visible')
+                cy.get('input[data-cy="lastname-field"]').should('be.visible')
                 cy.get('input[data-cy="firstname-field"]').type(contactNames.firstname)
                 cy.get('input[data-cy="lastname-field"]').type(contactNames.lastname)
                 cy.get('[data-cy="aui-save-button"]').click()

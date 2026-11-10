@@ -150,21 +150,14 @@ context('Contract tests', () => {
                 cy.get('button[data-cy="aui-list-action--add"]').click()
                 cy.get('a[href="' + formUrl + '"]').click()
 
+                cy.get('input[data-cy="external-num"]').should('be.visible')
                 if (contractType === 'peering') {
                     cy.get('input[data-cy="external-num"]').type(peeringContract.external_id)
                 } else {
                     cy.get('input[data-cy="external-num"]').type(resellerContract.external_id)
                 }
                 cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: 'default', itemContains: 'default-system' })
-                cy.get('div[data-cy="contract-status"]').click()
-                cy.wait(200)
-                cy.get('div[data-cy="contract-status"]').parents('label').then($el => {
-                    const id = $el.attr('for')
-                    const dropdownListId = `#${id}_lb`
-                    cy.get(dropdownListId).should('be.visible')
-                    cy.contains(`${dropdownListId} .q-item`, 'Active').should('be.visible')
-                    cy.contains(`${dropdownListId} .q-item`, 'Active').click()
-                })
+                cy.qSelect({ dataCy: 'contract-status', filter: 'Active', itemContains: 'Active' })
                 cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: dependencyBillingProfile.name, itemContains: dependencyBillingProfile.name })
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
@@ -183,7 +176,8 @@ context('Contract tests', () => {
                 }
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 clickDataTableSelectedMoreMenuItem('contractEdit')
-                cy.wait(500)
+
+                cy.get('label[data-cy="contract-status"]').should('be.visible')
                 cy.qSelect({ dataCy: 'contract-status', filter: 'Pending', itemContains: 'Pending' })
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('[data-cy="aui-close-button"]').click()
