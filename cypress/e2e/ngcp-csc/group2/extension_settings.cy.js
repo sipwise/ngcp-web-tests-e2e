@@ -256,7 +256,9 @@ context('Extension Settings tests', () => {
             cy.get('div[data-cy="csc-manager-secretary-toggle"][aria-checked="true"]').should('be.visible')
             waitPageProgressCSC()
 
-            cy.qSelect({ dataCy: 'csc-manager-secretary-dropdown', itemContains: pbx_subscriber.primary_number.cc + pbx_subscriber.primary_number.ac + pbx_subscriber.primary_number.sn + pbx_subscriber.pbx_extension })
+            cy.get('[data-cy="csc-manager-secretary-dropdown"]').click()
+            cy.get('div[role="listbox"]').should('be.visible')
+            cy.get('span').contains(pbx_subscriber.primary_number.cc + pbx_subscriber.primary_number.ac + pbx_subscriber.primary_number.sn + pbx_subscriber.pbx_extension).click()
             cy.get('span[class="block"]').contains('Save').click()
             cy.get('input[aria-label="Select secretary numbers"][value="' + pbx_subscriber.primary_number.cc + pbx_subscriber.primary_number.ac + pbx_subscriber.primary_number.sn + pbx_subscriber.pbx_extension + '"]').should('exist')
 
@@ -268,7 +270,7 @@ context('Extension Settings tests', () => {
     })
 
     context('Auto Attendant', () => {
-        it('Add one slot , add destinaton and remove it', function () {
+        it('Add one slot, add destinaton and remove it', function () {
             if (!iscloudpbx) {
                 this.skip()
             }
