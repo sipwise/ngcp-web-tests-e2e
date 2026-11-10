@@ -220,7 +220,7 @@ context('Subscriber roles tests', () => {
             cy.get('a[href="#/user/speeddial"]').click()
 
             cy.get('button[data-cy="csc-speeddial-add"]').click()
-            cy.get('div[data-cy="csc-speeddial-slot"]').click()
+            cy.get('[data-cy="csc-speeddial-slot"]').click()
             cy.get('div[aria-selected="false"]').contains('*1').click()
             cy.get('input[data-cy="csc-speeddial-destination"]').type('testspeeddial')
             cy.get('button[data-cy="csc-speeddial-save"]').click()
@@ -309,7 +309,7 @@ context('Subscriber roles tests', () => {
             cy.get('a[href="#/user/speeddial"]').click()
 
             cy.get('button[data-cy="csc-speeddial-add"]').click()
-            cy.get('div[data-cy="csc-speeddial-slot"]').click()
+            cy.get('[data-cy="csc-speeddial-slot"]').click()
             cy.get('div[aria-selected="false"]').contains('*1').click()
             cy.get('input[data-cy="csc-speeddial-destination"]').type('testspeeddial')
             cy.get('button[data-cy="csc-speeddial-save"]').click()
@@ -380,7 +380,7 @@ context('Subscriber roles tests', () => {
             cy.get('a[href="#/user/speeddial"]').click()
 
             cy.get('button[data-cy="csc-speeddial-add"]').click()
-            cy.get('div[data-cy="csc-speeddial-slot"]').click()
+            cy.get('[data-cy="csc-speeddial-slot"]').click()
             cy.get('div[aria-selected="false"]').contains('*1').click()
             cy.get('input[data-cy="csc-speeddial-destination"]').type('testspeeddial')
             cy.get('button[data-cy="csc-speeddial-save"]').click()
@@ -510,7 +510,7 @@ context('Subscriber roles tests', () => {
             cy.get('a[href="#/user/speeddial"]').click()
 
             cy.get('button[data-cy="csc-speeddial-add"]').click()
-            cy.get('div[data-cy="csc-speeddial-slot"]').click()
+            cy.get('[data-cy="csc-speeddial-slot"]').click()
             cy.get('div[aria-selected="false"]').contains('*1').click()
             cy.get('input[data-cy="csc-speeddial-destination"]').type('testspeeddial')
             cy.get('button[data-cy="csc-speeddial-save"]').click()

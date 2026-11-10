@@ -53,7 +53,7 @@ const loginInfo = {
 function createCallForwarding(type, destinationType) {
     cy.get('button[data-cy="csc-add-forwarding"]').click()
     cy.get(`[data-cy="q-tab-${type}"]`).click()
-    cy.get('[data-cy="csc-cf-destination-type"]').click()
+    cy.get('[data-cy="csc-cf-destination-type"]').closest('.q-select').click()
     cy.get('.q-menu').should('be.visible').within(() => {
         cy.contains('.q-item', destinationType).click()
     })
@@ -62,7 +62,7 @@ function createCallForwarding(type, destinationType) {
     }
 
     if (destinationType === "Custom Announcement") {
-        cy.get('[data-cy="csc-cf-custom-announcement"]').click()
+        cy.get('[data-cy="csc-cf-custom-announcement"]').closest('.q-select').click()
         cy.get('.q-menu').filter(':visible').contains('.q-item', 'custom_announcement_0').click()
     }
     cy.get('[data-cy="csc-cf-save"]').click()
@@ -120,19 +120,19 @@ context('Call forwarding page tests', () => {
 
         cy.get('button[data-cy="csc-add-forwarding"]').click()
         cy.get('[data-cy="q-tab-cfu"]').click()
-        cy.get('[data-cy="csc-cf-destination-type"]').click()
+        cy.get('[data-cy="csc-cf-destination-type"]').closest('.q-select').click()
         cy.get('.q-menu').should('be.visible').within(() => {
             cy.contains('.q-item', 'Number').click()
         })
         cy.get('[data-cy="csc-cf-destination-number"]').should('be.visible')
         cy.get('[data-cy="csc-cf-save"]').should('be.disabled')
 
-        cy.get('[data-cy="csc-cf-destination-type"]').click()
+        cy.get('[data-cy="csc-cf-destination-type"]').closest('.q-select').click()
         cy.get('.q-menu').should('be.visible').within(() => {
             cy.contains('.q-item', 'Custom Announcement').click()
         })
 
-        cy.get('[data-cy="csc-cf-custom-announcement"]').should('be.visible')
+        cy.get('[data-cy="csc-cf-custom-announcement"]').closest('.q-select').should('be.visible')
         cy.get('[data-cy="csc-cf-save"]').should('be.disabled')
     })
 
@@ -298,7 +298,7 @@ context('Call forwarding page tests', () => {
         createCallForwarding('cft', 'Voicebox')
         cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
         cy.get('div[id="csc-wrapper-call-forwarding"]').contains('On no answer').should('be.visible')
-        cy.get('span[style="white-space: nowrap;"]').contains("60 seconds").trigger('mouseenter')
+        cy.get('span[style="white-space: nowrap;"]').contains("60 seconds").trigger('mouseenter').trigger('pointerenter')
         cy.get('div[role="tooltip"]').contains('This setting is synced with "After Ring Timeout", which can be edited above').should('exist')
     })
 })
