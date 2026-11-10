@@ -212,7 +212,7 @@ context('Subscriber Roles tests', () => {
             cy.get('a[href="#/user/speeddial"]').click()
 
             cy.get('button[data-cy="csc-speeddial-add"]').click()
-            cy.get('div[data-cy="csc-speeddial-slot"]').should('be.visible')
+            cy.get('[data-cy="csc-speeddial-slot"]').closest('.q-select').should('be.visible')
             cy.qSelect({ dataCy: 'csc-speeddial-slot', itemContains: '*1' })
             cy.get('input[data-cy="csc-speeddial-destination"]').type('testspeeddial')
             cy.get('button[data-cy="csc-speeddial-save"]').click()
@@ -294,7 +294,7 @@ context('Subscriber Roles tests', () => {
             cy.get('a[href="#/user/speeddial"]').click()
 
             cy.get('button[data-cy="csc-speeddial-add"]').click()
-            cy.get('div[data-cy="csc-speeddial-slot"]').should('be.visible')
+            cy.get('[data-cy="csc-speeddial-slot"]').closest('.q-select').should('be.visible')
             cy.qSelect({ dataCy: 'csc-speeddial-slot', itemContains: '*2' })
             cy.get('input[data-cy="csc-speeddial-destination"]').type('testspeeddial')
             cy.get('button[data-cy="csc-speeddial-save"]').click()
@@ -355,7 +355,7 @@ context('Subscriber Roles tests', () => {
             cy.get('a[href="#/user/speeddial"]').click()
 
             cy.get('button[data-cy="csc-speeddial-add"]').click()
-            cy.get('div[data-cy="csc-speeddial-slot"]').should('be.visible')
+            cy.get('[data-cy="csc-speeddial-slot"]').closest('.q-select').should('be.visible')
             cy.qSelect({ dataCy: 'csc-speeddial-slot', itemContains: '*3' })
             cy.get('input[data-cy="csc-speeddial-destination"]').type('testspeeddial')
             cy.get('button[data-cy="csc-speeddial-save"]').click()
@@ -476,7 +476,7 @@ context('Subscriber Roles tests', () => {
             cy.get('a[href="#/user/speeddial"]').click()
 
             cy.get('button[data-cy="csc-speeddial-add"]').click()
-            cy.get('div[data-cy="csc-speeddial-slot"]').should('be.visible')
+            cy.get('[data-cy="csc-speeddial-slot"]').closest('.q-select').should('be.visible')
             cy.qSelect({ dataCy: 'csc-speeddial-slot', itemContains: '*4' })
             cy.get('input[data-cy="csc-speeddial-destination"]').type('testspeeddial')
             cy.get('button[data-cy="csc-speeddial-save"]').click()
