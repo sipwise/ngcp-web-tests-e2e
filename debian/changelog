@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (13.5.1.42+0~mr13.5.1.42) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [1fd269e] MT#66185 update top up cash tests for updated top up logic
+  * [450f325] MT#63950 fix failure in admin roles customer creation in mr13.5
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 11 Nov 2026 13:42:16 +0100
+
 ngcp-web-tests-e2e (13.5.1.41+0~mr13.5.1.41) unstable; urgency=medium
 
   [ Debora Crescenzo ]
