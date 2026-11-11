@@ -993,6 +993,7 @@ context('Administrator roles tests', () => {
             cy.get('label[data-cy="aui-select-billing-profile"]').click()
             cy.get('div[data-cy="q-item-label"]').contains(billingProfile.name).should('be.visible')
             cy.get('div[data-cy="q-item-label"]').contains('Default Billing Profile').should('not.exist')
+            cy.get('input[data-cy="customer-external-id"]').click()
             cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: customerContact_reseller.email, itemContains: customerContact_reseller.email })
             cy.get('input[data-cy="customer-external-id"]').type(customer.external_id)
             cy.get('[data-cy="aui-save-button"]').click()
