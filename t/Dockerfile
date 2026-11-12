@@ -5,7 +5,7 @@ FROM docker.mgm.sipwise.com/sipwise-trixie:latest
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT=2026-11-06
+ENV REFRESHED_AT=2026-11-12
 ENV NODE_PATH=/usr/lib/nodejs:/usr/share/nodejs
 
 # Prepare .bashrc and .bash_history for test runs
