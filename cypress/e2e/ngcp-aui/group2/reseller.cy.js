@@ -30,7 +30,7 @@ const reseller = {
 }
 
 const systemContact = {
-    email: 'systemContact@example.com'
+    email: 'systemContactReseller@example.com'
 }
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -40,41 +40,28 @@ context('Reseller tests', () => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
             apiRemoveResellerBy({ name: reseller.name, authHeader })
             apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
-            cy.log('Data clean up pre-tests completed')
+            cy.log('Finished data cleanup')
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                 contract.contact_id = id
             })
-        })
-    })
-
-    beforeEach(() => {
-        apiLoginAsSuperuser().then(authHeader => {
-            cy.log('Cleaning up db...')
-            apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
-
-            cy.log('Seeding up db...')
-            apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
-                apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
-            })
+            cy.log('Finished data creation, start running tests...')
         })
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
+        Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveResellerBy({ name: reseller.name, authHeader })
             apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
+        cy.log('Cleanup complete!')
     })
 
-    it('Check if reseller with invalid values gets rejected', () => {
+    it('Check if Reseller with invalid values gets rejected', () => {
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / reseller')
 
@@ -89,10 +76,12 @@ context('Reseller tests', () => {
 
     })
 
-    it('Create a reseller', () => {
+    it('Create a Reseller', () => {
+        // Create Contract
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                reseller.contract_id = id
+            })
         })
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / reseller')
@@ -101,26 +90,30 @@ context('Reseller tests', () => {
         cy.get('a[data-cy="aui-list-action--add"]').click()
 
         cy.locationShouldBe('#/reseller/create')
-        cy.get('[data-cy=aui-select-contract] [data-cy=aui-create-button]').click()
-
-        cy.locationShouldBe('#/contract/reseller/create')
-        cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: 'default', itemContains: 'Default Billing Profile' })
-        cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: 'default', itemContains: 'default-system' })
-        cy.qSelect({ dataCy: 'contract-status', filter: '', itemContains: 'Pending' })
-        cy.get('input[data-cy="external-num"]').type(reseller.contract_id)
-        cy.get('[data-cy="aui-save-button"]').click()
-        cy.contains('.q-notification', 'Contract created successfully').should('be.visible')
-
-        cy.locationShouldBe('#/reseller/create')
-        cy.auiSelectLazySelect({ dataCy: 'aui-select-contract', filter: reseller.contract_id, itemContains: 'default-system' })
+        cy.auiSelectLazySelect({ dataCy: 'aui-select-contract', filter: systemContact.email, itemContains: systemContact.email })
         cy.get('[data-cy="reseller-name"] input').type(reseller.name)
         cy.get('[data-cy="aui-save-button"]').click()
 
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         cy.locationShouldBe('#/reseller')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveResellerBy({ name: reseller.name, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+        })
     })
 
-    it('Edit reseller status to "locked"', () => {
+    it('Edit Reseller status to "locked"', () => {
+        // Create Reseller and Contract, delete if already exists
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveResellerBy({ name: reseller.name, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
+            })
+        })
+
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / reseller')
 
@@ -133,9 +126,24 @@ context('Reseller tests', () => {
         cy.get('[data-cy="aui-save-button"]').click()
         cy.get('[data-cy="aui-close-button"]').click()
         cy.get('[data-cy="aui-data-table-inline-edit--select"]').should('contain.text', 'Locked')
+
+        // Cleanup
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveResellerBy({ name: reseller.name, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+        })
     })
 
-    it('Delete reseller and check if they are deleted', () => {
+    it('Delete Reseller and check if they are deleted', () => {
+        // Create Reseller and Contract, delete if already exists
+        apiLoginAsSuperuser().then(authHeader => {
+            apiRemoveResellerBy({ name: reseller.name, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
+            })
+        })
+
         cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / reseller')
 
