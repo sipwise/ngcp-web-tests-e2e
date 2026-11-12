@@ -9,7 +9,7 @@ ENV REFRESHED_AT=2026-11-12
 ENV NODE_PATH=/usr/lib/nodejs:/usr/share/nodejs
 
 # Prepare .bashrc and .bash_history for test runs
-RUN echo 'alias yarn="node .yarn/releases/yarn-*.cjs"' > /root/.bashrc
+RUN echo 'alias yarn="node /tmp/.yarn/releases/yarn-*.cjs"' > /root/.bashrc
 RUN echo "./run_web_e2e" > /root/.bash_history
 
 # files that get-code generates
