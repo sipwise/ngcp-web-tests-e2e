@@ -5,11 +5,10 @@ FROM docker.mgm.sipwise.com/sipwise-trixie:latest
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT=2026-11-12
+ENV REFRESHED_AT=2026-11-13
 ENV NODE_PATH=/usr/lib/nodejs:/usr/share/nodejs
 
-# Prepare .bashrc and .bash_history for test runs
-RUN echo 'alias yarn="node /tmp/.yarn/releases/yarn-*.cjs"' > /root/.bashrc
+# Prepare .bash_history for test runs
 RUN echo "./run_web_e2e" > /root/.bash_history
 
 # files that get-code generates
@@ -28,19 +27,12 @@ RUN apt-get update && \
         xz-utils && \
     apt-get clean
 
-# Preperation for yarn and Cypress installation
-COPY package.json /tmp/
-COPY yarn.lock /tmp/
-COPY .yarnrc.yml /tmp/
-COPY .yarn /tmp/.yarn/
-COPY README.md /tmp/
-WORKDIR /tmp
-
-# Install yarn (4.18.1) and Cypress (16.2.0), check if its installed properly
-RUN node .yarn/releases/yarn-*.cjs install && \
-    node .yarn/releases/yarn-*.cjs cypress install -f && \
-    node .yarn/releases/yarn-*.cjs cypress verify
-RUN node --version && node .yarn/releases/yarn-*.cjs --version && node .yarn/releases/yarn-*.cjs cypress --version
+# Install yarn (4.18.1) as a real executable, so it also works in
+# non-interactive scripts like run_web_e2e (aliases don't)
+COPY .yarn/releases/ /opt/yarn/
+RUN printf '#!/bin/sh\nexec node /opt/yarn/yarn-*.cjs "$@"\n' > /usr/local/bin/yarn && \
+    chmod +x /usr/local/bin/yarn
+RUN node --version && yarn --version
 
 # Installing Chrome (154.0.8037.98)
 RUN wget https://deb.sipwise.com/files/google-chrome-stable_154_amd64.deb && \
@@ -57,6 +49,12 @@ WORKDIR /code
 ADD package.json /code/
 ADD yarn.lock /code/
 ADD .yarnrc.yml /code/
+
+# Install Cypress (16.2.0) and dependencies, check if its installed properly
+RUN yarn install && \
+    yarn cypress install -f && \
+    yarn cypress verify && \
+    yarn cypress --version
 
 ################################################################################
 # Instructions for usage
