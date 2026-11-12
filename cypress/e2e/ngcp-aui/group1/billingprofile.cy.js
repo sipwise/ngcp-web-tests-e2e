@@ -11,7 +11,6 @@ import {
     apiRemoveContractBy,
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiCreateBillingProfileZone,
@@ -71,11 +70,11 @@ context('Billing profile tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+            apiRemoveBillingProfileFeeBy({ destination: billingProfileFee.destination, authHeader })
             apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -92,11 +91,11 @@ context('Billing profile tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+            apiRemoveBillingProfileFeeBy({ destination: billingProfileFee.destination, authHeader })
             apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
     })
@@ -155,13 +154,13 @@ context('Billing profile tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileEdit"]').click()
-            waitPageProgressAUI()
 
+            cy.get('input[data-cy="billingprofiles-name"]').should('have.value', billingProfile.name)
             cy.get('div[data-cy="billingprofiles-prepaid"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
-            waitPageProgressAUI()
+
             cy.get('div[data-cy="aui-data-table-inline-edit--toggle"][aria-checked="true"]').should('be.visible')
 
             // Cleanup
@@ -205,9 +204,10 @@ context('Billing profile tests', () => {
             searchInDataTable(billingProfile.name, 'Name')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept('GET', '**/api/billingzones/**').as('getBillingZonePage')
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileZones"]').click()
-            waitPageProgressAUI()
 
+            cy.wait('@getBillingZonePage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="billing-zone"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -233,8 +233,10 @@ context('Billing profile tests', () => {
             searchInDataTable(billingProfile.name, 'Name')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept('GET', '**/api/billingzones/**').as('getBillingZonePage')
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileZones"]').click()
 
+            cy.wait('@getBillingZonePage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="billing-zone"]').type(billingProfileZone.zone)
             cy.get('input[data-cy="billing-detail"]').type(billingProfileZone.detail)
@@ -265,8 +267,10 @@ context('Billing profile tests', () => {
             searchInDataTable(billingProfile.name, 'Name')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept('GET', '**/api/billingzones/**').as('getBillingZonePage')
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileZones"]').click()
 
+            cy.wait('@getBillingZonePage')
             searchInDataTable(billingProfileZone.zone)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
@@ -301,8 +305,10 @@ context('Billing profile tests', () => {
             searchInDataTable(billingProfile.name, 'Name')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept('GET', '**/api/billingzones/**').as('getBillingZonePage')
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileZones"]').click()
 
+            cy.wait('@getBillingZonePage')
             deleteItemOnListPageBy(billingProfileZone.zone)
 
             // Cleanup
@@ -328,8 +334,10 @@ context('Billing profile tests', () => {
             searchInDataTable(billingProfile.name, 'Name')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept('GET', '**/api/billingfees/**').as('getBillingFeePage')
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileFees"]').click()
 
+            cy.wait('@getBillingFeePage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="aui-select-zone"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -344,7 +352,7 @@ context('Billing profile tests', () => {
         it('Create a billing profile fee', () => {
             // Setup: Create Billing Profile, delete Billing Profile Fee if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+                apiRemoveBillingProfileFeeBy({ destination: billingProfileFee.destination, authHeader })
                 apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiCreateBillingProfile({ data: billingProfile, authHeader }).then(({ id }) => {
@@ -359,8 +367,10 @@ context('Billing profile tests', () => {
             searchInDataTable(billingProfile.name, 'Name')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept('GET', '**/api/billingfees/**').as('getBillingFeePage')
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileFees"]').click()
 
+            cy.wait('@getBillingFeePage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.auiSelectLazySelect({ dataCy: 'aui-select-zone', filter: billingProfileZone.zone, itemContains: billingProfileZone.zone })
             cy.get('input[data-cy="billingfees-destination"]').type(billingProfileFee.destination)
@@ -369,7 +379,7 @@ context('Billing profile tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+                apiRemoveBillingProfileFeeBy({ destination: billingProfileFee.destination, authHeader })
                 apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             })
@@ -378,7 +388,7 @@ context('Billing profile tests', () => {
         it('Edit a billing profile fee direction', () => {
             // Setup: Create Billing Profile, Billing Zone and Billing Profile Fee
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+                apiRemoveBillingProfileFeeBy({ destination: billingProfileFee.destination, authHeader })
                 apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiCreateBillingProfile({ data: billingProfile, authHeader }).then(({ id }) => {
@@ -398,8 +408,10 @@ context('Billing profile tests', () => {
             searchInDataTable(billingProfile.name, 'Name')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept('GET', '**/api/billingfees/**').as('getBillingFeePage')
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileFees"]').click()
 
+            cy.wait('@getBillingFeePage')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--billingFeeEdit"]').click()
@@ -412,7 +424,7 @@ context('Billing profile tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+                apiRemoveBillingProfileFeeBy({ destination: billingProfileFee.destination, authHeader })
                 apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             })
@@ -421,7 +433,7 @@ context('Billing profile tests', () => {
         it('Delete a billing profile fee and check if it is deleted', () => {
             // Setup: Create Billing Profile, Billing Zone and Billing Profile Fee
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+                apiRemoveBillingProfileFeeBy({ destination: billingProfileFee.destination, authHeader })
                 apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
                 apiCreateBillingProfile({ data: billingProfile, authHeader }).then(({ id }) => {
@@ -441,13 +453,15 @@ context('Billing profile tests', () => {
             searchInDataTable(billingProfile.name, 'Name')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept('GET', '**/api/billingfees/**').as('getBillingFeePage')
             cy.get('a[data-cy="aui-data-table-row-menu--billingProfileFees"]').click()
 
+            cy.wait('@getBillingFeePage')
             deleteItemOnListPageBy()
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveBillingProfileFeeBy({ name: billingProfileFee.destination, authHeader })
+                apiRemoveBillingProfileFeeBy({ destination: billingProfileFee.destination, authHeader })
                 apiRemoveBillingProfileZoneBy({ zone: billingProfileZone.zone, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             })

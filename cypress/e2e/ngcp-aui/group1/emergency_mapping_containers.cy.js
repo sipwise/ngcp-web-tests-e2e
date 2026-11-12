@@ -14,8 +14,7 @@ import {
     apiRemoveSystemContactBy,
     clickDataTableSelectedMoreMenuItem,
     deleteItemOnListPageBy,
-    searchInDataTable,
-    waitPageProgressAUI
+    searchInDataTable
 } from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -75,12 +74,12 @@ context('Emergency mapping tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+            apiRemoveEmergencyMappingBy({ code: emergencyMapping.code, authHeader })
             apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             apiRemoveResellerBy({ name: editReseller.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: editContract.external_id, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: editContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -100,12 +99,12 @@ context('Emergency mapping tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
-            apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+            apiRemoveEmergencyMappingBy({ code: emergencyMapping.code, authHeader })
             apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             apiRemoveResellerBy({ name: editReseller.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: editContract.external_id, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: editContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
     })
@@ -156,7 +155,6 @@ context('Emergency mapping tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--emergencyMappingContainerEdit"]').click()
-            waitPageProgressAUI()
             cy.get('label[data-cy="aui-select-reseller"] i').contains('cancel').click()
             cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: editReseller.name , itemContains: editReseller.name })
             cy.get('[data-cy="aui-save-button"]').click()
@@ -202,8 +200,10 @@ context('Emergency mapping tests', () => {
             cy.locationShouldBe('#/emergencymapping')
             searchInDataTable(emergencyMappingContainer.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.intercept('GET', '**/api/emergencymappings/**').as('getEmergencyMappingPage')
             clickDataTableSelectedMoreMenuItem('emergencyMappingList')
-            waitPageProgressAUI()
+
+            cy.wait('@getEmergencyMappingPage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('input[data-cy="emergency-code"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -217,7 +217,7 @@ context('Emergency mapping tests', () => {
         it('Create a new emergency mapping', () => {
             // Setup: Create Emergency Mapping Container, delete Emergency Mapping if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+                apiRemoveEmergencyMappingBy({ code: emergencyMapping.code, authHeader })
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
                 apiCreateEmergencyMappingContainer({ data: emergencyMappingContainer, authHeader })
             })
@@ -227,8 +227,10 @@ context('Emergency mapping tests', () => {
             cy.locationShouldBe('#/emergencymapping')
             searchInDataTable(emergencyMappingContainer.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.intercept('GET', '**/api/emergencymappings/**').as('getEmergencyMappingPage')
             clickDataTableSelectedMoreMenuItem('emergencyMappingList')
-            waitPageProgressAUI()
+
+            cy.wait('@getEmergencyMappingPage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="emergency-code"]').type(emergencyMapping.code)
             cy.get('input[data-cy="emergency-prefix"]').type(emergencyMapping.prefix)
@@ -238,7 +240,7 @@ context('Emergency mapping tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+                apiRemoveEmergencyMappingBy({ code: emergencyMapping.code, authHeader })
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             })
         })
@@ -246,7 +248,7 @@ context('Emergency mapping tests', () => {
         it('Edit emergency mapping', () => {
             // Setup: Create Emergency Mapping Container and Emergency Mapping
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+                apiRemoveEmergencyMappingBy({ code: emergencyMapping.code, authHeader })
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
                 apiCreateEmergencyMappingContainer({ data: emergencyMappingContainer, authHeader }).then(({ id }) => {
                     apiCreateEmergencyMapping({ data: { ...emergencyMapping, emergency_container_id: id }, authHeader })
@@ -258,13 +260,14 @@ context('Emergency mapping tests', () => {
             cy.locationShouldBe('#/emergencymapping')
             searchInDataTable(emergencyMappingContainer.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.intercept('GET', '**/api/emergencymappings/**').as('getEmergencyMappingPage')
             clickDataTableSelectedMoreMenuItem('emergencyMappingList')
-            waitPageProgressAUI()
+
+            cy.wait('@getEmergencyMappingPage')
             searchInDataTable(emergencyMapping.code, 'Number')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--emergencyMappingEdit"]').click()
-            waitPageProgressAUI()
             cy.get('input[data-cy="emergency-prefix"]').clear().type('testprefix')
             cy.get('input[data-cy="emergency-suffix"]').clear().type('testsuffix')
             cy.get('[data-cy="aui-save-button"]').click()
@@ -275,7 +278,7 @@ context('Emergency mapping tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+                apiRemoveEmergencyMappingBy({ code: emergencyMapping.code, authHeader })
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             })
         })
@@ -283,7 +286,7 @@ context('Emergency mapping tests', () => {
         it('Delete emergency mapping', () => {
             // Setup: Create Emergency Mapping Container and Emergency Mapping
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+                apiRemoveEmergencyMappingBy({ code: emergencyMapping.code, authHeader })
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
                 apiCreateEmergencyMappingContainer({ data: emergencyMappingContainer, authHeader }).then(({ id }) => {
                     apiCreateEmergencyMapping({ data: { ...emergencyMapping, emergency_container_id: id }, authHeader })
@@ -295,13 +298,15 @@ context('Emergency mapping tests', () => {
             cy.locationShouldBe('#/emergencymapping')
             searchInDataTable(emergencyMappingContainer.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.intercept('GET', '**/api/emergencymappings/**').as('getEmergencyMappingPage')
             clickDataTableSelectedMoreMenuItem('emergencyMappingList')
-            waitPageProgressAUI()
+
+            cy.wait('@getEmergencyMappingPage')
             deleteItemOnListPageBy(emergencyMapping.code)
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveEmergencyMappingBy({ name: emergencyMapping.code, authHeader })
+                apiRemoveEmergencyMappingBy({ code: emergencyMapping.code, authHeader })
                 apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             })
         })

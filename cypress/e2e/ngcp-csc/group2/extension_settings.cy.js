@@ -8,12 +8,11 @@ import {
     apiRemoveDomainBy,
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
-    getRandomNum,
-    waitPageProgressCSC,
+    getRandomNum
 } from '../../../support/e2e'
 
-const ngcpConfig = Cypress.config('ngcpConfig')
 let iscloudpbx = false
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 const domain = {
     domain: 'domainExtensionSettings',
@@ -98,26 +97,10 @@ const loginInfo = {
     password: `${pbx_subscriber_pilot.webpassword}`
 }
 
-const apiLoginInfo = {
-    username: `${subscriber.webusername}@${domain.domain}`,
-    password: `${subscriber.webpassword}`
-}
-
 context('Extension Settings tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
-            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-            cy.log('Data clean up pre-tests completed')
-            apiCreateDomain({ data: domain, authHeader })
-            apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
-                apiCreateSubscriber({ data: {...subscriber, customer_id: id}, authHeader })
-            })
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -125,40 +108,60 @@ context('Extension Settings tests', () => {
             }).then(({ body }) => {
                 if (body.cloudpbx) {
                     iscloudpbx = true
+                    Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                    apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
+                    apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                    apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                    apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                    cy.log('Finished data cleanup')
+                    apiCreateDomain({ data: domain, authHeader })
+                    apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                        apiCreateSubscriber({ data: {...subscriber, customer_id: id}, authHeader })
+                    })
                     apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
-                        apiCreateSubscriber({ data: { ...pbx_subscriber_pilot, customer_id: id }, authHeader })
                         pbx_subscriber.customer_id = id
                         pbx_subscriber_pilot.customer_id = id
                     })
+                    cy.log('Finished data creation')
                 } else {
-                    cy.log('Not a CloudPBX enabled instance, skipping all tests...');
+                    cy.log('Not a CloudPBX enabled instance, skipping all tests...')
                     iscloudpbx = false
                 }
             })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
         })
     })
 
     beforeEach(() => {
         if (iscloudpbx) {
+            cy.log('Start beforeEach() preperation...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-                apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
                 apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
             })
+            cy.log('beforeEach() preperation complete, start running tests...')
+        } else {
+            cy.log('Not a CloudPBX enabled instance, skipping beforeEach() preperation...')
         }
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-        })
+        if (iscloudpbx) {
+            Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
+                apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            })
+            cy.log('Cleanup complete!')
+        } else {
+            cy.log('Not a CloudPBX enabled instance, skipping cleanup...')
+        }
     })
 
     context('Call Queues', () => {
@@ -168,8 +171,10 @@ context('Extension Settings tests', () => {
             }
 
             cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+            cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallQueuePage')
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/call-queues"]').click()
+            cy.wait('@getCallQueuePage')
 
             cy.get('div[data-cy="csc-call-queue-feature-switch"][aria-disabled="true"]').should('not.exist')
             cy.get('div[data-cy="csc-call-queue-feature-switch"][aria-checked="false"]').should('be.visible')
@@ -186,8 +191,10 @@ context('Extension Settings tests', () => {
             }
 
             cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+            cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallQueuePage')
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/call-queues"]').click()
+            cy.wait('@getCallQueuePage')
 
             cy.get('input[data-cy="csc-call-queue-length"]').clear().type('invalidtest')
             cy.get('input[data-cy="csc-call-queue-wrapup-time"]').clear().type('invalidtest')
@@ -206,8 +213,10 @@ context('Extension Settings tests', () => {
             }
 
             cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+            cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallQueuePage')
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/call-queues"]').click()
+            cy.wait('@getCallQueuePage')
 
             cy.get('input[data-cy="csc-call-queue-length"]').clear().type('30')
             cy.get('span[class="block"]').contains('Save').click()
@@ -225,8 +234,10 @@ context('Extension Settings tests', () => {
             }
 
             cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+            cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getMSPage')
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/ms-configs"]').click()
+            cy.wait('@getMSPage')
 
             cy.get('div[data-cy="csc-manager-secretary-toggle"][aria-disabled="true"]').should('not.exist')
             cy.get('div[data-cy="csc-manager-secretary-toggle"]').click()
@@ -243,18 +254,20 @@ context('Extension Settings tests', () => {
 
             apiLoginAsSuperuser().then(authHeader => {
                 // Setup: Create second PBX Subscriber, delete if already exists 
-                apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
                 apiCreateSubscriber({ data: pbx_subscriber, authHeader })
             })
 
             cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+            cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getMSPage')
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/ms-configs"]').click()
+            cy.wait('@getMSPage')
 
             cy.get('div[data-cy="csc-manager-secretary-toggle"][aria-disabled="true"]').should('not.exist')
             cy.get('div[data-cy="csc-manager-secretary-toggle"]').click()
             cy.get('div[data-cy="csc-manager-secretary-toggle"][aria-checked="true"]').should('be.visible')
-            waitPageProgressCSC()
+            cy.get('div[data-cy="csc-manager-secretary-toggle"][aria-disabled="true"]').should('not.exist')
 
             cy.get('[data-cy="csc-manager-secretary-dropdown"]').click()
             cy.get('div[role="listbox"]').should('be.visible')
@@ -264,7 +277,7 @@ context('Extension Settings tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
             })
         })
     })
@@ -276,9 +289,11 @@ context('Extension Settings tests', () => {
             }
 
             cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+            cy.intercept({ method: 'GET', pathname: '**/api/autoattendants/' }).as('getAutoAttendantPage')
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
             cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
-            waitPageProgressCSC()
+            cy.wait('@getAutoAttendantPage')
+
             cy.get('button[data-cy="csc-pbx-auto-attendant-add-slot"]').click()
             cy.get('div[role="list"][data-cy="q-list-0"]').click()
             cy.get('div[data-cy="csc-list-item-title"]').contains('Slot: 0').should('be.visible')
@@ -296,8 +311,10 @@ context('Extension Settings tests', () => {
 
             cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
+            cy.intercept({ method: 'GET', pathname: '**/api/autoattendants/' }).as('getAutoAttendantPage')
             cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
-            waitPageProgressCSC()
+            cy.wait('@getAutoAttendantPage')
+
             cy.get('button[data-cy="csc-pbx-auto-attendant-add-slot"]').click()
             cy.get('div[role="list"][data-cy="q-list-0"]').click()
             cy.get('div[role="list"][data-cy="q-list-1"]').click()

@@ -2,7 +2,6 @@
 
 import {
     getRandomNum,
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiCreateContract,
@@ -82,10 +81,10 @@ context('Peering tests', () => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
             apiRemovePeeringServerBy({ name: peeringServer.name, authHeader })
-            apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
-            apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.pattern, authHeader })
+            apiRemovePeeringOutboundRuleBy({ description: PeeringOutboundRule.description, authHeader})
+            apiRemovePeeringInboundRuleBy({ group_id: peeringInboundRule.pattern, authHeader })
             apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
@@ -101,10 +100,10 @@ context('Peering tests', () => {
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
             apiRemovePeeringServerBy({ name: peeringServer.name, authHeader })
-            apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
-            apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.pattern, authHeader })
+            apiRemovePeeringOutboundRuleBy({ description: PeeringOutboundRule.description, authHeader})
+            apiRemovePeeringInboundRuleBy({ group_id: peeringInboundRule.pattern, authHeader })
             apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
         })
     })
@@ -112,7 +111,7 @@ context('Peering tests', () => {
     context('Peering Group tests', () => {
         it('Check if Peering Group with invalid values gets rejected', () => {
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering', false)
+            cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -132,7 +131,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering', false)
+            cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
             cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -160,7 +159,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering', false)
+            cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
@@ -192,7 +191,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering', false)
+            cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
             deleteItemOnListPageBy(peeringGroup.name, 'Name')
@@ -213,18 +212,18 @@ context('Peering tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering', false)
+            cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
-
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/inbound-rules/' }).as('getPeeringInboundRulesPage')
             cy.get('div[data-cy="q-item-label"]').contains('Inbound Rules').click()
-            cy.get('a[data-cy="aui-list-action--add"]').click()
 
+            cy.wait('@getPeeringInboundRulesPage')
+            cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="inbound-pattern"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('label[data-cy="inbound-priority"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -244,24 +243,24 @@ context('Peering tests', () => {
         it('Create an Inbound Peering Rule', () => {
             // Setup: Create Peering Group, remove Inbound Peering Rule if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.group_id, authHeader })
+                apiRemovePeeringInboundRuleBy({ group_id: peeringInboundRule.group_id, authHeader })
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader })
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering', false)
+            cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
-
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/inbound-rules/' }).as('getPeeringInboundRulesPage')
             cy.get('div[data-cy="q-item-label"]').contains('Inbound Rules').click()
-            cy.get('a[data-cy="aui-list-action--add"]').click()
 
+            cy.wait('@getPeeringInboundRulesPage')
+            cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="inbound-pattern"]').type(peeringInboundRule.pattern)
             cy.get('input[data-cy="inbound-reject_code"]').type(peeringInboundRule.reject_code)
             cy.get('input[data-cy="inbound-reject_reason"]').type(peeringInboundRule.reject_reason)
@@ -272,7 +271,7 @@ context('Peering tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.group_id, authHeader })
+                apiRemovePeeringInboundRuleBy({ group_id: peeringInboundRule.group_id, authHeader })
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
             })
         })
@@ -280,7 +279,7 @@ context('Peering tests', () => {
         it('Edit an Inbound Peering Rule', () => {
             // Setup: Create Peering Group and Inbound Peering Rule
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.group_id, authHeader })
+                apiRemovePeeringInboundRuleBy({ group_id: peeringInboundRule.group_id, authHeader })
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader }).then(({ id }) => {
                     apiCreatePeeringInboundRule({ data: { ...peeringInboundRule, group_id: id}, authHeader })
@@ -288,31 +287,30 @@ context('Peering tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering', false)
+            cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
-
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/inbound-rules/' }).as('getPeeringInboundRulesPage')
             cy.get('div[data-cy="q-item-label"]').contains('Inbound Rules').click()
+
+            cy.wait('@getPeeringInboundRulesPage')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetailsInboundRuleEdit"]').click()
-
             cy.get('input[data-cy="inbound-reject_reason"]').clear().type('newrejectreason')
             cy.get('[data-cy="aui-save-button"]').click()
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
-
             cy.get('td[data-cy="q-td--reject-reason"]').contains('newrejectreason').should('be.visible')
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.group_id, authHeader })
+                apiRemovePeeringInboundRuleBy({ group_id: peeringInboundRule.group_id, authHeader })
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
             })
         })
@@ -320,7 +318,7 @@ context('Peering tests', () => {
         it('Delete Inbound Peering Rule', () => {
             // Setup: Create Peering Group and Inbound Peering Rule
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.group_id, authHeader })
+                apiRemovePeeringInboundRuleBy({ group_id: peeringInboundRule.group_id, authHeader })
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader }).then(({ id }) => {
                     apiCreatePeeringInboundRule({ data: { ...peeringInboundRule, group_id: id}, authHeader })
@@ -328,21 +326,22 @@ context('Peering tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering', false)
+            cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
-
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/inbound-rules/' }).as('getPeeringInboundRulesPage')
             cy.get('div[data-cy="q-item-label"]').contains('Inbound Rules').click()
+
+            cy.wait('@getPeeringInboundRulesPage')
             deleteItemOnListPageBy()
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringInboundRuleBy({ name: peeringInboundRule.group_id, authHeader })
+                apiRemovePeeringInboundRuleBy({ group_id: peeringInboundRule.group_id, authHeader })
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
             })
         })
@@ -357,18 +356,18 @@ context('Peering tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering', false)
+            cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
-
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/rules/' }).as('getPeeringOutboundRulesPage')
             cy.get('div[data-cy="q-item-label"]').contains('Outbound Rules').click()
-            cy.get('a[data-cy="aui-list-action--add"]').click()
 
+            cy.wait('@getPeeringOutboundRulesPage')
+            cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('input[data-cy="outbound-description"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
 
@@ -381,24 +380,24 @@ context('Peering tests', () => {
         it('Create an Outbound Peering Rule', () => {
             // Setup: Create Peering Group, remove Outbound Peering Rule if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
+                apiRemovePeeringOutboundRuleBy({ description: PeeringOutboundRule.description, authHeader})
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader })
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering', false)
+            cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
-
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/rules/' }).as('getPeeringOutboundRulesPage')
             cy.get('div[data-cy="q-item-label"]').contains('Outbound Rules').click()
-            cy.get('a[data-cy="aui-list-action--add"]').click()
 
+            cy.wait('@getPeeringOutboundRulesPage')
+            cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="outbound-callee_prefix"]').type(PeeringOutboundRule.callee_prefix)
             cy.get('input[data-cy="outbound-callee_pattern"]').type(PeeringOutboundRule.callee_pattern)
             cy.get('input[data-cy="outbound-caller_pattern"]').type(PeeringOutboundRule.caller_pattern)
@@ -409,7 +408,7 @@ context('Peering tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
+                apiRemovePeeringOutboundRuleBy({ description: PeeringOutboundRule.description, authHeader})
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
             })
         })
@@ -417,7 +416,7 @@ context('Peering tests', () => {
         it('Edit an Outbound Peering Rule', () => {
             // Setup: Create Peering Group and Outbound Peering Rule
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
+                apiRemovePeeringOutboundRuleBy({ description: PeeringOutboundRule.description, authHeader})
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader }).then(({ id }) => {
                     apiCreatePeeringOutboundRule({ data: { ...PeeringOutboundRule, group_id: id}, authHeader })
@@ -425,7 +424,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering', false)
+            cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
@@ -433,23 +432,23 @@ context('Peering tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/rules/' }).as('getPeeringOutboundRulesPage')
             cy.get('div[data-cy="q-item-label"]').contains('Outbound Rules').click()
+
+            cy.wait('@getPeeringOutboundRulesPage')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetailsOutboundRuleEdit"]').click()
-
             cy.get('input[data-cy="outbound-callee_prefix"]').clear().type('newcalleeprefix')
             cy.get('[data-cy="aui-save-button"]').click()
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
-
             cy.get('td[data-cy="q-td--callee-prefix"]').contains('newcalleeprefix').should('be.visible')
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
+                apiRemovePeeringOutboundRuleBy({ description: PeeringOutboundRule.description, authHeader})
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
             })
         })
@@ -457,7 +456,7 @@ context('Peering tests', () => {
         it('Delete Outbound Peering Rule', () => {
             // Setup: Create Peering Group and Outbound Peering Rule
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
+                apiRemovePeeringOutboundRuleBy({ description: PeeringOutboundRule.description, authHeader})
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
                 apiCreatePeeringGroup({ data: peeringGroup, authHeader }).then(({ id }) => {
                     apiCreatePeeringOutboundRule({ data: { ...PeeringOutboundRule, group_id: id}, authHeader })
@@ -465,7 +464,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering', false)
+            cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
@@ -473,13 +472,15 @@ context('Peering tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/rules/' }).as('getPeeringOutboundRulesPage')
             cy.get('div[data-cy="q-item-label"]').contains('Outbound Rules').click()
+
+            cy.wait('@getPeeringOutboundRulesPage')
             deleteItemOnListPageBy()
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemovePeeringOutboundRuleBy({ name: PeeringOutboundRule.description, authHeader})
+                apiRemovePeeringOutboundRuleBy({ description: PeeringOutboundRule.description, authHeader})
                 apiRemovePeeringGroupBy({ name: peeringGroup.name, authHeader })
             })
         })
@@ -494,18 +495,18 @@ context('Peering tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering', false)
+            cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
-
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/servers/' }).as('getPeeringServersPage')
             cy.get('div[data-cy="q-item-label"]').contains('Peering Servers').click()
-            cy.get('a[data-cy="aui-list-action--add"]').click()
 
+            cy.wait('@getPeeringServersPage')
+            cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('input[data-cy="server-name"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('input[data-cy="server-ip"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -528,18 +529,18 @@ context('Peering tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering', false)
+            cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
-
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/servers/' }).as('getPeeringServersPage')
             cy.get('div[data-cy="q-item-label"]').contains('Peering Servers').click()
-            cy.get('a[data-cy="aui-list-action--add"]').click()
 
+            cy.wait('@getPeeringServersPage')
+            cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="server-name"]').type(peeringServer.name)
             cy.get('input[data-cy="server-ip"]').type(peeringServer.ip)
             cy.get('input[data-cy="server-host"]').type(peeringServer.host)
@@ -565,7 +566,7 @@ context('Peering tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering', false)
+            cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
@@ -573,18 +574,18 @@ context('Peering tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
 
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/servers/' }).as('getPeeringServersPage')
             cy.get('div[data-cy="q-item-label"]').contains('Peering Servers').click()
+
+            cy.wait('@getPeeringServersPage')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupServerEdit"]').click()
-
             cy.get('input[data-cy="server-host"]').clear().type('PeeringServerHost')
             cy.get('[data-cy="aui-save-button"]').click()
 
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
-
             cy.get('td[data-cy="q-td--host"]').contains('PeeringServerHost').should('be.visible')
 
             // Cleanup
@@ -605,16 +606,17 @@ context('Peering tests', () => {
             })
 
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / peering', false)
+            cy.navigateMainMenu('settings / peering')
 
             cy.locationShouldBe('#/peering')
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
-
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/servers/' }).as('getPeeringServersPage')
             cy.get('div[data-cy="q-item-label"]').contains('Peering Servers').click()
+
+            cy.wait('@getPeeringServersPage')
             deleteItemOnListPageBy()
 
             // Cleanup

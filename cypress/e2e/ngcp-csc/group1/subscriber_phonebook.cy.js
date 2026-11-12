@@ -10,9 +10,11 @@ import {
     apiRemoveSubscriberBy,
     getRandomNum,
     apiRemoveSubscriberPhonebookBy,
-    apiCreateSubscriberPhonebook,
-    waitPageProgressCSC,
+    apiCreateSubscriberPhonebook
 } from '../../../support/e2e'
+
+let issppro = null
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 const domain = {
     domain: 'domainSubscriberPhonebook',
@@ -81,26 +83,10 @@ const secondSubscriberPhonebookEntry = {
     shared: true
 }
 
-const ngcpConfig = Cypress.config('ngcpConfig')
-let issppro = null
-
 context('Subscriber phonebook tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
-            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriberSharedPhonebook.username, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-            cy.log('Data clean up pre-tests completed')
-            apiCreateDomain({ data: domain, authHeader })
-            apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
-                    subscriber.customer_id = id
-                    subscriberSharedPhonebook.customer_id = id
-            })
-            apiCreateSubscriber({ data: subscriber, authHeader })
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -108,11 +94,24 @@ context('Subscriber phonebook tests', () => {
             }).then(({ body }) => {
                 if (body.type === 'sppro') {
                     issppro = true
+                    Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
                     apiRemoveSubscriberPhonebookBy({name: secondSubscriberPhonebookEntry.name, authHeader})
                     apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
+                    apiRemoveSubscriberBy({ username: subscriberSharedPhonebook.username, authHeader })
+                    apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                    apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                    apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                    cy.log('Finished data cleanup')
+                    apiCreateDomain({ data: domain, authHeader })
+                    apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                            subscriber.customer_id = id
+                            subscriberSharedPhonebook.customer_id = id
+                    })
+                    apiCreateSubscriber({ data: subscriber, authHeader })
+                    cy.log('Finished data creation, start running tests...')
                 } else {
-                    cy.log('Not a SPPRO instance, skipping all tests...');
                     issppro = false
+                    cy.log('Not a SPPRO instance, skipping all tests...')
                     return
                 }
             })
@@ -120,18 +119,21 @@ context('Subscriber phonebook tests', () => {
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
-        apiLoginAsSuperuser().then(authHeader => {
-            if (issppro) {
+        if (issppro) {
+            Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
+            apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberPhonebookBy({name: secondSubscriberPhonebookEntry.name, authHeader})
                 apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
-            }
-            apiRemoveSubscriberBy({ name: subscriberSharedPhonebook.username, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-        })
+                apiRemoveSubscriberBy({ username: subscriberSharedPhonebook.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            })
+            cy.log('Cleanup complete!')
+        } else {
+            cy.log('Not a SPPRO instance, skipping cleanup...')
+        }
+
     })
 
     it('Create subscriber phonebook entry', function () {
@@ -142,14 +144,16 @@ context('Subscriber phonebook tests', () => {
         // Setup: Create Subscriber, delete Phonebook if exists
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader })
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/subscribers/*/phonebook' }).as('getSubscriberPhonebookPage')
         cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
-        cy.get('button[data-cy="csc-phonebook-add"]').click()
+        cy.wait('@getSubscriberPhonebookPage')
 
+        cy.get('button[data-cy="csc-phonebook-add"]').click()
         cy.get('input[data-cy="csc-phonebook-add-name"]').type(subscriberPhonebookEntry.name)
         cy.get('input[data-cy="csc-phonebook-add-number"]').type(subscriberPhonebookEntry.number)
         cy.get('button[data-cy="csc-phonebook-add-confirm"]').click()
@@ -160,7 +164,7 @@ context('Subscriber phonebook tests', () => {
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -172,14 +176,16 @@ context('Subscriber phonebook tests', () => {
         // Setup: Create Subscriber and Subscriber Phonebook
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                 apiCreateSubscriberPhonebook({data: { ...subscriberPhonebookEntry, subscriber_id: id }, authHeader})
             })
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/subscribers/*/phonebook' }).as('getSubscriberPhonebookPage')
         cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
+        cy.wait('@getSubscriberPhonebookPage')
         cy.get('i').contains('more_vert').click()
         cy.get('div[data-cy="csc-phonebook-entry-edit"]').click()
 
@@ -192,7 +198,7 @@ context('Subscriber phonebook tests', () => {
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -204,14 +210,16 @@ context('Subscriber phonebook tests', () => {
         // Setup: Create Subscriber and Subscriber Phonebook
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                 apiCreateSubscriberPhonebook({data: { ...subscriberPhonebookEntry, subscriber_id: id }, authHeader})
             })
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/subscribers/*/phonebook' }).as('getSubscriberPhonebookPage')
         cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
+        cy.wait('@getSubscriberPhonebookPage')
         cy.window().then((win) => {
             win.addEventListener('unhandledrejection', (event) => {
                 const reason = event.reason || {}
@@ -233,7 +241,7 @@ context('Subscriber phonebook tests', () => {
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -245,8 +253,8 @@ context('Subscriber phonebook tests', () => {
         // Setup: Create Subscribers and Subscriber Phonebook
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebookEntry.name, authHeader })
-            apiRemoveSubscriberBy({ name: subscriberSharedPhonebook.username, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriberSharedPhonebook.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                 apiCreateSubscriberPhonebook({ data: { ...subscriberPhonebookEntry, subscriber_id: id }, authHeader })
             })
@@ -254,7 +262,9 @@ context('Subscriber phonebook tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/subscribers/*/phonebook' }).as('getSubscriberPhonebookPage')
         cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
+        cy.wait('@getSubscriberPhonebookPage')
         cy.get('div[role="switch"][data-cy="q-toggle"]').click()
         cy.get('div[role="switch"][data-cy="q-toggle"][aria-checked="true"]').should('be.visible')
 
@@ -270,8 +280,8 @@ context('Subscriber phonebook tests', () => {
 
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriberSharedPhonebook.username, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriberSharedPhonebook.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebookEntry.name, authHeader })
         })
     })
@@ -285,7 +295,7 @@ context('Subscriber phonebook tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebookEntry.name, authHeader })
             apiRemoveSubscriberPhonebookBy({ name: secondSubscriberPhonebookEntry.name, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                 apiCreateSubscriberPhonebook({ data: { ...subscriberPhonebookEntry, subscriber_id: id }, authHeader })
                 apiCreateSubscriberPhonebook({ data: { ...secondSubscriberPhonebookEntry, subscriber_id: id }, authHeader })
@@ -293,7 +303,9 @@ context('Subscriber phonebook tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/subscribers/*/phonebook' }).as('getSubscriberPhonebookPage')
         cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
+        cy.wait('@getSubscriberPhonebookPage')
         cy.get('button[data-cy="groups-filter-open"]').click()
         cy.qSelect({ dataCy: 'csc-phonebook-search-filter', itemContains: 'Name' })
         cy.get('input[data-cy="csc-phonebook-entry-search-input"]').type(subscriberPhonebookEntry.name)
@@ -324,7 +336,7 @@ context('Subscriber phonebook tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebookEntry.name, authHeader })
             apiRemoveSubscriberPhonebookBy({ name: secondSubscriberPhonebookEntry.name, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 
@@ -336,14 +348,16 @@ context('Subscriber phonebook tests', () => {
         // Setup: Create Subscriber and Subscriber Phonebook
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({name: subscriberPhonebookEntry.name, authHeader})
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                 apiCreateSubscriberPhonebook({data: { ...subscriberPhonebookEntry, subscriber_id: id }, authHeader})
             })
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/subscribers/*/phonebook' }).as('getSubscriberPhonebookPage')
         cy.get('div[data-cy="q-item-label"]').contains('Subscriber Phonebook').click()
+        cy.wait('@getSubscriberPhonebookPage')
         cy.get('i').contains('more_vert').click()
         cy.get('div[data-cy="csc-phonebook-entry-delete"]').click()
         cy.get('span[class="block"]').contains('OK').click()
@@ -353,7 +367,7 @@ context('Subscriber phonebook tests', () => {
         // Cleanup
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebookEntry.name, authHeader })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
         })
     })
 })

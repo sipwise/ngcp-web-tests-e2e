@@ -13,10 +13,10 @@ import {
     apiRemoveSoundSetBy
 } from '../../../support/e2e'
 
+let iscloudpbx = null
 const ngcpConfig = Cypress.config('ngcpConfig')
 const fixturesFolder = Cypress.config('fixturesFolder')
 const path = require('path')
-let iscloudpbx = null
 
 const domain = {
     domain: 'domainSoundsetCSC',
@@ -73,17 +73,6 @@ context('Sound Set (CSC) page tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
-            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-            cy.log('Data clean up pre-tests completed')
-            apiCreateDomain({ data: domain, authHeader })
-            apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
-                pbx_subscriber_pilot.customer_id = id
-                soundSet.customer_id = id
-            })
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -91,9 +80,20 @@ context('Sound Set (CSC) page tests', () => {
             }).then(({ body }) => {
                 if (body.cloudpbx) {
                     iscloudpbx = true
+                    Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                    apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
+                    apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+                    apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                    cy.log('Finished data cleanup')
+                    apiCreateDomain({ data: domain, authHeader })
+                    apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
+                        pbx_subscriber_pilot.customer_id = id
+                        soundSet.customer_id = id
+                    })
+                    cy.log('Finished data creation')
                 } else {
-                    cy.log('Not a CloudPBX enabled instance, skipping all tests...');
                     iscloudpbx = false
+                    cy.log('Not a CloudPBX enabled instance, skipping all tests...')
                     return
                 }
             })
@@ -102,22 +102,28 @@ context('Sound Set (CSC) page tests', () => {
 
     beforeEach(() => {
         if (iscloudpbx) {
+            cy.log('Start beforeEach() preperation...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
-                apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
                 apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
                 apiCreateSoundSet({ data: soundSet, authHeader })
             })
+            cy.log('beforeEach() preperation complete, start running tests...')
         }
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-        })
+        if (iscloudpbx) {
+            Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            })
+            cy.log('Cleanup complete!')
+        } else {
+            cy.log('Not a CloudPBX enabled instance, skipping cleanup...')
+        }
     })
 
     it('Check if Sound Set with empty values gets rejected', function () {
@@ -143,8 +149,10 @@ context('Sound Set (CSC) page tests', () => {
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/soundsets/' }).as('getSoundsetPage')
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/sound-sets"]').click()
+        cy.wait('@getSoundsetPage')
 
         cy.get('button[data-cy="csc-sound-set-add"]').click()
         cy.get('input[data-cy="csc-sound-set-name"]').should('be.visible')
@@ -172,8 +180,10 @@ context('Sound Set (CSC) page tests', () => {
         }
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/soundsets/' }).as('getSoundsetPage')
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/sound-sets"]').click()
+        cy.wait('@getSoundsetPage')
 
         cy.get('div[class="csc-list-item-title"]').contains(soundSet.name).click()
         cy.get('div[data-cy="csc-sound-set-edit-default"]').click()
@@ -191,8 +201,10 @@ context('Sound Set (CSC) page tests', () => {
         }
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/soundsets/' }).as('getSoundsetPage')
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/sound-sets"]').click()
+        cy.wait('@getSoundsetPage')
 
         cy.get('div[class="csc-list-item-title"]').contains(soundSet.name).click()
         cy.get('div[data-cy="csc-list-item-title"]').contains('music_on_hold').click()
@@ -221,8 +233,10 @@ context('Sound Set (CSC) page tests', () => {
         }
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/soundsets/' }).as('getSoundsetPage')
         cy.get('div[data-cy="q-item-label"]').contains('PBX Configuration').click()
         cy.get('a[href="#/user/pbx-configuration/sound-sets"]').click()
+        cy.wait('@getSoundsetPage')
 
         cy.get('div[class="csc-list-item-head-menu"] button').click()
         cy.get('div[data-cy="q-item-section"]').contains('Remove').click()

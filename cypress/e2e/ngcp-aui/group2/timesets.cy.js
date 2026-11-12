@@ -11,7 +11,6 @@ import {
     apiRemoveTimesetBy,
     deleteItemOnListPageBy,
     searchInDataTable,
-    waitPageProgressAUI,
     apiRemoveSystemContactBy
 } from '../../../support/e2e'
 
@@ -68,8 +67,8 @@ context('Timeset tests', () => {
             apiRemoveTimesetBy({ name: timeset.name, authHeader })
             apiRemoveResellerBy({ name: editReseller.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: editContract.external_id, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: editContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             //TODO find a way to delete contacts without receiving error: LOCKED - contact still in use
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             cy.log('Data clean up pre-tests completed')
@@ -99,8 +98,8 @@ context('Timeset tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveResellerBy({ name: editReseller.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: editContract.external_id, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: editContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             //TODO find a way to delete contacts without receiving error: LOCKED - contact still in use
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
         })
@@ -143,7 +142,6 @@ context('Timeset tests', () => {
         cy.get('[data-cy=aui-save-button]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         cy.get('[data-cy="aui-close-button"]').click()
-        waitPageProgressAUI()
         cy.get('td[data-cy="q-td--reseller-name"]').contains(editReseller.name).should('be.visible')
     })
 

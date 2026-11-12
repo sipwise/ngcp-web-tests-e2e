@@ -17,11 +17,12 @@ import {
     apiRemoveSoundSetBy, 
     apiRemoveSystemContactBy,
     deleteItemOnListPageBy,
-    searchInDataTable,
-    waitPageProgressAUI
+    searchInDataTable
 } from '../../../support/e2e'
 
+let issppro = null
 const ngcpConfig = Cypress.config('ngcpConfig')
+const fixturesFolder = Cypress.config('fixturesFolder')
 const path = require('path')
 
 const billingProfile = {
@@ -72,14 +73,19 @@ const customerContact = {
     email: 'testContactSoundset@example.com'
 }
 
-const fixturesFolder = Cypress.config('fixturesFolder')
-var issppro = null
-
 context('Soundset tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+            apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
+            apiRemoveCustomerBy({ external_id: customerPbx.external_id, authHeader })
+            apiRemoveCustomerContactBy({ email: customerPbx.email, authHeader })
+            apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+            apiRemoveResellerBy({ name: reseller.name, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
+            cy.log('Finished data cleanup')
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -88,18 +94,10 @@ context('Soundset tests', () => {
                 if (body.type === 'sppro') {
                     issppro = true
                 } else {
-                    cy.log('Not a SPPRO instance, changing "Upload default soundset files" test...');
                     issppro = false
+                    cy.log('Not a SPPRO instance, changing "Upload default soundset files" test...')
                 }
             })
-            apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
-            apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
-            apiRemoveCustomerContactBy({ email: customerPbx.email, authHeader })
-            apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-            apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
-            apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
-            cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
                 apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                     apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
@@ -116,29 +114,32 @@ context('Soundset tests', () => {
                     })
                 })
             })
+            cy.log('Finished data creation')
         })
     })
 
     beforeEach(() => {
+        cy.log('Start beforeEach() preperation...')
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
-
             apiCreateSoundSet({ data: soundSet, authHeader })
         })
+        cy.log('beforeEach() preperation complete, start running tests...')
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
+        Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
-            apiRemoveCustomerBy({ name: customerPbx.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: customerPbx.external_id, authHeader })
             apiRemoveCustomerContactBy({ email: customerPbx.email, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
         })
+        cy.log('Cleanup complete!')
+
     })
 
     it('Check if soundset with invalid values gets rejected', () => {
@@ -181,7 +182,6 @@ context('Soundset tests', () => {
         cy.get('[data-cy="aui-save-button"]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         cy.get('[data-cy="aui-close-button"]').click()
-        waitPageProgressAUI()
         cy.get('td[data-cy="q-td--name"]').contains(soundSet.name).should('be.visible')
         cy.get('td[data-cy="q-td--description"]').contains('testDescription').should('be.visible')
         cy.get('td[data-cy="q-td--expose-to-customer"]').find('div[aria-checked="false"]').should('be.visible')
@@ -196,7 +196,6 @@ context('Soundset tests', () => {
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--soundSetHandles"]').click()
 
-        waitPageProgressAUI()
         cy.get('div[data-cy="aui-list-item-title"]').contains('voucher_recharge').should('be.visible')
         cy.get('div[data-cy="aui-list-item-title"]').contains('calling_card').scrollIntoView()
         cy.get('div[data-cy="aui-list-item-title"]').contains('calling_card').click()
@@ -228,7 +227,6 @@ context('Soundset tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--soundSetDefault"]').click()
-            waitPageProgressAUI()
             cy.qSelect({ dataCy: 'soundsets-language', itemContains: 'de' })
             cy.get('div[data-cy="soundsets-loopplay"]').click()
             cy.get('div[data-cy="soundsets-replace_existing"]').click()
@@ -243,7 +241,6 @@ context('Soundset tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--soundSetDefault"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="soundsets-loopplay"]').click()
             cy.get('div[data-cy="soundsets-replace_existing"]').click()
             cy.get('div[class="aui-base-sub-context"]').click()

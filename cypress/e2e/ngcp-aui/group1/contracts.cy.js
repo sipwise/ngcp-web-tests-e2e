@@ -2,7 +2,6 @@
 
 import {
     getRandomNum,
-    waitPageProgressAUI,
     searchInDataTable,
     deleteItemOnListPageBy,
     clickDataTableSelectedMoreMenuItem,
@@ -69,12 +68,12 @@ context('Contract tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveContractBy({ name: peeringContract.external_id, authHeader })
-            apiRemoveContractBy({ name: resellerContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: peeringContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: resellerContract.external_id, authHeader })
             apiRemoveBillingProfileBy({ name: dependencyBillingProfile.name, authHeader })
             apiRemoveResellerBy({ name: dependencyReseller.name, authHeader })
-            apiRemoveContractBy({ name: dependencyContract.external_id, authHeader })
-            apiRemoveSystemContactBy({email:systemContactDependency.email, authHeader })
+            apiRemoveContractBy({ external_id: dependencyContract.external_id, authHeader })
+            apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
                 resellerContract.contact_id = id
@@ -94,8 +93,8 @@ context('Contract tests', () => {
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
             cy.log('Cleaning up db...')
-            apiRemoveContractBy({ name: peeringContract.external_id, authHeader })
-            apiRemoveContractBy({ name: resellerContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: peeringContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: resellerContract.external_id, authHeader })
 
             cy.log('Seeding db...')
             apiCreateContract({ data: peeringContract, authHeader })
@@ -107,12 +106,12 @@ context('Contract tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveContractBy({ name: peeringContract.external_id, authHeader })
-            apiRemoveContractBy({ name: resellerContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: peeringContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: resellerContract.external_id, authHeader })
             apiRemoveBillingProfileBy({ name: dependencyBillingProfile.name, authHeader })
             apiRemoveResellerBy({ name: dependencyReseller.name, authHeader })
-            apiRemoveContractBy({ name: dependencyContract.external_id, authHeader })
-            apiRemoveSystemContactBy({email:systemContactDependency.email, authHeader })
+            apiRemoveContractBy({ external_id: dependencyContract.external_id, authHeader })
+            apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
         })
     })
 
@@ -141,8 +140,8 @@ context('Contract tests', () => {
 
             it(`Create a ${contractType} Contract`, () => {
                 apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveContractBy({ name: peeringContract.external_id, authHeader })
-                    apiRemoveContractBy({ name: resellerContract.external_id, authHeader })
+                    apiRemoveContractBy({ external_id: peeringContract.external_id, authHeader })
+                    apiRemoveContractBy({ external_id: resellerContract.external_id, authHeader })
                 })
                 cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
                 cy.navigateMainMenu('settings / contract')
@@ -151,21 +150,14 @@ context('Contract tests', () => {
                 cy.get('button[data-cy="aui-list-action--add"]').click()
                 cy.get('a[href="' + formUrl + '"]').click()
 
+                cy.get('input[data-cy="external-num"]').should('be.visible')
                 if (contractType === 'peering') {
                     cy.get('input[data-cy="external-num"]').type(peeringContract.external_id)
                 } else {
                     cy.get('input[data-cy="external-num"]').type(resellerContract.external_id)
                 }
                 cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: 'default', itemContains: 'default-system' })
-                cy.get('div[data-cy="contract-status"]').click()
-                cy.wait(200)
-                cy.get('div[data-cy="contract-status"]').parents('label').then($el => {
-                    const id = $el.attr('for')
-                    const dropdownListId = `#${id}_lb`
-                    cy.get(dropdownListId).should('be.visible')
-                    cy.contains(`${dropdownListId} .q-item`, 'Active').should('be.visible')
-                    cy.contains(`${dropdownListId} .q-item`, 'Active').click()
-                })
+                cy.qSelect({ dataCy: 'contract-status', filter: 'Active', itemContains: 'Active' })
                 cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: dependencyBillingProfile.name, itemContains: dependencyBillingProfile.name })
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
@@ -178,17 +170,16 @@ context('Contract tests', () => {
                 cy.locationShouldBe('#/contract')
 
                 if (contractType === 'peering') {
-                    searchInDataTable(peeringContract.external_id)
+                    searchInDataTable(peeringContract.external_id, null, true, true)
                 } else {
-                    searchInDataTable(resellerContract.external_id)
+                    searchInDataTable(resellerContract.external_id, null, true, true)
                 }
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 clickDataTableSelectedMoreMenuItem('contractEdit')
-                waitPageProgressAUI()
-                cy.wait(500)
+
+                cy.get('label[data-cy="contract-status"]').should('be.visible')
                 cy.qSelect({ dataCy: 'contract-status', filter: 'Pending', itemContains: 'Pending' })
                 cy.get('[data-cy="aui-save-button"]').click()
-                waitPageProgressAUI()
                 cy.get('[data-cy="aui-close-button"]').click()
                 cy.get('span[data-cy="aui-data-table-inline-edit--select"] span').contains('Pending').should('be.visible')
             })
@@ -199,9 +190,9 @@ context('Contract tests', () => {
 
                 cy.locationShouldBe('#/contract')
                 if (contractType === 'peering') {
-                    deleteItemOnListPageBy(peeringContract.external_id)
+                    deleteItemOnListPageBy(peeringContract.external_id, null, true, true)
                 } else {
-                    deleteItemOnListPageBy(resellerContract.external_id)
+                    deleteItemOnListPageBy(resellerContract.external_id, null, true, true)
                 }
             })
         })
