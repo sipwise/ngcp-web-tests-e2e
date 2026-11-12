@@ -55,9 +55,9 @@ context('Call Settings "General" tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -68,7 +68,7 @@ context('Call Settings "General" tests', () => {
 
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader })
         })
     })
@@ -77,15 +77,17 @@ context('Call Settings "General" tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 
     it('Enable/Disable "Music on Hold"', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallSettingsGeneralPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-settings"]').click()
+        cy.wait('@getCallSettingsGeneralPage')
 
         cy.get('div[data-cy="music-on-hold"][aria-disabled="true"]').should('not.exist')
         cy.get('div[data-cy="music-on-hold"]').click()
@@ -96,8 +98,10 @@ context('Call Settings "General" tests', () => {
 
     it('Enable/Disable "Hide your number to the callee"', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getPrivacyPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-blocking/privacy"]').click()
+        cy.wait('@getPrivacyPage')
 
         cy.get('div[data-cy="csc-callee-hide"] svg').should('not.exist')
         cy.get('div[data-cy="csc-privacy-hide"] svg').should('not.exist')

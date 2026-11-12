@@ -12,8 +12,8 @@ import {
     apiEditAutoAttendant,
 } from '../../../support/e2e'
 
-const ngcpConfig = Cypress.config('ngcpConfig')
 let iscloudpbx = false
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 const domain = {
     domain: 'domainAutoAttendant',
@@ -79,13 +79,6 @@ context('Auto Attendant tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
-            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-            cy.log('Data clean up pre-tests completed')
-            apiCreateDomain({ data: domain, authHeader })
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -93,12 +86,19 @@ context('Auto Attendant tests', () => {
             }).then(({ body }) => {
                 if (body.cloudpbx) {
                     iscloudpbx = true
+                    Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                    apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
+                    apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+                    apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                    cy.log('Finished data cleanup')
+                    apiCreateDomain({ data: domain, authHeader })
                     apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
                         pbx_subscriber_pilot.customer_id = id
                     })
+                    cy.log('Finished data creation, start running tests...')
                 } else {
-                    cy.log('Not a CloudPBX enabled instance, skipping "Mail2Fax" tests...');
                     iscloudpbx = false
+                    cy.log('Not a CloudPBX enabled instance, skipping all tests...')
                     return
                 }
             })
@@ -106,12 +106,17 @@ context('Auto Attendant tests', () => {
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-        })
+        if (iscloudpbx) {
+            Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
+                apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            })
+            cy.log('Cleanup complete!')
+        } else {
+            cy.log('Not a CloudPBX enabled instance, skipping cleanup...')
+        }
     })
 
     it('Create multiple Auto Attendants', function () {
@@ -121,13 +126,15 @@ context('Auto Attendant tests', () => {
 
         // Setup: Create Subscriber, delete Subscriber if exists
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader })
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/autoattendants/' }).as('getAutoAttendantsPage')
         cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
         cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
+        cy.wait('@getAutoAttendantsPage')
 
         cy.get('button[data-cy="csc-pbx-auto-attendant-add-slot"]').should('be.visible')
         cy.get('button[data-cy="csc-pbx-auto-attendant-add-slot"]').click()
@@ -152,15 +159,17 @@ context('Auto Attendant tests', () => {
 
         // Setup: Create Subscriber and auto attendant
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader }).then(({ id }) => {
                 apiEditAutoAttendant({ subid: id, data: autoattendant, authHeader})
             })
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/autoattendants/' }).as('getAutoAttendantsPage')
         cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
         cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
+        cy.wait('@getAutoAttendantsPage')
 
         cy.get('div[class="csc-list-item transition-generic"]:first').click()
         cy.get('input[data-cy="csc-pbx-auto-attendant-destination"]').clear().type('testdestination')
@@ -185,15 +194,17 @@ context('Auto Attendant tests', () => {
 
         // Setup: Create Subscriber and auto attendant
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader }).then(({ id }) => {
                 apiEditAutoAttendant({ subid: id, data: autoattendant, authHeader})
             })
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/autoattendants/' }).as('getAutoAttendantsPage')
         cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
         cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
+        cy.wait('@getAutoAttendantsPage')
 
         cy.get('div[class="csc-list-item transition-generic"]:first').click()
         cy.get('input[data-cy="csc-pbx-auto-attendant-destination"]').clear().type('testdestination')
@@ -217,15 +228,17 @@ context('Auto Attendant tests', () => {
 
         // Setup: Create Subscriber and auto attendant
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.username, authHeader })
+            apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.username, authHeader })
             apiCreateSubscriber({ data:  pbx_subscriber_pilot, authHeader }).then(({ id }) => {
                 apiEditAutoAttendant({ subid: id, data: autoattendantDelete, authHeader})
             })
         })
 
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/autoattendants/' }).as('getAutoAttendantsPage')
         cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
         cy.get('a[href="#/user/extension-settings/auto-attendant"]').click()
+        cy.wait('@getAutoAttendantsPage')
 
         cy.get('div[class="csc-list-item-head-menu"]').click()
         cy.get('div[data-cy="csc-pbx-auto-attendant-delete"]').click()

@@ -2,7 +2,6 @@
 
 import {
     getRandomNum,
-    waitPageProgressAUI,
     deleteDownloadsFolder,
     deleteItemOnListPageBy,
     clickDataTableSelectedMoreMenuItem,
@@ -99,12 +98,12 @@ context('Administrator tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
                 cy.log('Preparing environment...')
-                apiRemoveAdminBy({ name: admin1.login, authHeader })
-                apiRemoveAdminBy({ name: admin2.login, authHeader })
-                apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
-                apiRemoveAdminBy({ name: secondaryResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ login: admin1.login, authHeader })
+                apiRemoveAdminBy({ login: admin2.login, authHeader })
+                apiRemoveAdminBy({ login: mainResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ login: secondaryResellerAdmin.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
                 cy.log('Data clean up pre-tests completed')
                 apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -120,8 +119,8 @@ context('Administrator tests', () => {
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
                 cy.log('Data clean up...')
-                apiRemoveAdminBy({ name: admin1.login, authHeader })
-                apiRemoveAdminBy({ name: admin2.login, authHeader })
+                apiRemoveAdminBy({ login: admin1.login, authHeader })
+                apiRemoveAdminBy({ login: admin2.login, authHeader })
 
                 cy.log('Creating db entries...')
                 apiCreateAdmin({ data: admin1, authHeader })
@@ -147,14 +146,14 @@ context('Administrator tests', () => {
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 
         it('Create an administrator', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin1.login, authHeader })
+                apiRemoveAdminBy({ login: admin1.login, authHeader })
             })
             cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / administrator')
@@ -179,7 +178,6 @@ context('Administrator tests', () => {
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin1.login)
             cy.get('[data-cy="aui-data-table-inline-edit--toggle"]:first').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-negative')
             cy.get('div[data-cy="aui-data-table-inline-edit--toggle"]:first[aria-checked="true"]').should('be.visible')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -280,25 +278,21 @@ context('Administrator tests', () => {
                 }
             })
 
-            // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('settings / administrator', false)
+            cy.navigateMainMenu('settings / administrator')
             cy.locationShouldBe('#/administrator')
             cy.get('div[data-cy^=aui-list-action]').should('not.exist')
 
-            // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('customer', false)
+            cy.navigateMainMenu('customer')
             cy.locationShouldBe('#/customer')
             cy.get('div[data-cy=aui-list-action--customer-creation]').should('not.exist');
             cy.get('div[data-cy=aui-list-action--customer-edit]').should('not.exist');
             cy.get('div[data-cy=aui-list-action--delete]').should('not.exist');
 
-            // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('contact', false)
+            cy.navigateMainMenu('contact')
             cy.locationShouldBe('#/contact');
             cy.get('div[data-cy^=aui-list-action]').should('not.exist');
 
-            // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('domain', false)
+            cy.navigateMainMenu('domain')
             cy.locationShouldBe('#/domain');
             cy.get('div[data-cy=aui-list-action--domain-creation]').should('not.exist');
             cy.get('div[data-cy=aui-list-action--delete]').should('not.exist')
@@ -392,19 +386,19 @@ context('Administrator tests', () => {
             // let's remove all data via API
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
-                apiRemoveAdminBy({ name: secondaryResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ login: mainResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ login: secondaryResellerAdmin.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 reseller.name = 'reseller' + getRandomNum()
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 
         afterEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: secondaryResellerAdmin.login, authHeader })
-                apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ login: secondaryResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ login: mainResellerAdmin.login, authHeader })
             })
         })
 
@@ -436,7 +430,7 @@ context('Administrator tests', () => {
 
         it('Create a reseller admin (is_master=false) and check if permissions are correct', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: secondaryResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ login: secondaryResellerAdmin.login, authHeader })
             })
             cy.quickLoginAUI(mainResellerAdmin.login, mainResellerAdmin.password)
             cy.navigateMainMenu('settings / administrator')
@@ -450,7 +444,6 @@ context('Administrator tests', () => {
             cy.get('input[data-cy="password-retype-field"]').type(secondaryResellerAdmin.password)
             cy.get('div[data-cy="can-reset-password-flag"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 
             cy.logoutUiAUI()
@@ -506,7 +499,7 @@ context('Administrator tests', () => {
                     cy.get('div').contains('Settings').click()
                 }
             })
-            cy.navigateMainMenu('settings / administrator', false)
+            cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
             cy.get('a[data-cy="aui-list-action--add"]').should('be.visible')
@@ -630,16 +623,16 @@ context('Administrator tests', () => {
             cy.log('Data clean up...')
             deleteDownloadsFolder()
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin1.login, authHeader })
+                apiRemoveAdminBy({ login: admin1.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 
         it('Create and Download API certificate from second administrator', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin1.login, authHeader })
+                apiRemoveAdminBy({ login: admin1.login, authHeader })
                 apiCreateAdmin({ data: admin1, authHeader })
             })
 

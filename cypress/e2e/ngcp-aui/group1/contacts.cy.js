@@ -2,7 +2,6 @@
 
 import {
     getRandomNum,
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     clickDataTableSelectedMoreMenuItem,
     searchInDataTable,
@@ -62,7 +61,7 @@ context('Contact tests', () => {
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
@@ -94,7 +93,7 @@ context('Contact tests', () => {
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
         })
     })
@@ -117,6 +116,7 @@ context('Contact tests', () => {
                 cy.get('a[href="' + formUrl + '"]').click()
 
                 cy.locationShouldBe(formUrl)
+                cy.get('input[data-cy="email-field"]').should('be.visible')
                 cy.get('[data-cy="aui-save-button"]').click()
                 if (contactType === 'customer') {
                     cy.get('input[data-cy="aui-select-reseller"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -147,6 +147,7 @@ context('Contact tests', () => {
                 cy.get('a[href="' + formUrl + '"]').click()
 
                 cy.locationShouldBe(formUrl)
+                cy.get('input[data-cy="email-field"]').should('be.visible')
                 if (contactType === 'customer') {
                     cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: reseller.name, itemContains: reseller.name })
                     cy.get('input[data-cy="email-field"]').type(customerContact.email)
@@ -166,20 +167,20 @@ context('Contact tests', () => {
                 cy.locationShouldBe('#/contact')
 
                 if (contactType === 'customer') {
-                    searchInDataTable(customerContact.email)
+                    searchInDataTable(customerContact.email, null, true, true)
                 } else {
-                    searchInDataTable(systemContact.email)
+                    searchInDataTable(systemContact.email, null, true, true)
                 }
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 clickDataTableSelectedMoreMenuItem('contactEdit')
 
-                // cy.locationShouldBe(formUrl) // TODO: parametric URLs
+                cy.get('input[data-cy="firstname-field"]').should('be.visible')
+                cy.get('input[data-cy="lastname-field"]').should('be.visible')
                 cy.get('input[data-cy="firstname-field"]').type(contactNames.firstname)
                 cy.get('input[data-cy="lastname-field"]').type(contactNames.lastname)
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
                 cy.get('[data-cy="aui-close-button"]').click()
-                waitPageProgressAUI()
                 cy.get('td[data-cy="q-td--firstname"]').contains(contactNames.firstname).should('be.visible')
                 cy.get('td[data-cy="q-td--lastname"]').contains(contactNames.lastname).should('be.visible')
             })
@@ -190,9 +191,9 @@ context('Contact tests', () => {
 
                 cy.locationShouldBe('#/contact')
                 if (contactType === 'customer') {
-                    deleteItemOnListPageBy(customerContact.email)
+                    deleteItemOnListPageBy(customerContact.email, null, true, true)
                 } else {
-                    deleteItemOnListPageBy(systemContact.email)
+                    deleteItemOnListPageBy(systemContact.email, null, true, true)
                 }
             })
         })

@@ -8,7 +8,6 @@ import {
     apiRemoveDomainBy,
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
-    waitPageProgressCSC,
     getRandomNum
 } from '../../../support/e2e'
 
@@ -57,9 +56,9 @@ context('Reminder tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -70,8 +69,7 @@ context('Reminder tests', () => {
 
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader })
         })
     })
@@ -80,52 +78,52 @@ context('Reminder tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 
     it('Enable/Disable reminder', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/reminders/' }).as('getReminderPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/reminder"]').click()
+        cy.wait('@getReminderPage')
 
-        waitPageProgressCSC()
+        cy.get('div[data-cy="csc-reminder-toggle"][aria-disabled="true"]').should('not.exist')
         cy.get('div[data-cy="csc-reminder-toggle"]').click()
 
-        waitPageProgressCSC()
         cy.get('div[data-cy="csc-reminder-toggle"][aria-checked="true"]').should('be.visible')
         cy.get('div[data-cy="csc-reminder-toggle"]').click()
 
-        waitPageProgressCSC()
         cy.get('div[data-cy="csc-reminder-toggle"][aria-checked="false"]').should('be.visible')
     })
 
     it('Set occurance and then enable reminder', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/reminders/' }).as('getReminderPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/reminder"]').click()
+        cy.wait('@getReminderPage')
 
-        waitPageProgressCSC()
+        cy.get('div[data-cy="csc-reminder-toggle"][aria-disabled="true"]').should('not.exist')
         cy.get('div[data-cy="csc-reminder-occurance"][aria-label="On weekdays"]').click()
-        waitPageProgressCSC()
         cy.get('div[data-cy="csc-reminder-occurance"][aria-label="On weekdays"][aria-checked="true"]').should('be.visible')
         cy.get('div[data-cy="csc-reminder-occurance"][aria-label="Always"]').click()
-        waitPageProgressCSC()
         cy.get('div[data-cy="csc-reminder-occurance"][aria-label="Always"][aria-checked="true"]').should('be.visible')
         cy.get('div[data-cy="csc-reminder-toggle"]').click()
-
-        waitPageProgressCSC()
         cy.get('div[data-cy="csc-reminder-toggle"][aria-checked="true"]').should('be.visible')
     })
 
     it('Set time and then enable reminder', () => {
         cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/reminders/' }).as('getReminderPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/reminder"]').click()
+        cy.wait('@getReminderPage')
 
-        waitPageProgressCSC()
-
+        cy.get('div[data-cy="csc-reminder-toggle"][aria-disabled="true"]').should('not.exist')
         cy.get('button[data-cy="csc-reminder-show-timeselector"]').trigger("click")
         cy.get('div[class="q-time__clock-position row flex-center q-time__clock-pos-6"]').click()
         cy.wait(1000)
@@ -139,7 +137,6 @@ context('Reminder tests', () => {
         const regex = new RegExp(`${time1}|${time2}|${time3}`)
         cy.get('input[data-cy="csc-reminder-time"]').should('have.attr', 'value').and('match', regex)
         cy.get('div[data-cy="csc-reminder-toggle"]').click()
-        waitPageProgressCSC()
         cy.get('div[data-cy="csc-reminder-toggle"][aria-checked="true"]').should('be.visible')
     })
 })
