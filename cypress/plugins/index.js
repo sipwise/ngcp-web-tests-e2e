@@ -12,8 +12,8 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
-const { rmdir } = require('fs').promises
 const AdmZip = require('adm-zip')
+const { rmSync } = require('fs')
 
 /**
  * @type {Cypress.PluginConfig}
@@ -46,7 +46,7 @@ module.exports = (on, config) => {
         async deleteFolder (folderName) {
             console.log('deleting folder %s', folderName)
             try {
-                await rmdir(folderName, { maxRetries: 10, recursive: true })
+                await rmSync(folderName, { force: true, recursive: true })
                 return null
             } catch (err) {
                 console.error(err)
