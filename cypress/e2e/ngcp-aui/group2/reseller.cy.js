@@ -9,7 +9,6 @@ import {
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     getRandomNum,
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable
 } from '../../../support/e2e'
@@ -43,7 +42,7 @@ context('Reseller tests', () => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -56,7 +55,7 @@ context('Reseller tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             cy.log('Cleaning up db...')
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
 
             cy.log('Seeding up db...')
             apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
@@ -70,13 +69,13 @@ context('Reseller tests', () => {
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
     })
 
     it('Check if reseller with invalid values gets rejected', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / reseller')
 
         cy.locationShouldBe('#/reseller')
@@ -93,9 +92,9 @@ context('Reseller tests', () => {
     it('Create a reseller', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
         })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / reseller')
 
         cy.locationShouldBe('#/reseller')
@@ -116,14 +115,13 @@ context('Reseller tests', () => {
         cy.auiSelectLazySelect({ dataCy: 'aui-select-contract', filter: reseller.contract_id, itemContains: 'default-system' })
         cy.get('[data-cy="reseller-name"] input').type(reseller.name)
         cy.get('[data-cy="aui-save-button"]').click()
-        waitPageProgressAUI()
 
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         cy.locationShouldBe('#/reseller')
     })
 
     it('Edit reseller status to "locked"', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / reseller')
 
         cy.locationShouldBe('#/reseller')
@@ -131,16 +129,14 @@ context('Reseller tests', () => {
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--resellerEdit"]').click()
-        waitPageProgressAUI()
         cy.qSelect({ dataCy: 'reseller-status', filter: '', itemContains: 'Locked' })
         cy.get('[data-cy="aui-save-button"]').click()
-        waitPageProgressAUI()
         cy.get('[data-cy="aui-close-button"]').click()
         cy.get('[data-cy="aui-data-table-inline-edit--select"]').should('contain.text', 'Locked')
     })
 
     it('Delete reseller and check if they are deleted', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / reseller')
 
         cy.locationShouldBe('#/reseller')

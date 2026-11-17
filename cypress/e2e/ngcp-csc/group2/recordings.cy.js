@@ -11,6 +11,9 @@ import {
     apiRemoveSubscriberBy,
 } from '../../../support/e2e'
 
+const dayjs = require('dayjs')
+const ngcpConfig = Cypress.config('ngcpConfig')
+
 const domain = {
     domain: 'domainRecordings',
     reseller_id: 1
@@ -47,18 +50,15 @@ const loginInfo = {
     password: `${subscriber.webpassword}`
 }
 
-const ngcpConfig = Cypress.config('ngcpConfig')
-const dayjs = require('dayjs')
-
-context('Call recordings tests', () => {
+context('Call Recordings tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -69,31 +69,30 @@ context('Call recordings tests', () => {
 
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data:  subscriber, authHeader })
         })
-        cy.visit('/')
     })
 
     after(() => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
         })
     })
 
     it('Add timerange to recording filters', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/callrecordings/' }).as('getCallRecordingPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/recordings"]').click()
+        cy.wait('@getCallRecordingPage')
 
         cy.get('button').contains('Filter').click()
-        cy.get('div[data-cy="csc-call-recording-filters"] label').click()
-        cy.get('div[class="q-virtual-scroll__content"]').contains('Timerange').click()
+        cy.get('[data-cy="csc-recording-filter"]').closest('.q-select').should('be.visible')
+        cy.qSelect({ dataCy: 'csc-recording-filter', itemContains: 'Timerange' })
         cy.get('div[class="q-field__prepend q-field__marginal row no-wrap items-center"] i:first').click()
         cy.get('div[class="q-date q-date--portrait q-date--portrait-standard q-date--dark q-dark"]').contains('Close').click()
         cy.get('div[data-cy="q-chip-start-time"]').contains('Start time: ' + dayjs().format('YYYY-MM-DD' + ' 00:00')).should('be.visible')
@@ -105,15 +104,15 @@ context('Call recordings tests', () => {
     })
 
     it('Add caller to recording filters', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/callrecordings/' }).as('getCallRecordingPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/recordings"]').click()
+        cy.wait('@getCallRecordingPage')
 
         cy.get('button').contains('Filter').click()
-        cy.get('div[data-cy="csc-call-recording-filters"] label').click()
-        cy.get('div[class="q-virtual-scroll__content"]').contains('Caller').click()
+        cy.get('[data-cy="csc-recording-filter"]').closest('.q-select').should('be.visible')
+        cy.qSelect({ dataCy: 'csc-recording-filter', itemContains: 'Caller' })
         cy.get('input[data-cy="csc-recording-filter-input"]').type('testcaller')
         cy.get('div[class="q-field__append q-field__marginal row no-wrap items-center"] i').contains('search').click()
         cy.get('div[data-cy="q-chip-caller"]').contains('Caller: testcaller')
@@ -122,15 +121,15 @@ context('Call recordings tests', () => {
     })
 
     it('Add callee to recording filters', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/callrecordings/' }).as('getCallRecordingPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/recordings"]').click()
+        cy.wait('@getCallRecordingPage')
 
         cy.get('button').contains('Filter').click()
-        cy.get('div[data-cy="csc-call-recording-filters"] label').click()
-        cy.get('div[class="q-virtual-scroll__content"]').contains('Callee').click()
+        cy.get('[data-cy="csc-recording-filter"]').closest('.q-select').should('be.visible')
+        cy.qSelect({ dataCy: 'csc-recording-filter', itemContains: 'Callee' })
         cy.get('input[data-cy="csc-recording-filter-input"]').type('testcallee')
         cy.get('div[class="q-field__append q-field__marginal row no-wrap items-center"] i').contains('search').click()
         cy.get('div[data-cy="q-chip-callee"]').contains('Callee: testcallee')
@@ -139,15 +138,15 @@ context('Call recordings tests', () => {
     })
 
     it('Add callID to recording filters', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/callrecordings/' }).as('getCallRecordingPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/recordings"]').click()
+        cy.wait('@getCallRecordingPage')
 
         cy.get('button').contains('Filter').click()
-        cy.get('div[data-cy="csc-call-recording-filters"] label').click()
-        cy.get('div[class="q-virtual-scroll__content"]').contains('CallID').click()
+        cy.get('[data-cy="csc-recording-filter"]').closest('.q-select').should('be.visible')
+        cy.qSelect({ dataCy: 'csc-recording-filter', itemContains: 'CallID' })
         cy.get('input[data-cy="csc-recording-filter-input"]').type('testcallid')
         cy.get('div[class="q-field__append q-field__marginal row no-wrap items-center"] i').contains('search').click()
         cy.get('div[data-cy="q-chip-call-id"]').contains('CallID: testcallid').should('be.visible')

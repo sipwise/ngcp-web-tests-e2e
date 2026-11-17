@@ -4,7 +4,6 @@ import {
     apiCreateSubscriberProfileSet,
     apiLoginAsSuperuser,
     apiRemoveSubscriberProfileSetBy,
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable
 } from '../../../support/e2e'
@@ -25,7 +24,7 @@ const profileSet = {
     name: 'ProfileSP'
 }
 
-context('Subscriber profile tests', () => {
+context('Subscriber Profile tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
@@ -51,8 +50,8 @@ context('Subscriber profile tests', () => {
         })
     })
 
-    it('Check if subscriber profile set with invalid values gets rejected', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+    it('Check if Subscriber Profile Set with invalid values gets rejected', () => {
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / subscriberprofile')
 
         cy.locationShouldBe('#/subscriberprofile')
@@ -63,11 +62,12 @@ context('Subscriber profile tests', () => {
         cy.get('label[data-cy="profile-set-description"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
     })
 
-    it('Create subscriber profile set', () => {
+    it('Create Subscriber Profile Set', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveSubscriberProfileSetBy({ name: profileSet.name, authHeader })
         })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / subscriberprofile')
 
         cy.locationShouldBe('#/subscriberprofile')
@@ -80,8 +80,8 @@ context('Subscriber profile tests', () => {
         cy.locationShouldBe('#/subscriberprofile')
     })
 
-    it('Edit subscriber profile set', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+    it('Edit Subscriber Profile Set', () => {
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / subscriberprofile')
 
         cy.locationShouldBe('#/subscriberprofile')
@@ -94,48 +94,49 @@ context('Subscriber profile tests', () => {
         cy.get('[data-cy="aui-save-button"]').click()
         cy.contains('.q-notification', 'Subscriber Profile Set saved successfully').should('be.visible')
         cy.get('[data-cy="aui-close-button"]').click()
-        waitPageProgressAUI()
         cy.contains('[data-cy="q-td--description"]', profileSet.descriptionNew).should('be.visible')
     })
 
-    it('Check if subscriber profile with invalid values gets rejected', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+    it('Check if Subscriber Profile with invalid values gets rejected', () => {
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / subscriberprofile')
         cy.locationShouldBe('#/subscriberprofile')
         searchInDataTable(profileSet.name)
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+        cy.intercept('GET', '**/api/subscriberprofiles/**').as('getSubscriberProfilePage')
         cy.get('a[data-cy="aui-data-table-row-menu--subscriberProfileList"]').click()
-        waitPageProgressAUI()
+
+        cy.wait('@getSubscriberProfilePage')
         cy.get('a[data-cy="aui-list-action--add"]').click()
         cy.get('[data-cy=aui-save-button]').click()
         cy.get('label[data-cy="profile-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
         cy.get('label[data-cy="profile-description"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
     })
 
-    it('Create two subscriber profiles and mark one as default', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+    it('Create two Subscriber Profile and mark one as default', () => {
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / subscriberprofile')
 
         cy.locationShouldBe('#/subscriberprofile')
         searchInDataTable(profileSet.name)
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+        cy.intercept('GET', '**/api/subscriberprofiles/**').as('getSubscriberProfilePage')
         cy.get('a[data-cy="aui-data-table-row-menu--subscriberProfileList"]').click()
-        waitPageProgressAUI()
+
+        cy.wait('@getSubscriberProfilePage')
         cy.get('a[data-cy="aui-list-action--add"]').click()
         cy.get('[data-cy="profile-name"]input').type(profile.profilename)
         cy.get('[data-cy="profile-description"]input').type(profile.description)
         cy.get('div[aria-label="block_in_list"]').click()
         cy.get('[data-cy="aui-save-button"]').click()
-        waitPageProgressAUI()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         cy.get('a[data-cy="aui-list-action--add"]').click()
         cy.get('[data-cy="profile-name"]input').type(profile.profilename2)
         cy.get('[data-cy="profile-description"]input').type(profile.description)
         cy.get('[data-cy="profile-set-default-flag"]').click()
         cy.get('[data-cy="aui-save-button"]').click()
-        waitPageProgressAUI()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         searchInDataTable(profile.profilename)
         cy.get('[data-cy="aui-data-table-inline-edit--toggle"]:eq(0)[aria-checked="false"]').should('be.visible')
@@ -143,8 +144,8 @@ context('Subscriber profile tests', () => {
         cy.get('[data-cy="aui-data-table-inline-edit--toggle"]:eq(0)[aria-checked="true"]').should('be.visible')
     })
 
-    it('Delete subscriber profile set and check if they are deleted', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+    it('Delete Subscriber Profile set and check if they are deleted', () => {
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / subscriberprofile')
 
         cy.locationShouldBe('#/subscriberprofile')

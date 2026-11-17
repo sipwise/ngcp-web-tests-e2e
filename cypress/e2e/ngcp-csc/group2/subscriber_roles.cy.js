@@ -8,9 +8,11 @@ import {
     apiRemoveDomainBy,
     apiRemoveCustomerBy,
     apiRemoveSubscriberBy,
-    getRandomNum,
-    waitPageProgressCSC,
+    getRandomNum
 } from '../../../support/e2e'
+
+let iscloudpbx = false
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 const domain = {
     domain: 'domainSubscriberRoles',
@@ -66,7 +68,7 @@ const pbx_subscriber_pilot = {
     primary_number: {
         sn: 17,
         ac: 23,
-        cc: 7777
+        cc: 7378
     },
 }
 
@@ -117,66 +119,64 @@ const pbxcustomer = {
     type: 'pbxaccount'
 }
 
-const ngcpConfig = Cypress.config('ngcpConfig')
-let iscloudpbx = false
-
 const loginInfo = {
     username: `${subscriber.webusername}@${subscriber.domain}`,
     password: `${subscriber.webpassword}`
 }
 
-context('Subscriber roles tests', () => {
+context('Subscriber Roles tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: admin_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_admin_subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-            cy.log('Data clean up pre-tests completed')
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: admin_subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            cy.log('Finished data cleanup')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                 subscriber.customer_id = id
                 admin_subscriber.customer_id = id
             })
-            apiCreateSubscriber({ data: subscriber, authHeader })
-            cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-            cy.visit('/')
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.wait('@platforminfo').then(({ response }) => {
-                if (response.body.cloudpbx) {
+            cy.request({
+                method: 'GET',
+                url: `${ngcpConfig.apiHost}/api/platforminfo`,
+                ...authHeader
+            }).then(({ body }) => {
+                if (body.cloudpbx) {
                     iscloudpbx = true
+                    apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_admin_subscriber.username, authHeader })
+                    apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+                    apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
+                        pbx_subscriber_pilot.customer_id = id
+                        pbx_subscriber.customer_id = id
+                        pbx_admin_subscriber.customer_id = id
+                    })
                 } else {
-                    cy.log('Not a CloudPBX enabled instance, skipping "PBX Subscriber" tests...');
+                    cy.log('Not a CloudPBX enabled instance, skipping "PBX Subscriber" tests...')
                     iscloudpbx = false
                 }
             })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiCreateCustomer({ data: pbxcustomer, authHeader }).then(({ id }) => {
-                pbx_subscriber_pilot.customer_id = id
-                pbx_subscriber.customer_id = id
-                pbx_admin_subscriber.customer_id = id
-            })
+            cy.log('Finished data creation, start running tests...')
         })
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
+        Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: admin_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_subscriber.username, authHeader })
-            apiRemoveSubscriberBy({ name: pbx_admin_subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveCustomerBy({ name: pbxcustomer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            if (iscloudpbx) {
+                apiRemoveSubscriberBy({ username: pbx_subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: pbx_admin_subscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: pbxcustomer.external_id, authHeader })
+            }
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: admin_subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
+        cy.log('Cleanup complete!')
     })
 
     context('Test subscriber', () => {
@@ -188,20 +188,14 @@ context('Subscriber roles tests', () => {
             loginInfo.password = `${subscriber.webpassword}`
         })
 
-        beforeEach(() => {
-            cy.visit('/')
-        })
-
         after(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.external_id, authHeader })
             })
         })
 
         it('Login and check if subscriber cannot see pbx and admin pages, cannot see SIP password fields', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('button[data-cy="user-menu"]').click()
             cy.get('a[data-cy="user-settings"]').click()
 
@@ -213,15 +207,13 @@ context('Subscriber roles tests', () => {
         })
 
         it('Check if subscriber can create/delete an object (speed dial)', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/speeddial"]').click()
 
             cy.get('button[data-cy="csc-speeddial-add"]').click()
-            cy.get('[data-cy="csc-speeddial-slot"]').click()
-            cy.get('div[aria-selected="false"]').contains('*1').click()
+            cy.get('[data-cy="csc-speeddial-slot"]').closest('.q-select').should('be.visible')
+            cy.qSelect({ dataCy: 'csc-speeddial-slot', itemContains: '*1' })
             cy.get('input[data-cy="csc-speeddial-destination"]').type('testspeeddial')
             cy.get('button[data-cy="csc-speeddial-save"]').click()
 
@@ -236,7 +228,7 @@ context('Subscriber roles tests', () => {
     context('Test admin subscriber', () => {
         before(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: admin_subscriber.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: admin_subscriber.external_id, authHeader })
                 loginInfo.username = `${admin_subscriber.webusername}@${domain.domain}`
                 loginInfo.password = `${admin_subscriber.webpassword}`
             })
@@ -246,19 +238,16 @@ context('Subscriber roles tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 apiCreateSubscriber({ data: admin_subscriber, authHeader })
             })
-            cy.visit('/')
         })
 
         afterEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: admin_subscriber.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: admin_subscriber.external_id, authHeader })
             })
         })
 
         it('Login and check if admin subscriber cannot see pbx and admin pages, can see SIP password fields', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('button[data-cy="user-menu"]').click()
             cy.get('a[data-cy="user-settings"]').click()
 
@@ -270,9 +259,7 @@ context('Subscriber roles tests', () => {
         })
 
         it('Change and copy SIP password', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.wrap(
                 Cypress.automation('remote:debugger:protocol', {
                     command: 'Browser.grantPermissions',
@@ -281,7 +268,7 @@ context('Subscriber roles tests', () => {
                     origin: window.location.origin,
                     },
                 }),
-            );
+            )
             cy.get('button[data-cy="user-menu"]').click()
             cy.get('a[data-cy="user-settings"]').click()
 
@@ -296,21 +283,19 @@ context('Subscriber roles tests', () => {
             cy.wait(500)
             cy.window().then((win) => {
                 win.navigator.clipboard.readText().then((text) => {
-                expect(text).to.eq('testpassword');
+                expect(text).to.eq('testpassword')
                 })
             })
         })
 
         it('Check if admin subscriber can create/delete an object (speed dial)', () => {
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/speeddial"]').click()
 
             cy.get('button[data-cy="csc-speeddial-add"]').click()
-            cy.get('[data-cy="csc-speeddial-slot"]').click()
-            cy.get('div[aria-selected="false"]').contains('*1').click()
+            cy.get('[data-cy="csc-speeddial-slot"]').closest('.q-select').should('be.visible')
+            cy.qSelect({ dataCy: 'csc-speeddial-slot', itemContains: '*2' })
             cy.get('input[data-cy="csc-speeddial-destination"]').type('testspeeddial')
             cy.get('button[data-cy="csc-speeddial-save"]').click()
 
@@ -326,8 +311,8 @@ context('Subscriber roles tests', () => {
         before(() => {
             if(iscloudpbx) {
                 apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveSubscriberBy({ name: pbx_subscriber.external_id, authHeader })
-                    apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_subscriber.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.external_id, authHeader })
                     apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
                     apiCreateSubscriber({ data: pbx_subscriber, authHeader })
                 })
@@ -336,17 +321,11 @@ context('Subscriber roles tests', () => {
             }
         })
 
-        beforeEach(() => {
-            if(iscloudpbx) {
-                cy.visit('/')
-            }
-        })
-
         after(() => {
             if(iscloudpbx) {
                 apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveSubscriberBy({ name: pbx_subscriber.external_id, authHeader })
-                    apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_subscriber.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.external_id, authHeader })
                 })
             }
 
@@ -356,9 +335,7 @@ context('Subscriber roles tests', () => {
             if (!iscloudpbx) {
                 this.skip()
             }
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('button[data-cy="user-menu"]').click()
             cy.get('a[data-cy="user-settings"]').click()
 
@@ -373,15 +350,13 @@ context('Subscriber roles tests', () => {
             if (!iscloudpbx) {
                 this.skip()
             }
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/speeddial"]').click()
 
             cy.get('button[data-cy="csc-speeddial-add"]').click()
-            cy.get('[data-cy="csc-speeddial-slot"]').click()
-            cy.get('div[aria-selected="false"]').contains('*1').click()
+            cy.get('[data-cy="csc-speeddial-slot"]').closest('.q-select').should('be.visible')
+            cy.qSelect({ dataCy: 'csc-speeddial-slot', itemContains: '*3' })
             cy.get('input[data-cy="csc-speeddial-destination"]').type('testspeeddial')
             cy.get('button[data-cy="csc-speeddial-save"]').click()
 
@@ -396,15 +371,13 @@ context('Subscriber roles tests', () => {
             if (!iscloudpbx) {
                 this.skip()
             }
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
+            cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallQueuePage')
             cy.get('a[href="#/user/extension-settings/call-queues"]').click()
-            waitPageProgressCSC()
 
+            cy.wait('@getCallQueuePage')
             cy.get('div[data-cy="csc-call-queue-feature-switch"]').click()
-
             cy.get('div[data-cy="csc-call-queue-feature-switch"][aria-checked="true"]').should('be.visible')
         })
     })
@@ -413,8 +386,8 @@ context('Subscriber roles tests', () => {
         before(() => {
             if(iscloudpbx){
                 apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveSubscriberBy({ name: pbx_admin_subscriber.external_id, authHeader })
-                    apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_admin_subscriber.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.external_id, authHeader })
                     apiCreateSubscriber({ data: pbx_subscriber_pilot, authHeader })
                 })
                 loginInfo.username = `${pbx_admin_subscriber.webusername}@${domain.domain}`
@@ -427,14 +400,13 @@ context('Subscriber roles tests', () => {
                 apiLoginAsSuperuser().then(authHeader => {
                     apiCreateSubscriber({ data: pbx_admin_subscriber, authHeader })
                 })
-                cy.visit('/')
             }
         })
 
         after(() => {
             if(iscloudpbx) {
                 apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveSubscriberBy({ name: pbx_subscriber_pilot.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_subscriber_pilot.external_id, authHeader })
                 })
             }
         })
@@ -442,7 +414,7 @@ context('Subscriber roles tests', () => {
         afterEach(() => {
             if(iscloudpbx) {
                 apiLoginAsSuperuser().then(authHeader => {
-                    apiRemoveSubscriberBy({ name: pbx_admin_subscriber.external_id, authHeader })
+                    apiRemoveSubscriberBy({ username: pbx_admin_subscriber.external_id, authHeader })
                 })
             }
         })
@@ -451,9 +423,7 @@ context('Subscriber roles tests', () => {
             if (!iscloudpbx) {
                 this.skip()
             }
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('button[data-cy="user-menu"]').click()
             cy.get('a[data-cy="user-settings"]').click()
 
@@ -468,9 +438,7 @@ context('Subscriber roles tests', () => {
             if (!iscloudpbx) {
                 this.skip()
             }
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.wrap(
                 Cypress.automation('remote:debugger:protocol', {
                     command: 'Browser.grantPermissions',
@@ -479,7 +447,7 @@ context('Subscriber roles tests', () => {
                     origin: window.location.origin,
                     },
                 }),
-            );
+            )
             cy.get('button[data-cy="user-menu"]').click()
             cy.get('a[data-cy="user-settings"]').click()
 
@@ -494,7 +462,7 @@ context('Subscriber roles tests', () => {
             cy.wait(500)
             cy.window().then((win) => {
                 win.navigator.clipboard.readText().then((text) => {
-                expect(text).to.eq('testpassword');
+                expect(text).to.eq('testpassword')
                 })
             })
         })
@@ -503,15 +471,13 @@ context('Subscriber roles tests', () => {
             if (!iscloudpbx) {
                 this.skip()
             }
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
             cy.get('a[href="#/user/speeddial"]').click()
 
             cy.get('button[data-cy="csc-speeddial-add"]').click()
-            cy.get('[data-cy="csc-speeddial-slot"]').click()
-            cy.get('div[aria-selected="false"]').contains('*1').click()
+            cy.get('[data-cy="csc-speeddial-slot"]').closest('.q-select').should('be.visible')
+            cy.qSelect({ dataCy: 'csc-speeddial-slot', itemContains: '*4' })
             cy.get('input[data-cy="csc-speeddial-destination"]').type('testspeeddial')
             cy.get('button[data-cy="csc-speeddial-save"]').click()
 
@@ -526,15 +492,13 @@ context('Subscriber roles tests', () => {
             if (!iscloudpbx) {
                 this.skip()
             }
-            cy.loginUiCSC(loginInfo.username, loginInfo.password)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+            cy.quickLoginCSC(loginInfo.username, loginInfo.password)
             cy.get('div[data-cy="q-item-label"]').contains('Extension Settings').click()
+            cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallQueuePage')
             cy.get('a[href="#/user/extension-settings/call-queues"]').click()
 
-            waitPageProgressCSC()
+            cy.wait('@getCallQueuePage')
             cy.get('div[data-cy="csc-call-queue-feature-switch"]').click()
-
             cy.get('div[data-cy="csc-call-queue-feature-switch"][aria-checked="true"]').should('be.visible')
         })
     })

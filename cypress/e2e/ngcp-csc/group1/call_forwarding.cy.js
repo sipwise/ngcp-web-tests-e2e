@@ -19,286 +19,287 @@ const domain = {
 }
 
 const subscriber = {
-    username: 'subscriberCallForw',
-    webusername: 'subscriberCallForw',
-    email: 'subscriberCallForw@test.com',
-    external_id: 'subscriberCallForw',
+    username: 'subscriberCF',
+    webusername: 'subscriberCF',
+    email: 'subscriberCF@test.com',
+    external_id: 'subscriberCF',
     password: 'sub' + getRandomNum() + 'pass',
     webpassword: 'sub' + getRandomNum() + 'pass',
     domain: domain.domain,
     customer_id: 0,
     subscriber_id: 0,
     primary_number: {
-        sn: 11,
-        ac: 22,
-        cc: 2222
+        sn: 13,
+        ac: 13,
+        cc: 1113
     },
 }
 
 const customer = {
     billing_profile_definition: 'id',
     billing_profile_id: 1,
-    external_id: 'customerCallForw',
+    external_id: 'customerCF',
     contact_id: 1,
     status: 'active',
     type: 'sipaccount'
 }
 
-const loginInfo = {
+const subscriberLoginInfo = {
     username: `${subscriber.webusername}@${subscriber.domain}`,
     password: `${subscriber.webpassword}`
 }
 
-// Helper function to create a call forwarding
-function createCallForwarding(type, destinationType) {
+function createCallForwarding(type, destinationType, number = '0123456789') {
     cy.get('button[data-cy="csc-add-forwarding"]').click()
     cy.get(`[data-cy="q-tab-${type}"]`).click()
     cy.get('[data-cy="csc-cf-destination-type"]').closest('.q-select').click()
     cy.get('.q-menu').should('be.visible').within(() => {
         cy.contains('.q-item', destinationType).click()
     })
-    if (destinationType === "Number") {
-        cy.get('[data-cy="csc-cf-destination-number"]').should('be.visible').type('0123456789')
+    if (destinationType === 'Number') {
+        cy.get('[data-cy="csc-cf-destination-number"]').should('be.visible').type(number)
     }
-
-    if (destinationType === "Custom Announcement") {
+    if (destinationType === 'Custom Announcement') {
         cy.get('[data-cy="csc-cf-custom-announcement"]').closest('.q-select').click()
         cy.get('.q-menu').filter(':visible').contains('.q-item', 'custom_announcement_0').click()
     }
+    cy.intercept({ method: 'GET', pathname: '**/api/cfdestinationsets/**' }).as('getCFDestinationSets')
     cy.get('[data-cy="csc-cf-save"]').click()
+    cy.wait('@getCFDestinationSets')
 }
 
-context('Call forwarding page tests', () => {
+context('Call Forwarding tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-            cy.log('Data clean up pre-tests completed')
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            cy.log('Finished data cleanup')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
-                    subscriber.customer_id = id
+                subscriber.customer_id = id
             })
-        })
-    })
-
-    beforeEach(() => {
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiCreateSubscriber({
-                data: {
-                    ...subscriber,
-                    primaryNumber: {
-                        sn: 13,
-                        ac: 13,
-                        cc: 1113
-                    }
-                },
-                authHeader
-                })
-        cy.visit('/')
+            cy.log('Finished data creation, start running tests...')
         })
     })
 
     after(() => {
-        cy.log('Data clean up...')
+        Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            cy.log('Cleanup complete!')
         })
     })
 
-    it('Creating a malformed call forward (Number/Custom Announcement) should not be possible', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
-        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-        cy.get('a[href="#/user/call-forwarding"]').click()
-
-        cy.get('button[data-cy="csc-add-forwarding"]').click()
-        cy.get('[data-cy="q-tab-cfu"]').click()
-        cy.get('[data-cy="csc-cf-destination-type"]').closest('.q-select').click()
-        cy.get('.q-menu').should('be.visible').within(() => {
-            cy.contains('.q-item', 'Number').click()
-        })
-        cy.get('[data-cy="csc-cf-destination-number"]').should('be.visible')
-        cy.get('[data-cy="csc-cf-save"]').should('be.disabled')
-
-        cy.get('[data-cy="csc-cf-destination-type"]').closest('.q-select').click()
-        cy.get('.q-menu').should('be.visible').within(() => {
-            cy.contains('.q-item', 'Custom Announcement').click()
+    context('Call Forward page tests', () => {
+        beforeEach(() => {
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiCreateSubscriber({ data: subscriber, authHeader })
+            })
         })
 
-        cy.get('[data-cy="csc-cf-custom-announcement"]').closest('.q-select').should('be.visible')
-        cy.get('[data-cy="csc-cf-save"]').should('be.disabled')
-    })
+        it('Try to create a malformed Call Forward (Number/Custom Announcement)', () => {
+            cy.quickLoginCSC(subscriberLoginInfo.username, subscriberLoginInfo.password)
+            cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-    it('Add and delete available, not available and busy call forwarding', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
+            cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
+            cy.get('a[href="#/user/call-forwarding"]').click()
 
-        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-        cy.get('a[href="#/user/call-forwarding"]').click()
+            cy.get('button[data-cy="csc-add-forwarding"]').click()
+            cy.get('[data-cy="q-tab-cfu"]').click()
+            cy.get('[data-cy="csc-cf-destination-type"]').closest('.q-select').click()
+            cy.get('.q-menu').should('be.visible').within(() => {
+                cy.contains('.q-item', 'Number').click()
+            })
+            cy.get('[data-cy="csc-cf-destination-number"]').should('be.visible')
+            cy.get('[data-cy="csc-cf-save"]').should('be.disabled')
 
-        // Create CF Always
-        createCallForwarding('cfu', 'Voicebox')
-        cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
-        cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
+            cy.get('[data-cy="csc-cf-destination-type"]').closest('.q-select').click()
+            cy.get('.q-menu').should('be.visible').within(() => {
+                cy.contains('.q-item', 'Custom Announcement').click()
+            })
 
-        // Create CF Not Available
-        createCallForwarding('cfna', 'Conference')
-        cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
-        cy.get('div[id="csc-wrapper-call-forwarding"]').contains('If not available').should('be.visible')
+            cy.get('[data-cy="csc-cf-custom-announcement"]').closest('.q-select').should('be.visible')
+            cy.get('[data-cy="csc-cf-save"]').should('be.disabled')
+        })
 
-        // Create CF busy
-        createCallForwarding('cfb', 'Voicebox')
-        cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
-        cy.get('div[id="csc-wrapper-call-forwarding"]').contains('If busy').should('be.visible')
+        it('Add and delete available, not available and busy Call Forwarding', () => {
+            cy.quickLoginCSC(subscriberLoginInfo.username, subscriberLoginInfo.password)
+            cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-        cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
-        cy.get('div[data-cy="csc-forwarding-delete"]').click()
-        cy.get('span[class="block"]').contains('OK').click()
+            cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
+            cy.get('a[href="#/user/call-forwarding"]').click()
 
-        cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('not.exist')
-        cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
-        cy.get('div[data-cy="csc-forwarding-delete"]').click()
-        cy.get('span[class="block"]').contains('OK').click()
+            // Create CF Always
+            createCallForwarding('cfu', 'Voicebox')
+            cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
+            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
 
-        cy.get('div[id="csc-wrapper-call-forwarding"]').contains('If not available').should('not.exist')
-        cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
-        cy.get('div[data-cy="csc-forwarding-delete"]').click()
-        cy.get('span[class="block"]').contains('OK').click()
+            // Create CF Not Available
+            createCallForwarding('cfna', 'Conference')
+            cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
+            cy.get('div[id="csc-wrapper-call-forwarding"]').contains('If not available').should('be.visible')
 
-        cy.get('div[id="csc-wrapper-call-forwarding"]').contains('If busy').should('not.exist')
-    })
+            // Create CF busy
+            createCallForwarding('cfb', 'Voicebox')
+            cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
+            cy.get('div[id="csc-wrapper-call-forwarding"]').contains('If busy').should('be.visible')
 
-    it('Add two numbers to forward to', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
+            cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
+            cy.get('div[data-cy="csc-forwarding-delete"]').click()
+            cy.get('span[class="block"]').contains('OK').click()
 
-        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-        cy.get('a[href="#/user/call-forwarding"]').click()
+            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('not.exist')
+            cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
+            cy.get('div[data-cy="csc-forwarding-delete"]').click()
+            cy.get('span[class="block"]').contains('OK').click()
 
-        createCallForwarding('cfu', 'Number')
-        cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
-        cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
+            cy.get('div[id="csc-wrapper-call-forwarding"]').contains('If not available').should('not.exist')
+            cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
+            cy.get('div[data-cy="csc-forwarding-delete"]').click()
+            cy.get('span[class="block"]').contains('OK').click()
 
-        cy.get('div[data-cy="q-item-label"]').contains('Forwarded to').should('be.visible')
-        cy.get('span[value="0123456789"]').should('be.visible')
-        cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
-        cy.get('div[data-cy="csc-forwarding-to-number"]').click()
+            cy.get('div[id="csc-wrapper-call-forwarding"]').contains('If busy').should('not.exist')
+        })
 
-        cy.get('i').contains('access_time').click()
-        cy.get('input:visible').clear()
-        cy.get('input:visible').type('30')
-        cy.get('button').contains('Set').click()
+        it('Add two numbers to forward to, move numbers around', () => {
+            cy.quickLoginCSC(subscriberLoginInfo.username, subscriberLoginInfo.password)
+            cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-        cy.get('input:visible').should('not.exist')
-        cy.get('div[class="q-item__label"]').contains('30 seconds').should('be.visible')
-        cy.get('span[data-cy="csc-cf-destination"]').last().click()
-        cy.get('input:visible').should('be.enabled').focus().type('9876543210')
-        cy.get('button').contains('Set').click()
+            cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
+            cy.get('a[href="#/user/call-forwarding"]').click()
 
-        cy.get('span[value="9876543210"]').should('be.visible')
-    })
+            createCallForwarding('cfu', 'Number')
+            cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
+            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
 
-    it('Add "Forward to voicebox" and delete it', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
+            cy.get('div[data-cy="q-item-label"]').contains('Forwarded to').should('be.visible')
+            cy.get('span[value="0123456789"]').should('be.visible')
+            cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
+            cy.get('div[data-cy="csc-forwarding-to-number"]').click()
+            cy.get('span[data-cy="csc-cf-destination"]:last').click()
+            cy.get('input:visible').should('be.enabled').focus().type('testingnumber')
+            cy.get('button[data-cy="q-btn"]').contains('Set').click()
+            cy.get('i').contains('access_time').click()
+            cy.get('input:visible').clear()
+            cy.get('input:visible').type('30')
+            cy.get('button').contains('Set').click()
+            cy.get('input:visible').should('not.exist')
+            cy.get('div[class="q-item__label"]').contains('30 seconds').should('be.visible')
+            cy.get('span[data-cy="csc-cf-destination"]').last().contains('testingnumber').should('be.visible')
 
-        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-        cy.get('a[href="#/user/call-forwarding"]').click()
+            cy.get('span[data-cy="csc-cf-destination"]').first().click()
+            cy.get('input:visible').should('be.enabled').focus().clear().type('9876543210')
+            cy.get('button').contains('Set').click()
+            cy.get('span[data-cy="csc-cf-destination"]').first().contains('9876543210').should('be.visible')
 
-        createCallForwarding('cfu', 'Number')
-        cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
-        cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
-        cy.get('div[data-cy="csc-forwarding-to-voicebox"]').click()
+            cy.get('button[data-cy="q-btn"]').last().click()
+            cy.get('div[data-cy="csc-cf-destination-move-up"]').click()
+            cy.get('span[data-cy="csc-cf-destination"]').first().contains('testingnumber').should('be.visible')
+            cy.get('span[data-cy="csc-cf-destination"]').last().contains('9876543210').should('be.visible')
 
-        cy.get('i').contains('access_time').click()
-        cy.get('input:visible').clear()
-        cy.get('input:visible').type('30')
-        cy.get('button').contains('Set').click()
+        })
 
-        cy.get('div[class="q-item__label"]').contains('30 seconds').should('be.visible')
-        cy.get('i[data-cy="q-icon"]').contains('more_vert').last().click()
-        cy.get('div[data-cy="csc-forwarding-delete"]').click()
-        cy.get('span[class="block"]').contains('OK').click()
+        it('Add "Forward to voicebox" and delete it', () => {
+            cy.quickLoginCSC(subscriberLoginInfo.username, subscriberLoginInfo.password)
+            cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-        cy.get('div[class="q-item__label"]').contains('30 seconds').should('not.exist')
-    })
+            cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
+            cy.get('a[href="#/user/call-forwarding"]').click()
 
-    it('Enable and Disable a call forward condition', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
+            createCallForwarding('cfu', 'Number')
+            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
+            cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
+            cy.get('div[data-cy="csc-forwarding-to-voicebox"]').click()
 
-        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-        cy.get('a[href="#/user/call-forwarding"]').click()
+            cy.get('i').contains('access_time').click()
+            cy.get('input:visible').clear()
+            cy.get('input:visible').type('30')
+            cy.get('button').contains('Set').click()
 
-        createCallForwarding('cfu', 'Voicebox')
-        cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
-        cy.get('div[data-cy="csc-forwarding-toggle"]').click()
-        cy.get('div[data-cy="csc-forwarding-toggle"][aria-checked="true"]').should('be.visible')
+            cy.get('div[class="q-item__label"]').contains('30 seconds').should('be.visible')
+            cy.get('i[data-cy="q-icon"]').contains('more_vert').last().click()
+            cy.get('div[data-cy="csc-forwarding-delete"]').click()
+            cy.get('span[class="block"]').contains('OK').click()
 
-        cy.get('div[data-cy="csc-forwarding-toggle"]').click()
-        cy.get('div[data-cy="csc-forwarding-toggle"][aria-checked="false"]').should('be.visible')
-    })
+            cy.get('div[class="q-item__label"]').contains('30 seconds').should('not.exist')
+        })
 
-    it('Create a cft and update timeout', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
+        it('Enable and Disable a Call Forward condition', () => {
+            cy.quickLoginCSC(subscriberLoginInfo.username, subscriberLoginInfo.password)
+            cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-        cy.get('a[href="#/user/call-forwarding"]').click()
+            cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
+            cy.get('a[href="#/user/call-forwarding"]').click()
 
-        createCallForwarding('cft', 'Custom Announcement')
-        cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
-        cy.get('div[id="csc-wrapper-call-forwarding"]').contains('On no answer').should('be.visible')
-        cy.get('div[data-cy="q-item-label"]').contains('After Ring Timeout').should('be.visible')
-        createCallForwarding('cft', 'Voicebox')
-        cy.get('span[data-cy="csc-forwarding-ring-timeout-global-edit"]').should('be.visible')
-        cy.get('span[data-cy="csc-forwarding-ring-timeout-global-edit"]').click()
-        cy.get('input[data-cy="csc-forwarding-ring-timeout-global-input"]').clear().type('20')
-        cy.get('button[data-cy="q-btn"] span').contains("Set").click()
-        cy.get('div[class="q-item__label"]').contains('20 seconds').should('be.visible')
-        cy.get('div[class="q-item__label"]').contains('60 seconds').should('not.exist')
-    })
+            createCallForwarding('cfu', 'Voicebox')
+            cy.get('div[id="csc-wrapper-call-forwarding"] span').contains('Always').should('be.visible')
+            cy.get('div[data-cy="csc-forwarding-toggle"]').click()
+            cy.get('div[data-cy="csc-forwarding-toggle"][aria-checked="true"]').should('be.visible')
 
-    it('Make sure that forwards other than primary number dont get changed', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
+            cy.get('div[data-cy="csc-forwarding-toggle"]').click()
+            cy.get('div[data-cy="csc-forwarding-toggle"][aria-checked="false"]').should('be.visible')
+        })
 
-        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-        cy.get('a[href="#/user/call-forwarding"]').click()
+        it('Create a cft and update timeout', () => {
+            cy.quickLoginCSC(subscriberLoginInfo.username, subscriberLoginInfo.password)
+            cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-        createCallForwarding('cfu', 'Number')
-        createCallForwarding('cft', 'Number')
-        cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
-        cy.get('div[id="csc-wrapper-call-forwarding"]').contains('On no answer').should('be.visible')
-        cy.get('div[data-cy="q-item-label"]').contains('After Ring Timeout').should('be.visible')
-        cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
-        cy.get('div[data-cy="csc-forwarding-to-voicebox"]').click()
-        cy.get('span[data-cy="csc-forwarding-ring-timeout-global-edit"]').should('be.visible')
-        cy.get('span[data-cy="csc-forwarding-ring-timeout-global-edit"]').click()
-        cy.get('input[data-cy="csc-forwarding-ring-timeout-global-input"]').clear().type('20')
-        cy.get('button[data-cy="q-btn"] span').contains("Set").click()
-        cy.get('div[class="q-item__label"]').contains('20 seconds').should('be.visible')
-        cy.get('div[class="q-item__label"]').contains('60 seconds').should('be.visible')
-    })
+            cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
+            cy.get('a[href="#/user/call-forwarding"]').click()
 
-    it('Hover over call forward time to check if popup appears', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
+            createCallForwarding('cft', 'Custom Announcement')
+            cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
+            cy.get('div[id="csc-wrapper-call-forwarding"]').contains('On no answer').should('be.visible')
+            cy.get('div[data-cy="q-item-label"]').contains('After Ring Timeout').should('be.visible')
+            createCallForwarding('cft', 'Voicebox')
+            cy.get('span[data-cy="csc-forwarding-ring-timeout-global-edit"]').should('be.visible')
+            cy.get('span[data-cy="csc-forwarding-ring-timeout-global-edit"]').click()
+            cy.get('input[data-cy="csc-forwarding-ring-timeout-global-input"]').clear().type('20')
+            cy.get('button[data-cy="q-btn"] span').contains("Set").click()
+            cy.get('div[class="q-item__label"]').contains('20 seconds').should('be.visible')
+            cy.get('div[class="q-item__label"]').contains('60 seconds').should('not.exist')
+        })
 
-        cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
-        cy.get('a[href="#/user/call-forwarding"]').click()
+        it('Make sure that forwards other than primary number dont get changed', () => {
+            cy.quickLoginCSC(subscriberLoginInfo.username, subscriberLoginInfo.password)
+            cy.get('a[href="#/user/dashboard"]').should('be.visible')
 
-        createCallForwarding('cft', 'Voicebox')
-        cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
-        cy.get('div[id="csc-wrapper-call-forwarding"]').contains('On no answer').should('be.visible')
-        cy.get('span[style="white-space: nowrap;"]').contains("60 seconds").trigger('mouseenter').trigger('pointerenter')
-        cy.get('div[role="tooltip"]').contains('This setting is synced with "After Ring Timeout", which can be edited above').should('exist')
+            cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
+            cy.get('a[href="#/user/call-forwarding"]').click()
+
+            createCallForwarding('cfu', 'Number')
+            createCallForwarding('cft', 'Number')
+            cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
+            cy.get('div[id="csc-wrapper-call-forwarding"]').contains('On no answer').should('be.visible')
+            cy.get('div[data-cy="q-item-label"]').contains('After Ring Timeout').should('be.visible')
+            cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
+            cy.get('div[data-cy="csc-forwarding-to-voicebox"]').click()
+            cy.get('span[data-cy="csc-forwarding-ring-timeout-global-edit"]').should('be.visible')
+            cy.get('span[data-cy="csc-forwarding-ring-timeout-global-edit"]').click()
+            cy.get('input[data-cy="csc-forwarding-ring-timeout-global-input"]').clear().type('20')
+            cy.get('button[data-cy="q-btn"] span').contains("Set").click()
+            cy.get('div[class="q-item__label"]').contains('20 seconds').should('be.visible')
+            cy.get('div[class="q-item__label"]').contains('60 seconds').should('be.visible')
+        })
+
+        it('Hover over call forward time to check if popup appears', () => {
+            cy.quickLoginCSC(subscriberLoginInfo.username, subscriberLoginInfo.password)
+            cy.get('a[href="#/user/dashboard"]').should('be.visible')
+
+            cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
+            cy.get('a[href="#/user/call-forwarding"]').click()
+
+            createCallForwarding('cft', 'Voicebox')
+            cy.get('div[id="csc-wrapper-call-forwarding"]').contains('condition').should('be.visible')
+            cy.get('div[id="csc-wrapper-call-forwarding"]').contains('On no answer').should('be.visible')
+            cy.get('span[style="white-space: nowrap;"]').contains("60 seconds").trigger('mouseenter').trigger('pointerenter')
+            cy.get('div[role="tooltip"]').contains('This setting is synced with "After Ring Timeout", which can be edited above').should('exist')
+        })
     })
 })

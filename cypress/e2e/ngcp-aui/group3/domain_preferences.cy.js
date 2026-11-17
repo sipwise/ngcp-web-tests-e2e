@@ -1,7 +1,6 @@
 /// <reference types="cypress" />
 
 import {
-    waitPageProgressAUI,
     clickDataTableSelectedMoreMenuItem,
     searchInDataTable,
     testPreferencesToggleField,
@@ -85,13 +84,13 @@ context('Domain Preferences tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
-            apiRemoveNCOSLevelBy({ name: ncosLevel.level, authHeader })
+            apiRemoveNCOSLevelBy({ level: ncosLevel.level, authHeader })
             apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
             apiRemoveResellerBy({ name: dependencyReseller.name, authHeader })
-            apiRemoveContractBy({ name: dependencyContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: dependencyContract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             cy.log('Data clean up pre-tests completed')
 
@@ -112,7 +111,7 @@ context('Domain Preferences tests', () => {
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
             cy.log('Cleaning up db...')
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
 
             cy.log('Seeding db...')
             apiCreateDomain({ data: domain, authHeader })
@@ -123,27 +122,29 @@ context('Domain Preferences tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
-            apiRemoveNCOSLevelBy({ name: ncosLevel.level, authHeader })
+            apiRemoveNCOSLevelBy({ level: ncosLevel.level, authHeader })
             apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             apiRemoveSoundSetBy({ name: soundSet.name, authHeader })
             apiRemoveResellerBy({ name: dependencyReseller.name, authHeader })
-            apiRemoveContractBy({ name: dependencyContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: dependencyContract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
         })
     })
 
     it('Test all Access Restriction settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
         searchInDataTable(domain.domain)
         cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/domainpreferences/*' }).as('getDomainPreferences')
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-        waitPageProgressAUI()
+        cy.wait('@getDomainPreferences')
+        cy.get('div[data-cy="q-item--allow-out-foreign-domain"]').should('be.visible')
         cy.qSelect({ dataCy: 'category-selection', filter: 'Access Restrictions', itemContains: 'Access Restrictions' })
         testPreferencesToggleField('allow_out_foreign_domain')
         testPreferencesListField('allowed_clis_reject_policy', 'Force CLIR')
@@ -173,15 +174,17 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all Application settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
         searchInDataTable(domain.domain)
         cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/domainpreferences/*' }).as('getDomainPreferences')
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-        waitPageProgressAUI()
+        cy.wait('@getDomainPreferences')
+        cy.get('div[data-cy="q-item--allow-out-foreign-domain"]').should('be.visible')
         cy.qSelect({ dataCy: 'category-selection', filter: 'Applications', itemContains: 'Applications' })
         testPreferencesListField('callrecording_type', 'External')
         testPreferencesToggleField('malicious_call_identification')
@@ -193,15 +196,17 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all Call Blocking settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
         searchInDataTable(domain.domain)
         cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/domainpreferences/*' }).as('getDomainPreferences')
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-        waitPageProgressAUI()
+        cy.wait('@getDomainPreferences')
+        cy.get('div[data-cy="q-item--allow-out-foreign-domain"]').should('be.visible')
         cy.qSelect({ dataCy: 'category-selection', filter: 'Call Blockings', itemContains: 'Call Blockings' })
         testPreferencesListField('adm_cf_ncos', ncosLevel.level)
         testPreferencesListField('adm_ncos', ncosLevel.level)
@@ -209,29 +214,33 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all IMS application server settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
         searchInDataTable(domain.domain)
         cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/domainpreferences/*' }).as('getDomainPreferences')
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-        waitPageProgressAUI()
+        cy.wait('@getDomainPreferences')
+        cy.get('div[data-cy="q-item--allow-out-foreign-domain"]').should('be.visible')
         cy.qSelect({ dataCy: 'category-selection', filter: 'IMS Application Server', itemContains: 'IMS Application Server' })
         testPreferencesToggleField('ims_as_context')
     })
 
     it('Test all Internal settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
         searchInDataTable(domain.domain)
         cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/domainpreferences/*' }).as('getDomainPreferences')
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-        waitPageProgressAUI()
+        cy.wait('@getDomainPreferences')
+        cy.get('div[data-cy="q-item--allow-out-foreign-domain"]').should('be.visible')
         cy.qSelect({ dataCy: 'category-selection', filter: 'Internal', itemContains: 'Internal' })
         testPreferencesListField('accept_auto_answer', 'No')
         testPreferencesListField('advice_of_charge', 'Currency')
@@ -305,15 +314,17 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all Media Codec Transcoding Options settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
         searchInDataTable(domain.domain)
         cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/domainpreferences/*' }).as('getDomainPreferences')
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-        waitPageProgressAUI()
+        cy.wait('@getDomainPreferences')
+        cy.get('div[data-cy="q-item--allow-out-foreign-domain"]').should('be.visible')
         cy.qSelect({ dataCy: 'category-selection', filter: 'Media Codec Transcoding Options', itemContains: 'Media Codec Transcoding Options' })
         cy.get('label[data-cy="aui-input-search"] input').clear()
         cy.get('label[data-cy="aui-input-search"] input').type('AMR')
@@ -390,15 +401,17 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all NAT and Media Flow Control settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
         searchInDataTable(domain.domain)
         cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/domainpreferences/*' }).as('getDomainPreferences')
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-        waitPageProgressAUI()
+        cy.wait('@getDomainPreferences')
+        cy.get('div[data-cy="q-item--allow-out-foreign-domain"]').should('be.visible')
         cy.qSelect({ dataCy: 'category-selection', filter: 'NAT and Media Flow Control', itemContains: 'NAT and Media Flow Control' })
         testPreferencesListField('DTLS_fingerprint', 'SHA-1')
         testPreferencesToggleField('ICE_lite')
@@ -425,15 +438,17 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all Number Manipulations settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
         searchInDataTable(domain.domain)
         cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/domainpreferences/*' }).as('getDomainPreferences')
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-        waitPageProgressAUI()
+        cy.wait('@getDomainPreferences')
+        cy.get('div[data-cy="q-item--allow-out-foreign-domain"]').should('be.visible')
         cy.qSelect({ dataCy: 'category-selection', filter: 'Number Manipulations', itemContains: 'Number Manipulations' })
         testPreferencesToggleField('colp_cf')
         testPreferencesListField('emergency_mapping_container', emergencyMappingContainer.name)
@@ -468,15 +483,17 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all Number Portability settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
         searchInDataTable(domain.domain)
         cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/domainpreferences/*' }).as('getDomainPreferences')
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-        waitPageProgressAUI()
+        cy.wait('@getDomainPreferences')
+        cy.get('div[data-cy="q-item--allow-out-foreign-domain"]').should('be.visible')
         cy.qSelect({ dataCy: 'category-selection', filter: 'Number Portability', itemContains: 'Number Portability' })
         testPreferencesToggleField('connect_on_ported')
         testPreferencesTextField('default_lnp_prefix')
@@ -487,29 +504,33 @@ context('Domain Preferences tests', () => {
     })
 
     it('Test all Remote Authentication settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
         searchInDataTable(domain.domain)
         cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/domainpreferences/*' }).as('getDomainPreferences')
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-        waitPageProgressAUI()
+        cy.wait('@getDomainPreferences')
+        cy.get('div[data-cy="q-item--allow-out-foreign-domain"]').should('be.visible')
         cy.qSelect({ dataCy: 'category-selection', filter: 'Remote Authentication', itemContains: 'Remote Authentication' })
         testPreferencesToggleField('peer_auth_register')
     })
 
     it('Test all Session Timers settings in domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
 
         cy.locationShouldBe('#/domain')
         searchInDataTable(domain.domain)
         cy.get('[data-cy=aui-data-table] .q-checkbox:first').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/domainpreferences/*' }).as('getDomainPreferences')
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
-        waitPageProgressAUI()
+        cy.wait('@getDomainPreferences')
+        cy.get('div[data-cy="q-item--allow-out-foreign-domain"]').should('be.visible')
         cy.qSelect({ dataCy: 'category-selection', filter: 'Session Timers', itemContains: 'Session Timers' })
         testPreferencesListField('sst_enable', 'yes')
         testPreferencesTextField('sst_expires', 123, true)

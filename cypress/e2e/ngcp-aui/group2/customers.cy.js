@@ -15,12 +15,14 @@ import {
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     getRandomNum,
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiRemoveCustomerContactsByIds,
-    apiRemoveCustomerById,
+    apiRemoveCustomerById
 } from '../../../support/e2e'
+
+const randomNumber = getRandomNum()
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 const contract = {
     contact_id: 0,
@@ -61,9 +63,6 @@ const systemContact = {
     email: 'systemContactTestCustomers@example.com'
 }
 
-const randomNumber = getRandomNum()
-const ngcpConfig = Cypress.config('ngcpConfig')
-
 context('Customer tests', () => {
     const customer = {
         billing_profile_definition: 'id',
@@ -89,9 +88,9 @@ context('Customer tests', () => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-            apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
+            apiRemoveAdminBy({ login: mainResellerAdmin.login, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -121,10 +120,8 @@ context('Customer tests', () => {
                         customer.customer_id = id
                     })
                 })
-
             })
         }
-
         cy.log('Skipped beforeEach()')
     })
 
@@ -133,13 +130,13 @@ context('Customer tests', () => {
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-            apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
+            apiRemoveAdminBy({ login: mainResellerAdmin.login, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
             // Customer contacts are considered locked when linked to an active customer.
             // We remove all of the, at the end to give the time to the dbs to update the
             // customer state of deleted items to "terminated"
             apiRemoveCustomerContactsByIds({ids: customerContactIdsToRemove, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
     })
@@ -169,7 +166,7 @@ context('Customer tests', () => {
     ].forEach(({ loginType, login, password }) => {
         context(`Admin login type: ${loginType}`, () => {
             it('Check if customer with invalid values gets rejected', () => {
-                cy.quickLogin(login, password)
+                cy.quickLoginAUI(login, password)
                 cy.navigateMainMenu('settings / customer')
 
                 cy.locationShouldBe('#/customer')
@@ -186,7 +183,8 @@ context('Customer tests', () => {
                     apiRemoveCustomerById({ id: customer.customer_id, authHeader })
                     customer.external_id = 'newCustomer' + getRandomNum()
                 })
-                cy.quickLogin(login, password)
+
+                cy.quickLoginAUI(login, password)
                 cy.navigateMainMenu('settings / customer')
 
                 cy.locationShouldBe('#/customer')
@@ -200,8 +198,8 @@ context('Customer tests', () => {
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             })
 
-            it('Edx customer status to "locked"', () => {
-                cy.quickLogin(login, password)
+            it('Edit customer status to "locked"', () => {
+                cy.quickLoginAUI(login, password)
                 cy.navigateMainMenu('settings / customer')
 
                 cy.locationShouldBe('#/customer')
@@ -209,18 +207,15 @@ context('Customer tests', () => {
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
                 cy.get('a[data-cy="aui-data-table-row-menu--customerEdit"]').click()
-                waitPageProgressAUI()
 
                 cy.qSelect({ dataCy: 'customer-status', filter: '', itemContains: 'Locked' })
                 cy.get('[data-cy="aui-save-button"]').click()
-                waitPageProgressAUI()
                 cy.get('[data-cy="aui-close-button"]').click()
-                waitPageProgressAUI()
                 cy.get('span[data-cy="aui-data-table-inline-edit--select"] span').contains('Locked')
             })
 
             it('Delete customer and check if they are deleted', () => {
-                cy.quickLogin(login, password)
+                cy.quickLoginAUI(login, password)
                 cy.navigateMainMenu('settings / customer')
 
                 cy.locationShouldBe('#/customer')

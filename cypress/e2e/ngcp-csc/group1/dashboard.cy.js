@@ -11,6 +11,10 @@ import {
     getRandomNum,
 } from '../../../support/e2e'
 
+let issppro = null
+const ngcpConfig = Cypress.config('ngcpConfig')
+const dayjs = require('dayjs')
+
 const domain = {
     domain: 'domainDashboard',
     reseller_id: 1
@@ -47,25 +51,15 @@ const loginInfo = {
     password: `${subscriber.webpassword}`
 }
 
-const ngcpConfig = Cypress.config('ngcpConfig')
-const dayjs = require('dayjs')
-var issppro = null
-
-context('Dashboard page tests', () => {
+context('Dashboard tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
-            cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-            cy.log('Data clean up pre-tests completed')
-            apiCreateDomain({ data: domain, authHeader })
-            apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
-                subscriber.customer_id = id
-            })
-            apiCreateSubscriber({ data:  subscriber, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            cy.log('Finished data cleanup')
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -74,36 +68,39 @@ context('Dashboard page tests', () => {
                 if (body.type === 'sppro') {
                     issppro = true
                 } else {
-                    cy.log('Not a SPPRO instance, adapting "Access every page in conversations tab" test...');
                     issppro = false
+                    cy.log('Not a SPPRO instance, adapting "Access every page in conversations tab" test...')
                 }
             })
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiCreateDomain({ data: domain, authHeader })
+            apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                subscriber.customer_id = id
+            })
+            cy.log('Finished data creation')
         })
     })
 
     beforeEach(() => {
+        cy.log('Start beforeEach() preperation...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(() => {
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader }).then(() => {
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
         })
-        cy.visit('/')
+        cy.log('beforeEach() preperation complete, start running tests...')
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
+        Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
+        cy.log('Cleanup complete!')
     })
 
     it('Check if links in Dashboard work properly', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('div[data-cy="dashboard-view-voicebox"] a').click()
         cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Voicemails found')
         cy.get('a[href="#/user/dashboard"]').click()
@@ -117,9 +114,7 @@ context('Dashboard page tests', () => {
     })
 
     it('Make a test call', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/home"]').click()
         cy.get('input[data-cy="csc-call-number-input"]').type('testcontact')
         cy.get('button[data-cy="start-call"]').click()
@@ -130,10 +125,7 @@ context('Dashboard page tests', () => {
     })
 
     it('Try to access every page in conversations tab', () => {
-        cy.intercept('GET', '**/api/platforminfo').as('platforminfo')
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('a[href="#/user/conversations"]:first').click()
         if (issppro){
             cy.get('div[data-cy="conversations-empty"]').should('contain.text', 'No Calls, Voicemails or Faxes found')

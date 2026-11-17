@@ -2,7 +2,6 @@
 
 import {
     getRandomNum,
-    waitPageProgressAUI,
     deleteDownloadsFolder,
     deleteItemOnListPageBy,
     clickDataTableSelectedMoreMenuItem,
@@ -18,8 +17,9 @@ import {
     apiRemoveResellerBy
 } from '../../../support/e2e'
 
-const path = require('path')
+const downloadsFolder = Cypress.config('downloadsFolder')
 const ngcpConfig = Cypress.config('ngcpConfig')
+const path = require('path')
 
 const systemContact = {
     email: 'systemContactAdmin@example.com'
@@ -90,8 +90,6 @@ const reseller = {
     enable_rtc: false
 }
 
-const downloadsFolder = Cypress.config('downloadsFolder')
-
 context('Administrator tests', () => {
     context('Test admin actions as normal admin', () => {
         // IMPORTANT: all tests in this suite are dependent to each other, so we cannot execute them individually
@@ -100,12 +98,12 @@ context('Administrator tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
                 cy.log('Preparing environment...')
-                apiRemoveAdminBy({ name: admin1.login, authHeader })
-                apiRemoveAdminBy({ name: admin2.login, authHeader })
-                apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
-                apiRemoveAdminBy({ name: secondaryResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ login: admin1.login, authHeader })
+                apiRemoveAdminBy({ login: admin2.login, authHeader })
+                apiRemoveAdminBy({ login: mainResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ login: secondaryResellerAdmin.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
                 cy.log('Data clean up pre-tests completed')
                 apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -121,8 +119,8 @@ context('Administrator tests', () => {
         beforeEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
                 cy.log('Data clean up...')
-                apiRemoveAdminBy({ name: admin1.login, authHeader })
-                apiRemoveAdminBy({ name: admin2.login, authHeader })
+                apiRemoveAdminBy({ login: admin1.login, authHeader })
+                apiRemoveAdminBy({ login: admin2.login, authHeader })
 
                 cy.log('Creating db entries...')
                 apiCreateAdmin({ data: admin1, authHeader })
@@ -148,16 +146,16 @@ context('Administrator tests', () => {
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 
         it('Create an administrator', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin1.login, authHeader })
+                apiRemoveAdminBy({ login: admin1.login, authHeader })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -174,13 +172,12 @@ context('Administrator tests', () => {
         })
 
         it('Check that administrator is not permitted to change their own permissions', () => {
-            cy.quickLogin(admin1.login, admin1.password)
+            cy.quickLoginAUI(admin1.login, admin1.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin1.login)
             cy.get('[data-cy="aui-data-table-inline-edit--toggle"]:first').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-negative')
             cy.get('div[data-cy="aui-data-table-inline-edit--toggle"]:first[aria-checked="true"]').should('be.visible')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
@@ -194,7 +191,7 @@ context('Administrator tests', () => {
         })
 
         it('Make sure that reseller admins cannot change permissions from reseller admins with different resellers', () => {
-            cy.quickLogin(admin1.login, admin1.password)
+            cy.quickLoginAUI(admin1.login, admin1.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -203,14 +200,13 @@ context('Administrator tests', () => {
         })
 
         it('Deactivate administrator and check if administrator is deactivated', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin1.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
-            waitPageProgressAUI()
             cy.get('[data-cy="master-flag"]').click()
             cy.get('[data-cy="active-flag"]').click()
 
@@ -225,7 +221,7 @@ context('Administrator tests', () => {
         })
 
         it('Enable customer care for administrator and check if customer care has been activated', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -244,7 +240,7 @@ context('Administrator tests', () => {
             cy.logoutUiAUI()
             cy.wait(500)
 
-            cy.quickLogin(admin1.login, admin1.password)
+            cy.quickLoginAUI(admin1.login, admin1.password)
             cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
                 if(value) {
                     cy.log("Closing Sidebar...")
@@ -260,14 +256,13 @@ context('Administrator tests', () => {
         })
 
         it('Enable read-only for administrator and check if read-only has been activated', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
             searchInDataTable(admin1.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
-            waitPageProgressAUI()
             cy.get('[data-cy="readonly-flag"]').click()
             cy.get('div[data-cy="readonly-flag"][aria-checked="true"]').should('be.visible')
             cy.get('[data-cy="aui-save-button"]').click()
@@ -275,7 +270,7 @@ context('Administrator tests', () => {
 
             cy.logoutUiAUI()
             cy.wait(500)
-            cy.quickLogin(admin1.login, admin1.password)
+            cy.quickLoginAUI(admin1.login, admin1.password)
             cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
                 if(value) {
                     cy.log("Closing Sidebar...")
@@ -283,32 +278,28 @@ context('Administrator tests', () => {
                 }
             })
 
-            // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('settings / administrator', false)
+            cy.navigateMainMenu('settings / administrator')
             cy.locationShouldBe('#/administrator')
             cy.get('div[data-cy^=aui-list-action]').should('not.exist')
 
-            // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('customer', false)
+            cy.navigateMainMenu('customer')
             cy.locationShouldBe('#/customer')
             cy.get('div[data-cy=aui-list-action--customer-creation]').should('not.exist');
             cy.get('div[data-cy=aui-list-action--customer-edit]').should('not.exist');
             cy.get('div[data-cy=aui-list-action--delete]').should('not.exist');
 
-            // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('contact', false)
+            cy.navigateMainMenu('contact')
             cy.locationShouldBe('#/contact');
             cy.get('div[data-cy^=aui-list-action]').should('not.exist');
 
-            // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('domain', false)
+            cy.navigateMainMenu('domain')
             cy.locationShouldBe('#/domain');
             cy.get('div[data-cy=aui-list-action--domain-creation]').should('not.exist');
             cy.get('div[data-cy=aui-list-action--delete]').should('not.exist')
         })
 
         it('Make sure that admins cannot change other admins password', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -318,7 +309,7 @@ context('Administrator tests', () => {
         })
 
         it('Change password of administrator and check if admin password has been changed', () => {
-            cy.quickLogin(admin1.login, admin1.password)
+            cy.quickLoginAUI(admin1.login, admin1.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -337,12 +328,12 @@ context('Administrator tests', () => {
 
             cy.logoutUiAUI()
             cy.wait(500)
-            cy.quickLogin(admin1.login, admin1.newpass)
+            cy.quickLoginAUI(admin1.login, admin1.newpass)
             cy.url().should('match', /\/#\/dashboard/)
         })
 
         it('Make sure that admins cannot delete themselves', () => {
-            cy.quickLogin(admin1.login, admin1.password)
+            cy.quickLoginAUI(admin1.login, admin1.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -354,7 +345,7 @@ context('Administrator tests', () => {
         })
 
         it('Delete administrator and check if they are deleted', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
                 if(value) {
                     cy.log("Closing Sidebar...")
@@ -395,24 +386,24 @@ context('Administrator tests', () => {
             // let's remove all data via API
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
-                apiRemoveAdminBy({ name: secondaryResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ login: mainResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ login: secondaryResellerAdmin.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
                 reseller.name = 'reseller' + getRandomNum()
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 
         afterEach(() => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: secondaryResellerAdmin.login, authHeader })
-                apiRemoveAdminBy({ name: mainResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ login: secondaryResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ login: mainResellerAdmin.login, authHeader })
             })
         })
 
         it('Check if reseller admin is not allowed to change their own permissions (with is_master=true/false)', () => {
-            cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password)
+            cy.quickLoginAUI(mainResellerAdmin.login, mainResellerAdmin.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -422,7 +413,7 @@ context('Administrator tests', () => {
             cy.logoutUiAUI()
             cy.wait(500)
 
-            cy.quickLogin(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
+            cy.quickLoginAUI(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
             cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
                 if(value) {
                     cy.log("Closing Sidebar...")
@@ -439,9 +430,9 @@ context('Administrator tests', () => {
 
         it('Create a reseller admin (is_master=false) and check if permissions are correct', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: secondaryResellerAdmin.login, authHeader })
+                apiRemoveAdminBy({ login: secondaryResellerAdmin.login, authHeader })
             })
-            cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password)
+            cy.quickLoginAUI(mainResellerAdmin.login, mainResellerAdmin.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -453,13 +444,12 @@ context('Administrator tests', () => {
             cy.get('input[data-cy="password-retype-field"]').type(secondaryResellerAdmin.password)
             cy.get('div[data-cy="can-reset-password-flag"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 
             cy.logoutUiAUI()
             cy.wait(500)
 
-            cy.quickLogin(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
+            cy.quickLoginAUI(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
             cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
                 if(value) {
                     cy.log("Closing Sidebar...")
@@ -488,14 +478,13 @@ context('Administrator tests', () => {
         })
 
         it('Enable master for reseller admin and check if permission is applied correctly', () => {
-            cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password)
+            cy.quickLoginAUI(mainResellerAdmin.login, mainResellerAdmin.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
             searchInDataTable(secondaryResellerAdmin.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
-            waitPageProgressAUI()
             cy.get('[data-cy="master-flag"]').click()
 
             cy.get('[data-cy="aui-save-button"]').click()
@@ -510,7 +499,7 @@ context('Administrator tests', () => {
                     cy.get('div').contains('Settings').click()
                 }
             })
-            cy.navigateMainMenu('settings / administrator', false)
+            cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
             cy.get('a[data-cy="aui-list-action--add"]').should('be.visible')
@@ -520,14 +509,13 @@ context('Administrator tests', () => {
         })
 
         it('Deactivate reseller admin and check if admin is deactivated', () => {
-            cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password)
+            cy.quickLoginAUI(mainResellerAdmin.login, mainResellerAdmin.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
             searchInDataTable(secondaryResellerAdmin.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
-            waitPageProgressAUI()
             cy.get('[data-cy="master-flag"]').click()
             cy.get('[data-cy="active-flag"]').click()
 
@@ -542,7 +530,7 @@ context('Administrator tests', () => {
         })
 
         it('Enter admin email', () => {
-            cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password)
+            cy.quickLoginAUI(mainResellerAdmin.login, mainResellerAdmin.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -556,7 +544,7 @@ context('Administrator tests', () => {
         })
 
         it('First check if password reset is disabled, then enable password reset for reseller admin and check if permission is applied correctly', () => {
-            cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password)
+            cy.quickLoginAUI(mainResellerAdmin.login, mainResellerAdmin.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -566,7 +554,7 @@ context('Administrator tests', () => {
             cy.get('div[data-cy="aui-data-table-row-menu--adminResetPassword"]').should('not.exist')
             cy.logoutUiAUI()
 
-            cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password)
+            cy.quickLoginAUI(mainResellerAdmin.login, mainResellerAdmin.password)
             cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
                 if(value) {
                     cy.log("Closing Sidebar...")
@@ -579,7 +567,6 @@ context('Administrator tests', () => {
             searchInDataTable(secondaryResellerAdmin.login)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
-            waitPageProgressAUI()
             cy.get('div[data-cy="master-flag"]').click()
             cy.get('div[data-cy="can-reset-password-flag"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
@@ -587,7 +574,7 @@ context('Administrator tests', () => {
             cy.get('button[data-cy="aui-close-button"]').click()
 
             cy.logoutUiAUI()
-            cy.quickLogin(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
+            cy.quickLoginAUI(secondaryResellerAdmin.login, secondaryResellerAdmin.password)
             cy.get('div').contains('Settings').invoke('attr', 'aria-expanded').then(value => {
                 if(value) {
                     cy.log("Closing Sidebar...")
@@ -596,18 +583,20 @@ context('Administrator tests', () => {
             })
             cy.navigateMainMenu('settings / administrator')
 
-            cy.locationShouldBe('#/administrator');
-            searchInDataTable(secondaryResellerAdmin.login);
-            cy.get('div[class="aui-data-table"] .q-checkbox').click();
-            clickDataTableSelectedMoreMenuItem('adminResetPassword');
-            cy.get('input[data-cy="password-input"]').type('averyshinynewpwd');
-            cy.get('input[data-cy="password-retype-input"]').type('averyshinynewpwd');
-            cy.get('button[data-cy="save-button"]').click();
+            cy.locationShouldBe('#/administrator')
+            searchInDataTable(secondaryResellerAdmin.login)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            clickDataTableSelectedMoreMenuItem('adminResetPassword')
+            cy.get('input[data-cy="password-input"]').click()
+            cy.get('input[data-cy="password-input"]').type('averyshinynewpwd', { delay: 10 })
+            cy.get('input[data-cy="password-retype-input"]').click()
+            cy.get('input[data-cy="password-retype-input"]').type('averyshinynewpwd', { delay: 10 })
+            cy.get('button[data-cy="save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
 
         it('Delete reseller admin and check if they are deleted', () => {
-            cy.quickLogin(mainResellerAdmin.login, mainResellerAdmin.password)
+            cy.quickLoginAUI(mainResellerAdmin.login, mainResellerAdmin.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -615,6 +604,7 @@ context('Administrator tests', () => {
         })
     })
 
+    //WARNING: If Create/Download API certificate test fails, the following tests will fail as well. Tests shoud usually never depend on each other, but in this case it is not possible to do it any other way.
     context('Admin certificates tests', () => {
         before(() => {
             apiLoginAsSuperuser().then(authHeader => {
@@ -633,15 +623,20 @@ context('Administrator tests', () => {
             cy.log('Data clean up...')
             deleteDownloadsFolder()
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin1.login, authHeader })
+                apiRemoveAdminBy({ login: admin1.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })
 
         it('Create and Download API certificate from second administrator', () => {
-            cy.quickLogin(admin1.login, admin1.password)
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveAdminBy({ login: admin1.login, authHeader })
+                apiCreateAdmin({ data: admin1, authHeader })
+            })
+
+            cy.quickLoginAUI(admin1.login, admin1.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -657,7 +652,7 @@ context('Administrator tests', () => {
         })
 
         it('Manually download/revoke certificate and check if it downloads properly', () => {
-            cy.quickLogin(admin1.login, admin1.password)
+            cy.quickLoginAUI(admin1.login, admin1.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -676,7 +671,7 @@ context('Administrator tests', () => {
         })
 
         it('Make sure that other admins are not able to add/remove the API Certificate', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
