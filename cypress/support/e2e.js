@@ -2988,7 +2988,7 @@ export const searchInDataTable = (searchText, searchCriteria = null, waitForSear
         const alias = 'dataTableSearch'
         if (expectRequest) {
             if(ajax) {
-                cy.intercept({ method: 'GET', path: '**/ajax?**', times: 1 }, (req) => {
+                cy.intercept({ method: 'GET', path: '**/ajax{/,?}**', times: 1 }, (req) => {
                     if (Object.values(req.query).some(value => String(value).includes(searchValue))) {
                         req.alias = alias
                     }
@@ -3076,7 +3076,7 @@ export const testPreferencesChipField = (name, testValues = { value1: 'testvalue
     cy.get('@' + cyAliasName).find('button[data-cy="chip-add"]').click({ scrollBehavior: { block: 'center', inline: 'center' }})
     cy.get('@' + cyAliasName).find('input[disabled="disabled"]').should('not.exist')
     cy.get('@' + cyAliasName).find('div[class="ellipsis"]').contains(testValues.value1).should('be.visible')
-    cy.get('@' + cyAliasName).find('button[data-cy="chip-removeall"]').click({ scrollBehavior: false })
+    cy.get('@' + cyAliasName).find('button[data-cy="chip-removeall"]').click({ scrollBehavior: false, force: true })
     cy.get('@' + cyAliasName).find('input[disabled="disabled"]').should('not.exist')
     cy.get('@' + cyAliasName).find('div[class="ellipsis"]').should('not.exist')
 }
