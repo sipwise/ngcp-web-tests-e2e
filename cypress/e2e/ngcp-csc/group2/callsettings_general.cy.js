@@ -11,6 +11,8 @@ import {
     getRandomNum,
 } from '../../../support/e2e'
 
+const ngcpConfig = Cypress.config('ngcpConfig')
+
 const domain = {
     domain: 'domainCallSettings',
     reseller_id: 1
@@ -47,17 +49,15 @@ const loginInfo = {
     password: `${subscriber.webpassword}`
 }
 
-const ngcpConfig = Cypress.config('ngcpConfig')
-
-context('Call Settings "General" page tests', () => {
+context('Call Settings "General" tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -68,27 +68,26 @@ context('Call Settings "General" page tests', () => {
 
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data: subscriber, authHeader })
         })
-        cy.visit('/')
     })
 
     after(() => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 
     it('Enable/Disable "Music on Hold"', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getCallSettingsGeneralPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-settings"]').click()
+        cy.wait('@getCallSettingsGeneralPage')
 
         cy.get('div[data-cy="music-on-hold"][aria-disabled="true"]').should('not.exist')
         cy.get('div[data-cy="music-on-hold"]').click()
@@ -98,11 +97,11 @@ context('Call Settings "General" page tests', () => {
     })
 
     it('Enable/Disable "Hide your number to the callee"', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/subscriberpreferences/*' }).as('getPrivacyPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/call-blocking/privacy"]').click()
+        cy.wait('@getPrivacyPage')
 
         cy.get('div[data-cy="csc-callee-hide"] svg').should('not.exist')
         cy.get('div[data-cy="csc-privacy-hide"] svg').should('not.exist')

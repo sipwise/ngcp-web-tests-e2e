@@ -19,7 +19,6 @@ import {
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     getRandomNum,
-    waitPageProgressAUI,
     searchInDataTable,
     clickDataTableSelectedMoreMenuItem,
     testPreferencesChipField,
@@ -27,6 +26,8 @@ import {
     testPreferencesTextField,
     testPreferencesToggleField
 } from '../../../support/e2e'
+
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 const contract = {
     contact_id: 0,
@@ -82,21 +83,19 @@ const systemContact = {
     email: 'systemTestCustomerPref@example.com'
 }
 
-const ngcpConfig = Cypress.config('ngcpConfig')
-
-context('Customer preferences tests', () => {
+context('Customer Preferences tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
 
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-            apiRemoveNCOSLevelBy({ name: ncosLevel.level, authHeader })
+            apiRemoveNCOSLevelBy({ level: ncosLevel.level, authHeader })
             apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -117,7 +116,7 @@ context('Customer preferences tests', () => {
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
             cy.log('Cleaning up db...')
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
 
             cy.log('Seeding db...')
@@ -133,28 +132,28 @@ context('Customer preferences tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-            apiRemoveNCOSLevelBy({ name: ncosLevel.level, authHeader })
+            apiRemoveNCOSLevelBy({ level: ncosLevel.level, authHeader })
             apiRemoveEmergencyMappingContainerBy({ name: emergencyMappingContainer.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
     })
 
     it('Test all Access Restriction settings in customer', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
         searchInDataTable(customer.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/customerpreferences/*' }).as('getCustomerPreferences')
         clickDataTableSelectedMoreMenuItem('customerPreferences')
 
-        waitPageProgressAUI()
-        cy.wait(1000)
-        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Access Restrictions' })
+        cy.wait('@getCustomerPreferences')
+        cy.qSelect({ dataCy: 'category-selection', filter: 'Access Restrictions', itemContains: 'Access Restrictions' })
         testPreferencesChipField('allowed_clis"]')
         testPreferencesListField('allowed_clis_reject_policy', 'Force CLIR')
         testPreferencesTextField('allowed_ips_header')
@@ -169,17 +168,17 @@ context('Customer preferences tests', () => {
     })
 
     it('Test all Application settings in customer', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
         searchInDataTable(customer.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/customerpreferences/*' }).as('getCustomerPreferences')
         clickDataTableSelectedMoreMenuItem('customerPreferences')
 
-        waitPageProgressAUI()
-        cy.wait(1000)
-        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Applications' })
+        cy.wait('@getCustomerPreferences')
+        cy.qSelect({ dataCy: 'category-selection', filter: 'Applications', itemContains: 'Applications' })
         testPreferencesToggleField('malicious_call_identification')
         testPreferencesToggleField('play_announce_before_call_setup')
         testPreferencesListField('play_announce_before_recording', 'External calls only')
@@ -188,17 +187,17 @@ context('Customer preferences tests', () => {
     })
 
     it('Test all Call Blocking settings in customer', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
         searchInDataTable(customer.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/customerpreferences/*' }).as('getCustomerPreferences')
         clickDataTableSelectedMoreMenuItem('customerPreferences')
 
-        waitPageProgressAUI()
-        cy.wait(1000)
-        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Call Blockings' })
+        cy.wait('@getCustomerPreferences')
+        cy.qSelect({ dataCy: 'category-selection', filter: 'Call Blockings', itemContains: 'Call Blockings' })
         testPreferencesToggleField('adm_block_in_clir')
         testPreferencesChipField('adm_block_in_list')
         testPreferencesToggleField('adm_block_in_mode')
@@ -216,17 +215,17 @@ context('Customer preferences tests', () => {
     })
 
     it('Test all Internal settings in customer', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
         searchInDataTable(customer.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/customerpreferences/*' }).as('getCustomerPreferences')
         clickDataTableSelectedMoreMenuItem('customerPreferences')
 
-        waitPageProgressAUI()
-        cy.wait(1000)
-        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Internals' })
+        cy.wait('@getCustomerPreferences')
+        cy.qSelect({ dataCy: 'category-selection', filter: 'Internals', itemContains: 'Internals' })
         testPreferencesListField('advice_of_charge', 'Currency')
         testPreferencesTextField('concurrent_calls_quota', 123)
         testPreferencesTextField('conference_max_participants', 123)
@@ -235,17 +234,17 @@ context('Customer preferences tests', () => {
     })
 
     it('Test all Number Manipulation settings in customer', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / customer')
 
         cy.locationShouldBe('#/customer')
         searchInDataTable(customer.external_id, 'External #')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
+        cy.intercept({ method: 'GET', pathname: '**/api/customerpreferences/*' }).as('getCustomerPreferences')
         clickDataTableSelectedMoreMenuItem('customerPreferences')
 
-        waitPageProgressAUI()
-        cy.wait(1000)
-        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Number Manipulations' })
+        cy.wait('@getCustomerPreferences')
+        cy.qSelect({ dataCy: 'category-selection', filter: 'Number Manipulations', itemContains: 'Number Manipulations' })
         testPreferencesTextField('emergency_cli')
         testPreferencesListField('emergency_mapping_container', emergencyMappingContainer.name)
         testPreferencesTextField('emergency_prefix', 123)

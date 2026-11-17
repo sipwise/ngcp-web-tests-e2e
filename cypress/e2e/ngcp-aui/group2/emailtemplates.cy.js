@@ -51,7 +51,7 @@ context('Email template tests', () => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
@@ -64,25 +64,19 @@ context('Email template tests', () => {
         })
     })
 
-    beforeEach(() => {
-        apiLoginAsSuperuser().then(authHeader => {
-
-        })
-    })
-
     after(() => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveEmailTemplateBy({ name: emailTemplate.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
         })
     })
 
     it('Check if email template with invalid values gets rejected', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emailtemplate')
 
         cy.locationShouldBe('#/emailtemplate/custom')
@@ -100,7 +94,7 @@ context('Email template tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveEmailTemplateBy({ name: emailTemplate.name, authHeader })
         })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emailtemplate')
         cy.locationShouldBe('#/emailtemplate/custom')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -119,7 +113,7 @@ context('Email template tests', () => {
     })
 
     it('Edit a email template', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emailtemplate')
 
         cy.locationShouldBe('#/emailtemplate/custom')
@@ -135,7 +129,7 @@ context('Email template tests', () => {
     })
 
     it('Delete email template', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / emailtemplate')
 
         cy.locationShouldBe('#/emailtemplate/custom')

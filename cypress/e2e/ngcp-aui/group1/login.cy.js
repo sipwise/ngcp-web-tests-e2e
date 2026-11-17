@@ -71,10 +71,10 @@ context('Login page tests', () => {
             Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         })
 
-        it('Testing "cy.loginAPI" command (valid user)', () => {
+        it('Testing "cy.AUIloginAPI" command (valid user)', () => {
             // requesting API for JWT token, before we actually load our application UI
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
-            cy.loginAPI(ngcpConfig.username, ngcpConfig.password).then(({ response }) => {
+            cy.AUIloginAPI(ngcpConfig.username, ngcpConfig.password).then(({ response }) => {
                 checkLoginAPIResponse(response)
             })
 
@@ -83,9 +83,9 @@ context('Login page tests', () => {
             CheckLoggedInUI()
         })
 
-        it('Testing "cy.loginAPI" command (invalid user)', () => {
+        it('Testing "cy.AUIloginAPI" command (invalid user)', () => {
             cy.intercept('POST', '**/login_jwt').as('loginRequest')
-            cy.loginAPI('invalid-user', 'invalid-password').then(({ response }) => {
+            cy.AUIloginAPI('invalid-user', 'invalid-password').then(({ response }) => {
                 expect(response.status || response.statusCode).to.not.equal(200)
             })
         })
@@ -97,11 +97,12 @@ context('Login page tests', () => {
             apiLoginAsSuperuser().then(authHeader => {
                 Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
                 cy.log('Preparing environment...')
-                apiRemoveAdminBy({ name: admin.login, authHeader })
+                apiRemoveAdminBy({ login: admin.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
                 cy.log('Data clean up pre-tests completed')
+
                 apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                     apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                         apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
@@ -126,9 +127,9 @@ context('Login page tests', () => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin.login, authHeader })
+                apiRemoveAdminBy({ login: admin.login, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
         })

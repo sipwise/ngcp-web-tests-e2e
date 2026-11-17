@@ -10,7 +10,6 @@ import {
     apiRemoveSubscriberBy,
     getRandomNum,
     searchInDataTable,
-    waitPageProgressAUI,
     apiCreateCFSourceSet,
     apiRemoveCFSourceSetBy,
     deleteItemOnListPageBy,
@@ -249,7 +248,7 @@ function createCFMappingEntries() {
         apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
         apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
         apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-        apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(() => {
+        apiRemoveSubscriberBy({ username: subscriber.username, authHeader }).then(() => {
             apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                 subscriber.subscriber_id = id
                 apiCreateCFSourceSet({ data: {...sourceset, subscriber_id: id}, authHeader }).then(({ id }) => {
@@ -300,9 +299,9 @@ context('Subscriber Call Forwarding tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
 
             apiCreateDomain({ data: domain, authHeader }).then(({ id }) => domain.id = id )
@@ -316,11 +315,11 @@ context('Subscriber Call Forwarding tests', () => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(()=> {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader }).then(()=> {
                     apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
                     apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
-                    apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                    apiRemoveDomainBy({ name: domain.domain, authHeader })
+                    apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                    apiRemoveDomainBy({ domain: domain.domain, authHeader })
                 })
         })
     })
@@ -329,10 +328,10 @@ context('Subscriber Call Forwarding tests', () => {
         it('Check if source set with empty values gets rejected', () => {
             // Setup: Create Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -340,9 +339,10 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/api/cfsourcesets/' }).as('getCFSourceSetsPage')
             cy.get('div[data-cy="q-item-label"]').contains('Source Sets').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getCFSourceSetsPage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="aui-sourceset-create-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -350,7 +350,7 @@ context('Subscriber Call Forwarding tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -358,10 +358,10 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber, delete Source Set if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -369,9 +369,10 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/api/cfsourcesets/' }).as('getCFSourceSetsPage')
             cy.get('div[data-cy="q-item-label"]').contains('Source Sets').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getCFSourceSetsPage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="aui-sourceset-create-name"]').type(sourceset.name)
             cy.get('button[data-cy="aui-sourceset-create-source-add"]').click()
@@ -386,7 +387,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -394,12 +395,12 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber and Source Set
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateCFSourceSet({ data: {...sourceset, subscriber_id: id}, authHeader })
                 })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -407,9 +408,10 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/api/cfsourcesets/' }).as('getCFSourceSetsPage')
             cy.get('div[data-cy="q-item-label"]').contains('Source Sets').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getCFSourceSetsPage')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetailsCallForwardingSourceSetEdit"]').click()
@@ -423,7 +425,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -431,12 +433,12 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber and Source Set
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateCFSourceSet({ data: {...sourceset, subscriber_id: id}, authHeader })
                 })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -444,15 +446,16 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/api/cfsourcesets/' }).as('getCFSourceSetsPage')
             cy.get('div[data-cy="q-item-label"]').contains('Source Sets').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getCFSourceSetsPage')
             deleteItemOnListPageBy()
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
     })
@@ -461,10 +464,10 @@ context('Subscriber Call Forwarding tests', () => {
         it('Check if timeset with empty values gets rejected', () => {
             // Setup: Create Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -472,9 +475,10 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/api/cftimesets/' }).as('getCFTimeSetsPage')
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Time Sets').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getCFTimeSetsPage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="aui-create-timeset-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -482,7 +486,7 @@ context('Subscriber Call Forwarding tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -490,10 +494,10 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber, delete Time Set if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -501,9 +505,10 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/api/cftimesets/' }).as('getCFTimeSetsPage')
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Time Sets').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getCFTimeSetsPage')
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="aui-create-timeset-name"]').type(timeset.name)
             cy.qSelect({ dataCy: 'aui-create-timeset-year', itemContains: timeset.times[0].year })
@@ -524,7 +529,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -532,12 +537,12 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber and Time Set
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateCFTimeSet({ data: {...timesetAPI, subscriber_id: id}, authHeader })
                 })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -545,9 +550,10 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/api/cftimesets/' }).as('getCFTimeSetsPage')
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Time Sets').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getCFTimeSetsPage')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetailsCallForwardingTimeSetEdit"]').click()
@@ -561,7 +567,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -569,12 +575,12 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber and Time Set
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateCFTimeSet({ data: {...timesetAPI, subscriber_id: id}, authHeader })
                 })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -582,15 +588,16 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/api/cftimesets/' }).as('getCFTimeSetsPage')
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Time Sets').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getCFTimeSetsPage')
             deleteItemOnListPageBy()
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
     })
@@ -599,10 +606,10 @@ context('Subscriber Call Forwarding tests', () => {
         it('Check if Bnumber set with empty values gets rejected', () => {
             // Setup: Create Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -610,9 +617,7 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('B-Number Sets').click()
-            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="aui-create-bnumber-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -620,7 +625,7 @@ context('Subscriber Call Forwarding tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -628,10 +633,10 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber, delete Bnumber Set if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFBnumberSetBy({ name: bnumberset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -639,9 +644,7 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('B-Number Sets').click()
-            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="aui-create-bnumber-name"]').type(bnumberset.name)
             cy.get('button[data-cy="aui-create-bnumber-add"]').click()
@@ -656,7 +659,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFBnumberSetBy({ name: bnumberset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -664,12 +667,12 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber and Bnumber Set
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateCFBnumberSet({ data: {...bnumberset, subscriber_id: id}, authHeader })
                 })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -677,9 +680,7 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('B-Number Sets').click()
-            waitPageProgressAUI()
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetailsCallForwardingBNumberSetEdit"]').click()
@@ -693,7 +694,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFBnumberSetBy({ name: bnumberset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -701,12 +702,12 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber and Bnumber Set
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateCFBnumberSet({ data: {...bnumberset, subscriber_id: id}, authHeader })
                 })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -714,15 +715,13 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('B-Number Sets').click()
-            waitPageProgressAUI()
             deleteItemOnListPageBy()
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFBnumberSetBy({ name: bnumberset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
     })
@@ -731,10 +730,10 @@ context('Subscriber Call Forwarding tests', () => {
         it('Check if destinationset with empty values gets rejected', () => {
             // Setup: Create Subscriber
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -742,9 +741,7 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Destination Sets').click()
-            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="aui-create-destination-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -752,7 +749,7 @@ context('Subscriber Call Forwarding tests', () => {
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
         })
@@ -761,10 +758,10 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber, delete Destination Set if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -772,9 +769,7 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Destination Sets').click()
-            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="aui-create-destination-name"]').type(destinationset.name)
             cy.get('button[data-cy="aui-create-destination-add"]').click()
@@ -792,7 +787,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -800,12 +795,12 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber and Destination Set
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateCFDestinationSet({ data: {...destinationset, subscriber_id: id}, authHeader })
                 })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -813,9 +808,7 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Destination Sets').click()
-            waitPageProgressAUI()
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetailsCallForwardingDestinationSetEdit"]').click()
@@ -829,7 +822,7 @@ context('Subscriber Call Forwarding tests', () => {
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
@@ -837,12 +830,12 @@ context('Subscriber Call Forwarding tests', () => {
             // Setup: Create Subscriber and Destination Set
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
                 apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                     apiCreateCFDestinationSet({ data: {...destinationset, subscriber_id: id}, authHeader })
                 })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -850,15 +843,13 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Destination Sets').click()
-            waitPageProgressAUI()
             deleteItemOnListPageBy()
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
     })
@@ -867,7 +858,7 @@ context('Subscriber Call Forwarding tests', () => {
         it('Add all elements to cfb', () => {
             // Setup: Create Subscriber and all CF Types
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(() => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader }).then(() => {
                     apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                         apiCreateCFSourceSet({ data: {...sourceset, subscriber_id: id}, authHeader })
                         apiCreateCFTimeSet({ data: {...timesetAPI, subscriber_id: id}, authHeader })
@@ -876,7 +867,7 @@ context('Subscriber Call Forwarding tests', () => {
                     })
                 })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -884,18 +875,14 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Busy').click()
-            waitPageProgressAUI()
             cy.auiSelectLazySelect({ dataCy: 'aui-cfbusy-destinationset-destination', filter: destinationset.name, itemContains: destinationset.name })
             cy.auiSelectLazySelect({ dataCy: 'aui-cfbusy-timeset-time', filter: timeset.name, itemContains: timeset.name })
             cy.auiSelectLazySelect({ dataCy: 'aui-cfbusy-sourceset-source', filter: sourceset.name, itemContains: sourceset.name })
             cy.auiSelectLazySelect({ dataCy: 'aui-cfbusy-bnumber', filter: bnumberset.name, itemContains: bnumberset.name })
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.reload()
-            waitPageProgressAUI()
             cy.get('label[data-cy="aui-cfbusy-destinationset-destination"] span').contains(destinationset.name).should('be.visible')
             cy.get('label[data-cy="aui-cfbusy-timeset-time"] span').contains(timeset.name).should('be.visible')
             cy.get('label[data-cy="aui-cfbusy-sourceset-source"] span').contains(sourceset.name).should('be.visible')
@@ -907,14 +894,14 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
         it('Check if popup appears when clicking "add" button inside cfb', () => {
             // Setup: Create Subscriber and all CF Types, add Mapping to Subscriber
             createCFMappingEntries()
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -922,15 +909,12 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Busy').click()
-            waitPageProgressAUI()
             cy.get('label[data-cy="aui-cfbusy-bnumber"]').find('i[aria-label="Clear"]').click()
             cy.get('label[data-cy="aui-cfbusy-sourceset-source"]').find('i[aria-label="Clear"]').click()
             cy.get('label[data-cy="aui-cfbusy-destinationset-destination"] button:first').click()
             cy.get('button[data-cy="btn-confirm"]').click()
             cy.get('button[data-cy="aui-close-button"]').click()
-            waitPageProgressAUI()
             cy.get('label[data-cy="aui-cfbusy-destinationset-destination"] span').contains(destinationset.name).should('be.visible')
             cy.get('label[data-cy="aui-cfbusy-timeset-time"] span').contains(timeset.name).should('be.visible')
             cy.get('label[data-cy="aui-cfbusy-sourceset-source"] span').contains(sourceset.name).should('be.visible')
@@ -942,14 +926,14 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
         it('Edit cfb', () => {
             // Setup: Create Subscriber and all CF Types, add Mapping to Subscriber
             createCFMappingEntries()
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -957,16 +941,12 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Busy').click()
-            waitPageProgressAUI()
             cy.get('label[data-cy="aui-cfbusy-timeset-time"]').find('i[aria-label="Clear"]').click()
             cy.get('label[data-cy="aui-cfbusy-sourceset-source"]').find('i[aria-label="Clear"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.reload()
-            waitPageProgressAUI()
             cy.get('label[data-cy="aui-cfbusy-destinationset-destination"] span').contains(destinationset.name).should('be.visible')
             cy.get('label[data-cy="aui-cfbusy-timeset-time"] span').contains(timeset.name).should('not.exist')
             cy.get('label[data-cy="aui-cfbusy-sourceset-source"] span').contains(sourceset.name).should('not.exist')
@@ -978,14 +958,14 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
         it('Edit cfb via summary menu', () => {
             // Setup: Create Subscriber and all CF Types, add Mapping to Subscriber
             createCFMappingEntries()
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -993,17 +973,13 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('td[data-cy="q-td--more-menu-left"]').eq(1).click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetailsCallForwardingBusyEdit').click()
-            waitPageProgressAUI()
             cy.get('label[data-cy="aui-cfbusy-bnumber"]').find('i[aria-label="Clear"]').click()
             cy.get('label[data-cy="aui-cfbusy-sourceset-source"]').find('i[aria-label="Clear"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="aui-close-button"]').click()
-            waitPageProgressAUI()
             cy.get('td[data-cy="q-td--mappings"] span').eq(7).contains('null').should('exist')
             cy.get('td[data-cy="q-td--mappings"] span').eq(8).contains('null').should('exist')
 
@@ -1013,14 +989,14 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
         it('Delete cfb', () => {
             // Setup: Create Subscriber and all CF Types, add Mapping to Subscriber
             createCFMappingEntries()
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -1028,15 +1004,11 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Busy').click()
-            waitPageProgressAUI()
             cy.get('button[data-cy="aui-cfbusy-delete"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.reload()
-            waitPageProgressAUI()
             cy.get('label[data-cy="aui-cfbusy-destinationset-destination"] span').contains(destinationset.name).should('not.exist')
             cy.get('label[data-cy="aui-cfbusy-timeset-time"] span').contains(timeset.name).should('not.exist')
             cy.get('label[data-cy="aui-cfbusy-sourceset-source"] span').contains(sourceset.name).should('not.exist')
@@ -1048,14 +1020,14 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
         it('Delete cfb via summary menu', () => {
             // Setup: Create Subscriber and all CF Types, add Mapping to Subscriber
             createCFMappingEntries()
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -1063,11 +1035,9 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('td[data-cy="q-td--more-menu-left"]').eq(1).click()
             cy.get('div[data-cy="aui-data-table-row-menu--delete"]').click()
             cy.get('button[data-cy="btn-confirm"]').click()
-            waitPageProgressAUI()
             cy.get('td[data-cy="q-td--mappings"] span').eq(6).contains('[]').should('exist')
             cy.get('td[data-cy="q-td--mappings"] span').eq(7).contains('[]').should('exist')
             cy.get('td[data-cy="q-td--mappings"] span').eq(8).contains('[]').should('exist')
@@ -1079,7 +1049,7 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
     })
@@ -1088,7 +1058,7 @@ context('Subscriber Call Forwarding tests', () => {
         it('Add all elements to cft', () => {
             // Setup: Create Subscriber and all CF Types
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(() => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader }).then(() => {
                     apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
                         apiCreateCFSourceSet({ data: {...sourceset, subscriber_id: id}, authHeader })
                         apiCreateCFTimeSet({ data: {...timesetAPI, subscriber_id: id}, authHeader })
@@ -1097,7 +1067,7 @@ context('Subscriber Call Forwarding tests', () => {
                     })
                 })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -1105,19 +1075,15 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Timeout').click()
-            waitPageProgressAUI()
             cy.get('input[data-cy="aui-cftimeout-ringtimeout"]').clear().type(10)
             cy.auiSelectLazySelect({ dataCy: 'aui-cftimeout-destinationset-destination', filter: destinationset.name, itemContains: destinationset.name })
             cy.auiSelectLazySelect({ dataCy: 'aui-cftimeout-timeset-time', filter: timeset.name, itemContains: timeset.name })
             cy.auiSelectLazySelect({ dataCy: 'aui-cftimeout-sourceset-source', filter: sourceset.name, itemContains: sourceset.name })
             cy.auiSelectLazySelect({ dataCy: 'aui-cftimeout-bnumber', filter: bnumberset.name, itemContains: bnumberset.name })
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.reload()
-            waitPageProgressAUI()
             cy.get('input[data-cy="aui-cftimeout-ringtimeout"][value="10"]').should('be.visible')
             cy.get('label[data-cy="aui-cftimeout-destinationset-destination"] span').contains(destinationset.name).should('be.visible')
             cy.get('label[data-cy="aui-cftimeout-timeset-time"] span').contains(timeset.name).should('be.visible')
@@ -1129,15 +1095,15 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFBnumberSetBy({ name: bnumberset.name, authHeader })
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
         it('Edit cft', () => {
             // Setup: Create Subscriber and all CF Types, add Mapping to Subscriber
             createCFMappingEntries()
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -1145,17 +1111,13 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Timeout').click()
-            waitPageProgressAUI()
             cy.get('input[data-cy="aui-cftimeout-ringtimeout"]').clear().type(20)
             cy.get('label[data-cy="aui-cftimeout-timeset-time"]').find('i[aria-label="Clear"]').click()
             cy.get('label[data-cy="aui-cftimeout-sourceset-source"]').find('i[aria-label="Clear"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.reload()
-            waitPageProgressAUI()
             cy.get('input[data-cy="aui-cftimeout-ringtimeout"][value="20"]').should('be.visible')
             cy.get('label[data-cy="aui-cftimeout-destinationset-destination"] span').contains(destinationset.name).should('be.visible')
             cy.get('label[data-cy="aui-cftimeout-timeset-time"] span').contains(timeset.name).should('not.exist')
@@ -1168,14 +1130,14 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
 
         it('Delete cft', () => {
             // Setup: Create Subscriber and all CF Types, add Mapping to Subscriber
             createCFMappingEntries()
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -1183,15 +1145,11 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Call Forwarding').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="q-item-label"]').contains('Timeout').click()
-            waitPageProgressAUI()
             cy.get('button[data-cy="aui-cftimeout-delete"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.reload()
-            waitPageProgressAUI()
             cy.get('input[data-cy="aui-cftimeout-ringtimeout"][value="15"]').should('be.visible')
             cy.get('label[data-cy="aui-cftimeout-destinationset-destination"] span').contains(destinationset.name).should('not.exist')
             cy.get('label[data-cy="aui-cftimeout-timeset-time"] span').contains(timeset.name).should('not.exist')
@@ -1204,7 +1162,7 @@ context('Subscriber Call Forwarding tests', () => {
                 apiRemoveCFTimeSetBy({ name: timesetAPI.name, authHeader })
                 apiRemoveCFSourceSetBy({ name: sourceset.name, authHeader })
                 apiRemoveCFDestinationSetBy({ name: destinationset.name, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             })
         })
     })

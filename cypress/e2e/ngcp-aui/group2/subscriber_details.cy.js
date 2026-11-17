@@ -14,11 +14,14 @@ import {
     deleteDownloadsFolder,
     deleteItemOnListPageBy,
     searchInDataTable,
-    waitPageProgressAUI,
     apiCreateSubscriberPhonebook,
-    apiRemoveSubscriberPhonebookBy
+    apiRemoveSubscriberPhonebookBy,
+    apiEditSubscriberSpeeddial
 } from '../../../support/e2e'
 
+let issppro = null
+const downloadsFolder = Cypress.config('downloadsFolder')
+const fixturesFolder = Cypress.config('fixturesFolder')
 const ngcpConfig = Cypress.config('ngcpConfig')
 const path = require('path')
 
@@ -48,6 +51,7 @@ const customer = {
 }
 
 const subscriber = {
+    subscriber_id: 0,
     username: 'subscriberDetailsCypressAui',
     email: 'subscriberDetailsCypressAui@test.com',
     external_id: 'subid' + getRandomNum(),
@@ -58,7 +62,20 @@ const subscriber = {
         sn: 11,
         ac: 22,
         cc: 9071
-    }
+    },
+}
+
+const speeddial = {
+    speeddials: [
+        {
+            slot:"*0",
+            destination:"SubscriberDetailsSpeeddial"
+        },
+        {
+            slot:"*1",
+            destination:"SecondSubscriberDetailsSpeeddial"
+        }
+    ]
 }
 
 const subscriberPhonebook = {
@@ -67,16 +84,16 @@ const subscriberPhonebook = {
     name: "SubscriberDetailsPhonebook"
 }
 
-let iscloudpbx = false
-let issppro = null
-const downloadsFolder = Cypress.config('downloadsFolder')
-const fixturesFolder = Cypress.config('fixturesFolder')
-
-context('Subscriber details tests', () => {
+context('Subscriber Details tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+            cy.log('Preparing environment...')
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            cy.log('Finished data cleanup')
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -85,61 +102,38 @@ context('Subscriber details tests', () => {
                 if (body.type === 'sppro') {
                     issppro = true
                 } else {
-                    cy.log('Not a SPPRO instance, skipping "Fax Settings" and "Phonebook" tests...');
                     issppro = false
+                    cy.log('Not a SPPRO instance, skipping "Fax Settings" and "Phonebook" tests...')
                 }
             })
-            cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-            cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader }).then(({ id }) => domain.id = id )
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
                 subscriber.customer_id = id
             })
-        })
-    })
-
-    beforeEach(() => {
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(() => {
-                apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
-                    subscriber.subscriber_id = id
-                    issppro
-                        ? apiCreateSubscriberPhonebook({ data: { ...subscriberPhonebook, subscriber_id: id }, authHeader })
-                        : cy.log("Instance is CE, not PRO. Skipping Subscriber Phonebook creation...")
-                    apiCreateLocationMapping({ data: { ...locationmapping, subscriber_id: id }, authHeader })
-                })
-            })
+            cy.log('Finished data creation, start running tests...')
         })
     })
 
     after(() => {
-            Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-            cy.log('Data clean up...')
-            apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(()=> {
-                    apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                    apiRemoveDomainBy({ name: domain.domain, authHeader })
-                })
-        })
-        deleteDownloadsFolder()
-    })
-
-    afterEach(() => {
+        Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
-            issppro
-                ? apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebook.name, authHeader })
-                : cy.log("Instance is CE, not PRO. Skipping Subscriber Phonebook deletion...")
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
+        cy.log('Cleanup complete!')
     })
 
     context('Voicemail settings', () => {
-        it('Change voicemail settings', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        it('Change Voicemail settings', () => {
+            // Setup: Create Subscriber
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiCreateSubscriber({ data: subscriber, authHeader })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
 
             cy.locationShouldBe('#/subscriber')
@@ -186,10 +180,21 @@ context('Subscriber details tests', () => {
             cy.get('div[data-cy="subscriber-attach-notification"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            })
         })
 
-        it('Upload/Redownload greetings in voicemail settings', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        it('Upload/Redownload greetings in Voicemail settings', () => {
+            // Setup: Create Subscriber
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiCreateSubscriber({ data: subscriber, authHeader })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
 
             cy.locationShouldBe('#/subscriber')
@@ -199,13 +204,11 @@ context('Subscriber details tests', () => {
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
 
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Voicemail Settings').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-sound-file-upload--unavail"] input[type="file"]').selectFile(path.join(fixturesFolder, 'ring.wav'), { force: 'true' })
             cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="file-reset-button"]').click()
             cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="file-select-button"]').should('be.visible')
             cy.get('div[data-cy="aui-sound-file-upload--unavail"] input[type="file"]').selectFile(path.join(fixturesFolder, 'ring.wav'), { force: 'true' })
             cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="file-upload-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="player-play-button"]').click()
             cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="player-pause-button"]').should('be.visible')
             cy.wait(2000)
@@ -213,19 +216,36 @@ context('Subscriber details tests', () => {
             cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="player-play-button"]').should('be.visible')
             cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="player-stop-button"]').click()
             cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="player-download-button"]').click()
-            const filename = path.join(downloadsFolder, 'voicemail_unavail_' + subscriber.subscriber_id + '.wav')
-            cy.readFile(filename, 'binary', { timeout: 5000 }).should(buffer => expect(buffer.length).to.be.gt(8400))
+            cy.url().then((pathname) => {
+                const filename = path.join(downloadsFolder, 'voicemail_unavail_' + pathname.split('/')[6] + '.wav')
+                cy.readFile(filename, 'binary', { timeout: 5000 }).should(buffer => expect(buffer.length).to.be.gt(8400))
+            })
             cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="file-delete-button"]').click()
             cy.get('button[data-cy="btn-confirm"]').click()
             cy.get('div[data-cy="aui-sound-file-upload--unavail"] [data-cy="file-select-button"]').should('be.visible')
-        })
 
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            })
+            deleteDownloadsFolder()
+        })
+    })
+
+    context('Fax Features', () => {
         it('Check if invalid values are being rejected in Fax Features', function () {
             if (!issppro) {
                 cy.log('Not a SPPRO instance, skipping fax features tests...')
                 this.skip()
             }
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+
+            // Setup: Create Subscriber
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiCreateSubscriber({ data: subscriber, authHeader })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -238,6 +258,11 @@ context('Subscriber details tests', () => {
             cy.get('input[data-cy="destination-email"]').type('notavalidemail')
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-negative')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            })
         })
 
         it('Add/Delete Destination to Fax Features', function () {
@@ -245,7 +270,14 @@ context('Subscriber details tests', () => {
                 cy.log('Not a SPPRO instance, skipping fax features tests...')
                 this.skip()
             }
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+
+            // Setup: Create Subscriber
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiCreateSubscriber({ data: subscriber, authHeader })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -284,6 +316,11 @@ context('Subscriber details tests', () => {
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[data-cy="faxserversettings-t38"][aria-disabled="true"]').should('not.exist')
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            })
         })
 
         it('Add/Delete Secret Key Renew Notify Email to Fax Features', function () {
@@ -291,7 +328,14 @@ context('Subscriber details tests', () => {
                 cy.log('Not a SPPRO instance, skipping fax features tests...')
                 this.skip()
             }
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+
+            // Setup: Create Subscriber
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiCreateSubscriber({ data: subscriber, authHeader })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -304,23 +348,24 @@ context('Subscriber details tests', () => {
             cy.get('label[data-cy="mailtofax-secret-key-renew-interval"]').click()
             cy.get('div[role="listbox"]').contains('Monthly').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="secret-key-reniew-notify-add"]').click()
             cy.get('input[data-cy="secret-key-notify-email"]').type('test.mail@invalid.com')
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="secret-key-reniew-notify-add"]').click()
             cy.get('input[data-cy="secret-key-notify-email"]:last').type('test.mail2@invalid.com')
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="secret-key-reniew-notify-delete"]:last').click()
             cy.get('button[data-cy="secret-key-reniew-notify-delete"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            })
         })
 
         it('Add/Delete ACL to Fax Features', function () {
@@ -328,7 +373,14 @@ context('Subscriber details tests', () => {
                 cy.log('Not a SPPRO instance, skipping fax features tests...')
                 this.skip()
             }
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+
+            // Setup: Create Subscriber
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiCreateSubscriber({ data: subscriber, authHeader })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
@@ -343,7 +395,6 @@ context('Subscriber details tests', () => {
             cy.get('input[data-cy="acl-destination"]').type('0123456789')
             cy.get('div[data-cy="acl-regex-enable"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="acl-add"]').scrollIntoView()
             cy.get('button[data-cy="acl-add"]').click({ force: true })
@@ -352,30 +403,39 @@ context('Subscriber details tests', () => {
             cy.get('input[data-cy="acl-destination"]:last').type('012345678')
             cy.get('div[data-cy="acl-regex-enable"]:last').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('button[data-cy="acl-delete"]:last').click()
             cy.get('button[data-cy="acl-delete"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            })
         })
     })
 
     context('Location mappings', () => {
         it('Add Location Mapping', () => {
+            // Setup: Create Subscriber, delete Location Mapping if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiCreateSubscriber({ data: subscriber, authHeader })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+            cy.intercept('GET', '**/api/subscriberlocationmappings/**').as('getSubscriberLocationMappingPage')
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Location Mappings').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getSubscriberLocationMappingPage')
             cy.get('div[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="locationmapping-location"]').type('testlocation')
             cy.get('input[data-cy="locationmapping-caller_pattern"]').type('testcallerpattern')
@@ -384,20 +444,36 @@ context('Subscriber details tests', () => {
             cy.get('input[data-cy="locationmapping-to_username"]').type('testusername')
             cy.get('input[data-cy="locationmapping-external_id"]').type(locationmapping.external_id)
             cy.get('[data-cy="aui-save-button"]').click()
-            waitPageProgressAUI()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            })
         })
 
         it('Edit Location Mapping', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            // Setup: Create Subscriber and Location Mapping
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
+                    apiCreateLocationMapping({ data: { ...locationmapping, subscriber_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+            cy.intercept('GET', '**/api/subscriberlocationmappings/**').as('getSubscriberLocationMappingPage')
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Location Mappings').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getSubscriberLocationMappingPage')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberLocationMappingsEdit"]').click()
@@ -414,22 +490,45 @@ context('Subscriber details tests', () => {
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('button[data-cy="aui-close-button"][aria-disabled="true"]').should('not.exist')
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            })
         })
 
         it('Delete Location Mapping', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+            // Setup: Create Subscriber and Location Mapping
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
+                    apiCreateLocationMapping({ data: { ...locationmapping, subscriber_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
             cy.locationShouldBe('#/subscriber')
             searchInDataTable(subscriber.username)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+            cy.intercept('GET', '**/api/subscriberlocationmappings/**').as('getSubscriberLocationMappingPage')
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Location Mappings').click()
-            waitPageProgressAUI()
+
+            cy.wait('@getSubscriberLocationMappingPage')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--delete"]').click()
             cy.get('button[data-cy="btn-confirm"]').click()
             cy.contains('.q-table__bottom--nodata', 'No data available').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveLocationMappingBy({ external_id: locationmapping.external_id, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            })
         })
     })
 
@@ -439,7 +538,14 @@ context('Subscriber details tests', () => {
                 cy.log('Not a SPPRO instance, skipping phonebook tests...')
                 this.skip()
             }
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+
+            // Setup: Create Subscriber
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiCreateSubscriber({ data: subscriber, authHeader })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
 
             cy.locationShouldBe('#/subscriber')
@@ -452,6 +558,11 @@ context('Subscriber details tests', () => {
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="phonebook-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('label[data-cy="phonebook-number"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            })
         })
 
         it('Create a phonebook', function () {
@@ -459,10 +570,15 @@ context('Subscriber details tests', () => {
                 cy.log('Not a SPPRO instance, skipping phonebook tests...')
                 this.skip()
             }
+
+            // Setup: Create Subscriber, delete Phonebook if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebook.name, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiCreateSubscriber({ data: subscriber, authHeader })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
 
             cy.locationShouldBe('#/subscriber')
@@ -478,6 +594,12 @@ context('Subscriber details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('td[data-cy="q-td--name"]').contains(subscriberPhonebook.name).should('be.visible')
             cy.get('td[data-cy="q-td--number"]').contains(subscriberPhonebook.number).should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebook.name, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            })
         })
 
         it('Edit a phonebook', function () {
@@ -485,7 +607,17 @@ context('Subscriber details tests', () => {
                 cy.log('Not a SPPRO instance, skipping phonebook tests...')
                 this.skip()
             }
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+
+            // Setup: Create Subscriber and Phonebook
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebook.name, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
+                    apiCreateSubscriberPhonebook({ data: { ...subscriberPhonebook, subscriber_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
 
             cy.locationShouldBe('#/subscriber')
@@ -503,6 +635,12 @@ context('Subscriber details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
             cy.get('td[data-cy="q-td--number"]').contains('anothertestnumber').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebook.name, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            })
         })
 
         it('Delete a phonebook', function () {
@@ -510,7 +648,17 @@ context('Subscriber details tests', () => {
                 cy.log('Not a SPPRO instance, skipping phonebook tests...')
                 this.skip()
             }
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+
+            // Setup: Create Subscriber and Phonebook
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebook.name, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiCreateSubscriber({ data: subscriber, authHeader }).then(({ id }) => {
+                    apiCreateSubscriberPhonebook({ data: { ...subscriberPhonebook, subscriber_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
             cy.navigateMainMenu('settings / subscriber')
 
             cy.locationShouldBe('#/subscriber')
@@ -520,6 +668,159 @@ context('Subscriber details tests', () => {
             cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
             deleteItemOnListPageBy(subscriberPhonebook.name, 'Name')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberPhonebookBy({ name: subscriberPhonebook.name, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            })
+        })
+    })
+
+    context('Speeddial', () => {
+        it('Create multiple Speeddials', () => {
+            // Setup: Create Customer and Subscriber
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                    apiCreateSubscriber({ data: { ...subscriber, customer_id: id }, authHeader })
+                })
+            })
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / subscriber')
+
+            cy.locationShouldBe('#/subscriber')
+            searchInDataTable(subscriber.username)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Speed Dial').click()
+            cy.get('span[class="block"]').contains('Edit').click()
+            cy.get('button[data-cy="aui-speeddial-add-another"]').should('be.visible')
+            cy.get('button[data-cy="aui-speeddial-add-another"]').click()
+            cy.get('input[data-cy="aui-speeddial-destination"]').type(speeddial.speeddials[0].destination)
+            cy.get('button[data-cy="aui-speeddial-add-another"]').click()
+            cy.get('input[data-cy="aui-speeddial-destination"]:last').type(speeddial.speeddials[1].destination)
+            cy.get('button[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('input[aria-label="Slot"][value=\"' + speeddial.speeddials[0].slot + '\"]').should('exist')
+            cy.get('input[aria-label="Slot"][value=\"' + speeddial.speeddials[1].slot + '\"]').should('exist')
+            cy.get('input[data-cy="aui-speeddial-destination"]:first').invoke('attr', 'value').should('contain', speeddial.speeddials[0].destination)
+            cy.get('input[data-cy="aui-speeddial-destination"]:last').invoke('attr', 'value').should('contain', speeddial.speeddials[1].destination)
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            })
+        })
+
+        it('Edit and save Speeddials', () => {
+            // Setup: Create Customer, Subsriber and Speeddial
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                    apiCreateSubscriber({ data: { ...subscriber, customer_id: id }, authHeader }).then(({ id }) => {
+                        apiEditSubscriberSpeeddial({ subid: id, data: speeddial, authHeader})
+                    })
+                })
+            })
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / subscriber')
+
+            cy.locationShouldBe('#/subscriber')
+            searchInDataTable(subscriber.username)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Speed Dial').click()
+            cy.get('span[class="block"]').contains('Edit').click()
+            cy.get('input[data-cy="aui-speeddial-destination"]:first').should('be.visible')
+            cy.get('input[data-cy="aui-speeddial-destination"]:first').clear().type('testdestination')
+            cy.get('input[data-cy="aui-speeddial-destination"]:last').clear().type('seconddestination')
+            cy.get('button[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('input[aria-label="Slot"][value=\"' + speeddial.speeddials[0].slot + '\"]').should('exist')
+            cy.get('input[aria-label="Slot"][value=\"' + speeddial.speeddials[1].slot + '\"]').should('exist')
+            cy.get('input[data-cy="aui-speeddial-destination"]:first').invoke('attr', 'value').should('contain', 'testdestination')
+            cy.get('input[data-cy="aui-speeddial-destination"]:last').invoke('attr', 'value').should('contain', 'seconddestination')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            })
+        })
+
+        it('Edit and reset Speeddials', () => {
+            // Setup: Create Customer, Subsriber and Speeddial
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                    apiCreateSubscriber({ data: { ...subscriber, customer_id: id }, authHeader }).then(({ id }) => {
+                        apiEditSubscriberSpeeddial({ subid: id, data: speeddial, authHeader})
+                    })
+                })
+            })
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / subscriber')
+
+            cy.locationShouldBe('#/subscriber')
+            searchInDataTable(subscriber.username)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Speed Dial').click()
+            cy.get('span[class="block"]').contains('Edit').click()
+            cy.get('input[data-cy="aui-speeddial-destination"]:first').should('be.visible')
+            cy.get('input[data-cy="aui-speeddial-destination"]:first').clear().type('testdestination')
+            cy.get('input[data-cy="aui-speeddial-destination"]:last').clear().type('seconddestination')
+            cy.get('button[data-cy="aui-reset-button"]').click()
+            cy.get('input[aria-label="Slot"][value=\"' + speeddial.speeddials[0].slot + '\"]').should('exist')
+            cy.get('input[aria-label="Slot"][value=\"' + speeddial.speeddials[1].slot + '\"]').should('exist')
+            cy.get('input[data-cy="aui-speeddial-destination"]:first').invoke('attr', 'value').should('contain', speeddial.speeddials[0].destination)
+            cy.get('input[data-cy="aui-speeddial-destination"]:last').invoke('attr', 'value').should('contain', speeddial.speeddials[1].destination)
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            })
+        })
+
+        it('Delete Speeddial', () => {
+            // Setup: Create Customer, Subsriber and Speeddial
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
+                    apiCreateSubscriber({ data: { ...subscriber, customer_id: id }, authHeader }).then(({ id }) => {
+                        apiEditSubscriberSpeeddial({ subid: id, data: speeddial, authHeader})
+                    })
+                })
+            })
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / subscriber')
+
+            cy.locationShouldBe('#/subscriber')
+            searchInDataTable(subscriber.username)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--subscriberDetails"]').click()
+            cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Speed Dial').click()
+            cy.get('span[class="block"]').contains('Edit').click()
+            cy.get('button[data-cy="aui-speeddial-delete"]:first').should('be.visible')
+            cy.get('button[data-cy="aui-speeddial-delete"]:first').click()
+            cy.get('button[data-cy="aui-speeddial-delete"]:first').click()
+            cy.get('button[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('input[aria-label="Slot"][value=\"' + speeddial.speeddials[0].slot + '\"]').should('not.exist')
+            cy.get('input[aria-label="Slot"][value=\"' + speeddial.speeddials[1].slot + '\"]').should('not.exist')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            })
         })
     })
 })

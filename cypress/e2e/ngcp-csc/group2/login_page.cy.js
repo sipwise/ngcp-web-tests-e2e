@@ -11,6 +11,8 @@ import {
     getRandomNum,
 } from '../../../support/e2e'
 
+const ngcpConfig = Cypress.config('ngcpConfig')
+
 const domain = {
     domain: 'domainLogin',
     reseller_id: 1
@@ -47,22 +49,20 @@ const loginInfo = {
     password: `${subscriber.webpassword}`
 }
 
-const ngcpConfig = Cypress.config('ngcpConfig')
-
 function checkLoginAPIResponse (response) {
     expect(response.status || response.statusCode).to.equal(200)
     expect(response.body).to.have.property('jwt')
 }
 
-context('Login page tests', () => {
+context('Login Page tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -73,23 +73,18 @@ context('Login page tests', () => {
 
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
             apiCreateSubscriber({ data:  subscriber, authHeader })
         })
-        if (Cypress.currentTest.title === 'Check if unknown URL will route to login page') {
-            cy.log('Skip beforeEach visit for this test to prevent freezing')
-        } else {
-            cy.visit('/')
-        }
     })
 
     after(() => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 
@@ -104,6 +99,7 @@ context('Login page tests', () => {
     })
 
     it('Trying to login through UI with no credentials', () => {
+        cy.visit('/')
         cy.intercept('POST', '**/login_jwt').as('loginRequest')
         cy.get('.q-btn:last').click()
 
@@ -114,6 +110,7 @@ context('Login page tests', () => {
     })
 
     it('Trying to login through UI with incorrect user and password', () => {
+        cy.visit('/')
         cy.intercept('POST', '**/login_jwt').as('loginRequest')
         cy.get('input:first').type('not-exists-user')
         cy.get('input:last').type('not-exists-password')
@@ -126,6 +123,7 @@ context('Login page tests', () => {
     })
 
     it('Trying to login through UI with incorrect password', () => {
+        cy.visit('/')
         cy.intercept('POST', '**/login_jwt').as('loginRequest')
         cy.get('input:first').type(loginInfo.username)
         cy.get('input:last').type('not-exists-password')
@@ -138,6 +136,7 @@ context('Login page tests', () => {
     })
 
     it('Trying to login through UI with no password', () => {
+        cy.visit('/')
         cy.intercept('POST', '**/login_jwt').as('loginRequest')
         cy.get('input:first').type('not-exists-user')
         cy.get('input:last').clear()
@@ -150,6 +149,7 @@ context('Login page tests', () => {
     })
 
     it('Trying to login through UI with correct credentials', () => {
+        cy.visit('/')
         cy.intercept('POST', '**/login_jwt').as('loginRequest')
         cy.get('input:first').type(loginInfo.username)
         cy.get('input:last').type(loginInfo.password)
@@ -162,22 +162,24 @@ context('Login page tests', () => {
     })
 
     it('Test cy.loginUI function', () => {
+        cy.visit('/')
         cy.intercept('POST', '**/login_jwt').as('loginRequest')
         cy.loginUiCSC(loginInfo.username, loginInfo.password)
         cy.wait('@loginRequest').then(({ response }) => {
             checkLoginAPIResponse(response)
-            cy.get('a[href="#/user/dashboard"]').should('be.visible')
         })
+        cy.get('a[href="#/user/dashboard"]').should('be.visible')
     })
 
     it('Trying to logout', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
         cy.get('button[data-cy="user-menu"]').click()
         cy.get('div[data-cy="user-logout"]').click()
         cy.url().should('match', /\/#\/login$/)
     })
 
     it('Try to change to all available languages', () => {
+        cy.visit('/')
         cy.contains('language').click()
         cy.get('.q-menu').should('be.visible')
         cy.contains('Deutsch').should('be.visible').click()

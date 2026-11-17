@@ -11,7 +11,6 @@ import {
     apiRemoveTimesetBy,
     deleteItemOnListPageBy,
     searchInDataTable,
-    waitPageProgressAUI,
     apiRemoveSystemContactBy
 } from '../../../support/e2e'
 
@@ -68,8 +67,8 @@ context('Timeset tests', () => {
             apiRemoveTimesetBy({ name: timeset.name, authHeader })
             apiRemoveResellerBy({ name: editReseller.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: editContract.external_id, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: editContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             //TODO find a way to delete contacts without receiving error: LOCKED - contact still in use
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             cy.log('Data clean up pre-tests completed')
@@ -99,15 +98,15 @@ context('Timeset tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveResellerBy({ name: editReseller.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: editContract.external_id, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: editContract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             //TODO find a way to delete contacts without receiving error: LOCKED - contact still in use
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
         })
     })
 
-    it('Check if timeset with invalid values gets rejected', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+    it('Check if Timeset with invalid values gets rejected', () => {
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / timeset')
         cy.locationShouldBe('#/timeset')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -116,11 +115,11 @@ context('Timeset tests', () => {
         cy.get('input[data-cy="timeset-name"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
     })
 
-    it('Create a timeset', () => {
+    it('Create a Timeset', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveTimesetBy({ name: timeset.name, authHeader })
         })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / timeset')
         cy.locationShouldBe('#/timeset')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -130,8 +129,8 @@ context('Timeset tests', () => {
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
     })
 
-    it('Edit timeset', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+    it('Edit Timeset', () => {
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / timeset')
         cy.locationShouldBe('#/timeset')
         searchInDataTable(timeset.name)
@@ -143,12 +142,11 @@ context('Timeset tests', () => {
         cy.get('[data-cy=aui-save-button]').click()
         cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         cy.get('[data-cy="aui-close-button"]').click()
-        waitPageProgressAUI()
         cy.get('td[data-cy="q-td--reseller-name"]').contains(editReseller.name).should('be.visible')
     })
 
-    it('Delete timeset', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+    it('Delete Timeset', () => {
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / timeset')
         cy.locationShouldBe('#/timeset')
         deleteItemOnListPageBy(timeset.name)

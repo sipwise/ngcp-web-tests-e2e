@@ -10,7 +10,6 @@ import {
     apiRemoveResellerBy,
     apiRemoveResellerPhonebookBy,
     apiRemoveSystemContactBy,
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiRemoveAdminBy,
@@ -26,6 +25,9 @@ import {
     apiCreateCustomer,
     apiCreateDomain
 } from '../../../support/e2e'
+
+let issppro = null
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 const billingProfile = {
     name: 'billingProfileResellerDetails',
@@ -113,14 +115,22 @@ const billingNetwork = {
   name: "billingNetworkName"
 }
 
-let issppro = null
-const ngcpConfig = Cypress.config('ngcpConfig')
-
-context('Reseller details tests', () => {
+context('Reseller Details tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+            apiRemoveBillingProfileBy({ name: internalBillingProfile.name, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+            apiRemoveBillingNetworkBy({ name: billingNetwork.name + "2", authHeader })
+            apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader })
+            apiRemoveAdminBy({ login: testadmin.login, authHeader })
+            apiRemoveResellerBy({ name: reseller.name, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -128,104 +138,60 @@ context('Reseller details tests', () => {
             }).then(({ body }) => {
                 if (body.type === 'sppro') {
                     issppro = true
+                    apiRemoveResellerPhonebookBy({ name: resellerPhonebook.name, authHeader })
                 } else {
-                    cy.log('Not a SPPRO instance, skipping Phonebook tests...');
                     issppro = false
+                    cy.log('Not a SPPRO instance, skipping Phonebook tests...')
                 }
             })
-            if (issppro) {
-                apiRemoveResellerPhonebookBy({ name: resellerPhonebook.name, authHeader })
-            }
-            apiRemoveBillingProfileBy({ name: internalBillingProfile.name, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-            apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-            apiRemoveBillingNetworkBy({ name: billingNetwork.name + "2", authHeader })
-            apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader })
-            apiRemoveAdminBy({ name: testadmin.login, authHeader })
-            apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
-            apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
-            cy.log('Data clean up pre-tests completed')
+            cy.log('Finished data cleanup')
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                 contract.contact_id = id
             })
-        })
-    })
-
-    beforeEach(() => {
-        apiLoginAsSuperuser().then(authHeader => {
-            cy.log('Cleaning up db...')
-            if (issppro) {
-                apiRemoveResellerPhonebookBy({ name: resellerPhonebook.name, authHeader })
-            }
-            apiRemoveBillingProfileBy({ name: internalBillingProfile.name, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-            apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-            apiRemoveBillingNetworkBy({ name: billingNetwork.name + "2", authHeader })
-            apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader})
-            apiRemoveAdminBy({ name: testadmin.login, authHeader })
-            apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
-
-            cy.log('Seeding up db...')
-            apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
-                apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
-                    if (issppro) {
-                        apiCreateResellerPhonebook({ data: { ...resellerPhonebook, reseller_id: id }, authHeader })
-                    }
-                    apiCreateAdmin({ data: { ...testadmin, reseller_id: id }, authHeader })
-                    apiCreateBillingNetwork({ data: { ...billingNetwork, reseller_id: id }, authHeader })
-                    apiCreateBillingProfile({ data: { ...billingProfile, reseller_id: id }, authHeader })
-                    apiCreateBillingProfile({ data: { ...internalBillingProfile, reseller_id: id }, authHeader }).then(({ id }) => {
-                        customer.billing_profile_id = id
-                    })
-                    apiCreateCustomerContact({ data: { ...customerContact, reseller_id: id }, authHeader }).then(({ id }) => {
-                        apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
-                    })
-                    apiCreateDomain({ data: { ...domain, reseller_id: id }, authHeader }).then(({ id }) => {
-                        domain.id = id
-                    })
-                })
-            })
+            cy.log('Finished data creation, start running tests...')
         })
     })
 
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
+        Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
         apiLoginAsSuperuser().then(authHeader => {
             if (issppro) {
                 apiRemoveResellerPhonebookBy({ name: resellerPhonebook.name, authHeader })
             }
             apiRemoveBillingProfileBy({ name: internalBillingProfile.name, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
             apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-            apiRemoveAdminBy({ name: testadmin.login, authHeader })
+            apiRemoveAdminBy({ login: testadmin.login, authHeader })
             apiRemoveBillingNetworkBy({ name: billingNetwork.name + "2", authHeader })
             apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader})
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
+        cy.log('Cleanup complete!')
     })
 
     context('Administrator', () => {
-        it('Try to create an administrator with invalid values', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+        it('Try to create an Administrator with invalid values', () => {
+            // Setup: Create Reseller
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Administrator Logins').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('button[data-cy="aui-save-button"]').click()
@@ -233,21 +199,33 @@ context('Reseller details tests', () => {
             cy.get('label[data-cy="login-field"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('label[data-cy="password-field"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('label[data-cy="password-retype-field"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
-        it('Create an administrator', () => {
+        it('Create an Administrator', () => {
+            // Setup: Create Reseller, delete Admin if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: testadmin.login, authHeader })
+                apiRemoveAdminBy({ login: testadmin.login, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
+                })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Administrator Logins').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
 
@@ -259,64 +237,116 @@ context('Reseller details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('td[data-cy="q-td--name"]').contains(testadmin.login).should('be.visible')
 
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveAdminBy({ login: testadmin.login, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
         it('Enable read only. Check if read only is enabled', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            // Setup: Create Admin
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveAdminBy({ login: testadmin.login, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateAdmin({ data: { ...testadmin, reseller_id: id }, authHeader })
+                    })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Administrator Logins').click()
             searchInDataTable(testadmin.login)
             cy.get('td[data-cy="q-td--read-only"]').click()
-            waitPageProgressAUI()
             cy.get('td[data-cy="q-td--read-only"]').find('div[role="switch"][aria-checked="true"]').should('be.visible')
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
             cy.logoutUiAUI()
             cy.wait(500)
             cy.loginUiAUI(testadmin.login, testadmin.password, false)
-            cy.navigateMainMenu('settings / reseller', false)
+            cy.navigateMainMenu('settings / reseller')
             cy.get('a[data-cy="aui-list-action--add"]').should('not.exist')
             cy.get('a[data-cy="aui-list-action--edit-menu-btn"]').should('not.exist')
             cy.get('a[data-cy="aui-list-action--delete"]').should('not.exist')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveAdminBy({ login: testadmin.login, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
-        it('Delete administrator', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+        it('Delete Administrator', () => {
+            // Setup: Create Admin
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveAdminBy({ login: testadmin.login, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateAdmin({ data: { ...testadmin, reseller_id: id }, authHeader })
+                    })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Administrator Logins').click()
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--delete"]').click()
             cy.get('[data-cy="btn-confirm"]').click()
             cy.contains('.q-table__bottom--nodata', 'No data available').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveAdminBy({ login: testadmin.login, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
     })
 
     context('Billing Network', () => {
-        it('Try to create a billing network with invalid values', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+        it('Try to create a Billing Network with invalid values', () => {
+            // Setup: Create Reseller
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/network/ajax/**', times: 1 }).as('getBillingNetworksList')
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Networks').click()
+            cy.wait('@getBillingNetworksList')
             cy.get('a[data-cy="aui-list-action--add"]').click()
+
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="billingnetworks-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('label[data-cy="billingnetworks-description"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
@@ -331,23 +361,38 @@ context('Reseller details tests', () => {
             cy.get('label[data-cy="billingnetworks-ip"]').clear().type('123.421.123.80')
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="billingnetworks-ip"]').find('div[role="alert"]').contains('Input must be a valid IPv4 or IPv6').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
-        it('Create a billing network', () => {
+        it('Create a Billing Network', () => {
+            // Setup: Create Reseller, delete Billing Network if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader})
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
+                })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/network/ajax/**', times: 1 }).as('getBillingNetworksList')
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Networks').click()
+            cy.wait('@getBillingNetworksList')
             cy.get('a[data-cy="aui-list-action--add"]').click()
+
             cy.get('label[data-cy="billingnetworks-name"]').type(billingNetwork.name + "2")
             cy.get('label[data-cy="billingnetworks-description"]').type(billingNetwork.description)
             cy.get('label[data-cy="billingnetworks-ip"]').type(billingNetwork.blocks[0].ip)
@@ -359,78 +404,147 @@ context('Reseller details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('td[data-cy="q-td--name"]').contains(billingNetwork.name).should('be.visible')
             cy.get('td[data-cy="q-td--blocks-grp"]').contains(billingNetwork.blocks[0].ip + '/' + billingNetwork.blocks[0].mask + ', ' + billingNetwork.blocks[1].ip + '/' + billingNetwork.blocks[1].mask).should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader})
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
-        it('Edit a billing network', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+        it('Edit a Billing Network', () => {
+            // Setup: Create Billing Network
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader})
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateBillingNetwork({ data: { ...billingNetwork, reseller_id: id }, authHeader })
+                    })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/network/ajax/**', times: 1 }).as('getBillingNetworksList')
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Networks').click()
-            searchInDataTable(billingNetwork.name)
+            cy.wait('@getBillingNetworksList')
+            searchInDataTable(billingNetwork.name, null, true, true)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetailsBillingNetworkEdit"]').click()
-            waitPageProgressAUI()
+
+            cy.get('input[data-cy="billingnetworks-ip"][value="' + billingNetwork.blocks[1].ip + '"]').should('be.visible')
             cy.get('input[data-cy="billingnetworks-ip"]:last').clear().type('3.3.3.3')
             cy.get('input[data-cy="billingnetworks-mask"]:last').clear().type('16')
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('[data-cy="aui-close-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('td[data-cy="q-td--blocks-grp"]').contains('3.3.3.3/16').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader})
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
-        it('Delete a billing network', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+        it('Delete a Billing Network', () => {
+            // Setup: Create Billing Network
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader})
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateBillingNetwork({ data: { ...billingNetwork, reseller_id: id }, authHeader })
+                    })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
+            cy.intercept({ method: 'GET', pathname: '**/network/ajax/**', times: 1 }).as('getBillingNetworksList')
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Networks').click()
-            deleteItemOnListPageBy(billingNetwork.name)
+            cy.wait('@getBillingNetworksList')
+
+            deleteItemOnListPageBy(billingNetwork.name, null, true, true)
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader})
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
     })
 
     context('Billing Profile', () => {
-        it('Try to create a billing profile with invalid values', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+        it('Try to create a Billing Profile with invalid values', () => {
+            // Setup: Create Reseller
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Profiles').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="billingprofiles-handle"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('label[data-cy="billingprofiles-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
-        it('Create a billing profile', () => {
+        it('Create a Billing Profile', () => {
+            // Setup: Create Reseller, delete Billing Profile if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
+                })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Profiles').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="billingprofiles-handle"]').type(billingProfile.handle)
@@ -439,62 +553,110 @@ context('Reseller details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('td[data-cy="q-td--name"]').contains(billingProfile.name).should('be.visible')
 
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
         it('Enable and disable prepaid', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            // Setup: Create Billing Profile
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader})
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateBillingProfile({ data: { ...billingProfile, reseller_id: id }, authHeader })
+                    })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Profiles').click()
-            searchInDataTable(billingProfile.name)
-            cy.get('td[data-cy="q-td--prepaid"]').find('div[role="switch"][aria-disabled="true"]').should('not.exist')
-            cy.get('td[data-cy="q-td--prepaid"]').find('div[role="switch"]').click()
+            searchInDataTable(billingProfile.name, null, true, true)
+            cy.get('td[data-cy="q-td--prepaid"] input').click({ force: true })
             cy.get('td[data-cy="q-td--prepaid"]').find('div[role="switch"][aria-checked="true"]').should('be.visible')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetailsBillingProfileEdit"]').click()
-            waitPageProgressAUI()
+            cy.get('input[data-cy="billingprofiles-name"]').should('have.value', billingProfile.name)
             cy.get('div[data-cy="billingprofiles-prepaid"]').click()
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('[data-cy="aui-close-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('td[data-cy="q-td--prepaid"]').find('div[role="switch"][aria-checked="false"]').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
-        it('Delete billing profile', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+        it('Delete Billing Profile', () => {
+            // Setup: Create Billing Profile
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveBillingNetworkBy({ name: billingNetwork.name, authHeader})
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateBillingProfile({ data: { ...billingProfile, reseller_id: id }, authHeader })
+                    })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Billing Profiles').click()
-            deleteItemOnListPageBy(billingProfile.name)
+            deleteItemOnListPageBy(billingProfile.name, null, true, true)
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
     })
 
     context('Branding', () => {
-        it('Change branding color', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+        it('Change Branding color', () => {
+            // Setup: Create Reseller
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Branding').click()
-            waitPageProgressAUI()
             cy.get('[data-cy="color-picker"]:first').click()
             cy.get('div[class="q-color-picker"]').should('be.visible')
             cy.get('input[data-cy="csc-font-color"]').click()
@@ -507,40 +669,70 @@ context('Reseller details tests', () => {
             cy.get('label[data-cy="csc-background-color"]').clear().type('rgba(0,110,0,1)')
             cy.get('[data-cy="aui-save-button"]').click()
             cy.contains('.q-notification', 'Branding changed successfully').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
     })
 
     context('Customer', () => {
-        it('Check if customer with invalid values gets rejected', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+        it('Check if Customer with invalid values gets rejected', () => {
+            // Setup: Create Reseller
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Customers').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('input[data-cy="aui-select-billing-profile"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('input[data-cy="aui-select-contact"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
-        it('Create a customer', () => {
+        it('Create a Customer', () => {
+            // Setup: Create Reseller and Customer dependencies, delete Customer if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateCustomerContact({ data: { ...customerContact, reseller_id: id }, authHeader })
+                        apiCreateBillingProfile({ data: { ...billingProfile, reseller_id: id }, authHeader })
+                    })
+                })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Customers').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: customerContact.email, itemContains: customerContact.email })
@@ -548,160 +740,304 @@ context('Reseller details tests', () => {
             cy.auiSelectLazySelect({ dataCy: 'aui-select-billing-profile', filter: billingProfile.name, itemContains: billingProfile.name })
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
-        it('Edit customer status to "locked"', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+        it('Edit Customer status to "locked"', () => {
+            // Setup: Create Billing Profile
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiRemoveBillingProfileBy({ name: internalBillingProfile.name, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateBillingProfile({ data: { ...internalBillingProfile, reseller_id: id }, authHeader }).then(({ id }) => {
+                            customer.billing_profile_id = id
+                        })
+                        apiCreateCustomerContact({ data: { ...customerContact, reseller_id: id }, authHeader }).then(({ id }) => {
+                            apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
+                        })
+                    })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Customers').click()
             searchInDataTable(customer.external_id, 'External #')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetailsCustomerEdit"]').click()
-            waitPageProgressAUI()
             cy.qSelect({ dataCy: 'customer-status', filter: '', itemContains: 'Locked' })
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
-            waitPageProgressAUI()
             cy.get('span[data-cy="aui-data-table-inline-edit--select"] span').contains('Locked')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiRemoveBillingProfileBy({ name: internalBillingProfile.name, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
-        it('Delete customer and check if they are deleted', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+        it('Delete Customer and check if they are deleted', () => {
+            // Setup: Create Billing Profile
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiRemoveBillingProfileBy({ name: internalBillingProfile.name, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateBillingProfile({ data: { ...internalBillingProfile, reseller_id: id }, authHeader }).then(({ id }) => {
+                            customer.billing_profile_id = id
+                        })
+                        apiCreateCustomerContact({ data: { ...customerContact, reseller_id: id }, authHeader }).then(({ id }) => {
+                            apiCreateCustomer({ data: { ...customer, contact_id: id }, authHeader })
+                        })
+                    })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Customers').click()
 
             deleteItemOnListPageBy(customer.external_id, 'External #')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact.email, authHeader })
+                apiRemoveBillingProfileBy({ name: internalBillingProfile.name, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
     })
 
     context('Domain', () => {
-        it('Check if domain with invalid values gets rejected', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+        it('Check if Domain with invalid values gets rejected', () => {
+            // Setup: Create Reseller
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Domains').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('[data-cy=aui-save-button]').click()
             cy.get('input[data-cy="domain-name"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
-        it('Create a domain', () => {
+        it('Create a Domain', () => {
+            // Setup: Create Reseller, delete Domain if exists
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
+                })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Domains').click()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="domain-name"]').type(domain.domain)
             cy.get('[data-cy=aui-save-button]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
         it('Check if clicking "Preferences" redirects to correct URL', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            // Setup: Create Domain
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateDomain({ data: { ...domain, reseller_id: id }, authHeader })
+                    })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Domains').click()
             searchInDataTable(domain.domain)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--domainPreferences"]').click()
             cy.get('div[data-cy="q-item--allowed-ips"]').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
-        it('Delete domain', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+        it('Delete Domain', () => {
+            // Setup: Create Domain
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateDomain({ data: { ...domain, reseller_id: id }, authHeader })
+                    })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Domains').click()
             deleteItemOnListPageBy(domain.domain)
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
     })
 
     context('Phonebook', () => {
-        it('Try to create phonebook entry with invalid values', function () {
+        it('Try to create Phonebook entry with invalid values', function () {
             if (!issppro) {
-                cy.log("Instance is CE, not PRO. Skipping phonebook tests...")
+                cy.log("Instance is CE, not PRO. Skipping Phonebook tests...")
                 this.skip()
             }
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+
+            // Setup: Create Reseller
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
-            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('button[data-cy="aui-save-button"]').click()
             cy.get('label[data-cy="phonebook-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             cy.get('label[data-cy="phonebook-number"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
-        it('Create a phonebook', function () {
+        it('Create a Phonebook', function () {
             if (!issppro) {
-                cy.log("Instance is CE, not PRO. Skipping phonebook tests...")
+                cy.log("Instance is CE, not PRO. Skipping Phonebook tests...")
                 this.skip()
             }
+
+            // Setup: Create Reseller, delete Phonebook if exists
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveResellerPhonebookBy({name: resellerPhonebook.name, authHeader})
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
+                })
             })
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
-            waitPageProgressAUI()
             cy.get('a[data-cy="aui-list-action--add"]').click()
             cy.get('input[data-cy="phonebook-name"]').type(resellerPhonebook.name)
             cy.get('input[data-cy="phonebook-number"]').type(resellerPhonebook.number)
@@ -709,24 +1045,42 @@ context('Reseller details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('td[data-cy="q-td--name"]').contains(resellerPhonebook.name).should('be.visible')
             cy.get('td[data-cy="q-td--number"]').contains(resellerPhonebook.number).should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerPhonebookBy({name: resellerPhonebook.name, authHeader})
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
-        it('Edit a phonebook', function () {
+        it('Edit a Phonebook', function () {
             if (!issppro) {
-                cy.log("Instance is CE, not PRO. Skipping phonebook tests...")
+                cy.log("Instance is CE, not PRO. Skipping Phonebook tests...")
                 this.skip()
             }
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+
+            // Setup: Create Phonebook
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerPhonebookBy({name: resellerPhonebook.name, authHeader})
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateResellerPhonebook({ data: { ...resellerPhonebook, reseller_id: id }, authHeader })
+                    })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
-            waitPageProgressAUI()
             searchInDataTable(resellerPhonebook.name, 'Name')
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
@@ -736,39 +1090,72 @@ context('Reseller details tests', () => {
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('[data-cy="aui-close-button"]').click()
             cy.get('td[data-cy="q-td--number"]').contains('anothertestnumber').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerPhonebookBy({name: resellerPhonebook.name, authHeader})
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
 
-        it('Delete a phonebook', function () {
+        it('Delete a Phonebook', function () {
             if (!issppro) {
-                cy.log("Instance is CE, not PRO. Skipping phonebook tests...")
+                cy.log("Instance is CE, not PRO. Skipping Phonebook tests...")
                 this.skip()
             }
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+
+            // Setup: Create Phonebook
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerPhonebookBy({name: resellerPhonebook.name, authHeader})
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateResellerPhonebook({ data: { ...resellerPhonebook, reseller_id: id }, authHeader })
+                    })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"] div').contains('Phonebook').click()
-            waitPageProgressAUI()
             deleteItemOnListPageBy(resellerPhonebook.name, 'Name')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerPhonebookBy({name: resellerPhonebook.name, authHeader})
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
     })
 
     context('Information', () => {
         it('Check if reseller, reseller contract and reseller contact info are correct', () => {
-            cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-            cy.navigateMainMenu('settings / reseller', false)
+            // Setup: Create Reseller
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+                apiCreateContract({ data: contract, authHeader }).then(({ id }) => {
+                    apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / reseller')
 
             cy.locationShouldBe('#/reseller')
             searchInDataTable(reseller.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
             cy.get('a[data-cy="aui-data-table-row-menu--resellerDetails"]').click()
-            waitPageProgressAUI()
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Reseller Base Information').click()
             cy.get('div[data-cy="aui-single-row-table--0"] td').contains(reseller.name).should('be.visible')
             cy.get('div[data-cy="aui-single-row-table--0"] td').contains(reseller.status).should('be.visible')
@@ -778,6 +1165,12 @@ context('Reseller details tests', () => {
             cy.get('div[data-cy="aui-single-row-table--0"] td').contains(systemContact.email).should('be.visible')
             cy.get('div[data-cy="aui-detail-page-menu"]').contains('Reseller Contract').click()
             cy.get('div[data-cy="aui-single-row-table--0"] td').contains(contract.external_id).should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveResellerBy({ name: reseller.name, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
+            })
         })
     })
 })

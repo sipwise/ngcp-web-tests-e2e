@@ -9,7 +9,6 @@ import {
     apiRemoveResellerBy,
     apiRemoveSystemContactBy,
     getRandomNum,
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiCreateHeaderRule,
@@ -22,8 +21,8 @@ import {
     apiRemoveHeaderRulesetBy
 } from '../../../support/e2e'
 
-const ngcpConfig = Cypress.config('ngcpConfig')
 let issppro = null
+const ngcpConfig = Cypress.config('ngcpConfig')
 
 const contract = {
     contact_id: 0,
@@ -88,7 +87,6 @@ context('Header manipulation tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
-            Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.request({
                 method: 'GET',
                 url: `${ngcpConfig.apiHost}/api/platforminfo`,
@@ -96,14 +94,15 @@ context('Header manipulation tests', () => {
             }).then(({ body }) => {
                 if (body.type === 'sppro') {
                     issppro = true
-                    apiRemoveHeaderRuleConditionBy({ name: headerRuleCondition.match_name, authHeader })
+                    Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
+                    apiRemoveHeaderRuleConditionBy({ match_name: headerRuleCondition.match_name, authHeader })
                     apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
                     apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
                     apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
                     apiRemoveResellerBy({ name: reseller.name, authHeader })
-                    apiRemoveContractBy({ name: contract.external_id, authHeader })
+                    apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                     apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
-                    cy.log('Data clean up pre-tests completed')
+                    cy.log('Finished data cleanup')
                     apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
                         apiCreateContract({ data: { ...contract, contact_id: id }, authHeader }).then(({ id }) => {
                             apiCreateReseller({ data: { ...reseller, contract_id: id }, authHeader }).then(({ id}) => {
@@ -111,416 +110,657 @@ context('Header manipulation tests', () => {
                             })
                         })
                     })
+                    cy.log('Finished data creation, start running tests...')
                 } else {
-                    cy.log('Not a SPPRO instance, skipping all tests...');
                     issppro = false
+                    cy.log('Not a SPPRO instance, skipping all tests...')
                     return
                 }
             })
         })
     })
 
-    beforeEach(() => {
-        if (issppro) {
-            apiLoginAsSuperuser().then(authHeader => {
-                cy.log('Cleaning up db...')
-                apiRemoveHeaderRuleConditionBy({ name: headerRuleCondition.match_name, authHeader })
-                apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
-                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
-                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
-
-                cy.log('Seeding db...')
-                apiCreateHeaderRuleset({ data: headerRuleset, authHeader }).then(({ id }) => {
-                    apiCreateHeaderRule({ data: { ...headerRule, set_id: id }, authHeader }).then(({ id }) => {
-                        apiCreateHeaderRuleAction({ data: { ...headerRuleAction, rule_id: id }, authHeader })
-                        apiCreateHeaderRuleCondition({ data: { ...headerRuleCondition, rule_id: id }, authHeader })
-                    })
-                })
-            })
-        }
-    })
-
     after(() => {
-        Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
-        cy.log('Data clean up...')
         if (issppro) {
+            Cypress.log({ displayName: 'END', message: 'Starting cleanup...' })
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveHeaderRuleConditionBy({ name: headerRuleCondition.match_name, authHeader })
+                apiRemoveHeaderRuleConditionBy({ match_name: headerRuleCondition.match_name, authHeader })
                 apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
                 apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
                 apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
                 apiRemoveResellerBy({ name: reseller.name, authHeader })
-                apiRemoveContractBy({ name: contract.external_id, authHeader })
+                apiRemoveContractBy({ external_id: contract.external_id, authHeader })
                 apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             })
+            cy.log('Cleanup complete!')
         } else {
-            cy.log('Skipping cleanup, because this is not an SPPRO instance');
+            cy.log('Not a SPPRO instance, skipping cleanup...')
         }
     })
 
-    it('Check if header rule set with invalid values gets rejected', function () {
-        if (!issppro) {
-            this.skip()
-        }
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / header')
+    context('Header Rule Set tests', () => {
+        it('Check if header rule set with invalid values gets rejected', function () {
+            if (!issppro) {
+                this.skip()
+            }
 
-        cy.locationShouldBe('#/header')
-        cy.get('a[data-cy="aui-list-action--add"]').click()
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / header')
 
-        cy.locationShouldBe('#/header/create')
-        cy.get('input[data-cy="aui-select-reseller"]').type('totallyaninvalidvalueforsure')
-        cy.get('[data-cy="aui-save-button"]').click()
-        cy.get('input[data-cy="aui-select-reseller"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
-        cy.get('label[data-cy="header-rule-set-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
-    })
-
-    it('Create a header rule set', function () {
-        if (!issppro) {
-            this.skip()
-        }
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            cy.locationShouldBe('#/header')
+            cy.get('a[data-cy="aui-list-action--add"]').click()
+            cy.locationShouldBe('#/header/create')
+            cy.get('input[data-cy="aui-select-reseller"]').type('totallyaninvalidvalueforsure')
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('input[data-cy="aui-select-reseller"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
+            cy.get('label[data-cy="header-rule-set-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
         })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / header')
 
-        cy.locationShouldBe('#/header')
-        cy.get('a[data-cy="aui-list-action--add"]').click()
+        it('Create a header rule set', function () {
+            if (!issppro) {
+                this.skip()
+            }
 
-        cy.locationShouldBe('#/header/create')
-        cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: reseller.name, itemContains: reseller.name })
-        cy.get('input[data-cy="header-rule-set-name"]').type(headerRuleset.name)
-        cy.get('input[data-cy="header-rule-set-description"]').type(headerRuleset.description)
-        cy.get('[data-cy="aui-save-button"]').click()
-        waitPageProgressAUI()
+            // Setup: Delete Header Rule Set if exists
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            })
 
-        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-        cy.locationShouldBe('#/header')
-    })
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / header')
 
-    it('Edit header ruleset', function () {
-        if (!issppro) {
-            this.skip()
-        }
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / header')
+            cy.locationShouldBe('#/header')
+            cy.get('a[data-cy="aui-list-action--add"]').click()
+            cy.locationShouldBe('#/header/create')
+            cy.auiSelectLazySelect({ dataCy: 'aui-select-reseller', filter: reseller.name, itemContains: reseller.name })
+            cy.get('input[data-cy="header-rule-set-name"]').type(headerRuleset.name)
+            cy.get('input[data-cy="header-rule-set-description"]').type(headerRuleset.description)
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.locationShouldBe('#/header')
 
-        cy.locationShouldBe('#/header')
-        searchInDataTable(headerRuleset.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerSetEdit"]').click()
-        waitPageProgressAUI()
-        cy.get('input[data-cy="header-rule-set-description"]').clear().type('testdescription')
-        cy.get('[data-cy="aui-save-button"]').click()
-        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-        cy.get('[data-cy="aui-close-button"]').click()
-        cy.get('td[data-cy="q-td--description"]').should('contain.text', 'testdescription')
-    })
-
-    it('Delete header rule set and check if they are deleted', function () {
-        if (!issppro) {
-            this.skip()
-        }
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / header')
-
-        cy.locationShouldBe('#/header')
-        deleteItemOnListPageBy(headerRuleset.name)
-    })
-
-    it('Check if header rule with invalid values gets rejected', function () {
-        if (!issppro) {
-            this.skip()
-        }
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / header')
-
-        cy.locationShouldBe('#/header')
-        searchInDataTable(headerRuleset.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-        waitPageProgressAUI()
-        cy.get('a[data-cy="aui-list-action--add"]').click()
-
-        cy.get('[data-cy="aui-save-button"]').click()
-        cy.get('label[data-cy="headerrules-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
-        cy.get('label[data-cy="headerrules-description"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
-    })
-
-    it('Create a header rule', function () {
-        if (!issppro) {
-            this.skip()
-        }
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            })
         })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / header')
 
-        cy.locationShouldBe('#/header')
-        searchInDataTable(headerRuleset.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-        waitPageProgressAUI()
-        cy.get('a[data-cy="aui-list-action--add"]').click()
+        it('Edit header rule set', function () {
+            if (!issppro) {
+                this.skip()
+            }
 
-        cy.get('input[data-cy="headerrules-name"]').type(headerRule.name)
-        cy.get('input[data-cy="headerrules-description"]').type(headerRule.description)
-        cy.get('[data-cy="aui-save-button"]').click()
-        waitPageProgressAUI()
+            // Setup: Create Header Rule Set
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+                apiCreateHeaderRuleset({ data: headerRuleset, authHeader })
+            })
 
-        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-    })
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / header')
 
-    it('Edit header rule priority and check if it gets applied properly', function () {
-        if (!issppro) {
-            this.skip()
-        }
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / header')
+            cy.locationShouldBe('#/header')
+            searchInDataTable(headerRuleset.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--headerSetEdit"]').click()
+            cy.get('input[data-cy="header-rule-set-description"]').clear().type('testdescription')
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('[data-cy="aui-close-button"]').click()
+            cy.get('td[data-cy="q-td--description"]').should('contain.text', 'testdescription')
 
-        cy.locationShouldBe('#/header')
-        searchInDataTable(headerRuleset.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-        waitPageProgressAUI()
-        searchInDataTable(headerRule.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRuleEdit"]').click()
-        waitPageProgressAUI()
-        cy.get('input[data-cy="headerrules-priority"]').clear().type('0')
-        cy.get('[data-cy="aui-save-button"]').click()
-        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-        cy.get('[data-cy="aui-close-button"]').click()
-        cy.get('td[data-cy="q-td--priority"]').should('contain.text', '0')
-    })
-
-    it('Delete header rule and check if they are deleted', function () {
-        if (!issppro) {
-            this.skip()
-        }
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / header')
-
-        cy.locationShouldBe('#/header')
-        searchInDataTable(headerRuleset.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-        waitPageProgressAUI()
-        deleteItemOnListPageBy(headerRule.name)
-    })
-
-    it('Check if header rule action with invalid values gets rejected', function () {
-        if (!issppro) {
-            this.skip()
-        }
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / header')
-
-        cy.locationShouldBe('#/header')
-        searchInDataTable(headerRuleset.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-        waitPageProgressAUI()
-        searchInDataTable(headerRule.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActions"]').click()
-        waitPageProgressAUI()
-        cy.get('a[data-cy="aui-list-action--add"]').click()
-        cy.get('[data-cy="aui-save-button"]').click()
-        cy.get('label[data-cy="headerruleactions-header"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
-    })
-
-    it('Create a header rule action', function () {
-        if (!issppro) {
-            this.skip()
-        }
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            })
         })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / header')
 
-        cy.locationShouldBe('#/header')
-        searchInDataTable(headerRuleset.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-        waitPageProgressAUI()
-        searchInDataTable(headerRule.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActions"]').click()
-        waitPageProgressAUI()
-        cy.get('a[data-cy="aui-list-action--add"]').click()
+        it('Delete header rule set and check if they are deleted', function () {
+            if (!issppro) {
+                this.skip()
+            }
 
-        cy.get('input[data-cy="headerruleactions-header"]').type(headerRuleAction.header)
-        cy.get('[data-cy="aui-save-button"]').click()
-        waitPageProgressAUI()
+            // Setup: Create Header Rule Set
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+                apiCreateHeaderRuleset({ data: headerRuleset, authHeader })
+            })
 
-        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-    })
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / header')
 
-    it('Edit header rule action priority and check if it gets applied properly', function () {
-        if (!issppro) {
-            this.skip()
-        }
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / header')
+            cy.locationShouldBe('#/header')
+            deleteItemOnListPageBy(headerRuleset.name)
 
-        cy.locationShouldBe('#/header')
-        searchInDataTable(headerRuleset.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-        waitPageProgressAUI()
-        searchInDataTable(headerRule.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActions"]').click()
-        waitPageProgressAUI()
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActionEdit"]').click()
-        waitPageProgressAUI()
-        cy.get('input[data-cy="headerruleactions-priority"]').clear().type('0')
-        cy.get('[data-cy="aui-save-button"]').click()
-        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-        cy.get('[data-cy="aui-close-button"]').click()
-        cy.get('td[data-cy="q-td--priority"]').should('contain.text', '0')
-    })
-
-    it('Delete header rule action and check if they are deleted', function () {
-        if (!issppro) {
-            this.skip()
-        }
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / header')
-
-        cy.locationShouldBe('#/header')
-        searchInDataTable(headerRuleset.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-        waitPageProgressAUI()
-        searchInDataTable(headerRule.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActions"]').click()
-        waitPageProgressAUI()
-        deleteItemOnListPageBy()
-    })
-
-    it('Check if header rule condition with invalid values gets rejected', function () {
-        if (!issppro) {
-            this.skip()
-        }
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / header')
-
-        cy.locationShouldBe('#/header')
-        searchInDataTable(headerRuleset.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-        waitPageProgressAUI()
-        searchInDataTable(headerRule.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditions"]').click()
-        waitPageProgressAUI()
-        cy.get('a[data-cy="aui-list-action--add"]').click()
-        cy.get('[data-cy="aui-save-button"]').click()
-        cy.get('label[data-cy="headerruleconditions-matchName"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
-    })
-
-    it('Create a header rule condition', function () {
-        if (!issppro) {
-            this.skip()
-        }
-        apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            })
         })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / header')
-
-        cy.locationShouldBe('#/header')
-        searchInDataTable(headerRuleset.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-        waitPageProgressAUI()
-        searchInDataTable(headerRule.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditions"]').click()
-        waitPageProgressAUI()
-        cy.get('a[data-cy="aui-list-action--add"]').click()
-
-        cy.get('input[data-cy="headerruleconditions-matchName"]').type(headerRuleCondition.match_part)
-        cy.get('[data-cy="aui-save-button"]').click()
-        waitPageProgressAUI()
-
-        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
     })
 
-    it('Edit header rule condition', function () {
-        if (!issppro) {
-            this.skip()
-        }
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / header')
+    context('Header Rule tests', () => {
+        it('Check if header rule with invalid values gets rejected', function () {
+            if (!issppro) {
+                this.skip()
+            }
 
-        cy.locationShouldBe('#/header')
-        searchInDataTable(headerRuleset.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-        waitPageProgressAUI()
-        searchInDataTable(headerRule.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditions"]').click()
-        waitPageProgressAUI()
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditionEdit"]').click()
-        waitPageProgressAUI()
-        cy.qSelect({ dataCy: 'headerruleconditions-expression', itemContains: 'contains' })
-        cy.get('[data-cy="aui-save-button"]').click()
-        cy.get('div[role="alert"]').should('have.class', 'bg-positive')
-        cy.get('[data-cy="aui-close-button"]').click()
-        cy.get('td[data-cy="q-td--expression"]').should('contain.text', 'contains')
+            // Setup: Create Header Rule Set
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+                apiCreateHeaderRuleset({ data: headerRuleset, authHeader })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / header')
+
+            cy.locationShouldBe('#/header')
+            searchInDataTable(headerRuleset.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
+
+            cy.wait('@getHeaderRulePage')
+            cy.get('a[data-cy="aui-list-action--add"]').click()
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('label[data-cy="headerrules-name"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+            cy.get('label[data-cy="headerrules-description"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            })
+        })
+
+        it('Create a header rule', function () {
+            if (!issppro) {
+                this.skip()
+            }
+
+            // Setup: Create Header Rule Set, delete Header Rule if exists
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+                apiCreateHeaderRuleset({ data: headerRuleset, authHeader })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / header')
+
+            cy.locationShouldBe('#/header')
+            searchInDataTable(headerRuleset.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
+
+            cy.wait('@getHeaderRulePage')
+            cy.get('a[data-cy="aui-list-action--add"]').click()
+            cy.get('input[data-cy="headerrules-name"]').type(headerRule.name)
+            cy.get('input[data-cy="headerrules-description"]').type(headerRule.description)
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            })
+        })
+
+        it('Edit header rule priority and check if it gets applied properly', function () {
+            if (!issppro) {
+                this.skip()
+            }
+
+            // Setup: Create Header Rule Set and Header Rule
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+                apiCreateHeaderRuleset({ data: headerRuleset, authHeader }).then(({ id }) => {
+                    apiCreateHeaderRule({ data: { ...headerRule, set_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / header')
+
+            cy.locationShouldBe('#/header')
+            searchInDataTable(headerRuleset.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
+
+            cy.wait('@getHeaderRulePage')
+            searchInDataTable(headerRule.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRuleEdit"]').click()
+            cy.get('input[data-cy="headerrules-priority"]').clear().type('0')
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('[data-cy="aui-close-button"]').click()
+            cy.get('td[data-cy="q-td--priority"]').should('contain.text', '0')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            })
+        })
+
+        it('Delete header rule and check if they are deleted', function () {
+            if (!issppro) {
+                this.skip()
+            }
+
+            // Setup: Create Header Rule Set and Header Rule
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+                apiCreateHeaderRuleset({ data: headerRuleset, authHeader }).then(({ id }) => {
+                    apiCreateHeaderRule({ data: { ...headerRule, set_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / header')
+
+            cy.locationShouldBe('#/header')
+            searchInDataTable(headerRuleset.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
+
+            cy.wait('@getHeaderRulePage')
+            deleteItemOnListPageBy(headerRule.name)
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            })
+        })
     })
 
-    it('Delete header rule condition and check if they are deleted', function () {
-        if (!issppro) {
-            this.skip()
-        }
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / header')
+    context('Header Rule Actions tests', () => {
+        it('Check if header rule action with invalid values gets rejected', function () {
+            if (!issppro) {
+                this.skip()
+            }
 
-        cy.locationShouldBe('#/header')
-        searchInDataTable(headerRuleset.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
-        waitPageProgressAUI()
-        searchInDataTable(headerRule.name)
-        cy.get('div[class="aui-data-table"] .q-checkbox').click()
-        cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-        cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditions"]').click()
-        waitPageProgressAUI()
-        deleteItemOnListPageBy()
+            // Setup: Create Header Rule Set and Header Rule
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+                apiCreateHeaderRuleset({ data: headerRuleset, authHeader }).then(({ id }) => {
+                    apiCreateHeaderRule({ data: { ...headerRule, set_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / header')
+
+            cy.locationShouldBe('#/header')
+            searchInDataTable(headerRuleset.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
+
+            cy.wait('@getHeaderRulePage')
+            searchInDataTable(headerRule.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/*/actions/' }).as('getHeaderRuleActionsPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActions"]').click()
+
+            cy.wait('@getHeaderRuleActionsPage')
+            cy.get('a[data-cy="aui-list-action--add"]').click()
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('label[data-cy="headerruleactions-header"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            })
+        })
+
+        it('Create a header rule action', function () {
+            if (!issppro) {
+                this.skip()
+            }
+
+            // Setup: Create Header Rule Set and Header Rule, delete Header Rule Action if exists
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+                apiCreateHeaderRuleset({ data: headerRuleset, authHeader }).then(({ id }) => {
+                    apiCreateHeaderRule({ data: { ...headerRule, set_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / header')
+
+            cy.locationShouldBe('#/header')
+            searchInDataTable(headerRuleset.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
+
+            cy.wait('@getHeaderRulePage')
+            searchInDataTable(headerRule.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/*/actions/' }).as('getHeaderRuleActionsPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActions"]').click()
+
+            cy.wait('@getHeaderRuleActionsPage')
+            cy.get('a[data-cy="aui-list-action--add"]').click()
+            cy.get('input[data-cy="headerruleactions-header"]').type(headerRuleAction.header)
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            })
+        })
+
+        it('Edit header rule action priority and check if it gets applied properly', function () {
+            if (!issppro) {
+                this.skip()
+            }
+
+            // Setup: Create Header Rule Set, Header Rule and Header Rule Action
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+                apiCreateHeaderRuleset({ data: headerRuleset, authHeader }).then(({ id }) => {
+                    apiCreateHeaderRule({ data: { ...headerRule, set_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateHeaderRuleAction({ data: { ...headerRuleAction, rule_id: id }, authHeader })
+                    })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / header')
+
+            cy.locationShouldBe('#/header')
+            searchInDataTable(headerRuleset.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
+
+            cy.wait('@getHeaderRulePage')
+            searchInDataTable(headerRule.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/*/actions/' }).as('getHeaderRuleActionsPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActions"]').click()
+
+            cy.wait('@getHeaderRuleActionsPage')
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActionEdit"]').click()
+            cy.get('input[data-cy="headerruleactions-priority"]').clear().type('0')
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('[data-cy="aui-close-button"]').click()
+            cy.get('td[data-cy="q-td--priority"]').should('contain.text', '0')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            })
+        })
+
+        it('Delete header rule action and check if they are deleted', function () {
+            if (!issppro) {
+                this.skip()
+            }
+
+            // Setup: Create Header Rule Set, Header Rule and Header Rule Action
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+                apiCreateHeaderRuleset({ data: headerRuleset, authHeader }).then(({ id }) => {
+                    apiCreateHeaderRule({ data: { ...headerRule, set_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateHeaderRuleAction({ data: { ...headerRuleAction, rule_id: id }, authHeader })
+                    })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / header')
+
+            cy.locationShouldBe('#/header')
+            searchInDataTable(headerRuleset.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
+
+            cy.wait('@getHeaderRulePage')
+            searchInDataTable(headerRule.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/*/actions/' }).as('getHeaderRuleActionsPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRuleActions"]').click()
+
+            cy.wait('@getHeaderRuleActionsPage')
+            deleteItemOnListPageBy()
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            })
+        })
+    })
+
+    context('Header Rule Condition tests', () => {
+        it('Check if header rule condition with invalid values gets rejected', function () {
+            if (!issppro) {
+                this.skip()
+            }
+
+            // Setup: Create Header Rule Set and Header Rule
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+                apiCreateHeaderRuleset({ data: headerRuleset, authHeader }).then(({ id }) => {
+                    apiCreateHeaderRule({ data: { ...headerRule, set_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / header')
+
+            cy.locationShouldBe('#/header')
+            searchInDataTable(headerRuleset.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
+
+            cy.wait('@getHeaderRulePage')
+            searchInDataTable(headerRule.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/*/conditions/' }).as('getHeaderRuleConditionsPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditions"]').click()
+
+            cy.wait('@getHeaderRuleConditionsPage')
+            cy.get('a[data-cy="aui-list-action--add"]').click()
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('label[data-cy="headerruleconditions-matchName"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            })
+        })
+
+        it('Create a header rule condition', function () {
+            if (!issppro) {
+                this.skip()
+            }
+
+            // Setup: Create Header Rule Set and Header Rule, delete Header Rule Condition if exists
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleConditionBy({ match_name: headerRuleCondition.match_name, authHeader })
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+                apiCreateHeaderRuleset({ data: headerRuleset, authHeader }).then(({ id }) => {
+                    apiCreateHeaderRule({ data: { ...headerRule, set_id: id }, authHeader })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / header')
+
+            cy.locationShouldBe('#/header')
+            searchInDataTable(headerRuleset.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
+
+            cy.wait('@getHeaderRulePage')
+            searchInDataTable(headerRule.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/*/conditions/' }).as('getHeaderRuleConditionsPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditions"]').click()
+
+            cy.wait('@getHeaderRuleConditionsPage')
+            cy.get('a[data-cy="aui-list-action--add"]').click()
+            cy.get('input[data-cy="headerruleconditions-matchName"]').type(headerRuleCondition.match_part)
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleConditionBy({ match_name: headerRuleCondition.match_name, authHeader })
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            })
+        })
+
+        it('Edit header rule condition', function () {
+            if (!issppro) {
+                this.skip()
+            }
+
+            // Setup: Create Header Rule Set, Header Rule and Header Rule Action
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+                apiCreateHeaderRuleset({ data: headerRuleset, authHeader }).then(({ id }) => {
+                    apiCreateHeaderRule({ data: { ...headerRule, set_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateHeaderRuleCondition({ data: { ...headerRuleCondition, rule_id: id }, authHeader })
+                    })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / header')
+
+            cy.locationShouldBe('#/header')
+            searchInDataTable(headerRuleset.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
+
+            cy.wait('@getHeaderRulePage')
+            searchInDataTable(headerRule.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/*/conditions/' }).as('getHeaderRuleConditionsPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditions"]').click()
+
+            cy.wait('@getHeaderRuleConditionsPage')
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditionEdit"]').click()
+            cy.qSelect({ dataCy: 'headerruleconditions-expression', itemContains: 'contains' })
+            cy.get('[data-cy="aui-save-button"]').click()
+            cy.get('div[role="alert"]').should('have.class', 'bg-positive')
+            cy.get('[data-cy="aui-close-button"]').click()
+            cy.get('td[data-cy="q-td--expression"]').should('contain.text', 'contains')
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleConditionBy({ match_name: headerRuleCondition.match_name, authHeader })
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            })
+        })
+
+        it('Delete header rule condition and check if they are deleted', function () {
+            if (!issppro) {
+                this.skip()
+            }
+
+            // Setup: Create Header Rule Set, Header Rule and Header Rule Action
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleActionBy({ header: headerRuleAction.header, authHeader })
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+                apiCreateHeaderRuleset({ data: headerRuleset, authHeader }).then(({ id }) => {
+                    apiCreateHeaderRule({ data: { ...headerRule, set_id: id }, authHeader }).then(({ id }) => {
+                        apiCreateHeaderRuleCondition({ data: { ...headerRuleCondition, rule_id: id }, authHeader })
+                    })
+                })
+            })
+
+            cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+            cy.navigateMainMenu('settings / header')
+
+            cy.locationShouldBe('#/header')
+            searchInDataTable(headerRuleset.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/' }).as('getHeaderRulePage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRules"]').click()
+
+            cy.wait('@getHeaderRulePage')
+            searchInDataTable(headerRule.name)
+            cy.get('div[class="aui-data-table"] .q-checkbox').click()
+            cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+            cy.intercept({ method: 'GET', pathname: '**/header-manipulations/sets/*/rules/*/conditions/' }).as('getHeaderRuleConditionsPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--headerRuleConditions"]').click()
+
+            cy.wait('@getHeaderRuleConditionsPage')
+            deleteItemOnListPageBy()
+
+            // Cleanup
+            apiLoginAsSuperuser().then(authHeader => {
+                apiRemoveHeaderRuleConditionBy({ match_name: headerRuleCondition.match_name, authHeader })
+                apiRemoveHeaderRuleBy({ name: headerRule.name, authHeader })
+                apiRemoveHeaderRulesetBy({ name: headerRuleset.name, authHeader })
+            })
+        })
     })
 })
+

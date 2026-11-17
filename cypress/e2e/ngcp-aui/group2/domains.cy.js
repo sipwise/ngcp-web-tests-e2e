@@ -20,7 +20,7 @@ context('Domain tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
         })
     })
@@ -28,7 +28,7 @@ context('Domain tests', () => {
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
             cy.log('Cleaning up db...')
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
 
             cy.log('Seeding db...')
             apiCreateDomain({ data: domain, authHeader })
@@ -39,12 +39,12 @@ context('Domain tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
             cy.log('Data clean up...')
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 
     it('Check if domain with invalid values gets rejected', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
         cy.locationShouldBe('#/domain')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -55,9 +55,9 @@ context('Domain tests', () => {
 
     it('Create a domain', () => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
         cy.locationShouldBe('#/domain')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -68,7 +68,7 @@ context('Domain tests', () => {
     })
 
     it('Delete domain', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
         cy.navigateMainMenu('settings / domain')
         cy.locationShouldBe('#/domain')
         deleteItemOnListPageBy(domain.domain)

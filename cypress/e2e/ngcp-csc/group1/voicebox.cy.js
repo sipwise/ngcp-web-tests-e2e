@@ -53,15 +53,15 @@ const path = require('path')
 
 const fixturesFolder = Cypress.config('fixturesFolder')
 
-context('Voicebox page tests', () => {
+context('Voicebox tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -72,28 +72,27 @@ context('Voicebox page tests', () => {
 
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader }).then(()=>{
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader }).then(()=>{
                 apiCreateSubscriber({ data:  subscriber, authHeader })
             })
         })
-        cy.visit('/')
     })
 
     after(() => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 
     it('Switch between all Voicebox languages', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/voicemailgreetings/' }).as('getVoiceboxPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/voicebox"]').click()
+        cy.wait('@getVoiceboxPage')
 
         cy.get('label[data-cy="q-select"][aria-disabled="true"]').should('not.exist')
         cy.get('div[data-cy="voicebox-change-language"]').contains('use domain default').should('be.visible')
@@ -168,11 +167,11 @@ context('Voicebox page tests', () => {
     })
 
     it('Change and Undo PIN', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/voicemailgreetings/' }).as('getVoiceboxPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/voicebox"]').click()
+        cy.wait('@getVoiceboxPage')
 
         cy.get('input[data-cy="voicebox-change-pin"][disabled]').should('not.exist')
         cy.get('input[data-cy="voicebox-change-pin"]').clear()
@@ -200,11 +199,11 @@ context('Voicebox page tests', () => {
     })
 
     it('Change and Undo Email', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/voicemailgreetings/' }).as('getVoiceboxPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/voicebox"]').click()
+        cy.wait('@getVoiceboxPage')
 
         cy.get('input[data-cy="voicebox-change-email"][disabled]').should('not.exist')
         cy.get('input[data-cy="voicebox-change-email"]').type('invalidmail')
@@ -234,12 +233,12 @@ context('Voicebox page tests', () => {
             .then(inputval => expect(inputval).to.eq('test.test@test.coma'))
     })
 
-    it('Enable/Disable attach/delete voicemail', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+    it('Enable/Disable attach/delete Voicemail', () => {
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/voicemailgreetings/' }).as('getVoiceboxPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/voicebox"]').click()
+        cy.wait('@getVoiceboxPage')
 
         cy.get('div[data-cy="voicebox-attach-file"][aria-disabled="true"]').should('not.exist')
         cy.get('div[data-cy="voicebox-attach-file"][aria-checked="true"]').should('be.visible')
@@ -264,11 +263,11 @@ context('Voicebox page tests', () => {
     })
 
     it('Upload/Delete busy greeting sound', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/voicemailgreetings/' }).as('getVoiceboxPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/voicebox"]').click()
+        cy.wait('@getVoiceboxPage')
 
         cy.get('div[data-cy="voicebox-attach-file"] [aria-disabled="true"]').should('not.exist')
         cy.get('div[data-cy="voicebox-busy-greeting"] input[type="file"]').focus()
@@ -291,11 +290,11 @@ context('Voicebox page tests', () => {
     })
 
     it('Upload/Delete unavailable greeting sound', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/voicemailgreetings/' }).as('getVoiceboxPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/voicebox"]').click()
+        cy.wait('@getVoiceboxPage')
 
         cy.get('div[data-cy="voicebox-attach-file"] [aria-disabled="true"]').should('not.exist')
         cy.get('div[data-cy="voicebox-unavailable-greeting"] input[type="file"]').selectFile(path.join(fixturesFolder, 'ring.wav'), { force: true })

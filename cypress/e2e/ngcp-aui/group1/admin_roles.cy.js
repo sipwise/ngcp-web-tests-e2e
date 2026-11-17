@@ -23,8 +23,7 @@ import {
     apiRemoveCustomerContactBy,
     apiCreateBillingProfile,
     apiRemoveBillingProfileBy,
-    deleteItemOnListPageBy,
-    waitPageProgressAUI
+    deleteItemOnListPageBy
 } from '../../../support/e2e'
 
 const ngcpConfig = Cypress.config('ngcpConfig')
@@ -244,32 +243,32 @@ const subscriber_reseller = {
     },
 }
 
-context('Administrator roles tests', () => {
+context('Administrator Roles tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.external_id, authHeader})
-            apiRemoveSubscriberBy({ name: subscriber_reseller.external_id, authHeader})
+            apiRemoveSubscriberBy({ username: subscriber.external_id, authHeader})
+            apiRemoveSubscriberBy({ username: subscriber_reseller.external_id, authHeader})
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-            apiRemoveDomainBy({ name: 'testdomain', authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
-            apiRemoveDomainBy({ name: domain_reseller.domain, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveCustomerBy({ name: customer_reseller.external_id, authHeader })
-            apiRemoveCustomerContactBy({ name: customerContact_reseller.email, authHeader })
-            apiRemoveAdminBy({ name: admin_lawfulintercept.login, authHeader })
-            apiRemoveAdminBy({ name: admin_system.login, authHeader })
-            apiRemoveAdminBy({ name: admin.login, authHeader })
-            apiRemoveAdminBy({ name: admin_master.login, authHeader })
-            apiRemoveAdminBy({ name: admin_reseller.login, authHeader })
-            apiRemoveAdminBy({ name: testadmin_otherreseller.login, authHeader })
-            apiRemoveAdminBy({ name: testadminreseller_otherreseller.login, authHeader })
-            apiRemoveAdminBy({ name: admin_ccare.login, authHeader })
-            apiRemoveAdminBy({ name: admin_ccareadmin.login, authHeader })
+            apiRemoveDomainBy({ domain: 'testdomain', authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
+            apiRemoveDomainBy({ domain: domain_reseller.domain, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveCustomerBy({ external_id: customer_reseller.external_id, authHeader })
+            apiRemoveCustomerContactBy({ email: customerContact_reseller.email, authHeader })
+            apiRemoveAdminBy({ login: admin_lawfulintercept.login, authHeader })
+            apiRemoveAdminBy({ login: admin_system.login, authHeader })
+            apiRemoveAdminBy({ login: admin.login, authHeader })
+            apiRemoveAdminBy({ login: admin_master.login, authHeader })
+            apiRemoveAdminBy({ login: admin_reseller.login, authHeader })
+            apiRemoveAdminBy({ login: testadmin_otherreseller.login, authHeader })
+            apiRemoveAdminBy({ login: testadminreseller_otherreseller.login, authHeader })
+            apiRemoveAdminBy({ login: admin_ccare.login, authHeader })
+            apiRemoveAdminBy({ login: admin_ccareadmin.login, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContact, authHeader }).then(({ id }) => {
@@ -291,14 +290,14 @@ context('Administrator roles tests', () => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveAdminBy({ name: admin.login, authHeader })
-            apiRemoveAdminBy({ name: admin_master.login, authHeader })
-            apiRemoveAdminBy({ name: admin_reseller.login, authHeader })
-            apiRemoveAdminBy({ name: testadmin_otherreseller.login, authHeader })
-            apiRemoveAdminBy({ name: admin_ccare.login, authHeader })
-            apiRemoveAdminBy({ name: admin_ccareadmin.login, authHeader })
+            apiRemoveAdminBy({ login: admin.login, authHeader })
+            apiRemoveAdminBy({ login: admin_master.login, authHeader })
+            apiRemoveAdminBy({ login: admin_reseller.login, authHeader })
+            apiRemoveAdminBy({ login: testadmin_otherreseller.login, authHeader })
+            apiRemoveAdminBy({ login: admin_ccare.login, authHeader })
+            apiRemoveAdminBy({ login: admin_ccareadmin.login, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContact.email, authHeader })
         })
     })
@@ -307,16 +306,16 @@ context('Administrator roles tests', () => {
         before(() => {
             apiLoginAsSuperuser().then(authHeader => {
                 cy.log('Creating admin_master for tests...')
-                apiRemoveAdminBy({ name: admin_master.login, authHeader })
+                apiRemoveAdminBy({ login: admin_master.login, authHeader })
                 apiCreateAdmin({ data: admin_master, authHeader })
             })
         })
 
         it('Create administrator', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin.login, authHeader })
+                apiRemoveAdminBy({ login: admin.login, authHeader })
             })
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.createAdminUI(admin)
 
             searchInDataTable(admin.login)
@@ -325,15 +324,15 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin.login, authHeader })
+                apiRemoveAdminBy({ login: admin.login, authHeader })
             })
         })
 
         it('Create reseller administrator', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_reseller.login, authHeader })
+                apiRemoveAdminBy({ login: admin_reseller.login, authHeader })
             })
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.createAdminUI(admin_reseller)
 
             searchInDataTable(admin_reseller.login)
@@ -342,15 +341,15 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_reseller.login, authHeader })
+                apiRemoveAdminBy({ login: admin_reseller.login, authHeader })
             })
         })
 
         it('Create ccareadmin administrator', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_ccareadmin.login, authHeader })
+                apiRemoveAdminBy({ login: admin_ccareadmin.login, authHeader })
             })
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.createAdminUI(admin_ccareadmin)
 
             searchInDataTable(admin_ccareadmin.login)
@@ -359,15 +358,15 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_ccareadmin.login, authHeader })
+                apiRemoveAdminBy({ login: admin_ccareadmin.login, authHeader })
             })
         })
 
         it('Create ccare administrator', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_ccare.login, authHeader })
+                apiRemoveAdminBy({ login: admin_ccare.login, authHeader })
             })
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.createAdminUI(admin_ccare)
 
             searchInDataTable(admin_ccare.login)
@@ -376,18 +375,18 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_ccare.login, authHeader })
+                apiRemoveAdminBy({ login: admin_ccare.login, authHeader })
             })
         })
 
         it('Check if is_master admin can edit an admin from a different reseller', () => {
             // Setup: Create testadmin_otherreseller
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: testadmin_otherreseller.login, authHeader })
+                apiRemoveAdminBy({ login: testadmin_otherreseller.login, authHeader })
                 apiCreateAdmin({ data: testadmin_otherreseller, authHeader })
             })
 
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -405,18 +404,18 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: testadmin_otherreseller.login, authHeader })
+                apiRemoveAdminBy({ login: testadmin_otherreseller.login, authHeader })
             })
         })
 
         it('Edit ccareadmin admin to ccare admin', () => {
             // Setup: Create admin_ccareadmin
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_ccareadmin.login, authHeader })
+                apiRemoveAdminBy({ login: admin_ccareadmin.login, authHeader })
                 apiCreateAdmin({ data: admin_ccareadmin, authHeader })
             })
 
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -424,7 +423,7 @@ context('Administrator roles tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
 
-            waitPageProgressAUI()
+            cy.get('label[data-cy="roles-list"] input').should('exist')
             cy.qSelect({ dataCy: 'roles-list', filter: 'ccare', itemContains: 'ccare -' })
 
             cy.get('[data-cy="aui-save-button"]').click()
@@ -436,20 +435,20 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_ccareadmin.login, authHeader })
+                apiRemoveAdminBy({ login: admin_ccareadmin.login, authHeader })
             })
         })
 
         it('Make sure that admin user cannot edit an admin from a different reseller', () => {
             // Setup: Create both admin and testadmin_otherreseller
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin.login, authHeader })
-                apiRemoveAdminBy({ name: testadmin_otherreseller.login, authHeader })
+                apiRemoveAdminBy({ login: admin.login, authHeader })
+                apiRemoveAdminBy({ login: testadmin_otherreseller.login, authHeader })
                 apiCreateAdmin({ data: admin, authHeader })
                 apiCreateAdmin({ data: testadmin_otherreseller, authHeader })
             })
 
-            cy.quickLogin(admin.login, admin.password)
+            cy.quickLoginAUI(admin.login, admin.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -458,19 +457,19 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin.login, authHeader })
-                apiRemoveAdminBy({ name: testadmin_otherreseller.login, authHeader })
+                apiRemoveAdminBy({ login: admin.login, authHeader })
+                apiRemoveAdminBy({ login: testadmin_otherreseller.login, authHeader })
             })
         })
 
         it('Delete admin', () => {
             // Setup: Create admin
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin.login, authHeader })
+                apiRemoveAdminBy({ login: admin.login, authHeader })
                 apiCreateAdmin({ data: admin, authHeader })
             })
 
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -480,11 +479,11 @@ context('Administrator roles tests', () => {
         it('Delete reseller admin', () => {
             // Setup: Create admin_reseller
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_reseller.login, authHeader })
+                apiRemoveAdminBy({ login: admin_reseller.login, authHeader })
                 apiCreateAdmin({ data: admin_reseller, authHeader })
             })
 
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -494,11 +493,11 @@ context('Administrator roles tests', () => {
         it('Delete ccare admin', () => {
             // Setup: Create admin_ccare
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_ccare.login, authHeader })
+                apiRemoveAdminBy({ login: admin_ccare.login, authHeader })
                 apiCreateAdmin({ data: admin_ccare, authHeader })
             })
 
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -508,11 +507,11 @@ context('Administrator roles tests', () => {
         it('Delete ccareadmin admin', () => {
             // Setup: Create admin_ccareadmin
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_ccareadmin.login, authHeader })
+                apiRemoveAdminBy({ login: admin_ccareadmin.login, authHeader })
                 apiCreateAdmin({ data: admin_ccareadmin, authHeader })
             })
 
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -524,16 +523,16 @@ context('Administrator roles tests', () => {
         before(() => {
             apiLoginAsSuperuser().then(authHeader => {
                 cy.log('Creating admin_system for tests...')
-                apiRemoveAdminBy({ name: admin_system.login, authHeader })
+                apiRemoveAdminBy({ login: admin_system.login, authHeader })
                 apiCreateAdmin({ data: admin_system, authHeader })
             })
         })
 
         it('Check if system admin can create a master admin', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_master.login, authHeader })
+                apiRemoveAdminBy({ login: admin_master.login, authHeader })
             })
-            cy.quickLogin(admin_system.login, admin_system.password)
+            cy.quickLoginAUI(admin_system.login, admin_system.password)
             cy.createAdminUI(admin_master)
 
             searchInDataTable(admin_master.login)
@@ -542,15 +541,15 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_master.login, authHeader })
+                apiRemoveAdminBy({ login: admin_master.login, authHeader })
             })
         })
 
         it('Check if system admin can create a lawful intercept admin', () => {
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_lawfulintercept.login, authHeader })
+                apiRemoveAdminBy({ login: admin_lawfulintercept.login, authHeader })
             })
-            cy.quickLogin(admin_system.login, admin_system.password)
+            cy.quickLoginAUI(admin_system.login, admin_system.password)
             cy.createAdminUI(admin_lawfulintercept)
 
             searchInDataTable(admin_lawfulintercept.login)
@@ -559,20 +558,20 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_lawfulintercept.login, authHeader })
+                apiRemoveAdminBy({ login: admin_lawfulintercept.login, authHeader })
             })
         })
 
         it('Check if master admin cannot see lawful intercept admin', () => {
             // Setup: Create both admin_master and admin_lawfulintercept
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_master.login, authHeader })
-                apiRemoveAdminBy({ name: admin_lawfulintercept.login, authHeader })
+                apiRemoveAdminBy({ login: admin_master.login, authHeader })
+                apiRemoveAdminBy({ login: admin_lawfulintercept.login, authHeader })
                 apiCreateAdmin({ data: admin_master, authHeader })
                 apiCreateAdmin({ data: admin_lawfulintercept, authHeader })
             })
 
-            cy.quickLogin(admin_master.login, admin_master.password)
+            cy.quickLoginAUI(admin_master.login, admin_master.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -582,19 +581,19 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_master.login, authHeader })
-                apiRemoveAdminBy({ name: admin_lawfulintercept.login, authHeader })
+                apiRemoveAdminBy({ login: admin_master.login, authHeader })
+                apiRemoveAdminBy({ login: admin_lawfulintercept.login, authHeader })
             })
         })
 
         it('Check if lawful intercept admin cannot see any other admins or pages', () => {
             // Setup: Create admin_lawfulintercept
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_lawfulintercept.login, authHeader })
+                apiRemoveAdminBy({ login: admin_lawfulintercept.login, authHeader })
                 apiCreateAdmin({ data: admin_lawfulintercept, authHeader })
             })
 
-            cy.quickLogin(admin_lawfulintercept.login, admin_lawfulintercept.password)
+            cy.quickLoginAUI(admin_lawfulintercept.login, admin_lawfulintercept.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -607,18 +606,18 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_lawfulintercept.login, authHeader })
+                apiRemoveAdminBy({ login: admin_lawfulintercept.login, authHeader })
             })
         })
 
         it('Edit lintercept admin to admin', () => {
             // Setup: Create admin_lawfulintercept
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_lawfulintercept.login, authHeader })
+                apiRemoveAdminBy({ login: admin_lawfulintercept.login, authHeader })
                 apiCreateAdmin({ data: admin_lawfulintercept, authHeader })
             })
 
-            cy.quickLogin(admin_system.login, admin_system.password)
+            cy.quickLoginAUI(admin_system.login, admin_system.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -626,7 +625,7 @@ context('Administrator roles tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
 
-            waitPageProgressAUI()
+            cy.get('label[data-cy="roles-list"] input').should('exist')
             cy.qSelect({ dataCy: 'roles-list', filter: 'admin', itemContains: 'admin' })
 
             cy.get('[data-cy="aui-save-button"]').click()
@@ -637,18 +636,18 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_lawfulintercept.login, authHeader })
+                apiRemoveAdminBy({ login: admin_lawfulintercept.login, authHeader })
             })
         })
 
         it('Delete master admin', () => {
             // Setup: Create admin_master
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_master.login, authHeader })
+                apiRemoveAdminBy({ login: admin_master.login, authHeader })
                 apiCreateAdmin({ data: admin_master, authHeader })
             })
 
-            cy.quickLogin(admin_system.login, admin_system.password)
+            cy.quickLoginAUI(admin_system.login, admin_system.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -658,11 +657,11 @@ context('Administrator roles tests', () => {
         it('Delete lawful intercept admin', () => {
             // Setup: Create admin_lawfulintercept
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_lawfulintercept.login, authHeader })
+                apiRemoveAdminBy({ login: admin_lawfulintercept.login, authHeader })
                 apiCreateAdmin({ data: admin_lawfulintercept, authHeader })
             })
 
-            cy.quickLogin(admin_system.login, admin_system.password)
+            cy.quickLoginAUI(admin_system.login, admin_system.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -674,10 +673,10 @@ context('Administrator roles tests', () => {
         it('Check if reseller admin cannot see data from other resellers and cannot see admin create button', () => {
             // Setup: Create necessary admins and data
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: testadminreseller_otherreseller.login, authHeader })
-                apiRemoveAdminBy({ name: admin_reseller.login, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
+                apiRemoveAdminBy({ login: testadminreseller_otherreseller.login, authHeader })
+                apiRemoveAdminBy({ login: admin_reseller.login, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
 
                 apiCreateAdmin({ data: admin_reseller, authHeader })
                 apiCreateAdmin({ data: testadminreseller_otherreseller, authHeader })
@@ -685,10 +684,10 @@ context('Administrator roles tests', () => {
                 apiCreateDomain({ data: domain, authHeader})
             })
 
-            cy.quickLogin(testadminreseller_otherreseller.login, testadminreseller_otherreseller.password)
+            cy.quickLoginAUI(testadminreseller_otherreseller.login, testadminreseller_otherreseller.password)
             cy.navigateMainMenu('settings / administrator')
 
-            cy.locationShouldBe('#/administrator', false)
+            cy.locationShouldBe('#/administrator')
             cy.get('a[data-cy="aui-list-action--add"]').should('not.exist')
             searchInDataTable(admin_reseller.login)
             cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
@@ -700,32 +699,32 @@ context('Administrator roles tests', () => {
 
             cy.navigateMainMenu('settings / contact')
             cy.locationShouldBe('#/contact')
-            searchInDataTable("default-customer@default.invalid")
+            searchInDataTable("default-customer@default.invalid", null, true, true)
             cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
 
             cy.navigateMainMenu('settings / domain')
             cy.locationShouldBe('#/domain')
-            searchInDataTable(domain.domain)
+            searchInDataTable(domain.domain, null)
             cy.contains('.q-table__bottom--nodata', 'No matching records found').should('be.visible')
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: testadminreseller_otherreseller.login, authHeader })
-                apiRemoveAdminBy({ name: admin_reseller.login, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
+                apiRemoveAdminBy({ login: testadminreseller_otherreseller.login, authHeader })
+                apiRemoveAdminBy({ login: admin_reseller.login, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
             })
         })
 
         it('Create a domain, check that reseller cannot be changed', () => {
             // Setup: Create testadminreseller_otherreseller
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: testadminreseller_otherreseller.login, authHeader })
-                apiRemoveDomainBy({ name: 'testdomain', authHeader })
+                apiRemoveAdminBy({ login: testadminreseller_otherreseller.login, authHeader })
+                apiRemoveDomainBy({ domain: 'testdomain', authHeader })
                 apiCreateAdmin({ data: testadminreseller_otherreseller, authHeader })
             })
 
-            cy.quickLogin(testadminreseller_otherreseller.login, testadminreseller_otherreseller.password)
+            cy.quickLoginAUI(testadminreseller_otherreseller.login, testadminreseller_otherreseller.password)
             cy.navigateMainMenu('settings / domain')
 
             cy.locationShouldBe('#/domain')
@@ -739,20 +738,20 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveDomainBy({ name: 'testdomain', authHeader })
-                apiRemoveAdminBy({ name: testadminreseller_otherreseller.login, authHeader })
+                apiRemoveDomainBy({ domain: 'testdomain', authHeader })
+                apiRemoveAdminBy({ login: testadminreseller_otherreseller.login, authHeader })
             })
         })
 
         it('Create an admin with is_master reseller admin', () => {
             // Setup: Create admin_reseller
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_reseller.login, authHeader })
-                apiRemoveAdminBy({ name: admin_ccare.login, authHeader })
+                apiRemoveAdminBy({ login: admin_reseller.login, authHeader })
+                apiRemoveAdminBy({ login: admin_ccare.login, authHeader })
                 apiCreateAdmin({ data: admin_reseller, authHeader })
             })
 
-            cy.quickLogin(admin_reseller.login, admin_reseller.password)
+            cy.quickLoginAUI(admin_reseller.login, admin_reseller.password)
             cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
@@ -770,8 +769,8 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_ccare.login, authHeader })
-                apiRemoveAdminBy({ name: admin_reseller.login, authHeader })
+                apiRemoveAdminBy({ login: admin_ccare.login, authHeader })
+                apiRemoveAdminBy({ login: admin_reseller.login, authHeader })
             })
         })
     })
@@ -780,10 +779,10 @@ context('Administrator roles tests', () => {
         it('Check if ccareadmin admin can only see customer and subscriber menus, also access blocked site via customer creation page', () => {
             // Setup: Create all needed data
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveAdminBy({ name: admin_ccareadmin.login, authHeader })
-                apiRemoveSubscriberBy({ name: subscriber.external_id, authHeader})
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
+                apiRemoveAdminBy({ login: admin_ccareadmin.login, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.external_id, authHeader})
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
 
                 apiCreateAdmin({ data: admin_ccareadmin, authHeader })
                 apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -794,7 +793,7 @@ context('Administrator roles tests', () => {
                 })
             })
 
-            cy.quickLogin(admin_ccareadmin.login, admin_ccareadmin.password)
+            cy.quickLoginAUI(admin_ccareadmin.login, admin_ccareadmin.password)
             cy.navigateMainMenu('settings / customer')
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer.external_id, 'External #')
@@ -815,22 +814,22 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.external_id, authHeader})
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveAdminBy({ name: admin_ccareadmin.login, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.external_id, authHeader})
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveAdminBy({ login: admin_ccareadmin.login, authHeader })
             })
         })
 
         it('Create a customer with existing billing profile and contact', () => {
             // Setup: Create admin_ccareadmin
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveAdminBy({ name: admin_ccareadmin.login, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveAdminBy({ login: admin_ccareadmin.login, authHeader })
                 apiCreateAdmin({ data: admin_ccareadmin, authHeader })
             })
 
-            cy.quickLogin(admin_ccareadmin.login, admin_ccareadmin.password)
+            cy.quickLoginAUI(admin_ccareadmin.login, admin_ccareadmin.password)
             cy.navigateMainMenu('settings / customer')
 
             cy.locationShouldBe('#/customer')
@@ -846,8 +845,8 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveAdminBy({ name: admin_ccareadmin.login, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveAdminBy({ login: admin_ccareadmin.login, authHeader })
             })
         })
     })
@@ -856,12 +855,12 @@ context('Administrator roles tests', () => {
         it('Check if ccare admin can only see customer and subscriber menus, also access blocked site via customer creation page', () => {
             // Setup: Create all needed data
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber_reseller.external_id, authHeader})
-                apiRemoveDomainBy({ name: domain_reseller.domain, authHeader })
-                apiRemoveCustomerBy({ name: customer_reseller.external_id, authHeader })
-                apiRemoveCustomerContactBy({ name: customerContact_reseller.email, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber_reseller.external_id, authHeader})
+                apiRemoveDomainBy({ domain: domain_reseller.domain, authHeader })
+                apiRemoveCustomerBy({ external_id: customer_reseller.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact_reseller.email, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-                apiRemoveAdminBy({ name: admin_ccare.login, authHeader })
+                apiRemoveAdminBy({ login: admin_ccare.login, authHeader })
 
                 apiCreateAdmin({ data: admin_ccare, authHeader })
                 apiCreateCustomerContact({ data: customerContact_reseller, authHeader }).then(({ id }) => {
@@ -878,7 +877,7 @@ context('Administrator roles tests', () => {
                 })
             })
 
-            cy.quickLogin(admin_ccare.login, admin_ccare.password)
+            cy.quickLoginAUI(admin_ccare.login, admin_ccare.password)
             cy.navigateMainMenu('settings / customer')
             cy.locationShouldBe('#/customer')
             searchInDataTable(customer_reseller.external_id, 'External #')
@@ -899,27 +898,27 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber_reseller.external_id, authHeader})
-                apiRemoveDomainBy({ name: domain_reseller.domain, authHeader })
-                apiRemoveCustomerBy({ name: customer_reseller.external_id, authHeader })
-                apiRemoveCustomerContactBy({ name: customerContact_reseller.email, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber_reseller.external_id, authHeader})
+                apiRemoveDomainBy({ domain: domain_reseller.domain, authHeader })
+                apiRemoveCustomerBy({ external_id: customer_reseller.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact_reseller.email, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-                apiRemoveAdminBy({ name: admin_ccare.login, authHeader })
+                apiRemoveAdminBy({ login: admin_ccare.login, authHeader })
             })
         })
 
         it('Check if ccare admin can only see customer and subscriber with same reseller', () => {
             // Setup: Create all needed data for both resellers
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.external_id, authHeader})
-                apiRemoveSubscriberBy({ name: subscriber_reseller.external_id, authHeader})
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
-                apiRemoveDomainBy({ name: domain_reseller.domain, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveCustomerBy({ name: customer_reseller.external_id, authHeader })
-                apiRemoveCustomerContactBy({ name: customerContact_reseller.email, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.external_id, authHeader})
+                apiRemoveSubscriberBy({ username: subscriber_reseller.external_id, authHeader})
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                apiRemoveDomainBy({ domain: domain_reseller.domain, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer_reseller.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact_reseller.email, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-                apiRemoveAdminBy({ name: admin_ccare.login, authHeader })
+                apiRemoveAdminBy({ login: admin_ccare.login, authHeader })
 
                 apiCreateAdmin({ data: admin_ccare, authHeader })
                 apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -942,7 +941,7 @@ context('Administrator roles tests', () => {
                 })
             })
 
-            cy.quickLogin(admin_ccare.login, admin_ccare.password)
+            cy.quickLoginAUI(admin_ccare.login, admin_ccare.password)
             cy.navigateMainMenu('settings / customer')
             cy.locationShouldBe('#/customer')
 
@@ -956,36 +955,37 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ name: subscriber.external_id, authHeader})
-                apiRemoveSubscriberBy({ name: subscriber_reseller.external_id, authHeader})
-                apiRemoveDomainBy({ name: domain.domain, authHeader })
-                apiRemoveDomainBy({ name: domain_reseller.domain, authHeader })
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveCustomerBy({ name: customer_reseller.external_id, authHeader })
-                apiRemoveCustomerContactBy({ name: customerContact_reseller.email, authHeader })
+                apiRemoveSubscriberBy({ username: subscriber.external_id, authHeader})
+                apiRemoveSubscriberBy({ username: subscriber_reseller.external_id, authHeader})
+                apiRemoveDomainBy({ domain: domain.domain, authHeader })
+                apiRemoveDomainBy({ domain: domain_reseller.domain, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveCustomerBy({ external_id: customer_reseller.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact_reseller.email, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-                apiRemoveAdminBy({ name: admin_ccare.login, authHeader })
+                apiRemoveAdminBy({ login: admin_ccare.login, authHeader })
             })
         })
 
         it('Create a customer, check if reseller cannot be changed', () => {
             // Setup: Create all needed data
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveCustomerContactBy({ name: customerContact_reseller.email, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact_reseller.email, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-                apiRemoveAdminBy({ name: admin_ccare.login, authHeader })
+                apiRemoveAdminBy({ login: admin_ccare.login, authHeader })
 
                 apiCreateAdmin({ data: admin_ccare, authHeader })
                 apiCreateCustomerContact({ data: customerContact_reseller, authHeader })
                 apiCreateBillingProfile({ data: billingProfile, authHeader })
             })
 
-            cy.quickLogin(admin_ccare.login, admin_ccare.password)
+            cy.quickLoginAUI(admin_ccare.login, admin_ccare.password)
             cy.navigateMainMenu('settings / customer')
 
             cy.locationShouldBe('#/customer')
             cy.get('a[data-cy="aui-list-action--add"]').click()
+            cy.get('input[data-cy="customer-external-id"]').type(customer.external_id)
             cy.get('label[data-cy="aui-select-contact"]').click()
             cy.get('div[data-cy="q-item-label"]').contains(customerContact_reseller.email).should('be.visible')
             cy.get('div[data-cy="q-item-label"]').contains('#1 - default-customer@default.invalid').should('not.exist')
@@ -994,7 +994,6 @@ context('Administrator roles tests', () => {
             cy.get('div[data-cy="q-item-label"]').contains(billingProfile.name).should('be.visible')
             cy.get('div[data-cy="q-item-label"]').contains('Default Billing Profile').should('not.exist')
             cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: customerContact_reseller.email, itemContains: customerContact_reseller.email })
-            cy.get('input[data-cy="customer-external-id"]').type(customer.external_id)
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 
@@ -1005,10 +1004,10 @@ context('Administrator roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-                apiRemoveCustomerContactBy({ name: customerContact_reseller.email, authHeader })
+                apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+                apiRemoveCustomerContactBy({ email: customerContact_reseller.email, authHeader })
                 apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
-                apiRemoveAdminBy({ name: admin_ccare.login, authHeader })
+                apiRemoveAdminBy({ login: admin_ccare.login, authHeader })
             })
         })
     })

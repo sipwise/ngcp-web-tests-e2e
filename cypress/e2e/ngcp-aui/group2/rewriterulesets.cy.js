@@ -1,7 +1,6 @@
 /// <reference types="cypress" />
 
 import {
-    waitPageProgressAUI,
     deleteItemOnListPageBy,
     searchInDataTable,
     apiCreateContract,
@@ -96,7 +95,7 @@ context('Rewrite Rule Set tests', () => {
             apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name + "clone", authHeader })
             apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateSystemContact({ data: systemContactDependency, authHeader }).then(({ id }) => {
@@ -128,7 +127,7 @@ context('Rewrite Rule Set tests', () => {
             apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name + "clone", authHeader })
             apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
             apiRemoveResellerBy({ name: reseller.name, authHeader })
-            apiRemoveContractBy({ name: contract.external_id, authHeader })
+            apiRemoveContractBy({ external_id: contract.external_id, authHeader })
             apiRemoveSystemContactBy({ email: systemContactDependency.email, authHeader })
         })
     })
@@ -137,8 +136,9 @@ context('Rewrite Rule Set tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             apiRemoveRewriteRuleSetBy({ name: rewriteRuleSet.name, authHeader })
         })
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / rewrite', false)
+
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+        cy.navigateMainMenu('settings / rewrite')
 
         cy.locationShouldBe('#/rewrite')
         cy.get('a[data-cy="aui-list-action--add"]').click()
@@ -155,8 +155,8 @@ context('Rewrite Rule Set tests', () => {
     })
 
     it('Edit a Rewrite Rule Set', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / rewrite', false)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+        cy.navigateMainMenu('settings / rewrite')
 
         cy.locationShouldBe('#/rewrite')
         searchInDataTable(rewriteRuleSet.name)
@@ -177,8 +177,8 @@ context('Rewrite Rule Set tests', () => {
     })
 
     it('Clone a Rewrite Rule Set', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / rewrite', false)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+        cy.navigateMainMenu('settings / rewrite')
 
         cy.locationShouldBe('#/rewrite')
         searchInDataTable(rewriteRuleSet.name)
@@ -201,7 +201,6 @@ context('Rewrite Rule Set tests', () => {
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--rewriteRuleSetRules"]').click()
 
-        waitPageProgressAUI()
         cy.get('td[data-cy="q-td--match-pattern"] span').contains(rewriteRuleSet.rewriterules[0].match_pattern).should('be.visible')
         cy.get('td[data-cy="q-td--replace-pattern"] span').contains(rewriteRuleSet.rewriterules[0].replace_pattern).should('be.visible')
         cy.get('td[data-cy="q-td--description"] span').contains(rewriteRuleSet.rewriterules[0].description).should('be.visible')
@@ -231,8 +230,8 @@ context('Rewrite Rule Set tests', () => {
     })
 
     it('Create a Rewrite Rule', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / rewrite', false)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+        cy.navigateMainMenu('settings / rewrite')
 
         cy.locationShouldBe('#/rewrite')
         searchInDataTable(rewriteRuleSet.name)
@@ -240,7 +239,6 @@ context('Rewrite Rule Set tests', () => {
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--rewriteRuleSetRules"]').click()
 
-        waitPageProgressAUI()
         cy.contains('Inbound for Caller').click()
         cy.get('a[data-cy="aui-list-action--add"]').click()
 
@@ -253,16 +251,17 @@ context('Rewrite Rule Set tests', () => {
     })
 
     it('Edit a Rewrite Rule', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / rewrite', false)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+        cy.navigateMainMenu('settings / rewrite')
 
         cy.locationShouldBe('#/rewrite')
         searchInDataTable(rewriteRuleSet.name)
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+        cy.intercept({ method: 'GET', pathname: '**/rewrite-rules/sets/*/rules/' }).as('getRewriteRulesPage')
         cy.get('a[data-cy="aui-data-table-row-menu--rewriteRuleSetRules"]').click()
 
-        waitPageProgressAUI()
+        cy.wait('@getRewriteRulesPage')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--rewriteRulesEdit"]').click()
@@ -282,8 +281,8 @@ context('Rewrite Rule Set tests', () => {
     })
 
     it('Move a Rewrite Rule', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / rewrite', false)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+        cy.navigateMainMenu('settings / rewrite')
 
         cy.locationShouldBe('#/rewrite')
         searchInDataTable(rewriteRuleSet.name)
@@ -291,7 +290,6 @@ context('Rewrite Rule Set tests', () => {
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('a[data-cy="aui-data-table-row-menu--rewriteRuleSetRules"]').click()
 
-        waitPageProgressAUI()
         cy.contains('Outbound for Caller').click()
         cy.get('td[data-cy="q-td--match-pattern"]:first').contains('firstcallmatch').should('be.visible')
         cy.get('div[class="aui-data-table"] .q-checkbox:first').click()
@@ -302,21 +300,27 @@ context('Rewrite Rule Set tests', () => {
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
         cy.get('div[data-cy="aui-data-table-row-menu--rewriteRuleSetRuleUp"]').click()
 
-        waitPageProgressAUI()
         cy.get('td[data-cy="q-td--match-pattern"]:first').contains('firstcallmatch').should('be.visible')
     })
 
     it('Delete a Rewrite Rule', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / rewrite', false)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+        cy.navigateMainMenu('settings / rewrite')
 
         cy.locationShouldBe('#/rewrite')
         searchInDataTable(rewriteRuleSet.name)
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
+        // Currently Inbound for Callee is the default tab
+        cy.intercept({
+            method: 'GET',
+            pathname: '**/rewrite-rules/sets/*/rules/',
+            query: { direction: 'in', field: 'callee' }
+        }).as('getInboundCalleeRewriteRules')
         cy.get('a[data-cy="aui-data-table-row-menu--rewriteRuleSetRules"]').click()
 
-        waitPageProgressAUI()
+        cy.contains('Inbound for Callee').click()
+        cy.wait('@getInboundCalleeRewriteRules')
         cy.get('div[class="aui-data-table"] .q-checkbox').click()
         cy.get('button[data-cy="aui-list-action--delete"]').click()
         cy.get('button[data-cy="btn-confirm"]').click()
@@ -325,8 +329,8 @@ context('Rewrite Rule Set tests', () => {
     })
 
     it('Delete Rewrite Rule Set', () => {
-        cy.quickLogin(ngcpConfig.username, ngcpConfig.password)
-        cy.navigateMainMenu('settings / rewrite', false)
+        cy.quickLoginAUI(ngcpConfig.username, ngcpConfig.password)
+        cy.navigateMainMenu('settings / rewrite')
 
         cy.locationShouldBe('#/rewrite')
         deleteItemOnListPageBy(rewriteRuleSet.name)

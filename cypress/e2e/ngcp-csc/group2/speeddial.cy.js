@@ -49,15 +49,15 @@ const loginInfo = {
 
 const ngcpConfig = Cypress.config('ngcpConfig')
 
-context('Speed dial "General" page tests', () => {
+context('Speed Dial "General" tests', () => {
     before(() => {
         Cypress.log({ displayName: 'API URL', message: ngcpConfig.apiHost })
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
             cy.log('Data clean up pre-tests completed')
             apiCreateDomain({ data: domain, authHeader })
             apiCreateCustomer({ data: customer, authHeader }).then(({ id }) => {
@@ -68,28 +68,27 @@ context('Speed dial "General" page tests', () => {
 
     beforeEach(() => {
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveSubscriberBy({ name: subscriber.username, authHeader })
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader })
 
             apiCreateSubscriber({ data: subscriber, authHeader })
         })
-        cy.visit('/')
     })
 
     after(() => {
         Cypress.log({ displayName: 'END', message: 'Cleaning-up...' })
         cy.log('Data clean up...')
         apiLoginAsSuperuser().then(authHeader => {
-            apiRemoveCustomerBy({ name: customer.external_id, authHeader })
-            apiRemoveDomainBy({ name: domain.domain, authHeader })
+            apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
+            apiRemoveDomainBy({ domain: domain.domain, authHeader })
         })
     })
 
     it('Add/Delete speed dial', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/speeddials/*' }).as('getSpeeddialPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/speeddial"]').click()
+        cy.wait('@getSpeeddialPage')
 
         cy.get('button[data-cy="csc-speeddial-add"]').click()
         cy.get('div[data-cy="csc-speeddial-slot"]').click()
@@ -109,11 +108,11 @@ context('Speed dial "General" page tests', () => {
     })
 
     it('Add/Delete two speed dials', () => {
-        cy.loginUiCSC(loginInfo.username, loginInfo.password)
-        cy.get('a[href="#/user/dashboard"]').should('be.visible')
-
+        cy.quickLoginCSC(loginInfo.username, loginInfo.password)
+        cy.intercept({ method: 'GET', pathname: '**/api/speeddials/*' }).as('getSpeeddialPage')
         cy.get('div[data-cy="q-item-label"]').contains('Call Settings').click()
         cy.get('a[href="#/user/speeddial"]').click()
+        cy.wait('@getSpeeddialPage')
 
         cy.get('button[data-cy="csc-speeddial-add"]').click()
         cy.get('div[data-cy="csc-speeddial-slot"]').click()
