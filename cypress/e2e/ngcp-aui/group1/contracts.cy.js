@@ -135,7 +135,7 @@ context('Contract tests', () => {
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('input[data-cy="aui-select-contact"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
                 cy.get('input[data-cy="aui-billing-profile-Active"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
-                cy.get('div[data-cy="contract-status"] input').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
+                cy.get('label[data-cy="contract-status"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             })
 
             it(`Create a ${contractType} Contract`, () => {
@@ -157,7 +157,7 @@ context('Contract tests', () => {
                     cy.get('input[data-cy="external-num"]').type(resellerContract.external_id)
                 }
                 cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: 'default', itemContains: 'default-system' })
-                cy.qSelect({ dataCy: 'contract-status', filter: 'Active', itemContains: 'Active' })
+                cy.qSelect({ dataCy: 'contract-status', itemContains: 'Active' })
                 cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: dependencyBillingProfile.name, itemContains: dependencyBillingProfile.name })
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
@@ -178,7 +178,7 @@ context('Contract tests', () => {
                 clickDataTableSelectedMoreMenuItem('contractEdit')
 
                 cy.get('label[data-cy="contract-status"]').should('be.visible')
-                cy.qSelect({ dataCy: 'contract-status', filter: 'Pending', itemContains: 'Pending' })
+                cy.qSelect({ dataCy: 'contract-status', itemContains: 'Pending' })
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('[data-cy="aui-close-button"]').click()
                 cy.get('span[data-cy="aui-data-table-inline-edit--select"] span').contains('Pending').should('be.visible')
