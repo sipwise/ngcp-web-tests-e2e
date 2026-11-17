@@ -249,8 +249,8 @@ context('Administrator Roles tests', () => {
         apiLoginAsSuperuser().then(authHeader => {
             Cypress.log({ displayName: 'INIT', message: 'Preparing environment...'})
             cy.log('Preparing environment...')
-            apiRemoveSubscriberBy({ username: subscriber.external_id, authHeader})
-            apiRemoveSubscriberBy({ username: subscriber_reseller.external_id, authHeader})
+            apiRemoveSubscriberBy({ username: subscriber.username, authHeader})
+            apiRemoveSubscriberBy({ username: subscriber_reseller.username, authHeader})
             apiRemoveBillingProfileBy({ name: billingProfile.name, authHeader })
             apiRemoveDomainBy({ domain: 'testdomain', authHeader })
             apiRemoveDomainBy({ domain: domain.domain, authHeader })
@@ -780,7 +780,7 @@ context('Administrator Roles tests', () => {
             // Setup: Create all needed data
             apiLoginAsSuperuser().then(authHeader => {
                 apiRemoveAdminBy({ login: admin_ccareadmin.login, authHeader })
-                apiRemoveSubscriberBy({ username: subscriber.external_id, authHeader})
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader})
                 apiRemoveDomainBy({ domain: domain.domain, authHeader })
                 apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
 
@@ -814,7 +814,7 @@ context('Administrator Roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ username: subscriber.external_id, authHeader})
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader})
                 apiRemoveDomainBy({ domain: domain.domain, authHeader })
                 apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
                 apiRemoveAdminBy({ login: admin_ccareadmin.login, authHeader })
@@ -855,7 +855,7 @@ context('Administrator Roles tests', () => {
         it('Check if ccare admin can only see customer and subscriber menus, also access blocked site via customer creation page', () => {
             // Setup: Create all needed data
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ username: subscriber_reseller.external_id, authHeader})
+                apiRemoveSubscriberBy({ username: subscriber_reseller.username, authHeader})
                 apiRemoveDomainBy({ domain: domain_reseller.domain, authHeader })
                 apiRemoveCustomerBy({ external_id: customer_reseller.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact_reseller.email, authHeader })
@@ -898,7 +898,7 @@ context('Administrator Roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ username: subscriber_reseller.external_id, authHeader})
+                apiRemoveSubscriberBy({ username: subscriber_reseller.username, authHeader})
                 apiRemoveDomainBy({ domain: domain_reseller.domain, authHeader })
                 apiRemoveCustomerBy({ external_id: customer_reseller.external_id, authHeader })
                 apiRemoveCustomerContactBy({ email: customerContact_reseller.email, authHeader })
@@ -910,8 +910,8 @@ context('Administrator Roles tests', () => {
         it('Check if ccare admin can only see customer and subscriber with same reseller', () => {
             // Setup: Create all needed data for both resellers
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ username: subscriber.external_id, authHeader})
-                apiRemoveSubscriberBy({ username: subscriber_reseller.external_id, authHeader})
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader})
+                apiRemoveSubscriberBy({ username: subscriber_reseller.username, authHeader})
                 apiRemoveDomainBy({ domain: domain.domain, authHeader })
                 apiRemoveDomainBy({ domain: domain_reseller.domain, authHeader })
                 apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
@@ -955,8 +955,8 @@ context('Administrator Roles tests', () => {
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
-                apiRemoveSubscriberBy({ username: subscriber.external_id, authHeader})
-                apiRemoveSubscriberBy({ username: subscriber_reseller.external_id, authHeader})
+                apiRemoveSubscriberBy({ username: subscriber.username, authHeader})
+                apiRemoveSubscriberBy({ username: subscriber_reseller.username, authHeader})
                 apiRemoveDomainBy({ domain: domain.domain, authHeader })
                 apiRemoveDomainBy({ domain: domain_reseller.domain, authHeader })
                 apiRemoveCustomerBy({ external_id: customer.external_id, authHeader })
