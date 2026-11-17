@@ -457,7 +457,7 @@ context('Administrator tests', () => {
                 }
             })
             // we don't need for resources to load, hence the false flag
-            cy.navigateMainMenu('settings / administrator',false)
+            cy.navigateMainMenu('settings / administrator')
 
             cy.locationShouldBe('#/administrator')
             cy.get('div[data-cy="aui-list-action--admin-creation"]').should('not.exist')
