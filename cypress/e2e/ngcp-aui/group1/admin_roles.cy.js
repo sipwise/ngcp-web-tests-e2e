@@ -424,7 +424,7 @@ context('Administrator Roles tests', () => {
             clickDataTableSelectedMoreMenuItem('adminEdit')
 
             cy.get('label[data-cy="roles-list"] input').should('exist')
-            cy.qSelect({ dataCy: 'roles-list', filter: 'ccare', itemContains: 'ccare -' })
+            cy.qSelect({ dataCy: 'roles-list', itemContains: 'ccare -' })
 
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
@@ -626,7 +626,7 @@ context('Administrator Roles tests', () => {
             clickDataTableSelectedMoreMenuItem('adminEdit')
 
             cy.get('label[data-cy="roles-list"] input').should('exist')
-            cy.qSelect({ dataCy: 'roles-list', filter: 'admin', itemContains: 'admin' })
+            cy.qSelect({ dataCy: 'roles-list', itemContains: 'admin' })
 
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
