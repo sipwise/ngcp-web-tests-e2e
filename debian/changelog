@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.3.1.4+0~mr26.3.1.4) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [db178fb] MT#62469 backport all trunk changes to mr26.3
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 18 Nov 2026 11:13:13 +0100
+
 ngcp-web-tests-e2e (26.3.1.3+0~mr26.3.1.3) unstable; urgency=medium
 
   [ Nico Schedel ]
