@@ -170,9 +170,9 @@ context('Contract tests', () => {
                 cy.locationShouldBe('#/contract')
 
                 if (contractType === 'peering') {
-                    searchInDataTable(peeringContract.external_id, 'External #')
+                    searchInDataTable(peeringContract.external_id, null, true, true)
                 } else {
-                    searchInDataTable(resellerContract.external_id, 'External #')
+                    searchInDataTable(resellerContract.external_id, null, true, true)
                 }
                 cy.get('div[class="aui-data-table"] .q-checkbox').click()
                 clickDataTableSelectedMoreMenuItem('contractEdit')
@@ -190,9 +190,9 @@ context('Contract tests', () => {
 
                 cy.locationShouldBe('#/contract')
                 if (contractType === 'peering') {
-                    deleteItemOnListPageBy(peeringContract.external_id, 'External #')
+                    deleteItemOnListPageBy(peeringContract.external_id, null, true, true)
                 } else {
-                    deleteItemOnListPageBy(resellerContract.external_id, 'External #')
+                    deleteItemOnListPageBy(resellerContract.external_id, null, true, true)
                 }
             })
         })
