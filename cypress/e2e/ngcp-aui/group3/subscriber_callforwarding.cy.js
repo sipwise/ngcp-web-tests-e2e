@@ -774,7 +774,7 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('input[data-cy="aui-create-destination-name"]').type(destinationset.name)
             cy.get('button[data-cy="aui-create-destination-add"]').click()
             cy.get('input[data-cy="aui-create-destination-number"]:first').type(destinationset.destinations[0].simple_destination)
-            cy.get('div[data-cy="aui-create-destination-type"]:last').click()
+            cy.get('label[data-cy="aui-create-destination-type"]:last').click()
             cy.wait(200)
             cy.get('div[data-cy="q-item-label"] span').contains('URI/Number').click({ force: true })
             cy.get('input[data-cy="aui-create-destination-number"]:last').type(destinationset.destinations[1].simple_destination)
