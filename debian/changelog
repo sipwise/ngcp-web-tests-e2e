@@ -1,3 +1,12 @@
+ngcp-web-tests-e2e (26.3.1.5+0~mr26.3.1.5) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [547fabf] MT#66476 fix deleteDownloadsFolder task after node upgrade
+  * [dbf39e8] MT#66476 [E2E] Switch to node v26
+  * [5f7dfc9] MT#66229 fix NCOS "Add/Remove NCOS Level to NCOS Set" and peering tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 19 Nov 2026 11:53:51 +0100
+
 ngcp-web-tests-e2e (26.3.1.4+0~mr26.3.1.4) unstable; urgency=medium
 
   [ Nico Schedel ]
