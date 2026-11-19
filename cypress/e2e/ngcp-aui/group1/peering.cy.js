@@ -218,8 +218,8 @@ context('Peering tests', () => {
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/inbound-rules/' }).as('getPeeringInboundRulesPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.get('div[data-cy="q-item-label"]').contains('Inbound Rules').click()
 
             cy.wait('@getPeeringInboundRulesPage')
@@ -255,8 +255,8 @@ context('Peering tests', () => {
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/inbound-rules/' }).as('getPeeringInboundRulesPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.get('div[data-cy="q-item-label"]').contains('Inbound Rules').click()
 
             cy.wait('@getPeeringInboundRulesPage')
@@ -293,8 +293,8 @@ context('Peering tests', () => {
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/inbound-rules/' }).as('getPeeringInboundRulesPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.get('div[data-cy="q-item-label"]').contains('Inbound Rules').click()
 
             cy.wait('@getPeeringInboundRulesPage')
@@ -332,8 +332,8 @@ context('Peering tests', () => {
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/inbound-rules/' }).as('getPeeringInboundRulesPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.get('div[data-cy="q-item-label"]').contains('Inbound Rules').click()
 
             cy.wait('@getPeeringInboundRulesPage')
@@ -362,8 +362,8 @@ context('Peering tests', () => {
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/rules/' }).as('getPeeringOutboundRulesPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.get('div[data-cy="q-item-label"]').contains('Outbound Rules').click()
 
             cy.wait('@getPeeringOutboundRulesPage')
@@ -392,8 +392,8 @@ context('Peering tests', () => {
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/rules/' }).as('getPeeringOutboundRulesPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.get('div[data-cy="q-item-label"]').contains('Outbound Rules').click()
 
             cy.wait('@getPeeringOutboundRulesPage')
@@ -430,9 +430,8 @@ context('Peering tests', () => {
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
-
             cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/rules/' }).as('getPeeringOutboundRulesPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.get('div[data-cy="q-item-label"]').contains('Outbound Rules').click()
 
             cy.wait('@getPeeringOutboundRulesPage')
@@ -470,9 +469,8 @@ context('Peering tests', () => {
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
-
             cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/rules/' }).as('getPeeringOutboundRulesPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.get('div[data-cy="q-item-label"]').contains('Outbound Rules').click()
 
             cy.wait('@getPeeringOutboundRulesPage')
@@ -501,8 +499,8 @@ context('Peering tests', () => {
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/servers/' }).as('getPeeringServersPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.get('div[data-cy="q-item-label"]').contains('Peering Servers').click()
 
             cy.wait('@getPeeringServersPage')
@@ -535,8 +533,8 @@ context('Peering tests', () => {
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/servers/' }).as('getPeeringServersPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.get('div[data-cy="q-item-label"]').contains('Peering Servers').click()
 
             cy.wait('@getPeeringServersPage')
@@ -572,9 +570,8 @@ context('Peering tests', () => {
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
-
             cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/servers/' }).as('getPeeringServersPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.get('div[data-cy="q-item-label"]').contains('Peering Servers').click()
 
             cy.wait('@getPeeringServersPage')
@@ -612,8 +609,8 @@ context('Peering tests', () => {
             searchInDataTable(peeringGroup.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.intercept({ method: 'GET', pathname: '**/peerings/groups/*/servers/' }).as('getPeeringServersPage')
+            cy.get('a[data-cy="aui-data-table-row-menu--peeringGroupDetails"]').click()
             cy.get('div[data-cy="q-item-label"]').contains('Peering Servers').click()
 
             cy.wait('@getPeeringServersPage')
