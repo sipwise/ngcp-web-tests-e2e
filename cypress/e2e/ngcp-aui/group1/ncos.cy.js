@@ -276,15 +276,15 @@ context('NCOS tests', () => {
             searchInDataTable(NCOSSet.name)
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             cy.get('button[data-cy="aui-list-action--edit-menu-btn"]').click()
-            cy.intercept('GET', '**/api/v2/ncos/levels/**').as('getNCOSSetLevelListPage')
+            cy.intercept({ method: 'GET', pathname: '**/api/v2/ncos/levels/**' }).as('getNCOSSetLevelListPage')
             cy.get('a[data-cy="aui-data-table-row-menu--ncosSetLevelsList"]').click()
-
             cy.wait('@getNCOSSetLevelListPage')
 
             cy.get('button[data-cy="row-more-menu-btn"]:first').click()
+            cy.intercept({ method: 'GET', pathname: '**/api/v2/ncos/sets/**' }).as('getNCOSSetLevelSetsList')
             cy.get('div[data-cy="aui-data-table-row-menu--addLevel"]').click()
+            cy.wait('@getNCOSSetLevelSetsList')
 
-            cy.get('label[data-cy="aui-input-search--datatable"][aria-disabled="true"]').should('exist')
             cy.get('label[data-cy="aui-input-search--datatable"][aria-disabled="true"]').should('not.exist')
             cy.get('div[data-cy="ncos-set-levels-list"] input:last').type('thisshouldneverexist123')
 
