@@ -183,26 +183,34 @@ context('Call Forwarding tests', () => {
             cy.get('i[data-cy="q-icon"]').contains('more_vert').first().click()
             cy.get('div[data-cy="csc-forwarding-to-number"]').click()
             cy.get('span[data-cy="csc-cf-destination"]:last').click()
-            cy.get('input:visible').should('be.enabled').focus().type('testingnumber')
+            cy.get('input:visible').should('be.enabled').focus().clear().type('testingnumber')
+            cy.intercept({ method: 'GET', pathname: '**/api/cfdestinationsets/**', times: 1 }).as('getCFDestinationSets')
             cy.get('button[data-cy="q-btn"]').contains('Set').click()
+            cy.wait('@getCFDestinationSets')
+
             cy.get('i').contains('access_time').click()
             cy.get('input:visible').clear()
             cy.get('input:visible').type('30')
+            cy.intercept({ method: 'GET', pathname: '**/api/cfdestinationsets/**', times: 1 }).as('getCFDestinationSets')
             cy.get('button').contains('Set').click()
+            cy.wait('@getCFDestinationSets')
+
             cy.get('input:visible').should('not.exist')
             cy.get('div[class="q-item__label"]').contains('30 seconds').should('be.visible')
             cy.get('span[data-cy="csc-cf-destination"]').last().contains('testingnumber').should('be.visible')
-
             cy.get('span[data-cy="csc-cf-destination"]').first().click()
             cy.get('input:visible').should('be.enabled').focus().clear().type('9876543210')
+            cy.intercept({ method: 'GET', pathname: '**/api/cfdestinationsets/**', times: 1 }).as('getCFDestinationSets')
             cy.get('button').contains('Set').click()
+            cy.wait('@getCFDestinationSets')
             cy.get('span[data-cy="csc-cf-destination"]').first().contains('9876543210').should('be.visible')
 
             cy.get('button[data-cy="q-btn"]').last().click()
+            cy.intercept({ method: 'GET', pathname: '**/api/cfdestinationsets/**', times: 1 }).as('getCFDestinationSets')
             cy.get('div[data-cy="csc-cf-destination-move-up"]').click()
+            cy.wait('@getCFDestinationSets')
             cy.get('span[data-cy="csc-cf-destination"]').first().contains('testingnumber').should('be.visible')
             cy.get('span[data-cy="csc-cf-destination"]').last().contains('9876543210').should('be.visible')
-
         })
 
         it('Add "Forward to voicebox" and delete it', () => {
