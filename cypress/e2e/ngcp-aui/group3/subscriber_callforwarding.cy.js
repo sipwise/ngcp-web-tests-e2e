@@ -46,7 +46,7 @@ const timeset = {
       {
         wday: "Monday",
         minute: "0",
-        mday: "20",
+        mday: "10",
         hour: "8",
         month: "April",
         year: "2020"
@@ -54,7 +54,7 @@ const timeset = {
       {
         wday: "Thursday",
         minute: "0",
-        mday: "31",
+        mday: "20",
         hour: "9",
         month: "December",
         year: "2020"
@@ -524,7 +524,7 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
             cy.get('td[data-cy="q-td--name"] span').contains(timeset.name).should('be.visible')
-            cy.get('td[data-cy="q-td--times"] span').contains('{ "hour": "8-9", "mday": "20-31", "minute": null, "month": "4-12", "wday": "2-5", "year": "2020-2020" }').should('be.visible')
+            cy.get('td[data-cy="q-td--times"] span').contains('{ "hour": "8-9", "mday": "10-20", "minute": null, "month": "4-12", "wday": "2-5", "year": "2020-2020" }').should('be.visible')
 
             // Cleanup
             apiLoginAsSuperuser().then(authHeader => {
@@ -774,7 +774,7 @@ context('Subscriber Call Forwarding tests', () => {
             cy.get('input[data-cy="aui-create-destination-name"]').type(destinationset.name)
             cy.get('button[data-cy="aui-create-destination-add"]').click()
             cy.get('input[data-cy="aui-create-destination-number"]:first').type(destinationset.destinations[0].simple_destination)
-            cy.get('div[data-cy="aui-create-destination-type"]:last').click()
+            cy.get('label[data-cy="aui-create-destination-type"]:last').click()
             cy.wait(200)
             cy.get('div[data-cy="q-item-label"] span').contains('URI/Number').click({ force: true })
             cy.get('input[data-cy="aui-create-destination-number"]:last').type(destinationset.destinations[1].simple_destination)

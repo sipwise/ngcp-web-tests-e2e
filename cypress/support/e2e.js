@@ -488,7 +488,7 @@ Cypress.Commands.add('createAdminUI', (admin) => {
     cy.get('input[data-cy="login-field"] ').type(admin.login)
     cy.get('input[data-cy="password-field"] ').type(admin.password)
     cy.get('input[data-cy="password-retype-field"] ').type(admin.password)
-    cy.qSelect({ dataCy: 'roles-list', filter: admin.role, itemContains: admin.role })
+    cy.qSelect({ dataCy: 'roles-list', itemContains: admin.role })
     cy.get('[data-cy="aui-save-button"]').click()
     cy.get('div[role="alert"]').should('have.class', 'bg-positive')
 })
