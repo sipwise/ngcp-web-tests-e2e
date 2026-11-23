@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (26.0.1.21+0~mr26.0.1.21) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [95509bc] MT#62469 fix various issues discoverd by backporting tests
+  * [520298f] MT#62469 fix cf moving test by waiting for api before doing changes
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 23 Nov 2026 16:02:24 +0100
+
 ngcp-web-tests-e2e (26.0.1.20+0~mr26.0.1.20) unstable; urgency=medium
 
   [ Nico Schedel ]
