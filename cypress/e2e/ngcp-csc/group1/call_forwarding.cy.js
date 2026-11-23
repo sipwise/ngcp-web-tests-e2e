@@ -317,9 +317,12 @@ context('Call Forwarding tests', () => {
             cy.wait('@getPBXUsers')
             cy.get('span[data-cy="csc-cf-destination"]').first().contains('9876543210').should('be.visible')
 
+            // The last destination only offers "Move up" (no "Move down", no "Remove")
             cy.get('button[data-cy="q-btn"]').last().click()
+            cy.get('div[data-cy="csc-cf-destination-move-down"]').should('not.exist')
+            cy.get('.q-menu').should('be.visible').contains('Remove').should('not.exist')
             cy.intercept({ method: 'GET', pathname: '**/api/pbxusers/**', times: 1 }).as('getPBXUsers')
-            cy.get('div[data-cy="csc-cf-destination-move-down"]').click()
+            cy.get('div[data-cy="csc-cf-destination-move-up"]').click()
             cy.wait('@getPBXUsers')
             cy.get('span[data-cy="csc-cf-destination"]').first().contains('testingnumber').should('be.visible')
             cy.get('span[data-cy="csc-cf-destination"]').last().contains('9876543210').should('be.visible')
