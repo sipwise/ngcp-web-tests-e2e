@@ -800,7 +800,12 @@ context('Administrator roles tests', () => {
             searchInDataTable(customer.external_id, 'External #')
             cy.get('td[data-cy="q-td--external-id"]').contains(customer.external_id).should('be.visible')
             cy.get('a[data-cy="aui-list-action--add"]').click()
-            cy.get('button[data-cy="aui-create-button"]:first').click()
+            cy.get('button[data-cy="aui-create-button"]').should('have.length', 1).and('contain', 'Create Contact')
+            cy.get('button[data-cy="aui-create-button"]').click()
+            cy.locationShouldBe('#/contact/create')
+            cy.window().then(win => {
+                win.location.hash = '#/emailtemplate/create'
+            })
             cy.locationShouldBe('#/error403')
             cy.get('a[href="#/dashboard"]').click()
 
@@ -812,6 +817,9 @@ context('Administrator roles tests', () => {
             cy.get('a[href="#/administrator"]').should('not.exist')
             cy.get('a[href="#/reseller"]').should('not.exist')
             cy.get('a[href="#/domain"]').should('not.exist')
+
+            cy.navigateMainMenu('settings / contact')
+            cy.locationShouldBe('#/contact')
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
@@ -884,7 +892,12 @@ context('Administrator roles tests', () => {
             searchInDataTable(customer_reseller.external_id, 'External #')
             cy.get('td[data-cy="q-td--external-id"]').contains(customer_reseller.external_id).should('be.visible')
             cy.get('a[data-cy="aui-list-action--add"]').click()
-            cy.get('button[data-cy="aui-create-button"]:first').click()
+            cy.get('button[data-cy="aui-create-button"]').should('have.length', 1).and('contain', 'Create Contact')
+            cy.get('button[data-cy="aui-create-button"]').click()
+            cy.locationShouldBe('#/contact/create')
+            cy.window().then(win => {
+                win.location.hash = '#/emailtemplate/create'
+            })
             cy.locationShouldBe('#/error403')
             cy.get('a[href="#/dashboard"]').click()
 
@@ -896,6 +909,9 @@ context('Administrator roles tests', () => {
             cy.get('a[href="#/administrator"]').should('not.exist')
             cy.get('a[href="#/reseller"]').should('not.exist')
             cy.get('a[href="#/domain"]').should('not.exist')
+
+            cy.navigateMainMenu('settings / contact')
+            cy.locationShouldBe('#/contact')
 
             // Clean up
             apiLoginAsSuperuser().then(authHeader => {
