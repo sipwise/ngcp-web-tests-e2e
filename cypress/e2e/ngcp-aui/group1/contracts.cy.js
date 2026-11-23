@@ -136,7 +136,7 @@ context('Contract tests', () => {
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('input[data-cy="aui-select-contact"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
                 cy.get('input[data-cy="aui-billing-profile-Active"]').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
-                cy.get('div[data-cy="contract-status"] input').parents('label').find('div[role="alert"]').contains('Input is required').should('be.visible')
+                cy.get('label[data-cy="contract-status"]').find('div[role="alert"]').contains('Input is required').should('be.visible')
             })
 
             it(`Create a ${contractType} contract`, () => {
@@ -157,15 +157,7 @@ context('Contract tests', () => {
                     cy.get('input[data-cy="external-num"]').type(resellerContract.external_id)
                 }
                 cy.auiSelectLazySelect({ dataCy: 'aui-select-contact', filter: 'default', itemContains: 'default-system' })
-                cy.get('div[data-cy="contract-status"]').click()
-                cy.wait(200)
-                cy.get('div[data-cy="contract-status"]').parents('label').then($el => {
-                    const id = $el.attr('for')
-                    const dropdownListId = `#${id}_lb`
-                    cy.get(dropdownListId).should('be.visible')
-                    cy.contains(`${dropdownListId} .q-item`, 'Active').should('be.visible')
-                    cy.contains(`${dropdownListId} .q-item`, 'Active').click()
-                })
+                cy.qSelect({ dataCy: 'contract-status', itemContains: 'Active' })
                 cy.auiSelectLazySelect({ dataCy: 'aui-billing-profile-Active', filter: dependencyBillingProfile.name, itemContains: dependencyBillingProfile.name })
                 cy.get('[data-cy="aui-save-button"]').click()
                 cy.get('div[role="alert"]').should('have.class', 'bg-positive')
@@ -186,7 +178,7 @@ context('Contract tests', () => {
                 clickDataTableSelectedMoreMenuItem('contractEdit')
                 waitPageProgressAUI()
                 cy.wait(500)
-                cy.qSelect({ dataCy: 'contract-status', filter: 'Pending', itemContains: 'Pending' })
+                cy.qSelect({ dataCy: 'contract-status', itemContains: 'Pending' })
                 cy.get('[data-cy="aui-save-button"]').click()
                 waitPageProgressAUI()
                 cy.get('[data-cy="aui-close-button"]').click()
