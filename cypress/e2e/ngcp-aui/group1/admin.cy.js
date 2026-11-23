@@ -166,7 +166,7 @@ context('Administrator tests', () => {
             cy.get('input[data-cy="login-field"] ').type(admin1.login)
             cy.get('input[data-cy="password-field"] ').type(admin1.password)
             cy.get('input[data-cy="password-retype-field"] ').type(admin1.password)
-            cy.qSelect({ dataCy: 'roles-list', filter: 'admin', itemContains: 'admin' })
+            cy.qSelect({ dataCy: 'roles-list', itemContains: 'admin' })
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
         })
@@ -229,7 +229,7 @@ context('Administrator tests', () => {
             cy.get('div[class="aui-data-table"] .q-checkbox').click()
             clickDataTableSelectedMoreMenuItem('adminEdit')
             cy.get('label[data-cy="roles-list"]').should('be.visible')
-            cy.qSelect({ dataCy: 'roles-list', filter: 'ccareadmin', itemContains: 'ccareadmin' })
+            cy.qSelect({ dataCy: 'roles-list', itemContains: 'ccareadmin' })
 
             cy.get('[data-cy="aui-save-button"]').click()
             cy.get('div[role="alert"]').should('have.class', 'bg-positive')
