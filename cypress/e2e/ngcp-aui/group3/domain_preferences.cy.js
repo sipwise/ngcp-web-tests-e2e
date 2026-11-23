@@ -143,7 +143,7 @@ context('Domain preferences tests', () => {
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
         waitPageProgressAUI()
-        cy.qSelect({ dataCy: 'category-selection', filter: 'Access Restrictions', itemContains: 'Access Restrictions' })
+        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Access Restrictions' })
         testPreferencesToggleField('allow_out_foreign_domain')
         testPreferencesListField('allowed_clis_reject_policy', 'Force CLIR')
         testPreferencesChipField('allowed_ips', { value1: '10.0.0.1', value2: '10.0.0.10' }, true)
@@ -181,7 +181,7 @@ context('Domain preferences tests', () => {
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
         waitPageProgressAUI()
-        cy.qSelect({ dataCy: 'category-selection', filter: 'Applications', itemContains: 'Applications' })
+        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Applications' })
         testPreferencesListField('callrecording_type', 'External')
         testPreferencesToggleField('malicious_call_identification')
         testPreferencesToggleField('play_announce_before_call_setup')
@@ -201,7 +201,7 @@ context('Domain preferences tests', () => {
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
         waitPageProgressAUI()
-        cy.qSelect({ dataCy: 'category-selection', filter: 'Call Blockings', itemContains: 'Call Blockings' })
+        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Call Blockings' })
         testPreferencesListField('adm_cf_ncos', ncosLevel.level)
         testPreferencesListField('adm_ncos', ncosLevel.level)
         testPreferencesListField('ncos', ncosLevel.level)
@@ -217,7 +217,7 @@ context('Domain preferences tests', () => {
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
         waitPageProgressAUI()
-        cy.qSelect({ dataCy: 'category-selection', filter: 'IMS Application Server', itemContains: 'IMS Application Server' })
+        cy.qSelect({ dataCy: 'category-selection', itemContains: 'IMS Application Server' })
         testPreferencesToggleField('ims_as_context')
     })
 
@@ -231,7 +231,7 @@ context('Domain preferences tests', () => {
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
         waitPageProgressAUI()
-        cy.qSelect({ dataCy: 'category-selection', filter: 'Internal', itemContains: 'Internal' })
+        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Internal' })
         testPreferencesListField('accept_auto_answer', 'No')
         testPreferencesListField('advice_of_charge', 'Currency')
         testPreferencesListField('alert_info_type', 'internal_external')
@@ -313,7 +313,7 @@ context('Domain preferences tests', () => {
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
         waitPageProgressAUI()
-        cy.qSelect({ dataCy: 'category-selection', filter: 'Media Codec Transcoding Options', itemContains: 'Media Codec Transcoding Options' })
+        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Media Codec Transcoding Options' })
         cy.get('label[data-cy="aui-input-search"] input').clear()
         cy.get('label[data-cy="aui-input-search"] input').type('AMR')
         cy.wait(2)
@@ -398,7 +398,7 @@ context('Domain preferences tests', () => {
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
         waitPageProgressAUI()
-        cy.qSelect({ dataCy: 'category-selection', filter: 'NAT and Media Flow Control', itemContains: 'NAT and Media Flow Control' })
+        cy.qSelect({ dataCy: 'category-selection', itemContains: 'NAT and Media Flow Control' })
         testPreferencesListField('DTLS_fingerprint', 'SHA-1')
         testPreferencesToggleField('ICE_lite')
         testPreferencesToggleField('OSRTP_offer')
@@ -433,7 +433,7 @@ context('Domain preferences tests', () => {
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
         waitPageProgressAUI()
-        cy.qSelect({ dataCy: 'category-selection', filter: 'Number Manipulations', itemContains: 'Number Manipulations' })
+        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Number Manipulations' })
         testPreferencesToggleField('colp_cf')
         testPreferencesListField('emergency_mapping_container', emergencyMappingContainer.name)
         testPreferencesListField('emergency_upn', 'User-Provided-Number')
@@ -476,7 +476,7 @@ context('Domain preferences tests', () => {
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
         waitPageProgressAUI()
-        cy.qSelect({ dataCy: 'category-selection', filter: 'Remote Authentication', itemContains: 'Remote Authentication' })
+        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Remote Authentication' })
         testPreferencesToggleField('peer_auth_register')
     })
 
@@ -490,7 +490,7 @@ context('Domain preferences tests', () => {
         clickDataTableSelectedMoreMenuItem('domainPreferences')
 
         waitPageProgressAUI()
-        cy.qSelect({ dataCy: 'category-selection', filter: 'Session Timers', itemContains: 'Session Timers' })
+        cy.qSelect({ dataCy: 'category-selection', itemContains: 'Session Timers' })
         testPreferencesListField('sst_enable', 'yes')
         testPreferencesTextField('sst_expires', 123, true)
         testPreferencesTextField('sst_max_timer', 123, true)
