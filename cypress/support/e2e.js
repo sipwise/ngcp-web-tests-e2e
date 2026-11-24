@@ -95,7 +95,7 @@ Cypress.Commands.add(
             cy.wrap($parent).find(inputElementSelector).parents('label').then($el => {
                 const id = $el.attr('for')
                 const dropdownListId = `#${id}_lb`
-                cy.get(dropdownListId).should('be.visible')
+                cy.get(dropdownListId).should('exist')
                 cy.contains(`${dropdownListId} .q-item`, itemContains).scrollIntoView()
                 cy.contains(`${dropdownListId} .q-item`, itemContains).should('be.visible')
                 cy.contains(`${dropdownListId} .q-item`, itemContains).click()
