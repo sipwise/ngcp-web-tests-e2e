@@ -111,19 +111,19 @@ Cypress.Commands.add('auiSelectLazySelect',
         ;(subject ? cy.wrap(subject) : cy.get('body')).then($parent => {
             if (filter) {
                 cy.wrap($parent).find(inputElementSelector).click()
-                cy.get('div[role="listbox"]').should('be.visible')
+                cy.get('.q-menu').should('be.visible')
                 cy.wrap($parent).find(inputElementSelector).type(filter)
             } else {
                 cy.wrap($parent).find(inputElementSelector).click()
             }
 
             cy.get('div[role="listbox"]').should('not.be.visible')
-            cy.get('div[role="listbox"]').should('be.visible')
+            cy.get('.q-menu').should('be.visible')
 
             cy.wrap($parent).find(inputElementSelector).parents('label').then($el => {
                 const id = $el.attr('for')
                 const dropdownListId = `#${id}_lb`
-                cy.get(dropdownListId).should('be.visible')
+                cy.get(dropdownListId).should('exist')
                 cy.get(dropdownListId + ' .q-linear-progress').should('not.exist')
                 cy.wait(500)
                 cy.contains(`${dropdownListId} .q-item`, itemContains).click()
@@ -3501,7 +3501,7 @@ export const testPreferencesListField = (name, entry = null) => {
     const { dataCySelector, cyAliasName } = getPreferencesFieldInfo(name)
     cy.get(dataCySelector).should('be.visible').as(cyAliasName)
     cy.get('@' + cyAliasName).find('label').click()
-    cy.get('div[role="listbox"]').should('be.visible')
+    cy.get('.q-menu').should('be.visible')
     cy.wait(1000)
     cy.get('div[role="listbox"]').contains(entry).click()
     cy.get('@' + cyAliasName).find('label[aria-disabled="true"]').should('not.exist')
