@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.47+0~mr12.5.1.47) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [20ab488] MT#66856 fix race in testPreferencesChipField
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 25 Nov 2026 17:54:16 +0100
+
 ngcp-web-tests-e2e (12.5.1.46+0~mr12.5.1.46) unstable; urgency=medium
 
   [ Debora Crescenzo ]
