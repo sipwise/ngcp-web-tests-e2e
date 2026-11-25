@@ -1,3 +1,12 @@
+ngcp-web-tests-e2e (12.5.1.46+0~mr12.5.1.46) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [28e2b74] MT#66701 fix AUI tests after dependabot upgrade
+  * [5de3821] MT#66701 fix qSelect dropdown check for Quasar 2.32 on Cypress 14
+  * [5d48cf9] MT#66701 Fix auiSelectLazySelect for long option lists
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 25 Nov 2026 14:30:15 +0100
+
 ngcp-web-tests-e2e (12.5.1.45+0~mr12.5.1.45) unstable; urgency=medium
 
   [ Debora Crescenzo ]
