@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (26.3.1.7+0~mr26.3.1.7) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [f83e03c] MT#66701 fix AUI tests after dependabot upgrade
+  * [7674ea4] MT#66827 adapt CF move test to restored move up on last destination
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 25 Nov 2026 15:29:29 +0100
+
 ngcp-web-tests-e2e (26.3.1.6+0~mr26.3.1.6) unstable; urgency=medium
 
   [ Nico Schedel ]
