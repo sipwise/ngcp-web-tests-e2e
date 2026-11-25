@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (13.5.1.44+0~mr13.5.1.44) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [ae7de28] MT#66701 Fix qSelect after quasar upgrade
+  * [d3b9c52] MT#66701 fix AUI tests after dependabot upgrade
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 25 Nov 2026 14:41:23 +0100
+
 ngcp-web-tests-e2e (13.5.1.43+0~mr13.5.1.43) unstable; urgency=medium
 
   [ Debora Crescenzo ]
