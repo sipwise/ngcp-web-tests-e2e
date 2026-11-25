@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (13.5.1.43+0~mr13.5.1.43) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [9d170f8] MT#66764 adapt ccare/ccareadmin role tests to customer care permission fix
+  * [74dfcd9] MT#66701 Fix auiSelectLazySelect for long option lists
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 25 Nov 2026 14:30:11 +0100
+
 ngcp-web-tests-e2e (13.5.1.42+0~mr13.5.1.42) unstable; urgency=medium
 
   [ Nico Schedel ]
