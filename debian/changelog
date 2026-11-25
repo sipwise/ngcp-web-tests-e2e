@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.0.1.23+0~mr26.0.1.23) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [00dc68c] MT#66603 Fix CSC tests after the Quasar update
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 25 Nov 2026 19:47:00 +0100
+
 ngcp-web-tests-e2e (26.0.1.22+0~mr26.0.1.22) unstable; urgency=medium
 
   [ Debora Crescenzo ]
