@@ -3464,6 +3464,14 @@ function getPreferencesFieldInfo (fieldName) {
 
 export const testPreferencesChipField = (name, testValues = { value1: 'testvalue', value2: 'testtestvalue' }, numbers = false) => {
     const { dataCySelector, cyAliasName } = getPreferencesFieldInfo(name)
+    const patchAlias = 'patch' + Cypress._.upperFirst(cyAliasName)
+    const chipLabel = (value) => new RegExp('^' + Cypress._.escapeRegExp(String(value)) + '$')
+    // Note, the field is disabled while saving, but Vue 3 renders that as disabled="", so match [disabled].
+    const waitForSave = () => {
+        cy.wait('@' + patchAlias).its('response.statusCode').should('eq', 200)
+        cy.get('@' + cyAliasName).find('input[disabled]').should('not.exist')
+    }
+    cy.intercept({ method: 'PATCH', pathname: '**/api/*preferences/*' }).as(patchAlias)
     cy.get(dataCySelector).should('be.visible').as(cyAliasName)
 
     if (numbers) {
@@ -3476,22 +3484,22 @@ export const testPreferencesChipField = (name, testValues = { value1: 'testvalue
     cy.get('@' + cyAliasName).find('input').clear()
     cy.get('@' + cyAliasName).find('input').type(testValues.value1)
     cy.get('@' + cyAliasName).find('button[data-cy="chip-add"]').click()
-    cy.get('@' + cyAliasName).find('input[disabled="disabled"]').should('not.exist')
-    cy.get('@' + cyAliasName).find('div[class="ellipsis"]').contains(testValues.value1)
+    waitForSave()
+    cy.get('@' + cyAliasName).contains('div[class="ellipsis"]', chipLabel(testValues.value1)).should('be.visible')
     cy.get('@' + cyAliasName).find('input').type(testValues.value2)
     cy.get('@' + cyAliasName).find('button[data-cy="chip-add"]').click()
-    cy.get('@' + cyAliasName).find('input[disabled="disabled"]').should('not.exist')
-    cy.get('@' + cyAliasName).find('div[class="ellipsis"]').contains(testValues.value2)
-    cy.get('@' + cyAliasName).find('div[class="ellipsis"]').contains(testValues.value1).parents('div[class="q-chip row inline no-wrap items-center q-chip--dense"]').find('i[aria-label="Remove"]').click()
-    cy.get('@' + cyAliasName).find('input[disabled="disabled"]').should('not.exist')
-    cy.get('@' + cyAliasName).find('div[class="ellipsis"]').contains(testValues.value2).should('be.visible')
-    cy.get('@' + cyAliasName).find(testValues.value1).should('not.exist')
+    waitForSave()
+    cy.get('@' + cyAliasName).contains('div[class="ellipsis"]', chipLabel(testValues.value2)).should('be.visible')
+    cy.get('@' + cyAliasName).contains('div[class="ellipsis"]', chipLabel(testValues.value1)).parents('div[class="q-chip row inline no-wrap items-center q-chip--dense"]').find('i[aria-label="Remove"]').click()
+    waitForSave()
+    cy.get('@' + cyAliasName).contains('div[class="ellipsis"]', chipLabel(testValues.value2)).should('be.visible')
+    cy.get('@' + cyAliasName).contains('div[class="ellipsis"]', chipLabel(testValues.value1)).should('not.exist')
     cy.get('@' + cyAliasName).find('input').type(testValues.value1)
     cy.get('@' + cyAliasName).find('button[data-cy="chip-add"]').click()
-    cy.get('@' + cyAliasName).find('input[disabled="disabled"]').should('not.exist')
-    cy.get('@' + cyAliasName).find('div[class="ellipsis"]').contains(testValues.value1).should('be.visible')
+    waitForSave()
+    cy.get('@' + cyAliasName).contains('div[class="ellipsis"]', chipLabel(testValues.value1)).should('be.visible')
     cy.get('@' + cyAliasName).find('button[data-cy="chip-removeall"]').click()
-    cy.get('@' + cyAliasName).find('input[disabled="disabled"]').should('not.exist')
+    waitForSave()
     cy.get('@' + cyAliasName).find('div[class="ellipsis"]').should('not.exist')
 }
 
