@@ -66,6 +66,7 @@ function createCallForwarding(type, destinationType, number = '0123456789') {
     cy.intercept({ method: 'GET', pathname: '**/api/cfdestinationsets/**' }).as('getCFDestinationSets')
     cy.get('[data-cy="csc-cf-save"]').click()
     cy.wait('@getCFDestinationSets')
+    cy.get('[data-cy="csc-cf-save"]').should('not.exist')
 }
 
 context('Call Forwarding tests', () => {
@@ -205,7 +206,9 @@ context('Call Forwarding tests', () => {
             cy.wait('@getCFDestinationSets')
             cy.get('span[data-cy="csc-cf-destination"]').first().contains('9876543210').should('be.visible')
 
-            cy.get('button[data-cy="q-btn"]').last().click()
+            cy.get('span[data-cy="csc-cf-destination"]').last().closest('.q-item')
+                .find('button[data-cy="q-btn"]').click()
+            cy.get('.q-menu').should('be.visible')
             cy.intercept({ method: 'GET', pathname: '**/api/cfdestinationsets/**', times: 1 }).as('getCFDestinationSets')
             cy.get('div[data-cy="csc-cf-destination-move-up"]').click()
             cy.wait('@getCFDestinationSets')
