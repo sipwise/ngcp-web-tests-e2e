@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (26.0.1.25+0~mr26.0.1.25) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [dd0a35e] MT#66860 Wait for the reminder toggle before enabling it
+  * [e538afc] MT#66603 Wait for the CF add form to close in CSC tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 26 Nov 2026 11:00:00 +0100
+
 ngcp-web-tests-e2e (26.0.1.24+0~mr26.0.1.24) unstable; urgency=medium
 
   [ Debora Crescenzo ]
