@@ -1,3 +1,14 @@
+ngcp-web-tests-e2e (13.5.1.47+0~mr13.5.1.47) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [bc92451] MT#65130 make auiSelectLazySelect click the last element on a list
+  * [6ef32ba] MT#65940 fix auiSelectLazySelect weird behaviour when calling it multiple times in a row
+
+  [ Debora Crescenzo ]
+  * [fd3b48e] MT#66860 Wait for the reminder toggle before enabling it
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 26 Nov 2026 10:57:23 +0100
+
 ngcp-web-tests-e2e (13.5.1.46+0~mr13.5.1.46) unstable; urgency=medium
 
   [ Debora Crescenzo ]
