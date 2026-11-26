@@ -145,6 +145,7 @@ context('Reminder tests', () => {
         const time3 = dayjs().subtract(1, 'minute').format('HH:mm')
         const regex = new RegExp(`${time1}|${time2}|${time3}`)
         cy.get('input[data-cy="csc-reminder-time"]').should('have.attr', 'value').and('match', regex)
+        cy.get('div[data-cy="csc-reminder-toggle"][aria-disabled="true"]').should('not.exist')
         cy.get('div[data-cy="csc-reminder-toggle"]').click()
         waitPageProgressCSC()
         cy.get('div[data-cy="csc-reminder-toggle"][aria-checked="true"]').should('be.visible')
