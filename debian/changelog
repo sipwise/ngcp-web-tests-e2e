@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (12.5.1.49+0~mr12.5.1.49) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [149806c] MT#66860 Wait for the reminder toggle before enabling it
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 26 Nov 2026 10:57:18 +0100
+
 ngcp-web-tests-e2e (12.5.1.48+0~mr12.5.1.48) unstable; urgency=medium
 
   [ Debora Crescenzo ]
