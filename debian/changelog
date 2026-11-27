@@ -1,3 +1,10 @@
+ngcp-web-tests-e2e (26.3.1.11+0~mr26.3.1.11) unstable; urgency=medium
+
+  [ Debora Crescenzo ]
+  * [a036dbb] MT#66764 adapt ccare/ccareadmin role tests to customer care permission fix
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 27 Nov 2026 16:17:48 +0100
+
 ngcp-web-tests-e2e (26.3.1.10+0~mr26.3.1.10) unstable; urgency=medium
 
   [ Debora Crescenzo ]
