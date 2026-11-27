@@ -1,3 +1,11 @@
+ngcp-web-tests-e2e (26.0.1.26+0~mr26.0.1.26) unstable; urgency=medium
+
+  [ Nico Schedel ]
+  * [04864fc] MT#66701 auiSelectLazySelect: revert dropdownListId check to be.visible instead of exists
+  * [048c80a] MT#66229 fix NCOS "Add/Remove NCOS Level to NCOS Set" and peering tests
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 27 Nov 2026 14:51:24 +0100
+
 ngcp-web-tests-e2e (26.0.1.25+0~mr26.0.1.25) unstable; urgency=medium
 
   [ Debora Crescenzo ]
